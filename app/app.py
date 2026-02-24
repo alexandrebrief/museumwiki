@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """
 Application Flask pour MuseumWiki
-Version complète avec filtres dynamiques et recherche
+Version PostgreSQL (locale et VPS)
 """
 
 # ============================================
 # 1. IMPORTS
 # ============================================
 from flask import Flask, render_template, jsonify, request
-import pandas as pd
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 import os
 import plotly.express as px
 import plotly.utils
@@ -16,79 +17,90 @@ import json
 from datetime import datetime
 
 # ============================================
-# 2. CONFIGURATION GLOBALE
+# 2. CONFIGURATION DE LA BASE DE DONNÉES
 # ============================================
 app = Flask(__name__)
 
-# Cache global pour le DataFrame
-_df_cache = None
+# MÊMES IDENTIFIANTS PARTOUT (local comme VPS)
+DB_USER = 'superadmin'
+DB_PASSWORD = 'Lahess!2'
+DB_HOST = 'localhost'
+DB_NAME = 'museumwiki'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialisation SQLAlchemy
+db = SQLAlchemy(app)
 
 # ============================================
-# 3. DÉTERMINATION DU CHEMIN DES DONNÉES
+# 3. MODÈLE POUR LES ŒUVRES
 # ============================================
-if os.path.exists('/app/data/artworks_latest.csv'):
-    DATA_PATH = '/app/data/artworks_latest.csv'   # Dans Docker
-else:
-    DATA_PATH = '../data/artworks_latest.csv'     # En local
+class Artwork(db.Model):
+    __tablename__ = 'artworks'
+    
+    id = db.Column(db.String, primary_key=True)
+    titre = db.Column(db.String(500))
+    createur = db.Column(db.String(200))
+    createur_id = db.Column(db.String(50))
+    date = db.Column(db.String(50))
+    image_url = db.Column(db.String(500))
+    lieu = db.Column(db.String(200))
+    genre = db.Column(db.String(200))
+    mouvement = db.Column(db.String(200))
+    wikidata_url = db.Column(db.String(500))
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'titre': self.titre,
+            'createur': self.createur,
+            'date': self.date,
+            'image_url': self.image_url,
+            'lieu': self.lieu,
+            'genre': self.genre,
+            'mouvement': self.mouvement,
+            'wikidata_url': self.wikidata_url
+        }
 
 # ============================================
 # 4. FONCTIONS UTILITAIRES
 # ============================================
 
-def load_artworks():
+def get_filtered_query(query, artists, museums, movements):
     """
-    Charge les œuvres depuis le CSV avec mise en cache.
+    Construit une requête SQLAlchemy filtrée
     """
-    global _df_cache
-    if _df_cache is None:
-        try:
-            _df_cache = pd.read_csv(DATA_PATH)
-            _df_cache = _df_cache.fillna('Inconnu')
-            print("✅ CSV chargé en cache")
-        except Exception as e:
-            print(f"❌ Erreur de chargement: {e}")
-            return pd.DataFrame()
-    return _df_cache.copy()  # Retourner une copie pour éviter les problèmes d'index
-
-def get_filtered_df(query, artists, museums, movements):
-    """
-    Retourne un DataFrame filtré selon la recherche et les filtres sélectionnés
-    """
-    df = load_artworks()
-    filtered_df = df.copy()
+    q = Artwork.query
     
-    # Filtre de recherche textuelle
     if query:
-        mask = (
-            filtered_df['titre'].str.contains(query, case=False, na=False) |
-            filtered_df['createur'].str.contains(query, case=False, na=False) |
-            filtered_df['lieu'].str.contains(query, case=False, na=False) |
-            filtered_df['genre'].str.contains(query, case=False, na=False)
+        search = f"%{query}%"
+        q = q.filter(
+            (Artwork.titre.ilike(search)) |
+            (Artwork.createur.ilike(search)) |
+            (Artwork.lieu.ilike(search)) |
+            (Artwork.genre.ilike(search))
         )
-        filtered_df = filtered_df[mask].copy()
     
-    # Filtre par artiste
     if artists:
-        mask_artist = pd.Series([False] * len(filtered_df), index=filtered_df.index)
+        artist_filters = []
         for artist in artists:
-            mask_artist |= filtered_df['createur'].str.contains(artist, case=False, na=False)
-        filtered_df = filtered_df[mask_artist].copy()
+            artist_filters.append(Artwork.createur.ilike(f"%{artist}%"))
+        q = q.filter(db.or_(*artist_filters))
     
-    # Filtre par musée
     if museums:
-        mask_museum = pd.Series([False] * len(filtered_df), index=filtered_df.index)
+        museum_filters = []
         for museum in museums:
-            mask_museum |= filtered_df['lieu'].str.contains(museum, case=False, na=False)
-        filtered_df = filtered_df[mask_museum].copy()
+            museum_filters.append(Artwork.lieu.ilike(f"%{museum}%"))
+        q = q.filter(db.or_(*museum_filters))
     
-    # Filtre par mouvement
     if movements:
-        mask_movement = pd.Series([False] * len(filtered_df), index=filtered_df.index)
+        movement_filters = []
         for movement in movements:
-            mask_movement |= filtered_df['mouvement'].str.contains(movement, case=False, na=False)
-        filtered_df = filtered_df[mask_movement].copy()
+            movement_filters.append(Artwork.mouvement.ilike(f"%{movement}%"))
+        q = q.filter(db.or_(*movement_filters))
     
-    return filtered_df
+    return q
 
 # ============================================
 # 5. ROUTE PRINCIPALE
@@ -106,64 +118,33 @@ def index():
     movements = request.args.getlist('movement')
     sort = request.args.get('sort', 'relevance')
     
-    # Chargement des données
-    df = load_artworks()
-    filtered_df = df.copy()
+    # Construction de la requête de base
+    base_query = get_filtered_query(query, artists, museums, movements)
     
-    # Filtre de recherche textuelle
-    if query:
-        mask = (
-            filtered_df['titre'].str.contains(query, case=False, na=False) |
-            filtered_df['createur'].str.contains(query, case=False, na=False) |
-            filtered_df['lieu'].str.contains(query, case=False, na=False) |
-            filtered_df['genre'].str.contains(query, case=False, na=False)
-        )
-        filtered_df = filtered_df[mask].copy()
-    
-    # Application des filtres
-    if artists:
-        mask_artist = pd.Series([False] * len(filtered_df), index=filtered_df.index)
-        for artist in artists:
-            mask_artist |= filtered_df['createur'].str.contains(artist, case=False, na=False)
-        filtered_df = filtered_df[mask_artist].copy()
-    
-    if museums:
-        mask_museum = pd.Series([False] * len(filtered_df), index=filtered_df.index)
-        for museum in museums:
-            mask_museum |= filtered_df['lieu'].str.contains(museum, case=False, na=False)
-        filtered_df = filtered_df[mask_museum].copy()
-    
-    if movements:
-        mask_movement = pd.Series([False] * len(filtered_df), index=filtered_df.index)
-        for movement in movements:
-            mask_movement |= filtered_df['mouvement'].str.contains(movement, case=False, na=False)
-        filtered_df = filtered_df[mask_movement].copy()
-    
-    # Tri
+    # Application du tri
     if sort == 'date_asc':
-        filtered_df = filtered_df.sort_values('date', na_position='last')
+        base_query = base_query.order_by(Artwork.date)
     elif sort == 'date_desc':
-        filtered_df = filtered_df.sort_values('date', ascending=False, na_position='last')
+        base_query = base_query.order_by(Artwork.date.desc())
     elif sort == 'title_asc':
-        filtered_df = filtered_df.sort_values('titre')
+        base_query = base_query.order_by(Artwork.titre)
     elif sort == 'title_desc':
-        filtered_df = filtered_df.sort_values('titre', ascending=False)
+        base_query = base_query.order_by(Artwork.titre.desc())
     elif sort == 'artist_asc':
-        filtered_df = filtered_df.sort_values('createur')
+        base_query = base_query.order_by(Artwork.createur)
     elif sort == 'artist_desc':
-        filtered_df = filtered_df.sort_values('createur', ascending=False)
+        base_query = base_query.order_by(Artwork.createur.desc())
     # relevance = pas de tri
     
     # Pagination
-    total = len(filtered_df)
-    total_pages = (total + per_page - 1) // per_page
-    start = (page - 1) * per_page
-    end = start + per_page
-    results_page = filtered_df.iloc[start:end]
+    pagination = base_query.paginate(page=page, per_page=per_page, error_out=False)
+    results_page = pagination.items
+    total = pagination.total
+    total_pages = pagination.pages
     
     return render_template('index.html', 
                          query=query,
-                         results=results_page.to_dict('records'),
+                         results=[a.to_dict() for a in results_page],
                          count=total,
                          page=page,
                          total_pages=total_pages,
@@ -178,58 +159,65 @@ def index():
 
 @app.route('/api/artists')
 def api_artists():
-    """Retourne la liste des artistes avec leur nombre d'œuvres, filtrée par la recherche"""
+    """Retourne la liste des artistes avec leur nombre d'œuvres"""
     query = request.args.get('q', '')
     
-    # Utiliser la fonction de filtrage
-    filtered_df = get_filtered_df(query, [], [], [])
+    base_query = get_filtered_query(query, [], [], [])
     
-    if len(filtered_df) > 0:
-        artists = filtered_df['createur'].value_counts().head(30).reset_index()
-        artists.columns = ['name', 'count']
-        # Filtrer les valeurs vides ou "Inconnu"
-        artists = artists[artists['name'] != 'Inconnu']
-    else:
-        artists = pd.DataFrame(columns=['name', 'count'])
+    # Agrégation par artiste
+    results = db.session.query(
+        Artwork.createur.label('name'),
+        func.count(Artwork.id).label('count')
+    ).filter(
+        Artwork.createur != 'Inconnu'
+    ).group_by(
+        Artwork.createur
+    ).order_by(
+        func.count(Artwork.id).desc()
+    ).limit(30).all()
     
-    return jsonify(artists.to_dict('records'))
+    return jsonify([{'name': r.name, 'count': r.count} for r in results])
 
 @app.route('/api/museums')
 def api_museums():
-    """Retourne la liste des musées avec leur nombre d'œuvres, filtrée par la recherche"""
+    """Retourne la liste des musées avec leur nombre d'œuvres"""
     query = request.args.get('q', '')
     
-    # Utiliser la fonction de filtrage
-    filtered_df = get_filtered_df(query, [], [], [])
+    base_query = get_filtered_query(query, [], [], [])
     
-    if len(filtered_df) > 0:
-        museums = filtered_df['lieu'].value_counts().head(30).reset_index()
-        museums.columns = ['name', 'count']
-        # Filtrer les valeurs vides ou "Inconnu"
-        museums = museums[museums['name'] != 'Inconnu']
-    else:
-        museums = pd.DataFrame(columns=['name', 'count'])
+    results = db.session.query(
+        Artwork.lieu.label('name'),
+        func.count(Artwork.id).label('count')
+    ).filter(
+        Artwork.lieu != 'Inconnu'
+    ).group_by(
+        Artwork.lieu
+    ).order_by(
+        func.count(Artwork.id).desc()
+    ).limit(30).all()
     
-    return jsonify(museums.to_dict('records'))
+    return jsonify([{'name': r.name, 'count': r.count} for r in results])
 
 @app.route('/api/movements')
 def api_movements():
-    """Retourne la liste des mouvements avec leur nombre d'œuvres, filtrée par la recherche"""
+    """Retourne la liste des mouvements avec leur nombre d'œuvres"""
     query = request.args.get('q', '')
     
-    # Utiliser la fonction de filtrage
-    filtered_df = get_filtered_df(query, [], [], [])
+    base_query = get_filtered_query(query, [], [], [])
     
-    if len(filtered_df) > 0:
-        movements = filtered_df['mouvement'].value_counts().head(30).reset_index()
-        movements.columns = ['name', 'count']
-        # Filtrer les valeurs vides ou "Inconnu"
-        movements = movements[movements['name'] != 'Inconnu']
-        movements = movements[movements['name'] != 'nan']
-    else:
-        movements = pd.DataFrame(columns=['name', 'count'])
+    results = db.session.query(
+        Artwork.mouvement.label('name'),
+        func.count(Artwork.id).label('count')
+    ).filter(
+        Artwork.mouvement != 'Inconnu',
+        Artwork.mouvement != 'nan'
+    ).group_by(
+        Artwork.mouvement
+    ).order_by(
+        func.count(Artwork.id).desc()
+    ).limit(30).all()
     
-    return jsonify(movements.to_dict('records'))
+    return jsonify([{'name': r.name, 'count': r.count} for r in results])
 
 # ============================================
 # 7. ROUTES PAGES STATIQUES
@@ -238,13 +226,29 @@ def api_movements():
 @app.route('/stats')
 def statistics():
     """Page de statistiques"""
-    df = load_artworks()
-    
     # Top 10 artistes
-    top_artists = df['createur'].value_counts().head(10).to_dict()
+    top_artists_data = db.session.query(
+        Artwork.createur, func.count(Artwork.id)
+    ).filter(
+        Artwork.createur != 'Inconnu'
+    ).group_by(
+        Artwork.createur
+    ).order_by(
+        func.count(Artwork.id).desc()
+    ).limit(10).all()
+    top_artists = {a: c for a, c in top_artists_data}
     
-    # Répartition par genre
-    genres = df['genre'].value_counts().head(10).to_dict()
+    # Top 10 genres
+    top_genres_data = db.session.query(
+        Artwork.genre, func.count(Artwork.id)
+    ).filter(
+        Artwork.genre != 'Inconnu'
+    ).group_by(
+        Artwork.genre
+    ).order_by(
+        func.count(Artwork.id).desc()
+    ).limit(10).all()
+    genres = {g: c for g, c in top_genres_data}
     
     return render_template('stats.html',
                          top_artists=top_artists,
@@ -258,11 +262,10 @@ def about():
 @app.route('/oeuvre/<string:oeuvre_id>')
 def oeuvre_detail(oeuvre_id):
     """Page détaillée d'une œuvre"""
-    df = load_artworks()
-    oeuvre_data = df[df['id'] == oeuvre_id].to_dict('records')
+    artwork = Artwork.query.get(oeuvre_id)
     
-    if oeuvre_data:
-        return render_template('detail.html', oeuvre=oeuvre_data[0])
+    if artwork:
+        return render_template('detail.html', oeuvre=artwork.to_dict())
     else:
         return "Œuvre non trouvée", 404
 
@@ -273,25 +276,33 @@ def suggestions():
     if len(query) < 2:
         return jsonify([])
     
-    df = load_artworks()
+    search = f"%{query}%"
     
-    mask_artistes = df['createur'].str.contains(query, case=False, na=False)
-    mask_oeuvres = df['titre'].str.contains(query, case=False, na=False)
-    mask_musees = df['lieu'].str.contains(query, case=False, na=False)
+    # Artistes
+    artists = db.session.query(Artwork.createur).filter(
+        Artwork.createur.ilike(search),
+        Artwork.createur != 'Inconnu'
+    ).distinct().limit(3).all()
+    
+    # Titres
+    titles = db.session.query(Artwork.titre).filter(
+        Artwork.titre.ilike(search),
+        Artwork.titre != 'Inconnu'
+    ).distinct().limit(3).all()
+    
+    # Musées
+    museums = db.session.query(Artwork.lieu).filter(
+        Artwork.lieu.ilike(search),
+        Artwork.lieu != 'Inconnu'
+    ).distinct().limit(3).all()
     
     suggestions_list = []
-    
-    artistes = df[mask_artistes]['createur'].drop_duplicates().head(3).tolist()
-    for artiste in artistes:
-        suggestions_list.append({'texte': artiste, 'categorie': 'artiste'})
-    
-    oeuvres = df[mask_oeuvres]['titre'].drop_duplicates().head(3).tolist()
-    for oeuvre in oeuvres:
-        suggestions_list.append({'texte': oeuvre, 'categorie': 'œuvre'})
-    
-    musees = df[mask_musees]['lieu'].drop_duplicates().head(3).tolist()
-    for musee in musees:
-        suggestions_list.append({'texte': musee, 'categorie': 'musée'})
+    for a in artists:
+        suggestions_list.append({'texte': a[0], 'categorie': 'artiste'})
+    for t in titles:
+        suggestions_list.append({'texte': t[0], 'categorie': 'œuvre'})
+    for m in museums:
+        suggestions_list.append({'texte': m[0], 'categorie': 'musée'})
     
     return jsonify(suggestions_list[:9])
 
@@ -299,4 +310,9 @@ def suggestions():
 # 8. LANCEMENT
 # ============================================
 if __name__ == '__main__':
+    # Création des tables au démarrage (si elles n'existent pas)
+    with app.app_context():
+        db.create_all()
+        print("✅ Tables PostgreSQL vérifiées/créées")
+    
     app.run(host='0.0.0.0', port=5000, debug=True)

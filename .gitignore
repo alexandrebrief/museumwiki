@@ -17,3 +17,15 @@ data/*.db
 
 # Docker
 *.pid
+
+# Fichiers Docker (si supprimés)
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# Backups
+*backup*
+*Copie*
+
+# Données temporaires
+scripts/data/
