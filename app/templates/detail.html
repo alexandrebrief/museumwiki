@@ -5,125 +5,253 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ oeuvre.titre }} - MuseumWiki</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        * { font-family: 'Inter', sans-serif; }
-        body { background-color: #f5f5f7; }
-        .navbar-custom { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 1rem 0; }
-        .navbar-brand { font-weight: 600; font-size: 1.5rem; color: white !important; }
-        .nav-link { color: rgba(255,255,255,0.8) !important; font-weight: 500; }
-        .detail-container { margin-top: 3rem; margin-bottom: 3rem; }
-        .detail-card { background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .detail-image { width: 100%; border-radius: 12px; max-height: 500px; object-fit: contain; background: #f8f9fa; }
-        .detail-title { font-size: 2.5rem; font-weight: 700; color: #1a1a2e; margin-bottom: 1rem; }
-        .detail-info { margin-top: 2rem; }
-        .info-item { padding: 0.8rem 0; border-bottom: 1px solid #eee; }
-        .info-label { font-weight: 600; color: #667eea; width: 120px; display: inline-block; }
-        .info-value { color: #333; }
-        .btn-back { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 0.5rem 2rem; border-radius: 50px; text-decoration: none; }
-        .btn-back:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(102,126,234,0.4); color: white; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f0e8;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 500;
+            color: #1e2b3a;
+        }
+        
+        .navbar {
+            background: #2c3e50 !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+        }
+        
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #e6d8c3 !important;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-link {
+            color: #e6d8c3 !important;
+            font-weight: 400;
+            margin: 0 15px;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover {
+            border-bottom-color: #e6d8c3;
+        }
+        
+        .detail-container {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #8e9aab;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        
+        .back-link:hover {
+            color: #2c3e50;
+        }
+        
+        .artwork-detail {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 4rem;
+            background: white;
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: 0 4px 20px rgba(44,62,80,0.05);
+        }
+        
+        .artwork-image {
+            width: 100%;
+            max-height: 600px;
+            object-fit: contain;
+            background: #f0e8dc;
+            border-radius: 12px;
+        }
+        
+        .artwork-image-placeholder {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(145deg, #e6d8c3, #d4c9b9);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5d6d7e;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .artwork-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        
+        .artwork-artist {
+            font-size: 1.3rem;
+            color: #5d6d7e;
+            margin-bottom: 0.5rem;
+        }
+        
+        .artwork-date {
+            font-size: 1rem;
+            color: #8e9aab;
+            margin-bottom: 2rem;
+        }
+        
+        .info-block {
+            margin-bottom: 1.5rem;
+        }
+        
+        .info-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #8e9aab;
+            margin-bottom: 0.3rem;
+        }
+        
+        .info-value {
+            font-size: 1.1rem;
+            color: #2c3e50;
+        }
+        
+        .wikidata-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.8rem 2rem;
+            background: transparent;
+            border: 1px solid #2c3e50;
+            color: #2c3e50;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .wikidata-link:hover {
+            background: #2c3e50;
+            color: white;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: #e6d8c3;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .artwork-detail {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                padding: 2rem;
+            }
+            .artwork-title {
+                font-size: 2rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand" href="/">MUSEUMWIKI</a>
-            <div class="collapse navbar-collapse">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="/">Accueil</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/search">Recherche</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/stats">Statistiques</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/about">À propos</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Recherche</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/stats">Statistiques</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">À propos</a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <div class="container detail-container">
-        <div class="detail-card">
-            <div class="row">
-                <div class="col-md-6">
-                    {% if oeuvre.image_url and oeuvre.image_url != '' %}
-                        <img src="{{ oeuvre.image_url }}" class="detail-image" alt="{{ oeuvre.titre }}">
-                    {% else %}
-                        <div class="detail-image bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 400px;">
-                            <h3>Image non disponible</h3>
-                        </div>
-                    {% endif %}
+    <div class="detail-container">
+        <a href="javascript:history.back()" class="back-link">← Retour</a>
+        
+        <div class="artwork-detail">
+            <div>
+                {% if oeuvre.image_url and oeuvre.image_url != '' %}
+                <img src="{{ oeuvre.image_url }}" class="artwork-image" alt="{{ oeuvre.titre }}">
+                {% else %}
+                <div class="artwork-image-placeholder">No image</div>
+                {% endif %}
+            </div>
+            
+            <div>
+                <h1 class="artwork-title">{{ oeuvre.titre }}</h1>
+                <div class="artwork-artist">{{ oeuvre.createur }}</div>
+                <div class="artwork-date">{{ oeuvre.date[:10] if oeuvre.date else 'Date inconnue' }}</div>
+                
+                {% if oeuvre.lieu and oeuvre.lieu != 'Inconnu' %}
+                <div class="info-block">
+                    <div class="info-label">Musée</div>
+                    <div class="info-value">{{ oeuvre.lieu }}</div>
                 </div>
-                <div class="col-md-6">
-                    <h1 class="detail-title">{{ oeuvre.titre }}</h1>
-                    <div class="detail-info">
-                        <div class="info-item">
-                            <span class="info-label">Artiste :</span>
-                            <span class="info-value">{{ oeuvre.createur }}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Date :</span>
-                            <span class="info-value">{{ oeuvre.date[:10] if oeuvre.date else 'Inconnue' }}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Lieu :</span>
-                            <span class="info-value">{{ oeuvre.lieu }}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Genre :</span>
-                            <span class="info-value">{{ oeuvre.genre }}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Mouvement :</span>
-                            <span class="info-value">{{ oeuvre.mouvement }}</span>
-                        </div>
-<div class="info-item">
-    <span class="info-label">Dimensions :</span>
-    <span class="info-value">
-        {% if oeuvre.hauteur and oeuvre.largeur %}
-            {{ oeuvre.hauteur }} x {{ oeuvre.largeur }} cm
-        {% elif oeuvre.hauteur %}
-            H: {{ oeuvre.hauteur }} cm
-        {% elif oeuvre.largeur %}
-            L: {{ oeuvre.largeur }} cm
-        {% else %}
-            Non renseigné
-        {% endif %}
-    </span>
-</div>
-<div class="info-item">
-    <span class="info-label">Matériau :</span>
-    <span class="info-value">{{ oeuvre.materiau if oeuvre.materiau else 'Non renseigné' }}</span>
-</div>
-<div class="info-item">
-    <span class="info-label">Collection :</span>
-    <span class="info-value">{{ oeuvre.collection if oeuvre.collection else 'Non renseigné' }}</span>
-</div>
-<div class="info-item">
-    <span class="info-label">N° inventaire :</span>
-    <span class="info-value">{{ oeuvre.inventaire if oeuvre.inventaire else 'Non renseigné' }}</span>
-</div>
-<div class="info-item">
-    <span class="info-label">Sujet :</span>
-    <span class="info-value">{{ oeuvre.sujet if oeuvre.sujet else 'Non renseigné' }}</span>
-</div>
-<div class="info-item">
-    <span class="info-label">Lieu de création :</span>
-    <span class="info-value">{{ oeuvre.creation_lieu if oeuvre.creation_lieu else 'Non renseigné' }}</span>
-</div>
-                        <div class="info-item">
-                            <span class="info-label">ID Wikidata :</span>
-                            <span class="info-value">{{ oeuvre.id }}</span>
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <a href="{{ oeuvre.wikidata_url }}" target="_blank" class="btn btn-primary me-2">Voir sur Wikidata</a>
-                        <a href="javascript:history.back()" class="btn btn-back">Retour</a>
-                    </div>
+                {% endif %}
+                
+                {% if oeuvre.genre and oeuvre.genre != 'Inconnu' %}
+                <div class="info-block">
+                    <div class="info-label">Genre</div>
+                    <div class="info-value">{{ oeuvre.genre }}</div>
                 </div>
+                {% endif %}
+                
+                {% if oeuvre.mouvement and oeuvre.mouvement != 'Inconnu' and oeuvre.mouvement != 'nan' %}
+                <div class="info-block">
+                    <div class="info-label">Mouvement</div>
+                    <div class="info-value">{{ oeuvre.mouvement }}</div>
+                </div>
+                {% endif %}
+                
+                <a href="{{ oeuvre.wikidata_url }}" target="_blank" class="wikidata-link">Voir sur Wikidata</a>
             </div>
         </div>
     </div>
 
-    <footer class="text-center text-muted py-4">
-        <div class="container">MuseumWiki - Base de données d'œuvres d'art</div>
+    <footer class="footer">
+        <div class="container">
+            <p>MuseumWiki · Collection d'œuvres d'art · Données Wikidata</p>
+        </div>
     </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

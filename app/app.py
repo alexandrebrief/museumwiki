@@ -16,6 +16,7 @@ import plotly.express as px
 import plotly.utils
 import json
 from datetime import datetime
+from flask import redirect, url_for
 
 # ============================================
 # 2. CONFIGURATION GLOBALE
@@ -68,47 +69,7 @@ def load_artworks():
 
 @app.route('/')
 def index():
-    """
-    Page d'accueil avec galerie et pagination.
-    Affiche 20 œuvres par page.
-    """
-    page = request.args.get('page', 1, type=int)
-    per_page = 20
-    
-    df = load_artworks()
-    total = len(df)
-    
-    # Calcul de la pagination
-    start = (page - 1) * per_page
-    end = start + per_page
-    artworks_page = df.iloc[start:end]
-    total_pages = (total + per_page - 1) // per_page
-    
-    # Statistiques pour l'affichage
-    stats = {
-        'total': total,
-        'with_image': len(df[df['image_url'] != '']),
-        'without_image': total - len(df[df['image_url'] != '']),
-        'last_update': datetime.now().strftime('%d/%m/%Y'),
-        'page': page,
-        'total_pages': total_pages,
-        'per_page': per_page
-    }
-    
-    return render_template(
-        'index.html', 
-        artworks=artworks_page.to_dict('records'),
-        stats=stats
-    )
-
-
-@app.route('/search')
-@limiter.limit("30 per minute")  # Limite spécifique : 30 recherches par minute
-def search():
-    """
-    Page de recherche avec pagination.
-    Recherche dans le titre, l'artiste, le lieu et le genre.
-    """
+    """Page d'accueil avec recherche"""
     query = request.args.get('q', '')
     page = request.args.get('page', 1, type=int)
     per_page = 20
@@ -116,7 +77,7 @@ def search():
     df = load_artworks()
     
     if query:
-        # Masque de recherche sur plusieurs colonnes
+        # Recherche dans titre, createur, lieu, genre
         mask = (
             df['titre'].str.contains(query, case=False, na=False) |
             df['createur'].str.contains(query, case=False, na=False) |
@@ -126,7 +87,7 @@ def search():
         all_results = df[mask]
         total = len(all_results)
         
-        # Pagination des résultats
+        # Pagination
         start = (page - 1) * per_page
         end = start + per_page
         results_page = all_results.iloc[start:end]
@@ -136,14 +97,13 @@ def search():
         total = 0
         total_pages = 1
     
-    return render_template(
-        'search.html', 
-        query=query,
-        results=results_page.to_dict('records'),
-        count=total,
-        page=page,
-        total_pages=total_pages
-    )
+    return render_template('index.html', 
+                         query=query,
+                         results=results_page.to_dict('records'),
+                         count=total,
+                         page=page,
+                         total_pages=total_pages)
+
 
 
 @app.route('/oeuvre/<string:oeuvre_id>')

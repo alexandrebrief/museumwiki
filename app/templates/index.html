@@ -1,305 +1,330 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <!-- ============================================
-         MÉTADONNÉES ET RESSOURCES
-         ============================================ -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MuseumWiki - Collection d'œuvres d'art</title>
-    
-    <!-- Bootstrap CSS (framework pour le design responsive) -->
+    <title>MuseumWiki - Recherche d'œuvres</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Google Fonts : Inter (typographie moderne et lisible) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- ============================================
-         STYLES PERSONNALISÉS
-         ============================================ -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* ---------- RESET ET BASE ---------- */
+        /* ===== STYLE MUSÉE ===== */
         * {
-            font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
         
         body {
-            background-color: #f5f5f7;
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f0e8;  /* Beige musée */
+            color: #2c3e50;  /* Bleu-gris profond */
             line-height: 1.6;
         }
         
-        /* ---------- BARRE DE NAVIGATION ---------- */
-        .navbar-custom {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 500;
+            color: #1e2b3a;
+        }
+        
+        /* Navigation sobre */
+        .navbar {
+            background: #2c3e50 !important;  /* Bleu-gris foncé */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             padding: 1rem 0;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
         }
         
         .navbar-brand {
-            font-weight: 700;
+            font-family: 'Playfair Display', serif;
             font-size: 1.5rem;
+            font-weight: 600;
+            color: #e6d8c3 !important;  /* Beige clair */
             letter-spacing: 0.5px;
-            color: white !important;
         }
         
         .nav-link {
-            font-weight: 500;
-            margin: 0 10px;
-            transition: all 0.3s;
-            color: rgba(255,255,255,0.9) !important;
+            color: #e6d8c3 !important;
+            font-weight: 400;
+            margin: 0 15px;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
         }
         
         .nav-link:hover {
-            transform: translateY(-2px);
-            color: white !important;
+            border-bottom-color: #e6d8c3;
         }
         
         .nav-link.active {
-            color: white !important;
-            font-weight: 600;
+            border-bottom-color: #e6d8c3;
+            font-weight: 500;
         }
         
-        /* ---------- SECTION HÉROÏQUE (EN-TÊTE) ---------- */
+        /* En-tête sobre */
         .hero-section {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: white;
-            padding: 4rem 0;
-            margin-bottom: 3rem;
+            padding: 3rem 0 2rem;
+            text-align: center;
+            background: #f5f0e8;
         }
         
         .hero-title {
             font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
         }
         
         .hero-subtitle {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
+            color: #5d6d7e;
             font-weight: 300;
-            opacity: 0.9;
         }
         
-        /* ---------- GRILLE DE STATISTIQUES ---------- */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 3rem;
-        }
-        
-        .stat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: transform 0.3s;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-        }
-        
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #1a1a2e;
-        }
-        
-        .stat-label {
-            color: #666;
-            font-weight: 500;
-        }
-        
-        /* ---------- GRILLE DES ŒUVRES ---------- */
-        .row {
-            display: flex;
-            flex-wrap: wrap;
-            margin-right: -12px;
-            margin-left: -12px;
-        }
-        
-        .col-md-3 {
-            padding-right: 12px;
-            padding-left: 12px;
-            margin-bottom: 24px;  /* Espace vertical entre les lignes */
-            width: 25%;
-            box-sizing: border-box;
-        }
-        
-        /* Carte d'œuvre */
-        .artwork-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: all 0.3s;
-            height: 100%;
-            border: none;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .artwork-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 20px rgba(0,0,0,0.15);
-        }
-        
-        /* Zone image */
-        .artwork-image {
-            height: 250px;
-            width: 100%;
-            object-fit: cover;
-            border-bottom: 1px solid #eee;
-            background-color: #f0f0f0;
-        }
-        
-        /* Placeholder quand pas d'image (version pro, sans texte) */
-        .artwork-image-placeholder {
-            height: 250px;
-            width: 100%;
-            background: linear-gradient(145deg, #e0e0e0 0%, #b0b0b0 100%);
+        /* Barre de recherche */
+        .search-container {
+            max-width: 600px;
+            margin: 2rem auto 3rem;
             position: relative;
         }
         
-        /* Effet de texture subtile pour le placeholder */
-        .artwork-image-placeholder::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: repeating-linear-gradient(
-                45deg,
-                rgba(255,255,255,0.05) 0px,
-                rgba(255,255,255,0.05) 10px,
-                rgba(0,0,0,0.02) 10px,
-                rgba(0,0,0,0.02) 20px
-            );
+        .search-form {
+            display: flex;
+            gap: 10px;
+            position: relative;
         }
         
-        /* Informations de l'œuvre */
+        .search-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: 1px solid #d4c9b9;
+            border-radius: 50px;
+            font-size: 1rem;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #2c3e50;
+            box-shadow: 0 4px 12px rgba(44,62,80,0.1);
+        }
+        
+        .search-button {
+            padding: 0 2rem;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .search-button:hover {
+            background: #1e2b3a;
+        }
+        
+        /* Suggestions */
+        .suggestions-box {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #d4c9b9;
+            border-radius: 16px;
+            box-shadow: 0 12px 24px rgba(44,62,80,0.1);
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .suggestion-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0e8dc;
+            transition: background 0.2s;
+        }
+        
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        
+        .suggestion-item:hover {
+            background: #f5f0e8;
+        }
+        
+        .suggestion-item strong {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .suggestion-item small {
+            color: #8e9aab;
+            margin-left: 8px;
+            font-size: 0.8rem;
+        }
+        
+        /* Résultats */
+        .results-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #d4c9b9;
+            color: #5d6d7e;
+        }
+        
+        .results-count {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .artworks-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin: 2rem 0;
+        }
+        
+        .artwork-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 4px 12px rgba(44,62,80,0.05);
+        }
+        
+        .artwork-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(44,62,80,0.1);
+        }
+        
+        .artwork-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background-color: #f0e8dc;
+        }
+        
+        .artwork-image-placeholder {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(145deg, #e6d8c3, #d4c9b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5d6d7e;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
         .artwork-info {
             padding: 1.2rem;
-            flex-grow: 1;
+            background: white;
         }
         
         .artwork-title {
-            font-size: 1.1rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #1a1a2e;
+            color: #2c3e50;
+            margin-bottom: 0.3rem;
             line-height: 1.4;
         }
         
         .artwork-artist {
-            color: #666;
-            font-weight: 500;
-            margin-bottom: 0.3rem;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            color: #5d6d7e;
+            margin-bottom: 0.2rem;
         }
         
-        .artwork-details {
-            font-size: 0.85rem;
-            color: #888;
+        .artwork-museum {
+            font-size: 0.8rem;
+            color: #8e9aab;
         }
         
-        /* ---------- PAGINATION ---------- */
+        .no-results {
+            text-align: center;
+            padding: 4rem;
+            color: #8e9aab;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(44,62,80,0.05);
+        }
+        
         .pagination {
-            margin-top: 2rem;
-            margin-bottom: 3rem;
+            margin: 3rem 0;
             justify-content: center;
-            display: flex;
-            list-style: none;
-            padding-left: 0;
+            gap: 5px;
         }
         
         .page-link {
-            color: #1a1a2e;
             border: none;
-            margin: 0 5px;
-            border-radius: 8px;
-            font-weight: 500;
             padding: 0.5rem 1rem;
+            color: #5d6d7e;
+            background: white;
+            border-radius: 8px;
+            font-weight: 400;
             text-decoration: none;
-            transition: all 0.2s;
         }
         
         .page-link:hover {
-            background: #f0f0f0;
+            background: #f0e8dc;
+            color: #2c3e50;
         }
         
         .page-item.active .page-link {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #2c3e50;
             color: white;
         }
         
-        .page-item.disabled .page-link {
-            color: #ccc;
-            pointer-events: none;
-        }
-        
-        /* ---------- PIED DE PAGE ---------- */
         .footer {
-            background: #1a1a2e;
-            color: white;
+            background: #2c3e50;
+            color: #e6d8c3;
             padding: 2rem 0;
-            margin-top: 4rem;
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.9rem;
         }
         
-        /* ---------- RESPONSIVE (tablettes) ---------- */
         @media (max-width: 768px) {
-            .col-md-3 {
-                width: 50%;
+            .artworks-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
             }
-            
             .hero-title {
                 font-size: 2rem;
             }
         }
         
-        /* ---------- RESPONSIVE (mobiles) ---------- */
         @media (max-width: 480px) {
-            .col-md-3 {
-                width: 100%;
+            .artworks-grid {
+                grid-template-columns: 1fr;
             }
-            
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
+            .search-form {
+                flex-direction: column;
+            }
+            .search-button {
+                padding: 1rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- ============================================
-         BARRE DE NAVIGATION
-         ============================================ -->
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <!-- Logo / nom du site -->
             <a class="navbar-brand" href="/">MUSEUMWIKI</a>
-            
-            <!-- Bouton menu pour mobile -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
-            <!-- Liens de navigation -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="/">Accueil</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/search">Recherche</a>
+                        <a class="nav-link active" href="/">Recherche</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/stats">Statistiques</a>
@@ -312,115 +337,127 @@
         </div>
     </nav>
 
-    <!-- ============================================
-         SECTION HÉROÏQUE
-         ============================================ -->
     <div class="hero-section">
-        <div class="container text-center">
-            <h1 class="hero-title">Collection d'œuvres d'art</h1>
-            <p class="hero-subtitle">Explorez notre base de données d'œuvres issues des plus grands musées</p>
+        <div class="container">
+            <h1 class="hero-title">Recherche</h1>
+            <p class="hero-subtitle">Artistes · Œuvres · Musées</p>
         </div>
     </div>
 
-    <!-- ============================================
-         CONTENU PRINCIPAL
-         ============================================ -->
     <div class="container">
-        <!-- Statistiques générales -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number">{{ stats.total }}</div>
-                <div class="stat-label">Œuvres totales</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">{{ stats.with_image }}</div>
-                <div class="stat-label">Avec image</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">{{ stats.without_image }}</div>
-                <div class="stat-label">Sans image</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">{{ stats.last_update }}</div>
-                <div class="stat-label">Dernière mise à jour</div>
-            </div>
+        <div class="search-container">
+            <form action="/" method="get" class="search-form" autocomplete="off">
+                <input type="text" 
+                       name="q" 
+                       id="search-input"
+                       class="search-input" 
+                       placeholder="Ex: Monet, Louvre, Les nymphéas..."
+                       value="{{ query }}">
+                <button type="submit" class="search-button">Rechercher</button>
+                <div id="suggestions" class="suggestions-box" style="display: none;"></div>
+            </form>
         </div>
 
-        <!-- Grille des œuvres -->
-        <div class="row">
-            {% for artwork in artworks %}
-            <!-- Carte pour chaque œuvre (4 par ligne) -->
-            <div class="col-md-3">
-                <a href="/oeuvre/{{ artwork.id }}" style="text-decoration: none; color: inherit;">
-                    <div class="artwork-card">
-                        <!-- Affichage de l'image ou placeholder gris -->
+        {% if query %}
+            <div class="results-info">
+                <span class="results-count">{{ count }} résultat(s) pour "{{ query }}"</span>
+                <span>Page {{ page }} sur {{ total_pages }}</span>
+            </div>
+
+            {% if results %}
+                <div class="artworks-grid">
+                    {% for artwork in results %}
+                    <a href="/oeuvre/{{ artwork.id }}" class="artwork-card">
                         {% if artwork.image_url and artwork.image_url != '' %}
-                        <img src="{{ artwork.image_url }}" 
-                             class="artwork-image" 
-                             alt="{{ artwork.titre }}"
-                             loading="lazy">  <!-- Chargement différé pour performance -->
+                        <img src="{{ artwork.image_url }}" class="artwork-image" alt="{{ artwork.titre }}" loading="lazy">
                         {% else %}
-                        <!-- Placeholder élégant sans texte -->
-                        <div class="artwork-image-placeholder"></div>
+                        <div class="artwork-image-placeholder">No image</div>
                         {% endif %}
-                        
-                        <!-- Informations texte -->
                         <div class="artwork-info">
-                            <div class="artwork-title">
-                                {{ artwork.titre[:50] }}{% if artwork.titre|length > 50 %}...{% endif %}
-                            </div>
-                            <div class="artwork-artist">
-                                {{ artwork.createur }}
-                            </div>
-                            <div class="artwork-details">
-                                {{ artwork.date[:4] if artwork.date else 'Date inconnue' }}
-                            </div>
+                            <div class="artwork-title">{{ artwork.titre[:40] }}{% if artwork.titre|length > 40 %}...{% endif %}</div>
+                            <div class="artwork-artist">{{ artwork.createur }}</div>
+                            <div class="artwork-museum">{{ artwork.lieu[:30] if artwork.lieu and artwork.lieu != 'Inconnu' else 'Lieu inconnu' }}</div>
                         </div>
-                    </div>
-                </a>
-            </div>
-            {% endfor %}
-        </div>
+                    </a>
+                    {% endfor %}
+                </div>
 
-        <!-- ============================================
-             PAGINATION
-             ============================================ -->
-        <nav class="pagination-wrapper">
-            <ul class="pagination">
-                <!-- Bouton précédent -->
-                <li class="page-item {{ 'disabled' if stats.page == 1 else '' }}">
-                    <a class="page-link" href="?page={{ stats.page - 1 }}">Précédent</a>
-                </li>
-                
-                <!-- Numéros de page -->
-                {% for p in range(1, stats.total_pages + 1) %}
-                    {% if p == stats.page %}
-                        <li class="page-item active"><span class="page-link">{{ p }}</span></li>
-                    {% elif p <= 3 or p > stats.total_pages - 3 or (p >= stats.page - 2 and p <= stats.page + 2) %}
-                        <li class="page-item"><a class="page-link" href="?page={{ p }}">{{ p }}</a></li>
-                    {% elif p == 4 and stats.page > 4 %}
-                        <li class="page-item disabled"><span class="page-link">...</span></li>
-                    {% endif %}
-                {% endfor %}
-                
-                <!-- Bouton suivant -->
-                <li class="page-item {{ 'disabled' if stats.page == stats.total_pages else '' }}">
-                    <a class="page-link" href="?page={{ stats.page + 1 }}">Suivant</a>
-                </li>
-            </ul>
-        </nav>
+                <nav class="pagination">
+                    <ul class="pagination">
+                        <li class="page-item {{ 'disabled' if page == 1 else '' }}">
+                            <a class="page-link" href="?q={{ query }}&page={{ page - 1 }}">←</a>
+                        </li>
+                        
+                        {% for p in range(1, total_pages + 1) %}
+                            {% if p == page %}
+                                <li class="page-item active"><span class="page-link">{{ p }}</span></li>
+                            {% elif p <= 3 or p > total_pages - 3 or (p >= page - 2 and p <= page + 2) %}
+                                <li class="page-item"><a class="page-link" href="?q={{ query }}&page={{ p }}">{{ p }}</a></li>
+                            {% elif p == 4 and page > 4 %}
+                                <li class="page-item disabled"><span class="page-link">…</span></li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        <li class="page-item {{ 'disabled' if page == total_pages else '' }}">
+                            <a class="page-link" href="?q={{ query }}&page={{ page + 1 }}">→</a>
+                        </li>
+                    </ul>
+                </nav>
+            {% else %}
+                <div class="no-results">
+                    <p>Aucun résultat trouvé pour "{{ query }}"</p>
+                </div>
+            {% endif %}
+        {% endif %}
     </div>
 
-    <!-- ============================================
-         PIED DE PAGE
-         ============================================ -->
     <footer class="footer">
-        <div class="container text-center">
-            <p class="mb-0">© MuseumWiki - Base de données d'œuvres d'art | Données issues de Wikidata</p>
+        <div class="container">
+            <p>MuseumWiki · Collection d'œuvres d'art · Données Wikidata</p>
         </div>
     </footer>
 
-    <!-- Bootstrap JavaScript (pour le menu mobile) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const searchInput = document.getElementById('search-input');
+        const suggestionsBox = document.getElementById('suggestions');
+        
+        searchInput.addEventListener('input', function(e) {
+            const query = e.target.value;
+            
+            if (query.length < 2) {
+                suggestionsBox.style.display = 'none';
+                return;
+            }
+            
+            fetch(`/api/suggestions?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        suggestionsBox.innerHTML = '';
+                        data.forEach(suggestion => {
+                            const div = document.createElement('div');
+                            div.className = 'suggestion-item';
+                            div.innerHTML = `<strong>${suggestion.texte}</strong> <small>${suggestion.categorie}</small>`;
+                            div.onclick = function() {
+                                searchInput.value = suggestion.texte;
+                                suggestionsBox.style.display = 'none';
+                                document.querySelector('.search-form').submit();
+                            };
+                            suggestionsBox.appendChild(div);
+                        });
+                        suggestionsBox.style.display = 'block';
+                    } else {
+                        suggestionsBox.style.display = 'none';
+                    }
+                });
+        });
+        
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#search-input') && !e.target.closest('.suggestions-box')) {
+                suggestionsBox.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
