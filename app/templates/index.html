@@ -254,35 +254,44 @@
             font-size: 0.75rem;
         }
         
-.action-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-left: auto;
-}
-
-.apply-btn, .clear-btn {
-    padding: 0.3rem 1rem;
-    font-size: 0.8rem;
-    white-space: nowrap;
-}
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-left: 10px;
+        }
+        
+        .apply-btn {
+            padding: 0.3rem 0.8rem;
+            font-size: 0.75rem;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            min-width: 70px;
+        }
         
         .clear-btn {
+            padding: 0.3rem 0.8rem;
+            font-size: 0.7rem;
             background: white;
             color: #8e9aab;
             border: 1px solid #d4c9b9;
             border-radius: 30px;
-            padding: 0.4rem 0.8rem;
-            font-size: 0.85rem;
             cursor: pointer;
+            white-space: nowrap;
+            min-width: 70px;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 4px;
-            white-space: nowrap;
         }
         
         .clear-btn i {
-            font-size: 0.75rem;
+            font-size: 0.6rem;
         }
         
         .sort-container {
@@ -537,67 +546,59 @@
             </form>
         </div>
 
-
-<!-- Barre de filtres -->
-<div class="filter-section">
-    <div class="filter-row">
-        <span class="filter-label">Filtrer :</span>
-        
-        <!-- Artiste -->
-        <div class="filter-dropdown">
-            <button class="filter-button" onclick="toggleDropdown('artist-dropdown')">
-                Artiste <i class="fas fa-chevron-down"></i>
-            </button>
-            <div id="artist-dropdown" class="filter-menu"></div>
+        <!-- Barre de filtres -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <span class="filter-label">Filtrer :</span>
+                
+                <!-- Artiste -->
+                <div class="filter-dropdown">
+                    <button class="filter-button" onclick="toggleDropdown('artist-dropdown')">
+                        Artiste <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div id="artist-dropdown" class="filter-menu"></div>
+                </div>
+                
+                <!-- Musée -->
+                <div class="filter-dropdown">
+                    <button class="filter-button" onclick="toggleDropdown('museum-dropdown')">
+                        Musée <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div id="museum-dropdown" class="filter-menu"></div>
+                </div>
+                
+                <!-- Mouvement -->
+                <div class="filter-dropdown">
+                    <button class="filter-button" onclick="toggleDropdown('movement-dropdown')">
+                        Mouvement <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div id="movement-dropdown" class="filter-menu"></div>
+                </div>
+                
+                <!-- Boutons empilés -->
+                <div class="action-buttons">
+                    <button class="apply-btn" onclick="applyFilters()">Appliquer</button>
+                    <button class="clear-btn" onclick="clearAndApply()">
+                        <i class="fas fa-times"></i> Effacer
+                    </button>
+                </div>
+                
+                <!-- Tri avec label -->
+                <div class="sort-container">
+                    <span class="sort-label">Trier par :</span>
+                    <select id="sort" class="sort-select" onchange="applySort()">
+                        <option value="relevance" {% if sort == 'relevance' %}selected{% endif %}>Pertinence</option>
+                        <option value="date_asc" {% if sort == 'date_asc' %}selected{% endif %}>Date ↑</option>
+                        <option value="date_desc" {% if sort == 'date_desc' %}selected{% endif %}>Date ↓</option>
+                        <option value="title_asc" {% if sort == 'title_asc' %}selected{% endif %}>Titre A→Z</option>
+                        <option value="artist_asc" {% if sort == 'artist_asc' %}selected{% endif %}>Artiste A→Z</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Tags persistants -->
+            <div id="selected-filters" class="selected-filters"></div>
         </div>
-        
-        <!-- Musée -->
-        <div class="filter-dropdown">
-            <button class="filter-button" onclick="toggleDropdown('museum-dropdown')">
-                Musée <i class="fas fa-chevron-down"></i>
-            </button>
-            <div id="museum-dropdown" class="filter-menu"></div>
-        </div>
-        
-        <!-- Mouvement -->
-        <div class="filter-dropdown">
-            <button class="filter-button" onclick="toggleDropdown('movement-dropdown')">
-                Mouvement <i class="fas fa-chevron-down"></i>
-            </button>
-            <div id="movement-dropdown" class="filter-menu"></div>
-        </div>
-        
-        <!-- Boutons empilés (l'un sur l'autre) -->
-        <div style="display: flex; flex-direction: column; gap: 4px; margin-left: 10px;">
-            <button class="apply-btn" onclick="applyFilters()" style="padding: 0.3rem 0.8rem; font-size: 0.75rem; background: #2c3e50; color: white; border: none; border-radius: 30px; font-weight: 500; cursor: pointer; white-space: nowrap; min-width: 70px;">
-                Appliquer
-            </button>
-            <button class="clear-btn" onclick="clearAndApply()" style="padding: 0.3rem 0.8rem; font-size: 0.7rem; background: white; color: #8e9aab; border: 1px solid #d4c9b9; border-radius: 30px; cursor: pointer; white-space: nowrap; min-width: 70px;">
-                <i class="fas fa-times" style="font-size: 0.6rem; margin-right: 3px;"></i> Effacer
-            </button>
-        </div>
-        
-        <!-- Tri avec label (collé à droite) -->
-        <div class="sort-container" style="margin-left: auto;">
-            <span class="sort-label">Trier par :</span>
-            <select id="sort" class="sort-select" onchange="applySort()">
-                <option value="relevance" {% if sort == 'relevance' %}selected{% endif %}>Pertinence</option>
-                <option value="date_asc" {% if sort == 'date_asc' %}selected{% endif %}>Date ↑</option>
-                <option value="date_desc" {% if sort == 'date_desc' %}selected{% endif %}>Date ↓</option>
-                <option value="title_asc" {% if sort == 'title_asc' %}selected{% endif %}>Titre A→Z</option>
-                <option value="artist_asc" {% if sort == 'artist_asc' %}selected{% endif %}>Artiste A→Z</option>
-            </select>
-        </div>
-    </div>
-    
-    <!-- Tags persistants -->
-    <div id="selected-filters" class="selected-filters"></div>
-</div>
-
-
-
-
-
 
         {% if query or museums or movements or artists %}
             <div class="results-info">
@@ -716,13 +717,16 @@
                             </div>`
                         ).join('');
                         
-                        // Ajouter les événements de clic
                         document.querySelectorAll('.suggestion-item').forEach(item => {
                             item.addEventListener('click', function() {
                                 const index = this.dataset.index;
                                 searchInput.value = suggestions[index].texte;
                                 suggestionsBox.style.display = 'none';
-                                document.querySelector('.search-form').submit();
+                                // Recharger les filtres avant de soumettre
+                                setTimeout(() => {
+                                    loadFilterOptions();
+                                    document.querySelector('.search-form').submit();
+                                }, 100);
                             });
                         });
                         
@@ -751,7 +755,10 @@
                 e.preventDefault();
                 searchInput.value = suggestions[selectedSuggestionIndex].texte;
                 suggestionsBox.style.display = 'none';
-                document.querySelector('.search-form').submit();
+                setTimeout(() => {
+                    loadFilterOptions();
+                    document.querySelector('.search-form').submit();
+                }, 100);
             }
         });
         
@@ -789,14 +796,31 @@
             }
         });
         
+        
+        
         // ============================================
-        // CHARGEMENT DES OPTIONS DE FILTRES
+        // GESTION DES FILTRES DYNAMIQUES
         // ============================================
+        
         function loadFilterOptions() {
             const query = document.getElementById('search-input').value;
             
-            // Artistes
-            fetch(`/api/artists?q=${encodeURIComponent(query)}`)
+            // Construire l'URL de base avec la recherche
+            let baseUrl = `/api/artists?q=${encodeURIComponent(query)}`;
+            
+            // Ajouter tous les filtres déjà sélectionnés à l'URL
+            selectedFilters.artists.forEach(a => {
+                baseUrl += `&artist=${encodeURIComponent(a)}`;
+            });
+            selectedFilters.museums.forEach(m => {
+                baseUrl += `&museum=${encodeURIComponent(m)}`;
+            });
+            selectedFilters.movements.forEach(m => {
+                baseUrl += `&movement=${encodeURIComponent(m)}`;
+            });
+            
+            // Artistes (utilise la même URL avec tous les filtres)
+            fetch(baseUrl)
                 .then(response => response.json())
                 .then(data => {
                     const container = document.getElementById('artist-dropdown');
@@ -805,25 +829,31 @@
                     } else {
                         container.innerHTML = data.map(a => {
                             const id = `artist-${a.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
+                            const checked = selectedFilters.artists.includes(a.name) ? 'checked' : '';
                             return `
                                 <div class="filter-menu-item">
-                                    <input type="checkbox" value="${a.name}" id="${id}">
+                                    <input type="checkbox" value="${a.name}" id="${id}" ${checked}>
                                     <label for="${id}">${a.name}</label>
                                     <span class="count">(${a.count})</span>
                                 </div>
                             `;
                         }).join('');
                     }
-                    
-                    // Restaurer les checkboxes cochées
-                    selectedFilters.artists.forEach(val => {
-                        const cb = document.querySelector(`#artist-dropdown input[value="${val}"]`);
-                        if (cb) cb.checked = true;
-                    });
                 });
             
-            // Musées
-            fetch(`/api/museums?q=${encodeURIComponent(query)}`)
+            // Musées (même principe)
+            let museumsUrl = `/api/museums?q=${encodeURIComponent(query)}`;
+            selectedFilters.artists.forEach(a => {
+                museumsUrl += `&artist=${encodeURIComponent(a)}`;
+            });
+            selectedFilters.museums.forEach(m => {
+                museumsUrl += `&museum=${encodeURIComponent(m)}`;
+            });
+            selectedFilters.movements.forEach(m => {
+                museumsUrl += `&movement=${encodeURIComponent(m)}`;
+            });
+            
+            fetch(museumsUrl)
                 .then(response => response.json())
                 .then(data => {
                     const container = document.getElementById('museum-dropdown');
@@ -832,24 +862,31 @@
                     } else {
                         container.innerHTML = data.map(m => {
                             const id = `museum-${m.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
+                            const checked = selectedFilters.museums.includes(m.name) ? 'checked' : '';
                             return `
                                 <div class="filter-menu-item">
-                                    <input type="checkbox" value="${m.name}" id="${id}">
+                                    <input type="checkbox" value="${m.name}" id="${id}" ${checked}>
                                     <label for="${id}">${m.name}</label>
                                     <span class="count">(${m.count})</span>
                                 </div>
                             `;
                         }).join('');
                     }
-                    
-                    selectedFilters.museums.forEach(val => {
-                        const cb = document.querySelector(`#museum-dropdown input[value="${val}"]`);
-                        if (cb) cb.checked = true;
-                    });
                 });
             
             // Mouvements
-            fetch(`/api/movements?q=${encodeURIComponent(query)}`)
+            let movementsUrl = `/api/movements?q=${encodeURIComponent(query)}`;
+            selectedFilters.artists.forEach(a => {
+                movementsUrl += `&artist=${encodeURIComponent(a)}`;
+            });
+            selectedFilters.museums.forEach(m => {
+                movementsUrl += `&museum=${encodeURIComponent(m)}`;
+            });
+            selectedFilters.movements.forEach(m => {
+                movementsUrl += `&movement=${encodeURIComponent(m)}`;
+            });
+            
+            fetch(movementsUrl)
                 .then(response => response.json())
                 .then(data => {
                     const container = document.getElementById('movement-dropdown');
@@ -858,30 +895,44 @@
                     } else {
                         container.innerHTML = data.map(m => {
                             const id = `movement-${m.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
+                            const checked = selectedFilters.movements.includes(m.name) ? 'checked' : '';
                             return `
                                 <div class="filter-menu-item">
-                                    <input type="checkbox" value="${m.name}" id="${id}">
+                                    <input type="checkbox" value="${m.name}" id="${id}" ${checked}>
                                     <label for="${id}">${m.name}</label>
                                     <span class="count">(${m.count})</span>
                                 </div>
                             `;
                         }).join('');
                     }
-                    
-                    selectedFilters.movements.forEach(val => {
-                        const cb = document.querySelector(`#movement-dropdown input[value="${val}"]`);
-                        if (cb) cb.checked = true;
-                    });
                 });
         }
         
-        // Charger au démarrage et quand la recherche change
-        document.addEventListener('DOMContentLoaded', function() {
-            loadFilterOptions();
-            updateSelectedFiltersDisplay();
+        // Recharger les filtres quand la recherche change
+        searchInput.addEventListener('input', function() {
+            clearTimeout(window.filterTimer);
+            window.filterTimer = setTimeout(loadFilterOptions, 500);
         });
         
         searchInput.addEventListener('change', loadFilterOptions);
+        
+        document.getElementById('search-form').addEventListener('submit', function(e) {
+            // On recharge les filtres après soumission
+            setTimeout(loadFilterOptions, 500);
+        });
+        
+        // Recharger aussi quand on change les filtres (via les checkboxes)
+        document.addEventListener('change', function(e) {
+            if (e.target.closest('.filter-menu input[type="checkbox"]')) {
+                // On met à jour selectedFilters avant de recharger
+                setTimeout(() => {
+                    collectSelectedFilters();
+                    loadFilterOptions();
+                }, 100);
+            }
+        });        
+        
+        
         
         // ============================================
         // GESTION DES FILTRES SÉLECTIONNÉS
@@ -927,19 +978,21 @@
                 if (cb) cb.checked = false;
             }
             updateSelectedFiltersDisplay();
-            applyFilters();
         }
         
-        function clearAllFilters() {
+        function clearAndApply() {
+            document.querySelectorAll('.filter-menu input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+            });
+            
             selectedFilters = {
                 artists: [],
                 museums: [],
                 movements: []
             };
-            document.querySelectorAll('.filter-menu input[type="checkbox"]').forEach(cb => {
-                cb.checked = false;
-            });
+            
             updateSelectedFiltersDisplay();
+            applyFilters();
         }
         
         function applyFilters() {
@@ -1006,29 +1059,11 @@
             window.location.href = url;
         }
         
-// Effacer et appliquer
-function clearAndApply() {
-    // Décocher toutes les cases
-    document.querySelectorAll('.filter-menu input[type="checkbox"]').forEach(cb => {
-        cb.checked = false;
-    });
-    
-    // Vider les filtres sélectionnés
-    selectedFilters = {
-        artists: [],
-        museums: [],
-        movements: []
-    };
-    
-    // Mettre à jour l'affichage
-    updateSelectedFiltersDisplay();
-    
-    // Appliquer les filtres (qui sont maintenant vides)
-    applyFilters();
-}        
-        
-        
-        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFilterOptions();
+            updateSelectedFiltersDisplay();
+        });
     </script>
 </body>
 </html>

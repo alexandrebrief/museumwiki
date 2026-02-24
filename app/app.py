@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Application Flask pour MuseumWiki
-Version PostgreSQL (locale et VPS)
+Version PostgreSQL (locale et VPS) avec filtres dynamiques
 """
 
 # ============================================
@@ -159,10 +159,17 @@ def index():
 
 @app.route('/api/artists')
 def api_artists():
-    """Retourne la liste des artistes avec leur nombre d'œuvres"""
+    """Retourne la liste des artistes avec leur nombre d'œuvres,
+       filtrée par la recherche ET les filtres déjà appliqués"""
     query = request.args.get('q', '')
     
-    base_query = get_filtered_query(query, [], [], [])
+    # Récupérer les filtres déjà sélectionnés dans l'URL
+    current_artists = request.args.getlist('artist')
+    current_museums = request.args.getlist('museum')
+    current_movements = request.args.getlist('movement')
+    
+    # Appliquer tous les filtres
+    base_query = get_filtered_query(query, current_artists, current_museums, current_movements)
     
     # Agrégation par artiste
     results = db.session.query(
@@ -180,10 +187,15 @@ def api_artists():
 
 @app.route('/api/museums')
 def api_museums():
-    """Retourne la liste des musées avec leur nombre d'œuvres"""
+    """Retourne la liste des musées avec leur nombre d'œuvres,
+       filtrée par la recherche ET les filtres déjà appliqués"""
     query = request.args.get('q', '')
     
-    base_query = get_filtered_query(query, [], [], [])
+    current_artists = request.args.getlist('artist')
+    current_museums = request.args.getlist('museum')
+    current_movements = request.args.getlist('movement')
+    
+    base_query = get_filtered_query(query, current_artists, current_museums, current_movements)
     
     results = db.session.query(
         Artwork.lieu.label('name'),
@@ -200,10 +212,15 @@ def api_museums():
 
 @app.route('/api/movements')
 def api_movements():
-    """Retourne la liste des mouvements avec leur nombre d'œuvres"""
+    """Retourne la liste des mouvements avec leur nombre d'œuvres,
+       filtrée par la recherche ET les filtres déjà appliqués"""
     query = request.args.get('q', '')
     
-    base_query = get_filtered_query(query, [], [], [])
+    current_artists = request.args.getlist('artist')
+    current_museums = request.args.getlist('museum')
+    current_movements = request.args.getlist('movement')
+    
+    base_query = get_filtered_query(query, current_artists, current_museums, current_movements)
     
     results = db.session.query(
         Artwork.mouvement.label('name'),
