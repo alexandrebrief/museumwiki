@@ -632,26 +632,63 @@
                     {% endfor %}
                 </div>
 
-                <!-- Pagination -->
-                <nav class="pagination">
-                    <ul class="pagination">
-                        <li class="page-item {{ 'disabled' if page == 1 else '' }}">
-                            <a class="page-link" href="#" onclick="changePage({{ page - 1 }})">←</a>
-                        </li>
-                        
-                        {% for p in range(1, total_pages + 1) %}
-                            {% if p == page %}
-                                <li class="page-item active"><span class="page-link">{{ p }}</span></li>
-                            {% elif p <= 3 or p > total_pages - 3 or (p >= page - 2 and p <= page + 2) %}
-                                <li class="page-item"><a class="page-link" href="#" onclick="changePage({{ p }})">{{ p }}</a></li>
-                            {% endif %}
-                        {% endfor %}
-                        
-                        <li class="page-item {{ 'disabled' if page == total_pages else '' }}">
-                            <a class="page-link" href="#" onclick="changePage({{ page + 1 }})">→</a>
-                        </li>
-                    </ul>
-                </nav>
+ 
+ 
+<!-- Pagination avec ellipses -->
+<nav class="pagination">
+    <ul class="pagination">
+        <li class="page-item {{ 'disabled' if page == 1 else '' }}">
+            <a class="page-link" href="#" onclick="changePage({{ page - 1 }})">←</a>
+        </li>
+        
+        {% if total_pages > 7 %}
+            <!-- Première page -->
+            <li class="page-item {{ 'active' if page == 1 else '' }}">
+                <a class="page-link" href="#" onclick="changePage(1)">1</a>
+            </li>
+            
+            <!-- Ellipse si besoin -->
+            {% if page > 4 %}
+                <li class="page-item disabled"><span class="ellipsis">…</span></li>
+            {% endif %}
+            
+            <!-- Pages autour de la page courante -->
+            {% for p in range(page-2, page+3) %}
+                {% if p > 1 and p < total_pages %}
+                    <li class="page-item {{ 'active' if p == page else '' }}">
+                        <a class="page-link" href="#" onclick="changePage({{ p }})">{{ p }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            
+            <!-- Ellipse si besoin -->
+            {% if page < total_pages - 3 %}
+                <li class="page-item disabled"><span class="ellipsis">…</span></li>
+            {% endif %}
+            
+            <!-- Dernière page -->
+            <li class="page-item {{ 'active' if page == total_pages else '' }}">
+                <a class="page-link" href="#" onclick="changePage({{ total_pages }})">{{ total_pages }}</a>
+            </li>
+        {% else %}
+            <!-- Moins de 7 pages : afficher toutes -->
+            {% for p in range(1, total_pages + 1) %}
+                <li class="page-item {{ 'active' if p == page else '' }}">
+                    <a class="page-link" href="#" onclick="changePage({{ p }})">{{ p }}</a>
+                </li>
+            {% endfor %}
+        {% endif %}
+        
+        <li class="page-item {{ 'disabled' if page == total_pages else '' }}">
+            <a class="page-link" href="#" onclick="changePage({{ page + 1 }})">→</a>
+        </li>
+    </ul>
+</nav> 
+ 
+
+
+
+
             {% else %}
                 <div class="no-results">
                     <p>Aucun résultat trouvé</p>
@@ -797,140 +834,114 @@
         });
         
         
+// ============================================
+// GESTION DES FILTRES DYNAMIQUES
+// ============================================
+
+function loadFilterOptions() {
+    const query = document.getElementById('search-input').value;
+    
+    // Construire l'URL de base avec la recherche ET les filtres existants
+    function buildUrl(basePath) {
+        let url = `${basePath}?q=${encodeURIComponent(query)}`;
         
-        // ============================================
-        // GESTION DES FILTRES DYNAMIQUES
-        // ============================================
-        
-        function loadFilterOptions() {
-            const query = document.getElementById('search-input').value;
-            
-            // Construire l'URL de base avec la recherche
-            let baseUrl = `/api/artists?q=${encodeURIComponent(query)}`;
-            
-            // Ajouter tous les filtres déjà sélectionnés à l'URL
-            selectedFilters.artists.forEach(a => {
-                baseUrl += `&artist=${encodeURIComponent(a)}`;
-            });
-            selectedFilters.museums.forEach(m => {
-                baseUrl += `&museum=${encodeURIComponent(m)}`;
-            });
-            selectedFilters.movements.forEach(m => {
-                baseUrl += `&movement=${encodeURIComponent(m)}`;
-            });
-            
-            // Artistes (utilise la même URL avec tous les filtres)
-            fetch(baseUrl)
-                .then(response => response.json())
-                .then(data => {
-                    const container = document.getElementById('artist-dropdown');
-                    if (data.length === 0) {
-                        container.innerHTML = '<div class="filter-menu-item">Aucune information</div>';
-                    } else {
-                        container.innerHTML = data.map(a => {
-                            const id = `artist-${a.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
-                            const checked = selectedFilters.artists.includes(a.name) ? 'checked' : '';
-                            return `
-                                <div class="filter-menu-item">
-                                    <input type="checkbox" value="${a.name}" id="${id}" ${checked}>
-                                    <label for="${id}">${a.name}</label>
-                                    <span class="count">(${a.count})</span>
-                                </div>
-                            `;
-                        }).join('');
-                    }
-                });
-            
-            // Musées (même principe)
-            let museumsUrl = `/api/museums?q=${encodeURIComponent(query)}`;
-            selectedFilters.artists.forEach(a => {
-                museumsUrl += `&artist=${encodeURIComponent(a)}`;
-            });
-            selectedFilters.museums.forEach(m => {
-                museumsUrl += `&museum=${encodeURIComponent(m)}`;
-            });
-            selectedFilters.movements.forEach(m => {
-                museumsUrl += `&movement=${encodeURIComponent(m)}`;
-            });
-            
-            fetch(museumsUrl)
-                .then(response => response.json())
-                .then(data => {
-                    const container = document.getElementById('museum-dropdown');
-                    if (data.length === 0) {
-                        container.innerHTML = '<div class="filter-menu-item">Aucune information</div>';
-                    } else {
-                        container.innerHTML = data.map(m => {
-                            const id = `museum-${m.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
-                            const checked = selectedFilters.museums.includes(m.name) ? 'checked' : '';
-                            return `
-                                <div class="filter-menu-item">
-                                    <input type="checkbox" value="${m.name}" id="${id}" ${checked}>
-                                    <label for="${id}">${m.name}</label>
-                                    <span class="count">(${m.count})</span>
-                                </div>
-                            `;
-                        }).join('');
-                    }
-                });
-            
-            // Mouvements
-            let movementsUrl = `/api/movements?q=${encodeURIComponent(query)}`;
-            selectedFilters.artists.forEach(a => {
-                movementsUrl += `&artist=${encodeURIComponent(a)}`;
-            });
-            selectedFilters.museums.forEach(m => {
-                movementsUrl += `&museum=${encodeURIComponent(m)}`;
-            });
-            selectedFilters.movements.forEach(m => {
-                movementsUrl += `&movement=${encodeURIComponent(m)}`;
-            });
-            
-            fetch(movementsUrl)
-                .then(response => response.json())
-                .then(data => {
-                    const container = document.getElementById('movement-dropdown');
-                    if (data.length === 0) {
-                        container.innerHTML = '<div class="filter-menu-item">Aucune information</div>';
-                    } else {
-                        container.innerHTML = data.map(m => {
-                            const id = `movement-${m.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
-                            const checked = selectedFilters.movements.includes(m.name) ? 'checked' : '';
-                            return `
-                                <div class="filter-menu-item">
-                                    <input type="checkbox" value="${m.name}" id="${id}" ${checked}>
-                                    <label for="${id}">${m.name}</label>
-                                    <span class="count">(${m.count})</span>
-                                </div>
-                            `;
-                        }).join('');
-                    }
-                });
-        }
-        
-        // Recharger les filtres quand la recherche change
-        searchInput.addEventListener('input', function() {
-            clearTimeout(window.filterTimer);
-            window.filterTimer = setTimeout(loadFilterOptions, 500);
+        // Ajouter tous les filtres actuellement sélectionnés
+        selectedFilters.artists.forEach(a => {
+            url += `&artist=${encodeURIComponent(a)}`;
+        });
+        selectedFilters.museums.forEach(m => {
+            url += `&museum=${encodeURIComponent(m)}`;
+        });
+        selectedFilters.movements.forEach(m => {
+            url += `&movement=${encodeURIComponent(m)}`;
         });
         
-        searchInput.addEventListener('change', loadFilterOptions);
-        
-        document.getElementById('search-form').addEventListener('submit', function(e) {
-            // On recharge les filtres après soumission
-            setTimeout(loadFilterOptions, 500);
-        });
-        
-        // Recharger aussi quand on change les filtres (via les checkboxes)
-        document.addEventListener('change', function(e) {
-            if (e.target.closest('.filter-menu input[type="checkbox"]')) {
-                // On met à jour selectedFilters avant de recharger
-                setTimeout(() => {
-                    collectSelectedFilters();
-                    loadFilterOptions();
-                }, 100);
+        return url;
+    }
+    
+    // Artistes
+    fetch(buildUrl('/api/artists'))
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('artist-dropdown');
+            if (data.length === 0) {
+                container.innerHTML = '<div class="filter-menu-item">Aucun artiste</div>';
+            } else {
+                container.innerHTML = data.map(a => {
+                    const id = `artist-${a.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
+                    const checked = selectedFilters.artists.includes(a.name) ? 'checked' : '';
+                    return `
+                        <div class="filter-menu-item">
+                            <input type="checkbox" value="${a.name}" id="${id}" ${checked}>
+                            <label for="${id}">${a.name}</label>
+                            <span class="count">(${a.count})</span>
+                        </div>
+                    `;
+                }).join('');
             }
-        });        
+        });
+    
+    // Musées
+    fetch(buildUrl('/api/museums'))
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('museum-dropdown');
+            if (data.length === 0) {
+                container.innerHTML = '<div class="filter-menu-item">Aucun musée</div>';
+            } else {
+                container.innerHTML = data.map(m => {
+                    const id = `museum-${m.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
+                    const checked = selectedFilters.museums.includes(m.name) ? 'checked' : '';
+                    return `
+                        <div class="filter-menu-item">
+                            <input type="checkbox" value="${m.name}" id="${id}" ${checked}>
+                            <label for="${id}">${m.name}</label>
+                            <span class="count">(${m.count})</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+        });
+    
+    // Mouvements
+    fetch(buildUrl('/api/movements'))
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('movement-dropdown');
+            if (data.length === 0) {
+                container.innerHTML = '<div class="filter-menu-item">Aucun mouvement</div>';
+            } else {
+                container.innerHTML = data.map(m => {
+                    const id = `movement-${m.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
+                    const checked = selectedFilters.movements.includes(m.name) ? 'checked' : '';
+                    return `
+                        <div class="filter-menu-item">
+                            <input type="checkbox" value="${m.name}" id="${id}" ${checked}>
+                            <label for="${id}">${m.name}</label>
+                            <span class="count">(${m.count})</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+        });
+}
+
+// Recharger les filtres quand la recherche change
+searchInput.addEventListener('input', function() {
+    clearTimeout(window.filterTimer);
+    window.filterTimer = setTimeout(loadFilterOptions, 500);
+});
+
+searchInput.addEventListener('change', loadFilterOptions);
+
+document.getElementById('search-form').addEventListener('submit', function(e) {
+    setTimeout(loadFilterOptions, 500);
+});
+
+// Recharger aussi quand on clique sur Appliquer
+document.querySelector('.apply-btn').addEventListener('click', function() {
+    setTimeout(loadFilterOptions, 500);
+});
         
         
         

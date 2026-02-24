@@ -157,6 +157,8 @@ def index():
 # 6. API POUR LES FILTRES DYNAMIQUES
 # ============================================
 
+
+
 @app.route('/api/artists')
 def api_artists():
     """Retourne la liste des artistes avec leur nombre d'œuvres,
@@ -168,7 +170,7 @@ def api_artists():
     current_museums = request.args.getlist('museum')
     current_movements = request.args.getlist('movement')
     
-    # Appliquer tous les filtres
+    # Construire la requête avec TOUS les filtres
     base_query = get_filtered_query(query, current_artists, current_museums, current_movements)
     
     # Agrégation par artiste
@@ -236,40 +238,66 @@ def api_movements():
     
     return jsonify([{'name': r.name, 'count': r.count} for r in results])
 
+
+
+
 # ============================================
 # 7. ROUTES PAGES STATIQUES
 # ============================================
 
+
 @app.route('/stats')
 def statistics():
-    """Page de statistiques"""
-    # Top 10 artistes
-    top_artists_data = db.session.query(
-        Artwork.createur, func.count(Artwork.id)
+    """Page de statistiques enrichie"""
+    # Total des œuvres
+    total_oeuvres = Artwork.query.count()
+    
+    # Nombre d'artistes uniques
+    total_artistes = db.session.query(Artwork.createur).filter(
+        Artwork.createur != 'Inconnu'
+    ).distinct().count()
+    
+    # Nombre de musées uniques
+    total_musees = db.session.query(Artwork.lieu).filter(
+        Artwork.lieu != 'Inconnu'
+    ).distinct().count()
+    
+    # Top 30 artistes
+    top_artistes_data = db.session.query(
+        Artwork.createur.label('nom'),
+        func.count(Artwork.id).label('count')
     ).filter(
         Artwork.createur != 'Inconnu'
     ).group_by(
         Artwork.createur
     ).order_by(
         func.count(Artwork.id).desc()
-    ).limit(10).all()
-    top_artists = {a: c for a, c in top_artists_data}
+    ).limit(30).all()
     
-    # Top 10 genres
-    top_genres_data = db.session.query(
-        Artwork.genre, func.count(Artwork.id)
+    # Top 30 musées
+    top_musees_data = db.session.query(
+        Artwork.lieu.label('nom'),
+        func.count(Artwork.id).label('count')
     ).filter(
-        Artwork.genre != 'Inconnu'
+        Artwork.lieu != 'Inconnu'
     ).group_by(
-        Artwork.genre
+        Artwork.lieu
     ).order_by(
         func.count(Artwork.id).desc()
-    ).limit(10).all()
-    genres = {g: c for g, c in top_genres_data}
+    ).limit(30).all()
+    
+    # Date de dernière mise à jour (prendre la date du fichier ou maintenant)
+    from datetime import datetime
+    last_update = datetime.now().strftime('%d/%m/%Y à %H:%M')
     
     return render_template('stats.html',
-                         top_artists=top_artists,
-                         genres=genres)
+                         total_oeuvres=total_oeuvres,
+                         total_artistes=total_artistes,
+                         total_musees=total_musees,
+                         top_artistes=top_artistes_data,
+                         top_musees=top_musees_data,
+                         last_update=last_update)
+
 
 @app.route('/about')
 def about():
