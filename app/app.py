@@ -764,8 +764,91 @@ def profile():
         return redirect(url_for('login'))
     
     user = User.query.get(session['user_id'])
+    if not user:
+        session.clear()
+        flash('Utilisateur non trouvé', 'danger')
+        return redirect(url_for('login'))
+    
     return render_template('profile.html', user=user.to_dict())
 
+# ============================================
+# 7. ROUTES PAGES STATIQUES
+# ============================================
+
+@app.route('/stats')
+def statistics():
+    """Page de statistiques enrichie"""
+    try:
+        # Total des œuvres
+        total_oeuvres = Artwork.query.count()
+        
+        # Nombre d'artistes uniques
+        total_artistes = db.session.query(Artwork.createur).filter(
+            Artwork.createur != 'Inconnu'
+        ).distinct().count()
+        
+        # Nombre de musées uniques
+        total_musees = db.session.query(Artwork.lieu).filter(
+            Artwork.lieu != 'Inconnu'
+        ).distinct().count()
+        
+        # Top 30 artistes
+        top_artistes_data = db.session.query(
+            Artwork.createur.label('nom'),
+            func.count(Artwork.id).label('count')
+        ).filter(
+            Artwork.createur != 'Inconnu'
+        ).group_by(
+            Artwork.createur
+        ).order_by(
+            func.count(Artwork.id).desc()
+        ).limit(30).all()
+        
+        # Top 30 musées
+        top_musees_data = db.session.query(
+            Artwork.lieu.label('nom'),
+            func.count(Artwork.id).label('count')
+        ).filter(
+            Artwork.lieu != 'Inconnu'
+        ).group_by(
+            Artwork.lieu
+        ).order_by(
+            func.count(Artwork.id).desc()
+        ).limit(30).all()
+        
+        # Date de dernière mise à jour
+        last_update = datetime.now().strftime('%d/%m/%Y à %H:%M')
+        
+        return render_template('stats.html',
+                             total_oeuvres=total_oeuvres,
+                             total_artistes=total_artistes,
+                             total_musees=total_musees,
+                             top_artistes=top_artistes_data,
+                             top_musees=top_musees_data,
+                             last_update=last_update)
+    except Exception as e:
+        print(f"❌ Erreur dans stats: {e}")
+        return f"Erreur: {e}", 500
+
+
+@app.route('/about')
+def about():
+    """Page à propos"""
+    try:
+        return render_template('about.html')
+    except Exception as e:
+        print(f"❌ Erreur dans about: {e}")
+        return f"Erreur: {e}", 500
+        
+@app.route('/oeuvre/<string:oeuvre_id>')
+def oeuvre_detail(oeuvre_id):
+    """Page détaillée d'une œuvre"""
+    artwork = Artwork.query.get(oeuvre_id)
+    
+    if artwork:
+        return render_template('detail.html', oeuvre=artwork.to_dict())
+    else:
+        return "Œuvre non trouvée", 404
 
 # ============================================
 # 9. ROUTES DE VÉRIFICATION D'EMAIL
