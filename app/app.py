@@ -1199,15 +1199,16 @@ def test_email():
             
     except Exception as e:
         return f"❌ Erreur: {str(e)}"
-
 # ============================================
-# 12. CONTEXT PROCESSOR
+# 12. CONTEXT PROCESSOR (variables globales)
 # ============================================
 
 @app.context_processor
-def inject_user():
+def inject_global_vars():
     """Injecte des variables dans tous les templates"""
     return dict(
+        site_name="Blue Gallery",
+        current_year=datetime.now().year,
         now=datetime.now(),
         is_authenticated='user_id' in session,
         current_user=session.get('username', '')

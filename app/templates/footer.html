@@ -1,0 +1,78 @@
+<footer class="footer">
+    <div class="container">
+        <!-- Liens du footer -->
+        <div class="footer-links">
+            <a href="/">Accueil</a>
+            <span class="separator">·</span>
+            <a href="/stats">Statistiques</a>
+            <span class="separator">·</span>
+            <a href="/about">À propos</a>
+            <span class="separator">·</span>
+            <a href="#" onclick="return false;">Terms</a>
+            <span class="separator">·</span>
+            <a href="#" onclick="return false;">Privacy</a>
+            <span class="separator">·</span>
+            <a href="#" onclick="return false;">Legal</a>
+            <span class="separator">·</span>
+            <a href="#" onclick="return false;">Contact</a>
+        </div>
+        
+        <!-- Copyright -->
+        <div class="copyright">
+            © {{ current_year }} {{ site_name }}. All rights reserved.
+        </div>
+    </div>
+</footer>
+
+<style>
+.footer {
+    background: #2c3e50;
+    color: #e6d8c3;
+    padding: 1rem 0;  /* Plus fin */
+    margin-top: auto;
+    text-align: center;
+    font-size: 0.8rem;
+    width: 100%;
+}
+
+.footer-links {
+    margin-bottom: 0.3rem;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+}
+
+.footer a {
+    color: #e6d8c3;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    padding: 0.2rem 0.3rem;
+}
+
+.footer a:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+}
+
+.separator {
+    color: rgba(230, 216, 195, 0.3);
+}
+
+.copyright {
+    font-size: 0.7rem;
+    opacity: 0.8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .footer-links {
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+    
+    .separator {
+        display: none;
+    }
+}
+</style>

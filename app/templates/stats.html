@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MuseumWiki - Statistiques</title>
+    <title>{{ site_name }} - Statistiques</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Styles identiques à index.html et about.html */
+        /* ===== STYLES GÉNÉRAUX ===== */
         * {
             margin: 0;
             padding: 0;
@@ -19,6 +20,9 @@
             background-color: #f5f0e8;
             color: #2c3e50;
             line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         
         h1, h2, h3, h4, h5, h6 {
@@ -27,38 +31,7 @@
             color: #1e2b3a;
         }
         
-        .navbar {
-            background: #2c3e50 !important;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            padding: 1rem 0;
-        }
-        
-        .navbar-brand {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #e6d8c3 !important;
-            letter-spacing: 0.5px;
-        }
-        
-        .nav-link {
-            color: #e6d8c3 !important;
-            font-weight: 400;
-            margin: 0 15px;
-            padding: 0.5rem 0;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
-        }
-        
-        .nav-link:hover {
-            border-bottom-color: #e6d8c3;
-        }
-        
-        .nav-link.active {
-            border-bottom-color: #e6d8c3;
-            font-weight: 500;
-        }
-        
+        /* ===== STYLES SPÉCIFIQUES À STATS ===== */
         .hero-section {
             padding: 3rem 0 2rem;
             text-align: center;
@@ -76,6 +49,7 @@
             max-width: 1200px;
             margin: 2rem auto;
             padding: 0 1rem;
+            flex: 1;
         }
         
         .stats-grid {
@@ -140,14 +114,7 @@
             font-weight: 500;
         }
         
-        .footer {
-            background: #2c3e50;
-            color: #e6d8c3;
-            padding: 2rem 0;
-            margin-top: 3rem;
-            text-align: center;
-            font-size: 0.9rem;
-        }
+        /* Le footer est géré par footer.html */
     </style>
 </head>
 <body>
@@ -200,11 +167,7 @@
         </p>
     </div>
 
-    <footer class="footer">
-        <div class="container">
-            <p>MuseumWiki · Collection d'œuvres d'art · Données Wikidata</p>
-        </div>
-    </footer>
+    {% include 'footer.html' %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
