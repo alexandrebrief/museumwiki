@@ -1,42 +1,162 @@
 <nav class="navbar navbar-expand-lg">
+    <style>
+        /* ===== STYLES DE BASE ===== */
+        .navbar {
+            background: #2c3e50 !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 0.8rem 0;
+        }
+        
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #e6d8c3 !important;
+            letter-spacing: 0.5px;
+        }
+        
+        .navbar-toggler {
+            border-color: rgba(255,255,255,0.3);
+        }
+        
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28230, 216, 195, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+        
+        .nav-link {
+            color: #e6d8c3 !important;
+            font-weight: 400;
+            margin: 0 15px;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover {
+            border-bottom-color: #e6d8c3;
+        }
+        
+        .nav-link.active {
+            border-bottom-color: #e6d8c3;
+            font-weight: 500;
+        }
+        
+        /* ===== BOUTON CONNEXION (utilisé aussi pour le compte) ===== */
+        .btn-login {
+            background: #e6d8c3 !important;
+            color: #2c3e50 !important;
+            border-radius: 30px !important;
+            padding: 0.5rem 1.5rem !important;
+            font-weight: 600 !important;
+            border: none !important;
+            transition: all 0.2s !important;
+        }
+        
+        .btn-login:hover {
+            background: #d4c9b9 !important;
+            transform: scale(1.05);
+        }
+        
+        /* Style spécifique pour le dropdown du compte connecté */
+        .navbar .btn-login.dropdown-toggle {
+            background: #e6d8c3 !important;
+            color: #2c3e50 !important;
+            border-radius: 30px !important;
+            padding: 0.5rem 1.5rem !important;
+            font-weight: 600 !important;
+            border: none !important;
+        }
+        
+        .navbar .btn-login.dropdown-toggle:hover {
+            background: #d4c9b9 !important;
+            transform: scale(1.05);
+        }
+        
+        /* Style du dropdown menu */
+        .dropdown-menu {
+            background-color: #2c3e50;
+            border: 1px solid #3a4a5a;
+            margin-top: 0.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .dropdown-item {
+            color: #e6d8c3;
+            padding: 0.5rem 1.5rem;
+            transition: all 0.2s;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #3a4a5a;
+            color: #e6d8c3;
+        }
+        
+        .dropdown-divider {
+            border-top-color: #3a4a5a;
+        }
+        
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 992px) {
+            .navbar-nav {
+                margin-top: 1rem;
+            }
+            
+            .nav-link {
+                margin: 0;
+                padding: 0.5rem 0;
+                border-bottom: 1px solid rgba(230,216,195,0.2);
+            }
+            
+            .btn-login {
+                display: inline-block;
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
+    
     <div class="container">
         <a class="navbar-brand" href="/">MUSEUMWIKI</a>
+        
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
+        
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
+                <!-- Lien Recherche -->
                 <li class="nav-item">
                     <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">Recherche</a>
                 </li>
+                
+                <!-- Lien Statistiques -->
                 <li class="nav-item">
                     <a class="nav-link {% if request.path == '/stats' %}active{% endif %}" href="/stats">Statistiques</a>
                 </li>
+                
+                <!-- Lien À propos -->
                 <li class="nav-item">
                     <a class="nav-link {% if request.path == '/about' %}active{% endif %}" href="/about">À propos</a>
                 </li>
                 
                 {% if session.username %}
-                    <!-- Utilisateur connecté -->
-    <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-            👤 {{ session.username }}
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="/profile">👤 Mon profil</a></li>
-            <li><a class="dropdown-item" href="/favoris">⭐ Mes favoris</a></li>
-            <li><a class="dropdown-item" href="/mes-oeuvres">📝 Mes œuvres notées</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="/logout">🚪 Déconnexion</a></li>
+                    <!-- Utilisateur connecté - Style comme le bouton Connexion -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link btn-login dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ session.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="/profile">Mon profil</a></li>
+                            <li><a class="dropdown-item" href="/favoris">Mes favoris</a></li>
+                            <li><a class="dropdown-item" href="/mes-oeuvres">Mes œuvres notées</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout">Déconnexion</a></li>
                         </ul>
                     </li>
                 {% else %}
                     <!-- Utilisateur non connecté -->
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == '/login' %}active{% endif %}" href="/login">Connexion</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.path == '/register' %}active{% endif %}" href="/register">Inscription</a>
+                        <a class="nav-link btn-login" href="/login">Se connecter</a>
                     </li>
                 {% endif %}
             </ul>

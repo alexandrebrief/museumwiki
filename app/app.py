@@ -736,34 +736,48 @@ def register():
     
     return render_template('register.html')
 
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    """Page de connexion avec vérification d'email"""
+    """Page de connexion avec email"""
     if request.method == 'POST':
-        username = request.form.get('username', '').strip()
+        email = request.form.get('email', '').strip().lower()  # ← Changé: email au lieu de username
         password = request.form.get('password', '')
         
-        user = User.query.filter_by(username=username).first()
+        print(f"\n🔍 TENTATIVE DE CONNEXION")
+        print(f"📧 Email: {email}")
+        
+        # Recherche par email (pas par username)
+        user = User.query.filter_by(email=email).first()
+        
+        if user:
+            print(f"✅ Utilisateur trouvé: {user.username}")
+            print(f"🔐 Vérification mot de passe: {'OK' if user.check_password(password) else 'ÉCHEC'}")
+            print(f"📧 Email vérifié: {user.email_verified}")
+        else:
+            print(f"❌ Aucun utilisateur avec cet email")
         
         if user and user.check_password(password):
             if not user.email_verified:
+                print("❌ Email non vérifié")
                 flash('Veuillez vérifier votre email avant de vous connecter.', 'warning')
                 return redirect(url_for('verify_email_pending', email=user.email))
             
+            # Connexion réussie
             session['user_id'] = user.id
-            session['username'] = user.username
+            session['username'] = user.username  # On garde le username en session pour l'affichage
             
+            # Mettre à jour last_login
             user.last_login = datetime.utcnow()
             db.session.commit()
             
+            print(f"✅ Connexion réussie pour {user.username}")
             flash(f'Bienvenue {user.username} !', 'success')
             return redirect(url_for('index'))
         else:
-            flash('Nom d\'utilisateur ou mot de passe incorrect', 'danger')
+            print("❌ Email ou mot de passe incorrect")
+            flash('Email ou mot de passe incorrect', 'danger')
     
     return render_template('login.html')
-
 
 @app.route('/logout')
 def logout():
@@ -787,6 +801,97 @@ def profile():
         return redirect(url_for('login'))
     
     return render_template('profile.html', user=user.to_dict())
+
+# ============================================
+# GESTION DU COMPTE (MOT DE PASSE & SUPPRESSION)
+# ============================================
+
+@app.route('/change-password', methods=['GET', 'POST'])
+def change_password():
+    """Changer le mot de passe"""
+    if 'user_id' not in session:
+        flash('Veuillez vous connecter', 'warning')
+        return redirect(url_for('login'))
+    
+    user = User.query.get(session['user_id'])
+    
+    if request.method == 'POST':
+        current_password = request.form.get('current_password', '')
+        new_password = request.form.get('new_password', '')
+        confirm_password = request.form.get('confirm_password', '')
+        
+        errors = []
+        
+        # Vérifier l'ancien mot de passe
+        if not user.check_password(current_password):
+            errors.append("Mot de passe actuel incorrect")
+        
+        # Vérifier le nouveau mot de passe
+        if new_password != confirm_password:
+            errors.append("Les nouveaux mots de passe ne correspondent pas")
+        
+        if len(new_password) < 8:
+            errors.append("Le nouveau mot de passe doit contenir au moins 8 caractères")
+        
+        if not re.search(r"[A-Z]", new_password):
+            errors.append("Le nouveau mot de passe doit contenir au moins une majuscule")
+        
+        if not re.search(r"[a-z]", new_password):
+            errors.append("Le nouveau mot de passe doit contenir au moins une minuscule")
+        
+        if not re.search(r"[0-9]", new_password):
+            errors.append("Le nouveau mot de passe doit contenir au moins un chiffre")
+        
+        if errors:
+            for error in errors:
+                flash(error, 'danger')
+            return render_template('change_password.html')
+        
+        # Changer le mot de passe
+        user.set_password(new_password)
+        db.session.commit()
+        
+        flash('Mot de passe modifié avec succès !', 'success')
+        return redirect(url_for('profile'))
+    
+    return render_template('change_password.html')
+
+
+@app.route('/delete-account', methods=['POST'])
+def delete_account():
+    """Supprimer son compte"""
+    if 'user_id' not in session:
+        flash('Veuillez vous connecter', 'warning')
+        return redirect(url_for('login'))
+    
+    password = request.form.get('password', '')
+    user = User.query.get(session['user_id'])
+    
+    # Vérifier le mot de passe
+    if not user.check_password(password):
+        flash('Mot de passe incorrect', 'danger')
+        return redirect(url_for('profile'))
+    
+    try:
+        # Supprimer les données associées
+        EmailVerification.query.filter_by(user_id=user.id).delete()
+        Favorite.query.filter_by(user_id=user.id).delete()
+        Rating.query.filter_by(user_id=user.id).delete()
+        
+        # Supprimer l'utilisateur
+        db.session.delete(user)
+        db.session.commit()
+        
+        # Déconnecter
+        session.clear()
+        flash('Votre compte a été supprimé', 'info')
+        return redirect(url_for('index'))
+        
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Erreur suppression compte: {e}")
+        flash('Erreur lors de la suppression', 'danger')
+        return redirect(url_for('profile'))
 
 # ============================================
 # 10. ROUTES DE VÉRIFICATION D'EMAIL

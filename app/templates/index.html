@@ -620,16 +620,16 @@
                     
                     {% if session.username %}
                         <!-- Utilisateur connecté -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                👤 {{ session.username }}
+<li class="nav-item dropdown">
+    <a class="nav-link btn-login dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+         {{ session.username }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="/profile">👤 Mon profil</a></li>
-                                <li><a class="dropdown-item" href="/favoris">⭐ Mes favoris</a></li>
-                                <li><a class="dropdown-item" href="/mes-oeuvres">📝 Mes œuvres notées</a></li>
+                                <li><a class="dropdown-item" href="/profile"> Mon profil</a></li>
+                                <li><a class="dropdown-item" href="/favoris"> Mes favoris</a></li>
+                                <li><a class="dropdown-item" href="/mes-oeuvres"> Mes œuvres notées</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="/logout">🚪 Déconnexion</a></li>
+                                <li><a class="dropdown-item" href="/logout"> Déconnexion</a></li>
                             </ul>
                         </li>
                     {% else %}
