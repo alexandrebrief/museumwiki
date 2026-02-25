@@ -15,11 +15,14 @@ import plotly.express as px
 import plotly.utils
 import json
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
+import re
 
 # ============================================
 # 2. CONFIGURATION DE LA BASE DE DONNÉES
 # ============================================
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'une-cle-secrete-tres-longue-et-difficile-a-deviner-123!'
 
 # MÊMES IDENTIFIANTS PARTOUT (local comme VPS)
 DB_USER = 'superadmin'
@@ -61,6 +64,33 @@ class Artwork(db.Model):
             'genre': self.genre,
             'mouvement': self.mouvement,
             'wikidata_url': self.wikidata_url
+        }
+
+
+# ============================================
+# 3. MODÈLE POUR LES UTILISATEURS
+# ============================================
+class User(db.Model):
+    __tablename__ = 'users'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(200), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+    
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+            'created_at': self.created_at.strftime('%d/%m/%Y')
         }
 
 # ============================================
@@ -350,6 +380,111 @@ def suggestions():
         suggestions_list.append({'texte': m[0], 'categorie': 'musée'})
     
     return jsonify(suggestions_list[:9])
+
+
+# ============================================
+# 8. ROUTES D'AUTHENTIFICATION
+# ============================================
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    """Page d'inscription"""
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
+        
+        # Validation
+        errors = []
+        
+        # Vérifier que tous les champs sont remplis
+        if not username or not email or not password or not confirm_password:
+            errors.append("Tous les champs sont obligatoires")
+        
+        # Vérifier que les mots de passe correspondent
+        if password != confirm_password:
+            errors.append("Les mots de passe ne correspondent pas")
+        
+        # Vérifier la complexité du mot de passe
+        if len(password) < 8:
+            errors.append("Le mot de passe doit contenir au moins 8 caractères")
+        
+        if not re.search(r"[A-Z]", password):
+            errors.append("Le mot de passe doit contenir au moins une majuscule")
+        
+        if not re.search(r"[a-z]", password):
+            errors.append("Le mot de passe doit contenir au moins une minuscule")
+        
+        if not re.search(r"[0-9]", password):
+            errors.append("Le mot de passe doit contenir au moins un chiffre")
+        
+        # Vérifier le format de l'email
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            errors.append("Format d'email invalide")
+        
+        # Vérifier si l'utilisateur existe déjà
+        if User.query.filter_by(username=username).first():
+            errors.append("Ce nom d'utilisateur est déjà pris")
+        
+        if User.query.filter_by(email=email).first():
+            errors.append("Cet email est déjà utilisé")
+        
+        if errors:
+            return render_template('register.html', errors=errors, 
+                                 username=username, email=email)
+        
+        # Créer l'utilisateur
+        user = User(username=username, email=email)
+        user.set_password(password)
+        
+        try:
+            db.session.add(user)
+            db.session.commit()
+            flash('Inscription réussie ! Vous pouvez maintenant vous connecter.', 'success')
+            return redirect(url_for('login'))
+        except Exception as e:
+            db.session.rollback()
+            flash('Une erreur est survenue. Veuillez réessayer.', 'danger')
+            return render_template('register.html', username=username, email=email)
+    
+    return render_template('register.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Page de connexion"""
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
+        
+        user = User.query.filter_by(username=username).first()
+        
+        if user and user.check_password(password):
+            session['user_id'] = user.id
+            session['username'] = user.username
+            flash(f'Bienvenue {user.username} !', 'success')
+            return redirect(url_for('index'))
+        else:
+            flash('Nom d\'utilisateur ou mot de passe incorrect', 'danger')
+    
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    """Déconnexion"""
+    session.clear()
+    flash('Vous avez été déconnecté', 'info')
+    return redirect(url_for('index'))
+
+@app.route('/profile')
+def profile():
+    """Page de profil utilisateur"""
+    if 'user_id' not in session:
+        flash('Veuillez vous connecter pour accéder à cette page', 'warning')
+        return redirect(url_for('login'))
+    
+    user = User.query.get(session['user_id'])
+    return render_template('profile.html', user=user.to_dict())
 
 # ============================================
 # 8. LANCEMENT
