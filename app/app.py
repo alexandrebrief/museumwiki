@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Application Flask pour MuseumWiki
-Version PostgreSQL (locale et VPS) avec filtres dynamiques et authentification
+Version PostgreSQL avec authentification, favoris et notations
 """
 
 # ============================================
@@ -21,6 +21,7 @@ import json
 import re
 import secrets
 import logging
+from sqlalchemy import inspect
 
 # ============================================
 # 2. CONFIGURATION DE L'APPLICATION
@@ -38,9 +39,13 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USER}:{DB_PASSWORD}@{
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Configuration SendGrid
-from config import SENDGRID_API_KEY, FROM_EMAIL, BASE_URL
-FROM_EMAIL = 'alexandre.brief2.0@gmail.com'
-BASE_URL = 'http://localhost:5000'  # À changer en production
+try:
+    from config import SENDGRID_API_KEY, FROM_EMAIL, BASE_URL
+except ImportError:
+    # Fallback pour le développement
+    SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY', '')
+    FROM_EMAIL = 'alexandre.brief2.0@gmail.com'
+    BASE_URL = 'http://localhost:5000'
 
 # Configuration logging
 logging.basicConfig(level=logging.INFO)
@@ -83,16 +88,17 @@ class Artwork(db.Model):
 
 
 class User(db.Model):
+    """Modèle pour les utilisateurs"""
     __tablename__ = 'users'
     
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
-    email_verified = db.Column(db.Boolean, default=False)  # ← changé
-    email_verification_token = db.Column(db.String(100), unique=True)  # ← ajouté
-    verification_token = db.Column(db.String(100), unique=True)  # ← ajouté
-    last_login = db.Column(db.DateTime)  # ← ajouté
+    email_verified = db.Column(db.Boolean, default=False)
+    email_verification_token = db.Column(db.String(100), unique=True)
+    verification_token = db.Column(db.String(100), unique=True)
+    last_login = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     def set_password(self, password):
@@ -106,7 +112,7 @@ class User(db.Model):
             'id': self.id,
             'username': self.username,
             'email': self.email,
-            'email_verified': self.email_verified,  # ← changé
+            'email_verified': self.email_verified,
             'created_at': self.created_at.strftime('%d/%m/%Y')
         }
 
@@ -127,18 +133,64 @@ class EmailVerification(db.Model):
     
     @staticmethod
     def generate_code():
-        """Génère un code à 6 chiffres"""
         return ''.join(secrets.choice('0123456789') for _ in range(6))
     
     @staticmethod
     def generate_token():
-        """Génère un token unique"""
         return secrets.token_urlsafe(32)
     
     def is_valid(self):
-        """Vérifie si la vérification est encore valide"""
         return not self.used and datetime.utcnow() < self.expires_at
 
+
+class Favorite(db.Model):
+    """Modèle pour les favoris"""
+    __tablename__ = 'favorites'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    artwork_id = db.Column(db.String, db.ForeignKey('artworks.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    user = db.relationship('User', backref='favorites')
+    artwork = db.relationship('Artwork', backref='favorited_by')
+    
+    __table_args__ = (db.UniqueConstraint('user_id', 'artwork_id', name='unique_user_artwork_favorite'),)
+
+
+class Rating(db.Model):
+    """Modèle pour les notes"""
+    __tablename__ = 'ratings'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    artwork_id = db.Column(db.String, db.ForeignKey('artworks.id'), nullable=False)
+    
+    note_globale = db.Column(db.Float, nullable=False)
+    note_technique = db.Column(db.Float, nullable=False)
+    note_originalite = db.Column(db.Float, nullable=False)
+    note_emotion = db.Column(db.Float, nullable=False)
+    
+    commentaire = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    user = db.relationship('User', backref='ratings')
+    artwork = db.relationship('Artwork', backref='ratings')
+    
+    __table_args__ = (db.UniqueConstraint('user_id', 'artwork_id', name='unique_user_artwork_rating'),)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'note_globale': self.note_globale,
+            'note_technique': self.note_technique,
+            'note_originalite': self.note_originalite,
+            'note_emotion': self.note_emotion,
+            'commentaire': self.commentaire,
+            'created_at': self.created_at.strftime('%d/%m/%Y'),
+            'updated_at': self.updated_at.strftime('%d/%m/%Y') if self.updated_at else None
+        }
 
 # ============================================
 # 4. FONCTIONS UTILITAIRES
@@ -273,8 +325,56 @@ def get_filtered_query(query, artists, museums, movements):
     return q
 
 
+def handle_unverified_user(user, email):
+    """Gère le cas d'un utilisateur avec email non vérifié"""
+    old_verifications = EmailVerification.query.filter_by(
+        user_id=user.id, used=False
+    ).all()
+    for v in old_verifications:
+        v.used = True
+    
+    code = EmailVerification.generate_code()
+    token = EmailVerification.generate_token()
+    expires_at = datetime.utcnow() + timedelta(hours=24)
+    
+    verification = EmailVerification(
+        user_id=user.id,
+        token=token,
+        code=code,
+        expires_at=expires_at
+    )
+    db.session.add(verification)
+    db.session.commit()
+    
+    if send_verification_email(email, user.username, code, token):
+        flash('Un email de vérification a été renvoyé. Vérifiez votre boîte de réception.', 'info')
+    else:
+        flash('Erreur lors de l\'envoi de l\'email. Veuillez réessayer.', 'danger')
+    
+    return redirect(url_for('verify_email_pending', email=email))
+
 # ============================================
-# 5. ROUTES PRINCIPALES
+# 5. FILTRES POUR LES TEMPLATES
+# ============================================
+
+@app.template_filter('stars')
+def stars_filter(value):
+    """Convertit une note en étoiles"""
+    if not value:
+        return ''
+    full_stars = int(value)
+    half_star = 1 if value - full_stars >= 0.5 else 0
+    empty_stars = 5 - full_stars - half_star
+    
+    stars = '★' * full_stars
+    if half_star:
+        stars += '½'
+    stars += '☆' * empty_stars
+    
+    return stars
+
+# ============================================
+# 6. ROUTES PRINCIPALESe
 # ============================================
 
 @app.route('/')
@@ -290,7 +390,6 @@ def index():
     
     base_query = get_filtered_query(query, artists, museums, movements)
     
-    # Application du tri
     if sort == 'date_asc':
         base_query = base_query.order_by(Artwork.date)
     elif sort == 'date_desc':
@@ -318,8 +417,18 @@ def index():
                          sort=sort)
 
 
+@app.route('/oeuvre/<string:oeuvre_id>')
+def oeuvre_detail(oeuvre_id):
+    """Page détaillée d'une œuvre"""
+    artwork = Artwork.query.get(oeuvre_id)
+    
+    if artwork:
+        return render_template('detail.html', oeuvre=artwork.to_dict())
+    else:
+        return "Œuvre non trouvée", 404
+
 # ============================================
-# 6. API POUR LES FILTRES
+# 7. API POUR LES FILTRES
 # ============================================
 
 @app.route('/api/artists')
@@ -429,29 +538,99 @@ def suggestions():
     
     return jsonify(suggestions_list[:9])
 
+# ============================================
+# 8. ROUTES PAGES STATIQUES
+# ============================================
+
+@app.route('/api/comments/<artwork_id>')
+def get_comments(artwork_id):
+    """Récupère tous les commentaires d'une œuvre"""
+    ratings = Rating.query.filter_by(artwork_id=artwork_id)\
+        .filter(Rating.commentaire.isnot(None))\
+        .filter(Rating.commentaire != '')\
+        .order_by(Rating.created_at.desc())\
+        .all()
+    
+    comments = []
+    for rating in ratings:
+        user = User.query.get(rating.user_id)
+        comments.append({
+            'username': user.username if user else 'Anonyme',
+            'commentaire': rating.commentaire,
+            'note_globale': rating.note_globale,
+            'created_at': rating.created_at.strftime('%d/%m/%Y'),
+            'notes': {
+                'technique': rating.note_technique,
+                'originalite': rating.note_originalite,
+                'emotion': rating.note_emotion
+            }
+        })
+    
+    return jsonify(comments)
+
+@app.route('/stats')
+def statistics():
+    """Page de statistiques"""
+    try:
+        total_oeuvres = Artwork.query.count()
+        
+        total_artistes = db.session.query(Artwork.createur).filter(
+            Artwork.createur != 'Inconnu'
+        ).distinct().count()
+        
+        total_musees = db.session.query(Artwork.lieu).filter(
+            Artwork.lieu != 'Inconnu'
+        ).distinct().count()
+        
+        top_artistes_data = db.session.query(
+            Artwork.createur.label('nom'),
+            func.count(Artwork.id).label('count')
+        ).filter(
+            Artwork.createur != 'Inconnu'
+        ).group_by(
+            Artwork.createur
+        ).order_by(
+            func.count(Artwork.id).desc()
+        ).limit(30).all()
+        
+        top_musees_data = db.session.query(
+            Artwork.lieu.label('nom'),
+            func.count(Artwork.id).label('count')
+        ).filter(
+            Artwork.lieu != 'Inconnu'
+        ).group_by(
+            Artwork.lieu
+        ).order_by(
+            func.count(Artwork.id).desc()
+        ).limit(30).all()
+        
+        last_update = datetime.now().strftime('%d/%m/%Y à %H:%M')
+        
+        return render_template('stats.html',
+                             total_oeuvres=total_oeuvres,
+                             total_artistes=total_artistes,
+                             total_musees=total_musees,
+                             top_artistes=top_artistes_data,
+                             top_musees=top_musees_data,
+                             last_update=last_update)
+    except Exception as e:
+        print(f"❌ Erreur dans stats: {e}")
+        return f"Erreur: {e}", 500
+
+
+@app.route('/about')
+def about():
+    """Page à propos"""
+    try:
+        return render_template('about.html')
+    except Exception as e:
+        print(f"❌ Erreur dans about: {e}")
+        return f"Erreur: {e}", 500
 
 # ============================================
-# 7. ROUTES PAGES STATIQUES
+# 9. ROUTES D'AUTHENTIFICATION
 # ============================================
-@app.route('/test-email')
-def test_email():
-    """Route de test pour vérifier SendGrid"""
-    try:
-        test_email = "alexandre.brief2.0@gmail.com"  # Ton email
-        test_code = "123456"
-        test_token = "test-token-123"
-        
-        result = send_verification_email(test_email, "TestUser", test_code, test_token)
-        
-        if result:
-            return "✅ Email de test envoyé avec succès ! Vérifie ta boîte de réception."
-        else:
-            return "❌ Échec de l'envoi. Vérifie les logs."
-            
-    except Exception as e:
-        return f"❌ Erreur: {str(e)}"
-        
-        
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     """Page d'inscription avec vérification d'email"""
@@ -467,150 +646,66 @@ def register():
         print(f"📧 Email: {email}")
         print("="*50)
         
-        # Validation
         errors = []
         
         if not username or not email or not password or not confirm_password:
             errors.append("Tous les champs sont obligatoires")
-            print("❌ Erreur: Champs manquants")
         
         if password != confirm_password:
             errors.append("Les mots de passe ne correspondent pas")
-            print("❌ Erreur: Mots de passe différents")
         
         if len(password) < 8:
             errors.append("Le mot de passe doit contenir au moins 8 caractères")
-            print("❌ Erreur: Mot de passe trop court")
         
         if not re.search(r"[A-Z]", password):
             errors.append("Le mot de passe doit contenir au moins une majuscule")
-            print("❌ Erreur: Pas de majuscule")
         
         if not re.search(r"[a-z]", password):
             errors.append("Le mot de passe doit contenir au moins une minuscule")
-            print("❌ Erreur: Pas de minuscule")
         
         if not re.search(r"[0-9]", password):
             errors.append("Le mot de passe doit contenir au moins un chiffre")
-            print("❌ Erreur: Pas de chiffre")
         
         if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
             errors.append("Format d'email invalide")
-            print("❌ Erreur: Email invalide")
         
         if errors:
-            print(f"❌ Validation échouée: {errors}")
             return render_template('register.html', errors=errors, 
                                  username=username, email=email)
         
-        print("✅ Validation passée, vérification de l'existence...")
-        
-        # Vérifier si l'utilisateur existe déjà
         try:
             existing_user_by_username = User.query.filter_by(username=username).first()
             existing_user_by_email = User.query.filter_by(email=email).first()
-            
-            print(f"👤 Recherche username existant: {existing_user_by_username is not None}")
-            print(f"👤 Recherche email existant: {existing_user_by_email is not None}")
-            
         except Exception as e:
-            print(f"❌ Erreur lors de la recherche: {e}")
-            import traceback
-            traceback.print_exc()
+            logger.error(f"Erreur recherche utilisateur: {e}")
             flash('Erreur de base de données.', 'danger')
             return render_template('register.html', username=username, email=email)
         
         if existing_user_by_username:
             errors.append("Ce nom d'utilisateur est déjà pris")
-            print(f"❌ Username déjà pris: {username}")
         
-        # Gestion spéciale pour l'email existant mais non vérifié
         if existing_user_by_email:
-            print(f"📧 Email existant: {email}, email_verified: {existing_user_by_email.email_verified}")
-            
             if existing_user_by_email.email_verified:
                 errors.append("Cet email est déjà utilisé")
             else:
-                # Email non vérifié - on renvoie un nouveau code
-                try:
-                    print("🔄 Renvoi de code pour email non vérifié")
-                    
-                    # Désactiver les anciennes vérifications
-                    old_verifications = EmailVerification.query.filter_by(
-                        user_id=existing_user_by_email.id, used=False
-                    ).all()
-                    print(f"📊 Anciennes vérifications trouvées: {len(old_verifications)}")
-                    
-                    for v in old_verifications:
-                        v.used = True
-                    
-                    # Créer une nouvelle vérification
-                    code = EmailVerification.generate_code()
-                    token = EmailVerification.generate_token()
-                    expires_at = datetime.utcnow() + timedelta(hours=24)
-                    
-                    verification = EmailVerification(
-                        user_id=existing_user_by_email.id,
-                        token=token,
-                        code=code,
-                        expires_at=expires_at
-                    )
-                    db.session.add(verification)
-                    db.session.commit()
-                    print("✅ Nouvelle vérification créée en BDD")
-                    
-                    # Envoyer l'email
-                    if send_verification_email(email, existing_user_by_email.username, code, token):
-                        flash('Un email de vérification a été renvoyé. Vérifiez votre boîte de réception.', 'info')
-                        print("✅ Email renvoyé avec succès")
-                    else:
-                        flash('Erreur lors de l\'envoi de l\'email. Veuillez réessayer.', 'danger')
-                        print("❌ Échec envoi email")
-                    
-                    return redirect(url_for('verify_email_pending', email=email))
-                    
-                except Exception as e:
-                    db.session.rollback()
-                    logger.error(f"Erreur lors du renvoi de vérification: {e}")
-                    print(f"❌ Exception: {e}")
-                    import traceback
-                    traceback.print_exc()
-                    errors.append("Erreur lors du traitement. Veuillez réessayer.")
+                return handle_unverified_user(existing_user_by_email, email)
         
         if errors:
-            print(f"❌ Erreurs finales: {errors}")
             return render_template('register.html', errors=errors, 
                                  username=username, email=email)
         
-        # Création du nouvel utilisateur
         try:
-            print("✅ Création du nouvel utilisateur...")
+            db.session.execute(text('SELECT 1'))
             
-            # Vérifier la connexion à la BDD
-            try:
-                db.session.execute(text('SELECT 1'))
-                print("✅ Connexion BDD OK")
-            except Exception as e:
-                print(f"❌ Problème de connexion BDD: {e}")
-                raise
-            
-            # Créer l'utilisateur avec les bons noms de colonnes
             user = User(
                 username=username,
                 email=email,
-                email_verified=False,
-                # Les autres champs peuvent être NULL
+                email_verified=False
             )
             user.set_password(password)
-            
-            print(f"👤 User object créé: {user}")
             db.session.add(user)
-            print("✅ User ajouté à la session")
-            
             db.session.flush()
-            print(f"✅ User flushé, ID: {user.id}")
             
-            # Créer la vérification
             code = EmailVerification.generate_code()
             token = EmailVerification.generate_token()
             expires_at = datetime.utcnow() + timedelta(hours=24)
@@ -622,87 +717,22 @@ def register():
                 expires_at=expires_at
             )
             db.session.add(verification)
-            print("✅ Vérification ajoutée à la session")
-            
             db.session.commit()
-            print("✅ COMMIT RÉUSSI !")
             
-            # Vérifier que l'utilisateur est bien en BDD
-            check_user = User.query.get(user.id)
-            if check_user:
-                print(f"✅ Vérification: utilisateur trouvé en BDD avec ID {check_user.id}")
-            else:
-                print(f"❌ Vérification: utilisateur NON trouvé en BDD après commit")
-            
-            # Envoyer l'email
             if send_verification_email(email, username, code, token):
                 flash('Inscription réussie ! Un email de vérification vous a été envoyé.', 'success')
-                print("✅ Email envoyé avec succès")
                 return redirect(url_for('verify_email_pending', email=email))
             else:
                 flash('Compte créé mais erreur d\'envoi d\'email. Contactez le support.', 'warning')
-                print("❌ Échec envoi email après création")
                 return redirect(url_for('login'))
                 
         except Exception as e:
             db.session.rollback()
             logger.error(f"Erreur lors de l'inscription: {e}")
-            print(f"❌ EXCEPTION: {type(e).__name__}: {e}")
-            import traceback
-            traceback.print_exc()
-            
-            # Message d'erreur plus spécifique
-            if "duplicate key" in str(e).lower():
-                flash('Cet email ou nom d\'utilisateur existe déjà.', 'danger')
-            elif "not null" in str(e).lower():
-                flash('Erreur de validation des données. Vérifiez tous les champs.', 'danger')
-            else:
-                flash(f'Une erreur est survenue: {str(e)[:100]}', 'danger')
-            
+            flash('Une erreur est survenue. Veuillez réessayer.', 'danger')
             return render_template('register.html', username=username, email=email)
     
     return render_template('register.html')
-
-
-
-
-
-
-
-
-
-
-
-def handle_unverified_user(user, email):
-    """Gère le cas d'un utilisateur avec email non vérifié"""
-    # Désactiver les anciennes vérifications
-    old_verifications = EmailVerification.query.filter_by(
-        user_id=user.id, used=False
-    ).all()
-    for v in old_verifications:
-        v.used = True
-    
-    # Créer une nouvelle vérification
-    code = EmailVerification.generate_code()
-    token = EmailVerification.generate_token()
-    expires_at = datetime.utcnow() + timedelta(hours=24)
-    
-    verification = EmailVerification(
-        user_id=user.id,
-        token=token,
-        code=code,
-        expires_at=expires_at
-    )
-    db.session.add(verification)
-    db.session.commit()
-    
-    # Renvoyer l'email
-    if send_verification_email(email, user.username, code, token):
-        flash('Un email de vérification a été renvoyé. Vérifiez votre boîte de réception.', 'info')
-    else:
-        flash('Erreur lors de l\'envoi de l\'email. Veuillez réessayer.', 'danger')
-    
-    return redirect(url_for('verify_email_pending', email=email))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -712,37 +742,22 @@ def login():
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '')
         
-        print(f"\n🔍 TENTATIVE DE CONNEXION")
-        print(f"👤 Username: {username}")
-        
         user = User.query.filter_by(username=username).first()
-        
-        if user:
-            print(f"✅ Utilisateur trouvé: {user.username}")
-            print(f"🔐 Vérification mot de passe: {'OK' if user.check_password(password) else 'ÉCHEC'}")
-            print(f"📧 Email vérifié: {user.email_verified}")
-        else:
-            print(f"❌ Utilisateur non trouvé")
         
         if user and user.check_password(password):
             if not user.email_verified:
-                print("❌ Email non vérifié")
                 flash('Veuillez vérifier votre email avant de vous connecter.', 'warning')
                 return redirect(url_for('verify_email_pending', email=user.email))
             
-            # Connexion réussie
             session['user_id'] = user.id
             session['username'] = user.username
             
-            # Mettre à jour last_login
             user.last_login = datetime.utcnow()
             db.session.commit()
             
-            print(f"✅ Connexion réussie pour {user.username}")
             flash(f'Bienvenue {user.username} !', 'success')
             return redirect(url_for('index'))
         else:
-            print("❌ Nom d'utilisateur ou mot de passe incorrect")
             flash('Nom d\'utilisateur ou mot de passe incorrect', 'danger')
     
     return render_template('login.html')
@@ -772,86 +787,7 @@ def profile():
     return render_template('profile.html', user=user.to_dict())
 
 # ============================================
-# 7. ROUTES PAGES STATIQUES
-# ============================================
-
-@app.route('/stats')
-def statistics():
-    """Page de statistiques enrichie"""
-    try:
-        # Total des œuvres
-        total_oeuvres = Artwork.query.count()
-        
-        # Nombre d'artistes uniques
-        total_artistes = db.session.query(Artwork.createur).filter(
-            Artwork.createur != 'Inconnu'
-        ).distinct().count()
-        
-        # Nombre de musées uniques
-        total_musees = db.session.query(Artwork.lieu).filter(
-            Artwork.lieu != 'Inconnu'
-        ).distinct().count()
-        
-        # Top 30 artistes
-        top_artistes_data = db.session.query(
-            Artwork.createur.label('nom'),
-            func.count(Artwork.id).label('count')
-        ).filter(
-            Artwork.createur != 'Inconnu'
-        ).group_by(
-            Artwork.createur
-        ).order_by(
-            func.count(Artwork.id).desc()
-        ).limit(30).all()
-        
-        # Top 30 musées
-        top_musees_data = db.session.query(
-            Artwork.lieu.label('nom'),
-            func.count(Artwork.id).label('count')
-        ).filter(
-            Artwork.lieu != 'Inconnu'
-        ).group_by(
-            Artwork.lieu
-        ).order_by(
-            func.count(Artwork.id).desc()
-        ).limit(30).all()
-        
-        # Date de dernière mise à jour
-        last_update = datetime.now().strftime('%d/%m/%Y à %H:%M')
-        
-        return render_template('stats.html',
-                             total_oeuvres=total_oeuvres,
-                             total_artistes=total_artistes,
-                             total_musees=total_musees,
-                             top_artistes=top_artistes_data,
-                             top_musees=top_musees_data,
-                             last_update=last_update)
-    except Exception as e:
-        print(f"❌ Erreur dans stats: {e}")
-        return f"Erreur: {e}", 500
-
-
-@app.route('/about')
-def about():
-    """Page à propos"""
-    try:
-        return render_template('about.html')
-    except Exception as e:
-        print(f"❌ Erreur dans about: {e}")
-        return f"Erreur: {e}", 500
-        
-@app.route('/oeuvre/<string:oeuvre_id>')
-def oeuvre_detail(oeuvre_id):
-    """Page détaillée d'une œuvre"""
-    artwork = Artwork.query.get(oeuvre_id)
-    
-    if artwork:
-        return render_template('detail.html', oeuvre=artwork.to_dict())
-    else:
-        return "Œuvre non trouvée", 404
-
-# ============================================
-# 9. ROUTES DE VÉRIFICATION D'EMAIL
+# 10. ROUTES DE VÉRIFICATION D'EMAIL
 # ============================================
 
 @app.route('/verify-email-pending')
@@ -874,9 +810,8 @@ def verify_email():
         flash('Lien de vérification invalide ou expiré.', 'danger')
         return redirect(url_for('login'))
     
-    # Marquer l'utilisateur comme vérifié
     user = verification.user
-    user.is_verified = True
+    user.email_verified = True
     verification.used = True
     db.session.commit()
     
@@ -890,59 +825,25 @@ def verify_code():
     code = request.form.get('code', '').strip()
     email = request.form.get('email', '')
     
-    print(f"\n🔍 VÉRIFICATION DE CODE")
-    print(f"📧 Email: {email}")
-    print(f"🔢 Code reçu: {code}")
-    
     user = User.query.filter_by(email=email).first()
     if not user:
-        print(f"❌ Utilisateur non trouvé")
         flash('Utilisateur non trouvé.', 'danger')
         return redirect(url_for('login'))
     
-    print(f"👤 Utilisateur ID: {user.id}")
-    
-    # Chercher la vérification
     verification = EmailVerification.query.filter_by(
         user_id=user.id, used=False
     ).first()
     
-    if verification:
-        print(f"✅ Vérification trouvée en BDD")
-        print(f"   - Code en BDD: {verification.code}")
-        print(f"   - Code reçu: {code}")
-        print(f"   - Expire le: {verification.expires_at}")
-        print(f"   - Valide: {verification.is_valid()}")
-        
-        if verification.code != code:
-            print(f"❌ Code incorrect")
-            flash('Code incorrect.', 'danger')
-            return redirect(url_for('verify_email_pending', email=email))
-        
-        if not verification.is_valid():
-            print(f"❌ Code expiré")
-            flash('Code expiré.', 'danger')
-            return redirect(url_for('verify_email_pending', email=email))
-        
-        # Marquer l'utilisateur comme vérifié
-        user.email_verified = True
-        verification.used = True
-        db.session.commit()
-        
-        print(f"✅ Utilisateur {user.username} vérifié avec succès!")
-        flash('Email vérifié avec succès ! Vous pouvez maintenant vous connecter.', 'success')
-        return redirect(url_for('login'))
-    else:
-        print(f"❌ Aucune vérification trouvée pour l'utilisateur {user.id}")
-        
-        # Vérifie toutes les entrées pour cet utilisateur
-        all_verifs = EmailVerification.query.filter_by(user_id=user.id).all()
-        print(f"📊 Toutes les vérifications trouvées: {len(all_verifs)}")
-        for v in all_verifs:
-            print(f"   - ID: {v.id}, Code: {v.code}, used: {v.used}, expires: {v.expires_at}")
-        
-        flash('Aucune demande de vérification trouvée. Veuillez vous réinscrire.', 'danger')
-        return redirect(url_for('register'))
+    if not verification or verification.code != code or not verification.is_valid():
+        flash('Code invalide ou expiré.', 'danger')
+        return redirect(url_for('verify_email_pending', email=email))
+    
+    user.email_verified = True
+    verification.used = True
+    db.session.commit()
+    
+    flash('Email vérifié avec succès ! Vous pouvez maintenant vous connecter.', 'success')
+    return redirect(url_for('login'))
 
 
 @app.route('/resend-verification', methods=['POST'])
@@ -955,18 +856,16 @@ def resend_verification():
         flash('Utilisateur non trouvé.', 'danger')
         return redirect(url_for('register'))
     
-    if user.is_verified:
+    if user.email_verified:
         flash('Cet email est déjà vérifié.', 'info')
         return redirect(url_for('login'))
     
-    # Désactiver les anciennes vérifications
     old_verifications = EmailVerification.query.filter_by(
         user_id=user.id, used=False
     ).all()
     for v in old_verifications:
         v.used = True
     
-    # Créer une nouvelle vérification
     code = EmailVerification.generate_code()
     token = EmailVerification.generate_token()
     expires_at = datetime.utcnow() + timedelta(hours=24)
@@ -987,9 +886,215 @@ def resend_verification():
     
     return redirect(url_for('verify_email_pending', email=email))
 
+# ============================================
+# 11. ROUTES POUR LES FAVORIS ET NOTES
+# ============================================
+
+@app.route('/api/favorite/toggle', methods=['POST'])
+def toggle_favorite():
+    """Ajoute ou retire un favori"""
+    if 'user_id' not in session:
+        return jsonify({'error': 'Non connecté'}), 401
+    
+    data = request.get_json()
+    artwork_id = data.get('artwork_id')
+    
+    if not artwork_id:
+        return jsonify({'error': 'ID œuvre manquant'}), 400
+    
+    favorite = Favorite.query.filter_by(
+        user_id=session['user_id'],
+        artwork_id=artwork_id
+    ).first()
+    
+    if favorite:
+        db.session.delete(favorite)
+        db.session.commit()
+        return jsonify({'favorite': False, 'message': 'Retiré des favoris'})
+    else:
+        favorite = Favorite(
+            user_id=session['user_id'],
+            artwork_id=artwork_id
+        )
+        db.session.add(favorite)
+        db.session.commit()
+        return jsonify({'favorite': True, 'message': 'Ajouté aux favoris'})
+
+
+@app.route('/api/favorite/check/<artwork_id>')
+def check_favorite(artwork_id):
+    """Vérifie si une œuvre est en favori"""
+    if 'user_id' not in session:
+        return jsonify({'favorite': False})
+    
+    favorite = Favorite.query.filter_by(
+        user_id=session['user_id'],
+        artwork_id=artwork_id
+    ).first()
+    
+    return jsonify({'favorite': favorite is not None})
+
+
+@app.route('/favoris')
+def favorites_page():
+    """Page des favoris"""
+    if 'user_id' not in session:
+        flash('Veuillez vous connecter pour voir vos favoris', 'warning')
+        return redirect(url_for('login'))
+    
+    favorites = Favorite.query.filter_by(user_id=session['user_id']).all()
+    artworks = [fav.artwork.to_dict() for fav in favorites if fav.artwork]
+    
+    return render_template('favorites.html', artworks=artworks)
+
+
+@app.route('/api/rating/save', methods=['POST'])
+def save_rating():
+    """Sauvegarde une note"""
+    if 'user_id' not in session:
+        return jsonify({'error': 'Non connecté'}), 401
+    
+    data = request.get_json()
+    artwork_id = data.get('artwork_id')
+    
+    def validate_note(note):
+        try:
+            n = float(note)
+            return n >= 0 and n <= 5 and (n * 2).is_integer()
+        except:
+            return False
+    
+    if not all([
+        validate_note(data.get('note_globale')),
+        validate_note(data.get('note_technique')),
+        validate_note(data.get('note_originalite')),
+        validate_note(data.get('note_emotion'))
+    ]):
+        return jsonify({'error': 'Notes invalides'}), 400
+    
+    rating = Rating.query.filter_by(
+        user_id=session['user_id'],
+        artwork_id=artwork_id
+    ).first()
+    
+    if rating:
+        rating.note_globale = float(data['note_globale'])
+        rating.note_technique = float(data['note_technique'])
+        rating.note_originalite = float(data['note_originalite'])
+        rating.note_emotion = float(data['note_emotion'])
+        rating.commentaire = data.get('commentaire', '')
+        message = 'Note mise à jour'
+    else:
+        rating = Rating(
+            user_id=session['user_id'],
+            artwork_id=artwork_id,
+            note_globale=float(data['note_globale']),
+            note_technique=float(data['note_technique']),
+            note_originalite=float(data['note_originalite']),
+            note_emotion=float(data['note_emotion']),
+            commentaire=data.get('commentaire', '')
+        )
+        db.session.add(rating)
+        message = 'Note enregistrée'
+    
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'message': message,
+        'rating': rating.to_dict()
+    })
+
+
+@app.route('/api/rating/get/<artwork_id>')
+def get_rating(artwork_id):
+    """Récupère la note d'un utilisateur"""
+    if 'user_id' not in session:
+        return jsonify({'has_rating': False})
+    
+    rating = Rating.query.filter_by(
+        user_id=session['user_id'],
+        artwork_id=artwork_id
+    ).first()
+    
+    if rating:
+        return jsonify({
+            'has_rating': True,
+            'rating': rating.to_dict()
+        })
+    else:
+        return jsonify({'has_rating': False})
+
+
+@app.route('/mes-oeuvres')
+def my_rated_works():
+    """Page des œuvres notées"""
+    if 'user_id' not in session:
+        flash('Veuillez vous connecter pour voir vos œuvres notées', 'warning')
+        return redirect(url_for('login'))
+    
+    ratings = Rating.query.filter_by(user_id=session['user_id']).all()
+    
+    works = []
+    for rating in ratings:
+        artwork = Artwork.query.get(rating.artwork_id)
+        if artwork:
+            work_data = artwork.to_dict()
+            work_data['rating'] = rating.to_dict()
+            works.append(work_data)
+    
+    return render_template('my_works.html', works=works)
+
+
+@app.route('/api/artwork/stats/<artwork_id>')
+def artwork_stats(artwork_id):
+    """Statistiques d'une œuvre"""
+    artwork = Artwork.query.get(artwork_id)
+    if not artwork:
+        return jsonify({'error': 'Œuvre non trouvée'}), 404
+    
+    ratings = Rating.query.filter_by(artwork_id=artwork_id).all()
+    
+    if ratings:
+        stats = {
+            'total_notes': len(ratings),
+            'moyenne_globale': round(sum(r.note_globale for r in ratings) / len(ratings), 1),
+            'moyenne_technique': round(sum(r.note_technique for r in ratings) / len(ratings), 1),
+            'moyenne_originalite': round(sum(r.note_originalite for r in ratings) / len(ratings), 1),
+            'moyenne_emotion': round(sum(r.note_emotion for r in ratings) / len(ratings), 1),
+        }
+    else:
+        stats = {
+            'total_notes': 0,
+            'moyenne_globale': 0,
+            'moyenne_technique': 0,
+            'moyenne_originalite': 0,
+            'moyenne_emotion': 0,
+        }
+    
+    return jsonify(stats)
+
+
+@app.route('/test-email')
+def test_email():
+    """Route de test pour vérifier SendGrid"""
+    try:
+        test_email = "alexandre.brief2.0@gmail.com"
+        test_code = "123456"
+        test_token = "test-token-123"
+        
+        result = send_verification_email(test_email, "TestUser", test_code, test_token)
+        
+        if result:
+            return "✅ Email de test envoyé avec succès ! Vérifie ta boîte de réception."
+        else:
+            return "❌ Échec de l'envoi. Vérifie les logs."
+            
+    except Exception as e:
+        return f"❌ Erreur: {str(e)}"
 
 # ============================================
-# 10. CONTEXT PROCESSOR POUR LES TEMPLATES
+# 12. CONTEXT PROCESSOR
 # ============================================
 
 @app.context_processor
@@ -1001,25 +1106,21 @@ def inject_user():
         current_user=session.get('username', '')
     )
 
-
 # ============================================
-# 11. LANCEMENT DE L'APPLICATION
+# 13. LANCEMENT DE L'APPLICATION
 # ============================================
 if __name__ == '__main__':
     with app.app_context():
         try:
-            # Création des tables
             db.create_all()
             
-            # Vérifier si la colonne is_verified existe, l'ajouter si nécessaire
-            from sqlalchemy import inspect
             inspector = inspect(db.engine)
             columns = [col['name'] for col in inspector.get_columns('users')]
             
-            if 'is_verified' not in columns:
-                db.session.execute('ALTER TABLE users ADD COLUMN is_verified BOOLEAN DEFAULT FALSE')
+            if 'is_verified' not in columns and 'email_verified' not in columns:
+                db.session.execute(text('ALTER TABLE users ADD COLUMN email_verified BOOLEAN DEFAULT FALSE'))
                 db.session.commit()
-                print("✅ Colonne is_verified ajoutée à la table users")
+                print("✅ Colonne email_verified ajoutée à la table users")
             
             print("✅ Tables PostgreSQL vérifiées/créées")
             print(f"📧 SendGrid configuré avec FROM_EMAIL: {FROM_EMAIL}")

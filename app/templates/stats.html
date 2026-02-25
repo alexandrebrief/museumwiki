@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
+        /* Styles identiques à index.html et about.html */
         * {
             margin: 0;
             padding: 0;
@@ -18,9 +19,12 @@
             background-color: #f5f0e8;
             color: #2c3e50;
             line-height: 1.6;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 500;
+            color: #1e2b3a;
         }
         
         .navbar {
@@ -34,6 +38,7 @@
             font-size: 1.5rem;
             font-weight: 600;
             color: #e6d8c3 !important;
+            letter-spacing: 0.5px;
         }
         
         .nav-link {
@@ -42,6 +47,7 @@
             margin: 0 15px;
             padding: 0.5rem 0;
             border-bottom: 2px solid transparent;
+            transition: all 0.2s;
         }
         
         .nav-link:hover {
@@ -54,16 +60,16 @@
         }
         
         .hero-section {
-            padding: 3rem 0;
+            padding: 3rem 0 2rem;
             text-align: center;
-            background: white;
+            background: #f5f0e8;
         }
         
         .hero-title {
-            font-family: 'Playfair Display', serif;
             font-size: 2.5rem;
             font-weight: 600;
             color: #2c3e50;
+            margin-bottom: 0.5rem;
         }
         
         .stats-container {
@@ -72,85 +78,65 @@
             padding: 0 1rem;
         }
         
-        /* Cartes de stats générales */
-        .general-stats {
+        .stats-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 3rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
         }
         
         .stat-card {
             background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            text-align: center;
+            border-radius: 16px;
+            padding: 2rem;
             box-shadow: 0 4px 12px rgba(44,62,80,0.05);
+            text-align: center;
         }
         
         .stat-number {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            font-weight: 600;
+            font-size: 3rem;
+            font-weight: 700;
             color: #2c3e50;
-            line-height: 1.2;
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 0.5rem;
         }
         
         .stat-label {
             color: #5d6d7e;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-size: 1.1rem;
         }
         
-        .stat-date {
-            color: #8e9aab;
-            font-size: 0.8rem;
-            margin-top: 0.5rem;
-        }
-        
-        /* Grille des listes */
-        .lists-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 30px;
-            margin-top: 2rem;
-        }
-        
-        .list-card {
+        .top-list {
             background: white;
             border-radius: 16px;
-            padding: 1.5rem;
+            padding: 2rem;
+            margin-top: 2rem;
             box-shadow: 0 4px 12px rgba(44,62,80,0.05);
         }
         
-        .list-title {
-            font-family: 'Playfair Display', serif;
+        .top-title {
             font-size: 1.3rem;
-            font-weight: 500;
-            color: #2c3e50;
             margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid #eaeaea;
+            color: #2c3e50;
         }
         
-        .list-item {
+        .top-item {
             display: flex;
             justify-content: space-between;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #f5f5f5;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0e8dc;
         }
         
-        .list-item:last-child {
+        .top-item:last-child {
             border-bottom: none;
         }
         
-        .item-name {
+        .top-name {
             color: #2c3e50;
         }
         
-        .item-count {
-            color: #8e9aab;
+        .top-count {
+            color: #5d6d7e;
             font-weight: 500;
         }
         
@@ -160,15 +146,7 @@
             padding: 2rem 0;
             margin-top: 3rem;
             text-align: center;
-        }
-        
-        @media (max-width: 768px) {
-            .general-stats {
-                grid-template-columns: 1fr;
-            }
-            .lists-grid {
-                grid-template-columns: 1fr;
-            }
+            font-size: 0.9rem;
         }
     </style>
 </head>
@@ -181,12 +159,11 @@
         </div>
     </div>
 
-    <div class="stats-container">
-        <!-- Stats générales -->
-        <div class="general-stats">
+    <div class="container stats-container">
+        <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-number">{{ total_oeuvres }}</div>
-                <div class="stat-label">Œuvres totales</div>
+                <div class="stat-label">Œuvres</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number">{{ total_artistes }}</div>
@@ -197,40 +174,35 @@
                 <div class="stat-label">Musées</div>
             </div>
         </div>
-        
-        <div class="stat-card" style="margin-bottom: 2rem;">
-            <div class="stat-date">Dernière mise à jour : {{ last_update }}</div>
+
+        <div class="top-list">
+            <h2 class="top-title">Top 30 artistes</h2>
+            {% for artiste in top_artistes %}
+            <div class="top-item">
+                <span class="top-name">{{ artiste.nom }}</span>
+                <span class="top-count">{{ artiste.count }} œuvres</span>
+            </div>
+            {% endfor %}
         </div>
 
-        <!-- Listes détaillées -->
-        <div class="lists-grid">
-            <!-- Top 30 artistes -->
-            <div class="list-card">
-                <h2 class="list-title">Artistes les plus représentés</h2>
-                {% for artiste in top_artistes %}
-                <div class="list-item">
-                    <span class="item-name">{{ artiste.nom }}</span>
-                    <span class="item-count">{{ artiste.count }} œuvre(s)</span>
-                </div>
-                {% endfor %}
+        <div class="top-list">
+            <h2 class="top-title">Top 30 musées</h2>
+            {% for musee in top_musees %}
+            <div class="top-item">
+                <span class="top-name">{{ musee.nom }}</span>
+                <span class="top-count">{{ musee.count }} œuvres</span>
             </div>
-            
-            <!-- Top 30 musées -->
-            <div class="list-card">
-                <h2 class="list-title">Musées les plus représentés</h2>
-                {% for musee in top_musees %}
-                <div class="list-item">
-                    <span class="item-name">{{ musee.nom }}</span>
-                    <span class="item-count">{{ musee.count }} œuvre(s)</span>
-                </div>
-                {% endfor %}
-            </div>
+            {% endfor %}
         </div>
+
+        <p style="text-align: center; color: #5d6d7e; margin-top: 2rem;">
+            Dernière mise à jour : {{ last_update }}
+        </p>
     </div>
 
     <footer class="footer">
         <div class="container">
-            <p>MuseumWiki · Données Wikidata</p>
+            <p>MuseumWiki · Collection d'œuvres d'art · Données Wikidata</p>
         </div>
     </footer>
 

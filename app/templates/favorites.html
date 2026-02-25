@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes favoris - MuseumWiki</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f0e8;
+            color: #2c3e50;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 500;
+            color: #1e2b3a;
+        }
+        
+        .navbar {
+            background: #2c3e50 !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+        }
+        
+        .hero-section {
+            padding: 3rem 0 2rem;
+            text-align: center;
+            background: #f5f0e8;
+        }
+        
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .favorites-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            flex: 1;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .artwork-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            position: relative;
+        }
+        
+        .artwork-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+        
+        .artwork-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: #f5f0e8;
+        }
+        
+        .artwork-info {
+            padding: 1rem;
+        }
+        
+        .artwork-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            padding-right: 2rem;
+        }
+        
+        .artwork-artist {
+            color: #5d6d7e;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .artwork-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: #5d6d7e;
+        }
+        
+        .remove-favorite {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: white;
+            border-radius: 50%;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #dc3545;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+            z-index: 10;
+        }
+        
+        .remove-favorite:hover {
+            background: #dc3545;
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: #5d6d7e;
+            margin-bottom: 1rem;
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 1rem;
+        }
+        
+        .empty-state p {
+            color: #5d6d7e;
+            margin-bottom: 2rem;
+        }
+        
+        .btn-explore {
+            background: #2c3e50;
+            color: #e6d8c3;
+            border: none;
+            border-radius: 50px;
+            padding: 0.75rem 2rem;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+        
+        .btn-explore:hover {
+            background: #1e2b3a;
+            color: #e6d8c3;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: #e6d8c3;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">Mes favoris</h1>
+            <p class="hero-subtitle">Les œuvres que vous avez aimées</p>
+        </div>
+    </div>
+
+    <div class="container favorites-container">
+        {% if artworks %}
+            <div class="results-grid" id="favorites-grid">
+                {% for oeuvre in artworks %}
+                <div class="artwork-card" data-artwork-id="{{ oeuvre.id }}">
+                    <div class="remove-favorite" onclick="removeFromFavorites('{{ oeuvre.id }}', event)">
+                        <i class="fas fa-times"></i>
+                    </div>
+                    <div onclick="window.location.href='/oeuvre/{{ oeuvre.id }}'" style="cursor: pointer;">
+                        {% if oeuvre.image_url %}
+                        <img src="{{ oeuvre.image_url }}" alt="{{ oeuvre.titre }}" class="artwork-image">
+                        {% else %}
+                        <div class="artwork-image" style="background: #e0d6c8; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-image" style="font-size: 3rem; color: #5d6d7e;"></i>
+                        </div>
+                        {% endif %}
+                        <div class="artwork-info">
+                            <h3 class="artwork-title">{{ oeuvre.titre }}</h3>
+                            <p class="artwork-artist">{{ oeuvre.createur }}</p>
+                            <div class="artwork-meta">
+                                <span><i class="far fa-calendar"></i> {{ oeuvre.date or 'Date inconnue' }}</span>
+                                <span><i class="fas fa-map-marker-alt"></i> {{ oeuvre.lieu or 'Lieu inconnu' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="far fa-heart"></i>
+                <h3>Aucun favori pour le moment</h3>
+                <p>Explorez les œuvres et ajoutez-les à vos favoris en cliquant sur le ❤️</p>
+                <a href="/" class="btn-explore">Explorer les œuvres</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>MuseumWiki · Collection d'œuvres d'art · Données Wikidata</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        async function removeFromFavorites(artworkId, event) {
+            event.stopPropagation();
+            
+            if (!confirm('Retirer cette œuvre de vos favoris ?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/favorite/toggle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ artwork_id: artworkId })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Retirer la carte du DOM
+                    const card = document.querySelector(`.artwork-card[data-artwork-id="${artworkId}"]`);
+                    card.remove();
+                    
+                    // Vérifier s'il reste des favoris
+                    const remainingCards = document.querySelectorAll('.artwork-card').length;
+                    if (remainingCards === 0) {
+                        location.reload(); // Recharge pour afficher l'empty state
+                    }
+                } else {
+                    alert('Erreur : ' + data.error);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Une erreur est survenue');
+            }
+        }
+    </script>
+</body>
+</html>
