@@ -152,24 +152,19 @@
                 {% endif %}
             {% endwith %}
             
-<form method="POST" action="/login">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <!-- reste du formulaire -->
-    <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
-        <input type="email" class="form-control" id="email" name="email" required>
-    </div>
-    
-    <div class="mb-3">
-        <label for="password" class="form-label">Mot de passe</label>
-        <input type="password" class="form-control" id="password" name="password" required>
-    </div>
-    
-    <button type="submit" class="btn-login-form">Se connecter</button>
-</form>
-            
-            
-            
+            <form method="POST" action="/login">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required autofocus>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="password" class="form-label">Mot de passe</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                
+                <button type="submit" class="btn-login-form">Se connecter</button>
+            </form>
             
             <div class="register-link">
                 Pas encore de compte ? <a href="/register">S'inscrire</a>

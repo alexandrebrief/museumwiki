@@ -2,31 +2,50 @@
 __pycache__/
 *.py[cod]
 *.so
-.Python
-env/
-venv/
-.env
+*.egg-info/
+dist/
+build/
 
-# Données sensibles ou temporaires
-data/*.db
+# Virtual environment
+venv/
+env/
+ENV/
+.venv
+
+# Environnement variables
+.env
+.env.local
+.env.production
+.env.example  # ← on garde l'exemple, pas les vraies clés
+
+# Logs
 *.log
+security.log
+access.log
+error.log
 
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
-# Docker
-*.pid
+# OS
+.DS_Store
+Thumbs.db
 
-# Fichiers Docker (si supprimés)
-docker-compose.yml
-Dockerfile
-.dockerignore
+# Données temporaires (optionnel)
+scripts/temp/
+scripts/__pycache__/
 
 # Backups
-*backup*
-*Copie*
+backup/
+*.backup
+*.bak
+*.sql.gz
 
-# Données temporaires
-scripts/data/
-.env
+# Sécurité (ne pas versionner)
+security.log
+*.key
+*.pem

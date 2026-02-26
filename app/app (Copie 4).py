@@ -22,10 +22,7 @@ import re
 import secrets
 import logging
 from sqlalchemy import inspect
-from flask_talisman import Talisman
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
-from flask_wtf.csrf import CSRFProtect
+
 # ============================================
 # 2. CONFIGURATION DE L'APPLICATION
 # ============================================
@@ -56,60 +53,6 @@ logger = logging.getLogger(__name__)
 
 # Initialisation SQLAlchemy
 db = SQLAlchemy(app)
-
-
-# ============================================
-# 2.1 SÉCURITÉ - HEADERS HTTP (Flask-Talisman)
-# ============================================
-
-Talisman(app,
-    content_security_policy={
-        'default-src': ["'self'"],
-        'script-src': ["'self'", "https://cdn.jsdelivr.net", "https://code.jquery.com", "https://cdnjs.cloudflare.com"],
-        'style-src': ["'self'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com", "'unsafe-inline'"],
-        'font-src': ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
-        'img-src': ["'self'", "data:", "https:", "http:", "*"],
-    },
-    force_https=False,
-    strict_transport_security=True,
-    session_cookie_secure=False,
-    session_cookie_http_only=True,
-    referrer_policy='strict-origin-when-cross-origin'
-)
-
-# ============================================
-# 2.2 SÉCURITÉ - RATE LIMITING (Flask-Limiter)
-# ============================================
-
-
-limiter = Limiter(
-    app=app,
-    key_func=get_remote_address,
-    default_limits=["200 per day", "50 per hour"],
-    storage_uri="memory://"
-)
-
-# ============================================
-# 2.3 SÉCURITÉ - CSRF PROTECTION (Flask-WTF)
-# ============================================
-
-
-csrf = CSRFProtect(app)
-
-
-# ============================================
-# 2.5 LOGGING DE SÉCURITÉ
-# ============================================
-from logging.handlers import RotatingFileHandler
-
-# Logger de sécurité
-security_logger = logging.getLogger('security')
-security_logger.setLevel(logging.WARNING)
-
-handler = RotatingFileHandler('security.log', maxBytes=10000, backupCount=3)
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-security_logger.addHandler(handler)
 
 # ============================================
 # 3. MODÈLES DE BASE DE DONNÉES
@@ -410,41 +353,7 @@ def handle_unverified_user(user, email):
     
     return redirect(url_for('verify_email_pending', email=email))
 
-# ============================================
-# 4.1 VALIDATION DES MOTS DE PASSE (AJOUTE ICI)
-# ============================================
 
-def validate_password_strength(password):
-    """Valide la force du mot de passe et retourne une liste d'erreurs"""
-    errors = []
-    
-    if len(password) < 8:
-        errors.append("8 caractères minimum")
-    
-    if not re.search(r"[A-Z]", password):
-        errors.append("une majuscule requise")
-    
-    if not re.search(r"[a-z]", password):
-        errors.append("une minuscule requise")
-    
-    if not re.search(r"[0-9]", password):
-        errors.append("un chiffre requis")
-    
-    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
-        errors.append("un caractère spécial requis")
-    
-    # Mots de passe courants à éviter
-    common_passwords = [
-        'password', '123456', 'qwerty', 'admin', 'password123', 
-        'azerty', 'motdepasse', '12345678', '111111', '123456789',
-        '000000', 'abc123', 'password1', '12345', 'letmein',
-        'monkey', 'football', 'iloveyou', '123123', '654321'
-    ]
-    
-    if password.lower() in common_passwords:
-        errors.append("mot de passe trop commun")
-    
-    return errors
 
 # ============================================
 # 5. FILTRES POUR LES TEMPLATES
@@ -775,7 +684,7 @@ def about():
 # ============================================
 # 9. ROUTES D'AUTHENTIFICATION
 # ============================================
-@limiter.limit("3 per minute")
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     """Page d'inscription avec vérification d'email"""
@@ -799,14 +708,22 @@ def register():
         if password != confirm_password:
             errors.append("Les mots de passe ne correspondent pas")
         
-        password_errors = validate_password_strength(password)
-        errors.extend(password_errors)
+        if len(password) < 8:
+            errors.append("Le mot de passe doit contenir au moins 8 caractères")
+        
+        if not re.search(r"[A-Z]", password):
+            errors.append("Le mot de passe doit contenir au moins une majuscule")
+        
+        if not re.search(r"[a-z]", password):
+            errors.append("Le mot de passe doit contenir au moins une minuscule")
+        
+        if not re.search(r"[0-9]", password):
+            errors.append("Le mot de passe doit contenir au moins un chiffre")
         
         if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
             errors.append("Format d'email invalide")
         
         if errors:
-            security_logger.warning(f"Tentative inscription échouée - IP: {request.remote_addr} - Email: {email} - Erreurs: {', '.join(errors)}")
             return render_template('register.html', errors=errors, 
                                  username=username, email=email)
         
@@ -870,7 +787,7 @@ def register():
             return render_template('register.html', username=username, email=email)
     
     return render_template('register.html')
-@limiter.limit("5 per minute")
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """Page de connexion avec email"""
@@ -894,7 +811,6 @@ def login():
         if user and user.check_password(password):
             if not user.email_verified:
                 print("❌ Email non vérifié")
-                security_logger.warning(f"Tentative connexion échouée - IP: {request.remote_addr} - Email: {email}")
                 flash('Veuillez vérifier votre email avant de vous connecter.', 'warning')
                 return redirect(url_for('verify_email_pending', email=user.email))
             
@@ -941,7 +857,7 @@ def profile():
 # ============================================
 # GESTION DU COMPTE (MOT DE PASSE & SUPPRESSION)
 # ============================================
-@limiter.limit("10 per hour")
+
 @app.route('/change-password', methods=['GET', 'POST'])
 def change_password():
     """Changer le mot de passe"""
@@ -961,14 +877,22 @@ def change_password():
         # Vérifier l'ancien mot de passe
         if not user.check_password(current_password):
             errors.append("Mot de passe actuel incorrect")
-            security_logger.warning(f"Tentative changement mot de passe échouée - IP: {request.remote_addr} - User: {session.get('username')}")
         
         # Vérifier le nouveau mot de passe
         if new_password != confirm_password:
             errors.append("Les nouveaux mots de passe ne correspondent pas")
         
-        password_errors = validate_password_strength(new_password)
-        errors.extend(password_errors)
+        if len(new_password) < 8:
+            errors.append("Le nouveau mot de passe doit contenir au moins 8 caractères")
+        
+        if not re.search(r"[A-Z]", new_password):
+            errors.append("Le nouveau mot de passe doit contenir au moins une majuscule")
+        
+        if not re.search(r"[a-z]", new_password):
+            errors.append("Le nouveau mot de passe doit contenir au moins une minuscule")
+        
+        if not re.search(r"[0-9]", new_password):
+            errors.append("Le nouveau mot de passe doit contenir au moins un chiffre")
         
         if errors:
             for error in errors:

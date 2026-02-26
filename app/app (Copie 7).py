@@ -410,41 +410,7 @@ def handle_unverified_user(user, email):
     
     return redirect(url_for('verify_email_pending', email=email))
 
-# ============================================
-# 4.1 VALIDATION DES MOTS DE PASSE (AJOUTE ICI)
-# ============================================
 
-def validate_password_strength(password):
-    """Valide la force du mot de passe et retourne une liste d'erreurs"""
-    errors = []
-    
-    if len(password) < 8:
-        errors.append("8 caractères minimum")
-    
-    if not re.search(r"[A-Z]", password):
-        errors.append("une majuscule requise")
-    
-    if not re.search(r"[a-z]", password):
-        errors.append("une minuscule requise")
-    
-    if not re.search(r"[0-9]", password):
-        errors.append("un chiffre requis")
-    
-    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
-        errors.append("un caractère spécial requis")
-    
-    # Mots de passe courants à éviter
-    common_passwords = [
-        'password', '123456', 'qwerty', 'admin', 'password123', 
-        'azerty', 'motdepasse', '12345678', '111111', '123456789',
-        '000000', 'abc123', 'password1', '12345', 'letmein',
-        'monkey', 'football', 'iloveyou', '123123', '654321'
-    ]
-    
-    if password.lower() in common_passwords:
-        errors.append("mot de passe trop commun")
-    
-    return errors
 
 # ============================================
 # 5. FILTRES POUR LES TEMPLATES
@@ -799,8 +765,17 @@ def register():
         if password != confirm_password:
             errors.append("Les mots de passe ne correspondent pas")
         
-        password_errors = validate_password_strength(password)
-        errors.extend(password_errors)
+        if len(password) < 8:
+            errors.append("Le mot de passe doit contenir au moins 8 caractères")
+        
+        if not re.search(r"[A-Z]", password):
+            errors.append("Le mot de passe doit contenir au moins une majuscule")
+        
+        if not re.search(r"[a-z]", password):
+            errors.append("Le mot de passe doit contenir au moins une minuscule")
+        
+        if not re.search(r"[0-9]", password):
+            errors.append("Le mot de passe doit contenir au moins un chiffre")
         
         if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
             errors.append("Format d'email invalide")
@@ -967,8 +942,17 @@ def change_password():
         if new_password != confirm_password:
             errors.append("Les nouveaux mots de passe ne correspondent pas")
         
-        password_errors = validate_password_strength(new_password)
-        errors.extend(password_errors)
+        if len(new_password) < 8:
+            errors.append("Le nouveau mot de passe doit contenir au moins 8 caractères")
+        
+        if not re.search(r"[A-Z]", new_password):
+            errors.append("Le nouveau mot de passe doit contenir au moins une majuscule")
+        
+        if not re.search(r"[a-z]", new_password):
+            errors.append("Le nouveau mot de passe doit contenir au moins une minuscule")
+        
+        if not re.search(r"[0-9]", new_password):
+            errors.append("Le nouveau mot de passe doit contenir au moins un chiffre")
         
         if errors:
             for error in errors:
