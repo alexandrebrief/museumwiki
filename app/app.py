@@ -1186,14 +1186,18 @@ def favorites_page():
     
     return render_template('favorites.html', artworks=artworks)
 
-
 @app.route('/api/rating/save', methods=['POST'])
 def save_rating():
     """Sauvegarde une note"""
+    print("🔵 save_rating appelée")
+    print("Session user_id:", session.get('user_id'))
+    
     if 'user_id' not in session:
         return jsonify({'error': 'Non connecté'}), 401
     
     data = request.get_json()
+    print("Données reçues:", data)
+    
     artwork_id = data.get('artwork_id')
     
     def validate_note(note):
@@ -1209,6 +1213,7 @@ def save_rating():
         validate_note(data.get('note_originalite')),
         validate_note(data.get('note_emotion'))
     ]):
+        print("❌ Notes invalides")
         return jsonify({'error': 'Notes invalides'}), 400
     
     rating = Rating.query.filter_by(
@@ -1217,6 +1222,7 @@ def save_rating():
     ).first()
     
     if rating:
+        print("🔄 Mise à jour note existante")
         rating.note_globale = float(data['note_globale'])
         rating.note_technique = float(data['note_technique'])
         rating.note_originalite = float(data['note_originalite'])
@@ -1224,6 +1230,7 @@ def save_rating():
         rating.commentaire = data.get('commentaire', '')
         message = 'Note mise à jour'
     else:
+        print("➕ Création nouvelle note")
         rating = Rating(
             user_id=session['user_id'],
             artwork_id=artwork_id,
@@ -1237,6 +1244,7 @@ def save_rating():
         message = 'Note enregistrée'
     
     db.session.commit()
+    print("✅ Note sauvegardée, ID:", rating.id)
     
     return jsonify({
         'success': True,

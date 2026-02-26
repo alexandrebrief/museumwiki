@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ oeuvre.titre }} - {{ site_name }}</title>
@@ -747,37 +748,49 @@ function formatNote(value) {
             saveTimeout = setTimeout(saveRating, 800);
         }
         
-        async function saveRating() {
-            {% if not session.user_id %}
-            return;
-            {% endif %}
-            
-            const ratingData = {
-                artwork_id: artworkId,
-                note_globale: parseFloat(document.getElementById('note-globale').value),
-                note_technique: parseFloat(document.getElementById('note-technique').value),
-                note_originalite: parseFloat(document.getElementById('note-originalite').value),
-                note_emotion: parseFloat(document.getElementById('note-emotion').value),
-                commentaire: document.getElementById('commentaire').value
-            };
-            
-            try {
-                const response = await fetch('/api/rating/save', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(ratingData)
-                });
-                
-                if (response.ok) {
-                    console.log('Notes sauvegardées');
-                    loadArtworkStats();
-                }
-            } catch (error) {
-                console.error('Erreur sauvegarde:', error);
-            }
+async function saveRating() {
+    {% if not session.user_id %}
+    return;
+    {% endif %}
+    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    
+    const ratingData = {
+        artwork_id: artworkId,
+        note_globale: parseFloat(document.getElementById('note-globale').value),
+        note_technique: parseFloat(document.getElementById('note-technique').value),
+        note_originalite: parseFloat(document.getElementById('note-originalite').value),
+        note_emotion: parseFloat(document.getElementById('note-emotion').value),
+        commentaire: document.getElementById('commentaire').value
+    };
+    
+    console.log('📤 Envoi des notes (auto):', ratingData);
+    
+    try {
+        const response = await fetch('/api/rating/save', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify(ratingData)
+        });
+        
+        console.log('📥 Réponse status:', response.status);
+        
+        if (response.ok) {
+            const responseData = await response.json();
+            console.log('✅ Réponse succès:', responseData);
+            console.log('🔄 Rechargement des stats...');
+            await loadArtworkStats();
+        } else {
+            const errorText = await response.text();
+            console.error('❌ Erreur réponse:', errorText);
         }
+    } catch (error) {
+        console.error('❌ Erreur réseau:', error);
+    }
+}
         
         // ============================================
         // GESTION DU COMMENTAIRE
@@ -788,59 +801,78 @@ function formatNote(value) {
             document.getElementById('comment-edit-area').style.display = 'block';
         }
         
-        async function saveComment() {
-            {% if not session.user_id %}
-            window.location.href = '/login';
-            return;
-            {% endif %}
+async function saveComment() {
+    {% if not session.user_id %}
+    window.location.href = '/login';
+    return;
+    {% endif %}
+    
+    const comment = document.getElementById('commentaire').value;
+    const visibility = document.querySelector('input[name="visibility"]:checked').value;
+    
+    if (!comment.trim()) {
+        alert('Veuillez écrire un commentaire avant de publier.');
+        return;
+    }
+    
+    const noteGlobale = parseFloat(document.getElementById('note-globale').value);
+    const noteTechnique = parseFloat(document.getElementById('note-technique').value);
+    const noteOriginalite = parseFloat(document.getElementById('note-originalite').value);
+    const noteEmotion = parseFloat(document.getElementById('note-emotion').value);
+    
+    if (noteGlobale === 0) {
+        alert('Veuillez donner une note globale (cliquez sur les étoiles) avant de publier.');
+        return;
+    }
+    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    
+    const ratingData = {
+        artwork_id: artworkId,
+        note_globale: noteGlobale,
+        note_technique: noteTechnique,
+        note_originalite: noteOriginalite,
+        note_emotion: noteEmotion,
+        commentaire: visibility === 'public' ? comment : ''
+    };
+    
+    console.log('📤 Envoi commentaire:', ratingData);
+    
+    try {
+        const response = await fetch('/api/rating/save', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify(ratingData)
+        });
+        
+        console.log('📥 Réponse status:', response.status);
+        
+        if (response.ok) {
+            const responseData = await response.json();
+            console.log('✅ Réponse succès:', responseData);
             
-            const comment = document.getElementById('commentaire').value;
-            const visibility = document.querySelector('input[name="visibility"]:checked').value;
+            document.getElementById('displayed-comment-text').textContent = comment;
+            document.getElementById('user-comment-display').style.display = 'block';
+            document.getElementById('comment-edit-area').style.display = 'none';
+            alert('Commentaire publié avec succès !');
             
-            if (!comment.trim()) {
-                return;
+            if (visibility === 'public') {
+                await loadComments();
             }
-            
-            const noteGlobale = parseFloat(document.getElementById('note-globale').value);
-            const noteTechnique = parseFloat(document.getElementById('note-technique').value);
-            const noteOriginalite = parseFloat(document.getElementById('note-originalite').value);
-            const noteEmotion = parseFloat(document.getElementById('note-emotion').value);
-            
-            const ratingData = {
-                artwork_id: artworkId,
-                note_globale: noteGlobale,
-                note_technique: noteTechnique,
-                note_originalite: noteOriginalite,
-                note_emotion: noteEmotion,
-                commentaire: visibility === 'public' ? comment : ''
-            };
-            
-            try {
-                const response = await fetch('/api/rating/save', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(ratingData)
-                });
-                
-                if (response.ok) {
-                    // Afficher le commentaire dans "Votre avis"
-                    document.getElementById('displayed-comment-text').textContent = comment;
-                    
-                    document.getElementById('user-comment-display').style.display = 'block';
-                    document.getElementById('comment-edit-area').style.display = 'none';
-                    
-                    // Recharger les commentaires publics si le commentaire est public
-                    if (visibility === 'public') {
-                        loadComments();
-                    }
-                    loadArtworkStats();
-                }
-            } catch (error) {
-                console.error('Erreur:', error);
-            }
+            await loadArtworkStats();
+        } else {
+            const errorData = await response.text();
+            console.error('❌ Erreur serveur:', errorData);
+            alert('Erreur lors de la publication. Code: ' + response.status);
         }
+    } catch (error) {
+        console.error('❌ Erreur:', error);
+        alert('Erreur de connexion. Vérifiez votre réseau.');
+    }
+}
         
         // ============================================
         // CHARGEMENT DES NOTES EXISTANTES
@@ -901,34 +933,37 @@ function formatNote(value) {
         // ============================================
         
         async function loadArtworkStats() {
-            try {
-                const response = await fetch(`/api/artwork/stats/${artworkId}`);
-                const stats = await response.json();
-                
-                document.getElementById('avg-globale').textContent = stats.moyenne_globale.toFixed(1) + '/5';
-                document.getElementById('avg-technique').textContent = stats.moyenne_technique.toFixed(1) + '/5';
-                document.getElementById('avg-originalite').textContent = stats.moyenne_originalite.toFixed(1) + '/5';
-                document.getElementById('avg-emotion').textContent = stats.moyenne_emotion.toFixed(1) + '/5';
-                document.getElementById('total-notes').textContent = `Basé sur ${stats.total_notes} note(s)`;
-                
-                const avgStars = document.getElementById('avg-globale-stars');
-                const avg = stats.moyenne_globale;
-                let starsHtml = '';
-                for (let i = 0; i < 5; i++) {
-                    if (avg >= i + 1) {
-                        starsHtml += '★';
-                    } else if (avg >= i + 0.5) {
-                        starsHtml += '½';
-                    } else {
-                        starsHtml += '☆';
-                    }
-                }
-                avgStars.textContent = starsHtml;
-                
-            } catch (error) {
-                console.error('Erreur chargement stats:', error);
+    console.log('📊 Chargement des stats pour:', artworkId);
+    try {
+        const response = await fetch(`/api/artwork/stats/${artworkId}`);
+        const stats = await response.json();
+        console.log('📊 Stats reçues:', stats);
+        
+        document.getElementById('avg-globale').textContent = stats.moyenne_globale.toFixed(1) + '/5';
+        document.getElementById('avg-technique').textContent = stats.moyenne_technique.toFixed(1) + '/5';
+        document.getElementById('avg-originalite').textContent = stats.moyenne_originalite.toFixed(1) + '/5';
+        document.getElementById('avg-emotion').textContent = stats.moyenne_emotion.toFixed(1) + '/5';
+        document.getElementById('total-notes').textContent = `Basé sur ${stats.total_notes} note(s)`;
+        
+        const avgStars = document.getElementById('avg-globale-stars');
+        const avg = stats.moyenne_globale;
+        let starsHtml = '';
+        for (let i = 0; i < 5; i++) {
+            if (avg >= i + 1) {
+                starsHtml += '★';
+            } else if (avg >= i + 0.5) {
+                starsHtml += '½';
+            } else {
+                starsHtml += '☆';
             }
         }
+        avgStars.textContent = starsHtml;
+        console.log('⭐ Étoiles affichées:', starsHtml);
+        
+    } catch (error) {
+        console.error('❌ Erreur chargement stats:', error);
+    }
+}
         
         // ============================================
         // CHARGEMENT DES COMMENTAIRES
