@@ -36,6 +36,7 @@
             padding: 3rem 0 2rem;
             text-align: center;
             background: #f5f0e8;
+            border-bottom: 1px solid rgba(44,62,80,0.05);
         }
         
         .hero-title {
@@ -43,59 +44,196 @@
             font-weight: 600;
             color: #2c3e50;
             margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
         }
         
         .about-container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 2rem auto;
             flex: 1;
         }
         
+        /* ===== CARTE PRINCIPALE ===== */
         .about-card {
             background: white;
-            border-radius: 16px;
-            padding: 2rem;
+            border-radius: 20px;
+            padding: 2.5rem;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 12px rgba(44,62,80,0.05);
+            box-shadow: 0 10px 30px rgba(44,62,80,0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .about-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(44,62,80,0.1);
         }
         
         .about-title {
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
             color: #2c3e50;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        .about-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: #2c3e50;
+            border-radius: 2px;
         }
         
         .about-text {
             color: #5d6d7e;
-            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
         }
         
-        .about-list {
-            list-style: none;
-            padding: 0;
+        .about-text:last-child {
+            margin-bottom: 0;
         }
         
-        .about-list li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #f0e8dc;
-            color: #5d6d7e;
+        /* ===== STATISTIQUES ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
         }
         
-        .about-list li:last-child {
-            border-bottom: none;
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.8rem 1rem;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(44,62,80,0.03);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(44,62,80,0.03);
         }
         
-        .about-list strong {
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(44,62,80,0.08);
+            border-color: rgba(44,62,80,0.1);
+        }
+        
+        .stat-icon {
+            font-size: 2.2rem;
             color: #2c3e50;
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+        
+        .stat-number {
+            font-size: 2.8rem;
+            font-weight: 600;
+            color: #2c3e50;
+            line-height: 1.2;
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 0.3rem;
+        }
+        
+        .stat-label {
+            font-size: 0.95rem;
+            color: #5d6d7e;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 400;
+        }
+        
+        .update-info {
+            text-align: center;
+            margin: 2rem 0 1rem;
+            padding: 0.8rem;
+            background: rgba(44,62,80,0.02);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: #5d6d7e;
+            border: 1px dashed rgba(44,62,80,0.1);
+        }
+        
+        .update-info i {
+            margin-right: 0.5rem;
+            color: #2c3e50;
+            opacity: 0.6;
+        }
+        
+        /* ===== TECHNOLOGIES ===== */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .tech-item {
+            background: rgba(44,62,80,0.02);
+            border-radius: 12px;
+            padding: 1.2rem 0.5rem;
+            text-align: center;
+            transition: background 0.3s ease;
+            border: 1px solid rgba(44,62,80,0.03);
+        }
+        
+        .tech-item:hover {
+            background: rgba(44,62,80,0.04);
+        }
+        
+        .tech-icon {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            opacity: 0.7;
+        }
+        
+        .tech-name {
             font-weight: 500;
-            width: 120px;
-            display: inline-block;
+            color: #2c3e50;
+            font-size: 0.95rem;
+        }
+        
+        .tech-desc {
+            font-size: 0.75rem;
+            color: #5d6d7e;
+            margin-top: 0.2rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            .tech-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .about-card {
+                padding: 1.5rem;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     {% include 'navbar.html' %}
 
+    <!-- Hero Section -->
     <div class="hero-section">
         <div class="container">
             <h1 class="hero-title">À propos</h1>
@@ -103,25 +241,110 @@
     </div>
 
     <div class="container about-container">
+        <!-- Carte principale - Blue Gallery -->
         <div class="about-card">
-            <h2 class="about-title">Le projet</h2>
-            <p class="about-text">{{ site_name }} est une base de données d'œuvres d'art, construite à partir des données ouvertes de Wikidata. L'objectif est de rendre l'art accessible à tous en proposant une interface simple et élégante.</p>
+            <h2 class="about-title">Blue Gallery</h2>
+            <p class="about-text">
+                Blue Gallery est un projet qui transforme l'accès à l'art en une expérience intuitive et inspirante, où chaque tableau, sculpture ou installation devient une découverte à collectionner, noter et partager.
+            </p>
+            <p class="about-text">
+                L'idée ? Créer un espace où les passionnés d'art, novices ou experts, peuvent explorer, archiver leurs coups de cœur et échanger autour des chefs-d'œuvre qui les touchent.
+            </p>
         </div>
-        
-        <div class="about-card">
-            <h2 class="about-title">Sources</h2>
-            <p class="about-text">Les données proviennent de Wikidata via des requêtes SPARQL et concernent principalement les œuvres des grands maîtres de la peinture.</p>
+
+        <!-- Statistiques -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-paint-brush"></i>
+                </div>
+                <div class="stat-number">5 000</div>
+                <div class="stat-label">Œuvres</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-user-astronaut"></i>
+                </div>
+                <div class="stat-number">7</div>
+                <div class="stat-label">Artistes</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-landmark"></i>
+                </div>
+                <div class="stat-number">440</div>
+                <div class="stat-label">Musées</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-number">--</div>
+                <div class="stat-label">Utilisateurs</div>
+            </div>
         </div>
-        
+
+        <!-- Date de mise à jour -->
+        <div class="update-info">
+            <i class="fas fa-sync-alt"></i>
+            Dernière mise à jour : 26/02/2026 à 18:40
+        </div>
+
+        <!-- Technologies -->
         <div class="about-card">
             <h2 class="about-title">Technologies</h2>
-            <ul class="about-list">
-                <li><strong>Backend</strong> Flask (Python)</li>
-                <li><strong>Base de données</strong> PostgreSQL</li>
-                <li><strong>Interface</strong> HTML5, CSS3, Bootstrap</li>
-                <li><strong>Données</strong> Wikidata, Pandas</li>
-                <li><strong>Authentification</strong> SendGrid, bcrypt</li>
-            </ul>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fas fa-flask"></i>
+                    </div>
+                    <div class="tech-name">Flask</div>
+                    <div class="tech-desc">Backend Python</div>
+                </div>
+                
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="tech-name">PostgreSQL</div>
+                    <div class="tech-desc">Base de données</div>
+                </div>
+                
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fab fa-bootstrap"></i>
+                    </div>
+                    <div class="tech-name">Bootstrap</div>
+                    <div class="tech-desc">Interface responsive</div>
+                </div>
+                
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div class="tech-name">HTML5/CSS3</div>
+                    <div class="tech-desc">Frontend moderne</div>
+                </div>
+                
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <div class="tech-name">Wikidata</div>
+                    <div class="tech-desc">Source de données</div>
+                </div>
+                
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="tech-name">SendGrid</div>
+                    <div class="tech-desc">Emails</div>
+                </div>
+            </div>
         </div>
     </div>
 

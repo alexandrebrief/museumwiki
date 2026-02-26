@@ -1,25 +1,19 @@
 <footer class="footer">
     <div class="container">
-        <!-- Liens du footer -->
-        <div class="footer-links">
-            <a href="/">Accueil</a>
-            <span class="separator">·</span>
-            <a href="/stats">Statistiques</a>
-            <span class="separator">·</span>
-            <a href="/about">À propos</a>
-            <span class="separator">·</span>
-            <a href="#" onclick="return false;">Terms</a>
-            <span class="separator">·</span>
-            <a href="#" onclick="return false;">Privacy</a>
-            <span class="separator">·</span>
-            <a href="#" onclick="return false;">Legal</a>
-            <span class="separator">·</span>
-            <a href="#" onclick="return false;">Contact</a>
-        </div>
-        
-        <!-- Copyright -->
-        <div class="copyright">
-            © {{ current_year }} {{ site_name }}. All rights reserved.
+        <!-- Structure en 2 colonnes -->
+        <div class="footer-row">
+            <!-- Colonne gauche : vide -->
+            <div class="footer-left"></div>
+            
+            <!-- Colonne centrale : À propos -->
+            <div class="footer-center">
+                <a href="/about">À propos</a>
+            </div>
+            
+            <!-- Colonne droite : Copyright -->
+            <div class="footer-right">
+                <span class="copyright">© {{ current_year }} {{ site_name }}. All rights reserved.</span>
+            </div>
         </div>
     </div>
 </footer>
@@ -28,19 +22,35 @@
 .footer {
     background: #2c3e50;
     color: #e6d8c3;
-    padding: 1rem 0;  /* Plus fin */
+    padding: 1rem 0;
     margin-top: auto;
-    text-align: center;
     font-size: 0.8rem;
     width: 100%;
 }
 
-.footer-links {
-    margin-bottom: 0.3rem;
+.footer-row {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
     flex-wrap: wrap;
-    gap: 0.3rem;
+}
+
+.footer-left, .footer-center, .footer-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.footer-left {
+    justify-content: flex-start;
+}
+
+.footer-center {
+    justify-content: center;
+}
+
+.footer-right {
+    justify-content: flex-end;
 }
 
 .footer a {
@@ -55,24 +65,23 @@
     text-decoration: underline;
 }
 
-.separator {
-    color: rgba(230, 216, 195, 0.3);
-}
-
 .copyright {
     font-size: 0.7rem;
     opacity: 0.8;
+    white-space: nowrap;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .footer-links {
+    .footer-row {
         flex-direction: column;
-        gap: 0.2rem;
+        gap: 0.5rem;
     }
     
-    .separator {
-        display: none;
+    .footer-left, .footer-center, .footer-right {
+        justify-content: center;
+        text-align: center;
     }
 }
 </style>
+

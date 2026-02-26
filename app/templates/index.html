@@ -423,26 +423,26 @@
             right: 8px;
             background: white;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 24px;
+            height: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             box-shadow: 0 2px 4px rgba(0,0,0,0.15);
             z-index: 10;
-            font-size: 0.9rem;
+            font-size: 0.75rem;
             transition: all 0.2s;
             border: 1px solid rgba(0,0,0,0.05);
         }
 
         /* Cœur par défaut : contour rouge */
-        .favorite-icon i {
-            color: #dc3545;
-            transition: all 0.2s;
-            -webkit-text-stroke: 1px #dc3545;
-            -webkit-text-fill-color: transparent;
-        }
+.favorite-icon i {
+    color: #dc3545;
+    transition: all 0.2s;
+    -webkit-text-stroke: 0.5px #dc3545;  /* ← PLUS FIN (moitié moins épais) */
+    -webkit-text-fill-color: transparent;
+}
 
         /* Survol : le cœur devient plus visible */
         .favorite-icon:hover {
@@ -927,6 +927,7 @@
     
     <script>
 (function() {
+
     // ============================================
     // VARIABLES GLOBALES
     // ============================================

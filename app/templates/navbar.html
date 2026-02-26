@@ -221,8 +221,10 @@
             <form action="/" method="get" class="d-flex align-items-center w-100" autocomplete="off" id="navbar-search-form">
                 <input type="text" 
                        name="q" 
-                       id="navbar-search-input"  <!-- ID CHANGÉ pour éviter conflit -->
-                    
+                       id="navbar-search-input"
+                       class="search-input" 
+                       placeholder="Rechercher un artiste, une œuvre..."
+                       value="{{ query if query else '' }}">
                 {% if query %}
                 <button type="button" class="clear-search" onclick="window.clearNavbarSearch ? clearNavbarSearch() : window.location.href='/'">
                     <i class="fas fa-times"></i>
@@ -233,7 +235,7 @@
                 </button>
             </form>
             <!-- Suggestions -->
-            <div id="navbar-suggestions" class="suggestions-box"></div>  <!-- ID CHANGÉ -->
+            <div id="navbar-suggestions" class="suggestions-box"></div>
         </div>
         
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -242,16 +244,6 @@
         
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <!-- Lien Statistiques -->
-                <li class="nav-item">
-                    <a class="nav-link {% if request.path == '/stats' %}active{% endif %}" href="/stats">Statistiques</a>
-                </li>
-                
-                <!-- Lien À propos -->
-                <li class="nav-item">
-                    <a class="nav-link {% if request.path == '/about' %}active{% endif %}" href="/about">À propos</a>
-                </li>
-                
                 {% if session.username %}
                     <!-- Utilisateur connecté -->
                     <li class="nav-item dropdown">
