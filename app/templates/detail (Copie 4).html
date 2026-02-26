@@ -47,7 +47,7 @@
             flex-direction: column;
         }
 
-        h1, h2, h3, h4, h5, h6, .block-title {
+        h1, h2, h3, h4, h5, h6 {
             font-family: 'Playfair Display', serif;
             font-weight: 500;
             color: var(--primary);
@@ -58,7 +58,7 @@
            LAYOUT PRINCIPAL
            ============================================ */
         .detail-container {
-            max-width: 1400px;
+            max-width: 1300px;
             margin: 2rem auto;
             padding: 0 1.5rem;
             flex: 1;
@@ -66,17 +66,17 @@
 
         .detail-grid {
             display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
+            grid-template-columns: 1fr 1fr;
             gap: 2rem;
-            align-items: start;
         }
 
         /* ============================================
-           COLONNE IMAGE (AGRANDIE)
+           COLONNE IMAGE
            ============================================ */
         .image-section {
-            position: sticky;
-            top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
         }
 
         .artwork-image-container {
@@ -95,13 +95,13 @@
         .artwork-image {
             width: 100%;
             height: auto;
-            max-height: 700px;
+            max-height: 550px;
             object-fit: contain;
             background: var(--white);
         }
 
         .image-placeholder {
-            height: 500px;
+            height: 400px;
             background: linear-gradient(135deg, var(--secondary), var(--border));
             display: flex;
             align-items: center;
@@ -123,40 +123,40 @@
         }
 
         .block-title {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             margin-bottom: 1.2rem;
             color: var(--text);
+            font-weight: 500;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            border-bottom: 1px solid var(--border-light);
-            padding-bottom: 0.5rem;
         }
 
         .block-title i {
             color: var(--text-soft);
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
 
         /* ============================================
-           BLOC INFORMATIONS (format compact)
+           BLOC INFORMATIONS
            ============================================ */
-        .info-compact {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem 1.5rem;
         }
 
-        .info-line {
+        .info-item {
             display: flex;
-            align-items: baseline;
-            gap: 0.5rem;
+            flex-direction: column;
+            gap: 0.2rem;
         }
 
         .info-label {
-            font-size: 0.9rem;
-            color: var(--text-light);
-            min-width: 70px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-soft);
         }
 
         .info-value {
@@ -168,7 +168,7 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            margin-top: 0.8rem;
+            margin-top: 1rem;
             padding: 0.4rem 1.2rem;
             background: var(--background);
             color: var(--text);
@@ -231,7 +231,7 @@
             display: inline-flex;
             flex-direction: row-reverse;
             justify-content: flex-end;
-            font-size: 2rem;
+            font-size: 1.8rem;
             color: var(--border);
             cursor: pointer;
             margin: 0.5rem 0;
@@ -251,7 +251,6 @@
             transform: scale(1.05);
         }
 
-        /* Curseurs */
         .sliders-container {
             display: flex;
             flex-direction: column;
@@ -308,7 +307,6 @@
             color: var(--text-soft);
         }
 
-        /* Commentaire */
         .comment-box textarea {
             width: 100%;
             padding: 0.8rem;
@@ -430,7 +428,7 @@
 
         .comment-notes {
             display: flex;
-            gap: 1.2rem;
+            gap: 1rem;
             padding-top: 0.5rem;
             border-top: 1px solid var(--border-light);
             font-size: 0.7rem;
@@ -443,12 +441,18 @@
             color: var(--text-soft);
         }
 
-        .comment-note i {
+        .comment-note .fa-paint-brush {
+            color: var(--star);
+        }
+        .comment-note .fa-lightbulb {
+            color: var(--star);
+        }
+        .comment-note .fa-heart {
             color: var(--star);
         }
 
         /* ============================================
-           BOUTON FAVORI (ROND BLANC, PAS DE CONTOUR ROUGE)
+           BOUTON FAVORI (ANCIENNE VERSION)
            ============================================ */
         .favorite-btn {
             width: 45px;
@@ -473,8 +477,8 @@
         }
 
         .favorite-btn.active {
-            background: white;  /* Reste blanc */
-            border: 1px solid rgba(0,0,0,0.05);  /* Pas de bordure rouge */
+            background: #fff0f0;
+            border-color: #dc3545;
         }
 
         .favorite-btn.active i {
@@ -547,12 +551,8 @@
                 grid-template-columns: 1fr;
             }
 
-            .image-section {
-                position: static;
-            }
-
-            .artwork-image {
-                max-height: 500px;
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
@@ -571,9 +571,20 @@
                 width: 100%;
             }
 
-            .info-line {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .artwork-header {
                 flex-direction: column;
-                gap: 0.2rem;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .favorite-btn {
+                align-self: flex-end;
             }
         }
     </style>
@@ -597,7 +608,7 @@
 
     <div class="detail-container">
         <div class="detail-grid">
-            <!-- COLONNE GAUCHE : IMAGE (AGRANDIE) -->
+            <!-- COLONNE GAUCHE : IMAGE -->
             <div class="image-section">
                 {% if oeuvre.image_url %}
                 <div class="artwork-image-container" onclick="openImageModal('{{ oeuvre.image_url }}')">
@@ -623,26 +634,26 @@
                     {% endif %}
                 </div>
 
-                <!-- BLOC 1 : INFORMATIONS (format compact) -->
+                <!-- BLOC 1 : INFORMATIONS -->
                 <div class="info-block">
                     <div class="block-title">
                         <i class="fas fa-info-circle"></i> Informations
                     </div>
-                    <div class="info-compact">
-                        <div class="info-line">
-                            <span class="info-label">Artiste :</span>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Artiste</span>
                             <span class="info-value">{{ oeuvre.createur }}</span>
                         </div>
-                        <div class="info-line">
-                            <span class="info-label">Date :</span>
+                        <div class="info-item">
+                            <span class="info-label">Date</span>
                             <span class="info-value">{{ oeuvre.date[:4] if oeuvre.date else 'Inconnue' }}</span>
                         </div>
-                        <div class="info-line">
-                            <span class="info-label">Lieu :</span>
+                        <div class="info-item">
+                            <span class="info-label">Lieu</span>
                             <span class="info-value">{{ oeuvre.lieu or 'Inconnu' }}</span>
                         </div>
-                        <div class="info-line">
-                            <span class="info-label">Mouvement :</span>
+                        <div class="info-item">
+                            <span class="info-label">Mouvement</span>
                             <span class="info-value">{{ oeuvre.mouvement or 'Non spécifié' }}</span>
                         </div>
                     </div>
@@ -653,16 +664,43 @@
                     {% endif %}
                 </div>
 
-                <!-- BLOC 2 : VOTRE AVIS (si connecté) -->
+                <!-- BLOC 2 : AVIS DU PUBLIC -->
+                <div class="info-block">
+                    <div class="block-title">
+                        <i class="fas fa-star"></i> Avis du public
+                    </div>
+                    <div class="ratings-grid">
+                        <div class="rating-item">
+                            <span class="rating-label">Globale</span>
+                            <span class="rating-stars-display" id="avg-globale-stars">☆☆☆☆☆</span>
+                            <span class="rating-value" id="avg-globale">-/5</span>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Technique</span>
+                            <span class="rating-value" id="avg-technique">-/5</span>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Originalité</span>
+                            <span class="rating-value" id="avg-originalite">-/5</span>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Émotion</span>
+                            <span class="rating-value" id="avg-emotion">-/5</span>
+                        </div>
+                    </div>
+                    <div class="total-notes" id="total-notes">Basé sur 0 note(s)</div>
+                </div>
+
+                <!-- BLOC 3 : VOTRE AVIS (si connecté) -->
                 {% if session.user_id %}
                 <div class="info-block">
                     <div class="block-title">
                         <i class="fas fa-pen"></i> Votre avis
                     </div>
                     
-                    <!-- Note globale avec étoiles (possibilité de mettre 0) -->
+                    <!-- Note globale -->
                     <div>
-                        <div class="rating-stars" id="note-globale-stars">
+                        <div class="rating-stars" id="note-globale-stars" data-rating="0">
                             <span class="star" data-value="5">★</span>
                             <span class="star" data-value="4">★</span>
                             <span class="star" data-value="3">★</span>
@@ -743,33 +781,6 @@
                 </div>
                 {% endif %}
 
-                <!-- BLOC 3 : AVIS DU PUBLIC -->
-                <div class="info-block">
-                    <div class="block-title">
-                        <i class="fas fa-star"></i> Avis du public
-                    </div>
-                    <div class="ratings-grid">
-                        <div class="rating-item">
-                            <span class="rating-label">Globale</span>
-                            <span class="rating-stars-display" id="avg-globale-stars">☆☆☆☆☆</span>
-                            <span class="rating-value" id="avg-globale">-/5</span>
-                        </div>
-                        <div class="rating-item">
-                            <span class="rating-label">Technique</span>
-                            <span class="rating-value" id="avg-technique">-/5</span>
-                        </div>
-                        <div class="rating-item">
-                            <span class="rating-label">Originalité</span>
-                            <span class="rating-value" id="avg-originalite">-/5</span>
-                        </div>
-                        <div class="rating-item">
-                            <span class="rating-label">Émotion</span>
-                            <span class="rating-value" id="avg-emotion">-/5</span>
-                        </div>
-                    </div>
-                    <div class="total-notes" id="total-notes">Basé sur 0 note(s)</div>
-                </div>
-
                 <!-- BLOC 4 : COMMENTAIRES DU PUBLIC -->
                 <div class="info-block">
                     <div class="block-title">
@@ -784,7 +795,7 @@
     </div>
 
     {% if not session.user_id %}
-    <!-- MODAL DE CONNEXION -->
+    <!-- MODAL DE CONNEXION (si non connecté) -->
     <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -818,7 +829,7 @@
             new bootstrap.Modal(document.getElementById('imageModal')).show();
         }
 
-        // FAVORIS (rond blanc, pas de contour rouge)
+        // FAVORIS (ancienne version)
         async function checkFavorite() {
             {% if session.user_id %}
             try {
@@ -867,7 +878,7 @@
             }
         }
 
-        // ÉTOILES (avec possibilité de mettre 0)
+        // ÉTOILES
         function initStars() {
             const stars = document.querySelectorAll('#note-globale-stars .star');
             const hidden = document.getElementById('note-globale');
@@ -876,22 +887,16 @@
             stars.forEach(s => {
                 s.addEventListener('click', function() {
                     const val = parseFloat(this.dataset.value);
-                    // Si on clique sur la même étoile que la valeur actuelle, on met 0
-                    if (val === parseFloat(hidden.value)) {
-                        hidden.value = 0;
-                        stars.forEach(ss => ss.classList.remove('selected'));
-                    } else {
-                        hidden.value = val;
-                        stars.forEach(ss => {
-                            ss.classList.toggle('selected', parseFloat(ss.dataset.value) <= val);
-                        });
-                    }
+                    hidden.value = val;
+                    stars.forEach(ss => {
+                        ss.classList.toggle('selected', parseFloat(ss.dataset.value) <= val);
+                    });
                     autoSaveRating();
                 });
             });
         }
 
-        // CURSEURS (affichage 1 ou 0, pas 1,0)
+        // CURSEURS
         function initSliders() {
             const sliders = [
                 { id: 'note-technique', display: 'technique-value' },
@@ -905,13 +910,8 @@
                 if (!slider || !disp) return;
                 
                 const update = () => {
-                    let val = parseFloat(slider.value);
-                    // Afficher 1 au lieu de 1,0
-                    if (Number.isInteger(val)) {
-                        disp.textContent = val + '/5';
-                    } else {
-                        disp.textContent = val.toFixed(1).replace('.', ',') + '/5';
-                    }
+                    const val = parseFloat(slider.value);
+                    disp.textContent = val.toFixed(1).replace('.', ',') + '/5';
                 };
                 
                 update();
@@ -1008,13 +1008,13 @@
                 });
                 
                 document.getElementById('note-technique').value = r.note_technique;
-                document.getElementById('technique-value').textContent = (Number.isInteger(r.note_technique) ? r.note_technique : r.note_technique.toFixed(1).replace('.', ',')) + '/5';
+                document.getElementById('technique-value').textContent = r.note_technique.toFixed(1).replace('.', ',') + '/5';
                 
                 document.getElementById('note-originalite').value = r.note_originalite;
-                document.getElementById('originalite-value').textContent = (Number.isInteger(r.note_originalite) ? r.note_originalite : r.note_originalite.toFixed(1).replace('.', ',')) + '/5';
+                document.getElementById('originalite-value').textContent = r.note_originalite.toFixed(1).replace('.', ',') + '/5';
                 
                 document.getElementById('note-emotion').value = r.note_emotion;
-                document.getElementById('emotion-value').textContent = (Number.isInteger(r.note_emotion) ? r.note_emotion : r.note_emotion.toFixed(1).replace('.', ',')) + '/5';
+                document.getElementById('emotion-value').textContent = r.note_emotion.toFixed(1).replace('.', ',') + '/5';
                 
                 if (r.commentaire) {
                     document.getElementById('commentaire').value = r.commentaire;
@@ -1068,7 +1068,7 @@
                         </div>
                         <div class="comment-content">${c.commentaire}</div>
                         <div class="comment-notes">
-                            <span class="comment-note"><i class="fas fa-star"></i> ${c.notes.technique}</span>
+                            <span class="comment-note"><i class="fas fa-paint-brush"></i> ${c.notes.technique}</span>
                             <span class="comment-note"><i class="fas fa-lightbulb"></i> ${c.notes.originalite}</span>
                             <span class="comment-note"><i class="fas fa-heart"></i> ${c.notes.emotion}</span>
                         </div>
