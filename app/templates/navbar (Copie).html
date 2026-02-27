@@ -342,20 +342,20 @@
                             </li>
                             <li><hr class="dropdown-divider-account"></li>
                             <li>
-                                <a class="dropdown-item-account" href="/logout?next={{ request.path }}">
+                                <a class="dropdown-item-account" href="/logout">
                                     <i class="fas fa-sign-out-alt"></i> Déconnexion
                                 </a>
                             </li>
                         </ul>
                     </li>
                 {% else %}
-    <!-- Utilisateur non connecté -->
-    <li class="nav-item">
-        <a class="nav-link btn-login" href="/login?next={{ request.path }}">
-            <i class="fas fa-sign-in-alt"></i> Se connecter
-        </a>
-    </li>
-{% endif %}
+                    <!-- Utilisateur non connecté - même police, pas gras -->
+                    <li class="nav-item">
+                        <a class="nav-link btn-login" href="/login">
+                            <i class="fas fa-sign-in-alt"></i> Se connecter
+                        </a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </div>

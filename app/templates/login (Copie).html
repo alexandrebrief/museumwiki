@@ -83,37 +83,7 @@
             box-shadow: 0 0 0 0.2rem rgba(44,62,80,0.1);
             outline: none;
         }
-        /* Style pour le groupe d'entrée avec œil */
-.password-input-group {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.password-input-group .form-control {
-    padding-right: 2.5rem;
-}
-
-.password-toggle {
-    position: absolute;
-    right: 10px;
-    background: transparent;
-    border: none;
-    color: #5d6d7e;
-    cursor: pointer;
-    padding: 0;
-    font-size: 1.1rem;
-    transition: color 0.2s;
-    z-index: 10;
-}
-
-.password-toggle:hover {
-    color: #2c3e50;
-}
-
-.password-toggle:focus {
-    outline: none;
-}
+        
         /* Style spécifique pour le bouton du formulaire (pas celui de la navbar) */
         .btn-login-form {
             background: #2c3e50;
@@ -184,24 +154,17 @@
             
 <form method="POST" action="/login">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    
-    <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
-    
     <!-- reste du formulaire -->
     <div class="mb-3">
         <label for="email" class="form-label">Email</label>
         <input type="email" class="form-control" id="email" name="email" required>
     </div>
     
-<div class="mb-3">
-    <label for="password" class="form-label">Mot de passe</label>
-    <div class="password-input-group">
+    <div class="mb-3">
+        <label for="password" class="form-label">Mot de passe</label>
         <input type="password" class="form-control" id="password" name="password" required>
-        <button type="button" class="password-toggle" id="togglePassword" onclick="togglePasswordVisibility()">
-            <i class="far fa-eye" id="toggleIcon"></i>
-        </button>
     </div>
-</div>
+    
     <button type="submit" class="btn-login-form">Se connecter</button>
 </form>
             
@@ -226,21 +189,5 @@
             });
         }, 5000);
     </script>
-    <script>
-    function togglePasswordVisibility() {
-        const passwordInput = document.getElementById('password');
-        const toggleIcon = document.getElementById('toggleIcon');
-        
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            toggleIcon.classList.remove('fa-eye');
-            toggleIcon.classList.add('fa-eye-slash');
-        } else {
-            passwordInput.type = 'password';
-            toggleIcon.classList.remove('fa-eye-slash');
-            toggleIcon.classList.add('fa-eye');
-        }
-    }
-</script>
 </body>
 </html>

@@ -8,244 +8,306 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ===== STYLES GÉNÉRAUX ===== */
+        /* ===== VARIABLES DE COULEUR (simplifiées) ===== */
+        :root {
+            --primary: #2c3e50;
+            --primary-light: #3a4a5a;
+            --secondary: #e6d8c3;
+            --background: #f5f0e8;
+            --text: #2c3e50;
+            --text-light: #5d6d7e;
+            --white: #ffffff;
+            --border: #e0d6c8;
+            --danger: #dc3545;
+            --danger-bg: #f8d7da;
+            --shadow: 0 4px 12px rgba(44, 62, 80, 0.05);
+            --radius: 16px;
+            --radius-sm: 8px;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f5f0e8;
-            color: #2c3e50;
+            background-color: var(--background);
+            color: var(--text);
             line-height: 1.6;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
-        
+
         h1, h2, h3, h4, h5, h6 {
             font-family: 'Playfair Display', serif;
             font-weight: 500;
-            color: #1e2b3a;
+            color: var(--primary);
         }
-        
-        /* ===== STYLES SPÉCIFIQUES À PROFILE ===== */
+
+        /* ===== HERO SECTION ===== */
         .hero-section {
             padding: 3rem 0 2rem;
             text-align: center;
-            background: #f5f0e8;
+            background: var(--background);
+            border-bottom: 1px solid var(--border);
         }
-        
+
         .hero-title {
             font-size: 2.5rem;
             font-weight: 600;
-            color: #2c3e50;
+            color: var(--primary);
         }
-        
+
+        /* ===== CONTAINER PROFIL ===== */
         .profile-container {
             max-width: 600px;
             margin: 2rem auto;
             flex: 1;
+            width: 100%;
+            padding: 0 1rem;
         }
-        
+
         .profile-card {
-            background: white;
-            border-radius: 16px;
+            background: var(--white);
+            border-radius: var(--radius);
             padding: 2.5rem;
-            box-shadow: 0 4px 12px rgba(44,62,80,0.05);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
         }
-        
+
         .profile-title {
             font-size: 1.5rem;
             margin-bottom: 2rem;
             text-align: center;
-            color: #2c3e50;
+            color: var(--primary);
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid var(--secondary);
         }
-        
+
+        /* ===== INFORMATIONS PROFIL ===== */
         .profile-info {
             margin-bottom: 1.5rem;
         }
-        
+
         .profile-label {
             font-weight: 600;
-            color: #2c3e50;
+            color: var(--primary);
             margin-bottom: 0.25rem;
+            font-size: 0.9rem;
         }
-        
+
         .profile-value {
-            color: #5d6d7e;
-            padding: 0.5rem;
-            background: #f5f0e8;
-            border-radius: 8px;
+            color: var(--text);
+            padding: 0.8rem 1rem;
+            background: var(--background);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
         }
-        
-        /* ===== BOUTONS D'ACTION ===== */
+
+        .profile-value i {
+            width: 20px;
+            color: var(--primary);
+        }
+
+        /* Badge statut */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-badge.verified {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.2);
+        }
+
+        .status-badge.pending {
+            background: rgba(255, 193, 7, 0.1);
+            color: #856404;
+            border: 1px solid rgba(255, 193, 7, 0.2);
+        }
+
+        /* ===== SECTION ACTIONS ===== */
         .profile-actions {
-            border-top: 1px solid #eaeaea;
+            border-top: 1px solid var(--border);
             padding-top: 2rem;
             margin-top: 2rem;
         }
-        
+
+        .profile-actions h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
         .action-buttons {
             display: flex;
             flex-direction: column;
             gap: 1rem;
         }
-        
-        .btn-change-password {
-            background: #2c3e50;
-            color: #e6d8c3;
-            border: none;
-            border-radius: 8px;
-            padding: 0.75rem;
-            font-weight: 500;
-            width: 100%;
-            text-decoration: none;
+
+        /* ===== BOUTONS SIMPLES ET COHÉRENTS ===== */
+        .btn-action {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            transition: all 0.2s;
-        }
-        
-        .btn-change-password:hover {
-            background: #1e2b3a;
-            color: #e6d8c3;
-        }
-        
-        .btn-delete-account {
-            background: white;
-            color: #dc3545;
-            border: 2px solid #dc3545;
-            border-radius: 8px;
-            padding: 0.75rem;
+            gap: 0.8rem;
+            padding: 0.9rem 1.5rem;
+            border-radius: var(--radius-sm);
             font-weight: 500;
-            width: 100%;
             text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            width: 100%;
+            border: 1px solid transparent;
         }
-        
-        .btn-delete-account:hover {
-            background: #dc3545;
+
+        /* Bouton primaire (changer mot de passe) */
+        .btn-primary {
+            background: var(--primary);
+            color: var(--secondary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+
+        /* Bouton danger (supprimer) */
+        .btn-danger {
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger);
             color: white;
         }
-        
+
+        /* Bouton déconnexion */
         .btn-logout {
-            background: #6c757d;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 0.75rem;
-            font-weight: 500;
-            width: 100%;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-top: 1rem;
+            background: transparent;
+            color: var(--text-light);
+            border: 1px solid var(--border);
         }
-        
+
         .btn-logout:hover {
-            background: #5a6268;
+            background: var(--background);
+            border-color: var(--text-light);
         }
-        
-        /* ===== MODAL DE SUPPRESSION ===== */
+
+        /* ===== MODAL SIMPLIFIÉE ===== */
         .modal-content {
-            border-radius: 16px;
+            border-radius: var(--radius);
             border: none;
+            box-shadow: var(--shadow);
         }
-        
+
         .modal-header {
-            border-bottom: 1px solid #eaeaea;
+            border-bottom: 1px solid var(--border);
             padding: 1.5rem;
+            background: var(--white);
         }
-        
+
         .modal-title {
             font-family: 'Playfair Display', serif;
-            color: #2c3e50;
+            color: var(--primary);
         }
-        
+
         .modal-body {
-            padding: 1.5rem;
+            padding: 2rem;
         }
-        
+
         .modal-footer {
-            border-top: 1px solid #eaeaea;
+            border-top: 1px solid var(--border);
             padding: 1.5rem;
+            gap: 1rem;
         }
-        
+
         .warning-icon {
-            color: #dc3545;
+            color: var(--danger);
             font-size: 3rem;
             margin-bottom: 1rem;
         }
-        
+
         .danger-list {
-            background: #f8f4ee;
-            border-radius: 8px;
+            background: var(--danger-bg);
+            border-radius: var(--radius-sm);
             padding: 1rem;
             margin: 1rem 0;
             list-style: none;
         }
-        
+
         .danger-list li {
             padding: 0.3rem 0;
-            color: #5d6d7e;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        
+
         .danger-list i {
-            color: #dc3545;
-            width: 20px;
-            margin-right: 0.5rem;
+            color: var(--danger);
         }
-        
+
+        .form-control {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 0.8rem 1rem;
+        }
+
         .form-control:focus {
-            border-color: #2c3e50;
-            box-shadow: 0 0 0 0.2rem rgba(44,62,80,0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.1);
             outline: none;
         }
-        
-        .btn-modal-cancel {
-            background: #6c757d;
-            color: white;
-            border: none;
-            padding: 0.5rem 1.5rem;
-            border-radius: 8px;
-            transition: all 0.2s;
-        }
-        
-        .btn-modal-cancel:hover {
-            background: #5a6268;
-        }
-        
-        .btn-modal-delete {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 0.5rem 1.5rem;
-            border-radius: 8px;
-            transition: all 0.2s;
-        }
-        
-        .btn-modal-delete:hover {
-            background: #c82333;
-        }
-        
+
         /* Alertes */
         .alert {
-            border-radius: 8px;
+            border-radius: var(--radius-sm);
+            border: none;
+            padding: 1rem 1.2rem;
             margin-bottom: 1.5rem;
         }
-        
-        .alert-dismissible .btn-close {
-            padding: 0.75rem;
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+
+        /* Responsive */
+        @media (max-width: 576px) {
+            .profile-card {
+                padding: 1.5rem;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
@@ -276,52 +338,60 @@
             <div class="profile-info">
                 <div class="profile-label">Nom d'utilisateur</div>
                 <div class="profile-value">
-                    <i class="fas fa-user me-2"></i>{{ user.username }}
+                    <i class="fas fa-user"></i>
+                    {{ user.username }}
                 </div>
             </div>
             
             <div class="profile-info">
                 <div class="profile-label">Email</div>
                 <div class="profile-value">
-                    <i class="fas fa-envelope me-2"></i>{{ user.email }}
+                    <i class="fas fa-envelope"></i>
+                    {{ user.email }}
                 </div>
             </div>
             
             <div class="profile-info">
                 <div class="profile-label">Compte créé le</div>
                 <div class="profile-value">
-                    <i class="fas fa-calendar me-2"></i>{{ user.created_at }}
+                    <i class="fas fa-calendar"></i>
+                    {{ user.created_at }}
                 </div>
             </div>
             
             <div class="profile-info">
                 <div class="profile-label">Statut</div>
                 <div class="profile-value">
+                    <i class="fas fa-shield-alt"></i>
                     {% if user.email_verified %}
-                        <i class="fas fa-check-circle text-success me-2"></i>Email vérifié
+                        <span class="status-badge verified">
+                            <i class="fas fa-check-circle"></i> Email vérifié
+                        </span>
                     {% else %}
-                        <i class="fas fa-clock text-warning me-2"></i>En attente de vérification
+                        <span class="status-badge pending">
+                            <i class="fas fa-clock"></i> En attente
+                        </span>
                     {% endif %}
                 </div>
             </div>
             
             <!-- ===== ACTIONS DU COMPTE ===== -->
             <div class="profile-actions">
-                <h3 class="h5 mb-3">Gestion du compte</h3>
+                <h3>Gestion du compte</h3>
                 
                 <div class="action-buttons">
                     <!-- Changer mot de passe -->
-                    <a href="/change-password" class="btn-change-password">
+                    <a href="/change-password" class="btn-action btn-primary">
                         <i class="fas fa-key"></i> Changer mon mot de passe
                     </a>
                     
-                    <!-- Supprimer le compte (ouvre la modal) -->
-                    <button type="button" class="btn-delete-account" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                    <!-- Supprimer le compte -->
+                    <button type="button" class="btn-action btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
                         <i class="fas fa-trash"></i> Supprimer mon compte
                     </button>
                     
                     <!-- Déconnexion -->
-                    <a href="/logout" class="btn-logout">
+                    <a href="/logout" class="btn-action btn-logout">
                         <i class="fas fa-sign-out-alt"></i> Se déconnecter
                     </a>
                 </div>
@@ -334,37 +404,38 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Supprimer mon compte</h5>
+                    <h5 class="modal-title" id="deleteModalLabel">
+                        <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                        Supprimer mon compte
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center">
                     <div class="warning-icon">
-                        <i class="fas fa-exclamation-triangle"></i>
+                        <i class="fas fa-exclamation-circle"></i>
                     </div>
-                    <p class="text-danger"><strong>Attention ! Cette action est irréversible.</strong></p>
-                    <p>Toutes vos données personnelles seront définitivement supprimées :</p>
+                    <p class="text-danger"><strong>Action irréversible !</strong></p>
+                    <p>Toutes vos données seront supprimées :</p>
                     
                     <ul class="danger-list">
-                        <li><i class="fas fa-heart"></i> Vos favoris</li>
-                        <li><i class="fas fa-star"></i> Vos notes et commentaires</li>
-                        <li><i class="fas fa-user"></i> Votre profil utilisateur</li>
+                        <li><i class="fas fa-heart"></i> Favoris</li>
+                        <li><i class="fas fa-star"></i> Notes et commentaires</li>
+                        <li><i class="fas fa-user"></i> Profil</li>
                     </ul>
-                    
-                    <p class="mb-3">Pour confirmer la suppression, veuillez entrer votre mot de passe :</p>
                     
                     <form method="POST" action="/delete-account" id="delete-form">
                         <div class="mb-3">
-                            <input type="password" class="form-control" id="delete-password" name="password" 
-                                   placeholder="Votre mot de passe" required autocomplete="off">
+                            <input type="password" class="form-control" name="password" 
+                                   placeholder="Mot de passe" required>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
+                    <button type="button" class="btn-action btn-logout" data-bs-dismiss="modal">
                         <i class="fas fa-times"></i> Annuler
                     </button>
-                    <button type="submit" form="delete-form" class="btn-modal-delete">
-                        <i class="fas fa-trash"></i> Supprimer définitivement
+                    <button type="submit" form="delete-form" class="btn-action btn-danger">
+                        <i class="fas fa-trash"></i> Supprimer
                     </button>
                 </div>
             </div>
@@ -375,7 +446,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Script pour fermer automatiquement les alertes -->
     <script>
         setTimeout(function() {
             document.querySelectorAll('.alert').forEach(function(alert) {

@@ -929,22 +929,15 @@ def register():
 @limiter.limit("5 per minute")
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    """Page de connexion avec email et redirection"""
-    
-    # 👇 1. RÉCUPÉRER L'URL DE REDIRECTION (depuis l'URL)
-    next_url = request.args.get('next', '')
-    
+    """Page de connexion avec email"""
     if request.method == 'POST':
-        # 👇 2. RÉCUPÉRER AUSSI DU FORMULAIRE (champ caché)
-        next_url = request.form.get('next', next_url)
-        
-        email = request.form.get('email', '').strip().lower()
+        email = request.form.get('email', '').strip().lower()  # ← Changé: email au lieu de username
         password = request.form.get('password', '')
         
         print(f"\n🔍 TENTATIVE DE CONNEXION")
         print(f"📧 Email: {email}")
-        print(f"↪️ Next URL: {next_url}")  # 👈 Ajoute ce print
         
+        # Recherche par email (pas par username)
         user = User.query.filter_by(email=email).first()
         
         if user:
@@ -963,41 +956,26 @@ def login():
             
             # Connexion réussie
             session['user_id'] = user.id
-            session['username'] = user.username
+            session['username'] = user.username  # On garde le username en session pour l'affichage
             
+            # Mettre à jour last_login
             user.last_login = datetime.utcnow()
             db.session.commit()
             
             print(f"✅ Connexion réussie pour {user.username}")
             flash(f'Bienvenue {user.username} !', 'success')
-            
-            # 👇 3. REDIRECTION INTELLIGENTE
-            if next_url and next_url.startswith('/'):
-                # Sécurité : seulement les URLs relatives
-                return redirect(next_url)
             return redirect(url_for('index'))
         else:
             print("❌ Email ou mot de passe incorrect")
             flash('Email ou mot de passe incorrect', 'danger')
     
-    return render_template('login.html', next=next_url)  # 👈 Passe next au template
-
-
+    return render_template('login.html')
 
 @app.route('/logout')
 def logout():
-    """Déconnexion avec retour à la page précédente"""
-    
-    # 👇 RÉCUPÈRE L'URL DE REDIRECTION
-    next_url = request.args.get('next', '')
-    
-    # Déconnexion
+    """Déconnexion"""
     session.clear()
     flash('Vous avez été déconnecté', 'info')
-    
-    # 👇 REDIRECTION
-    if next_url and next_url.startswith('/'):
-        return redirect(next_url)
     return redirect(url_for('index'))
 
 
@@ -1421,7 +1399,7 @@ def test_email():
 def inject_global_vars():
     """Injecte des variables dans tous les templates"""
     return dict(
-        site_name="Bluetocus",
+        site_name="Blue Gallery",
         current_year=datetime.now().year,
         now=datetime.now(),
         is_authenticated='user_id' in session,

@@ -986,18 +986,9 @@ def login():
 
 @app.route('/logout')
 def logout():
-    """Déconnexion avec retour à la page précédente"""
-    
-    # 👇 RÉCUPÈRE L'URL DE REDIRECTION
-    next_url = request.args.get('next', '')
-    
-    # Déconnexion
+    """Déconnexion"""
     session.clear()
     flash('Vous avez été déconnecté', 'info')
-    
-    # 👇 REDIRECTION
-    if next_url and next_url.startswith('/'):
-        return redirect(next_url)
     return redirect(url_for('index'))
 
 
