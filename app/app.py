@@ -1276,6 +1276,67 @@ def profile():
     
     return render_template('profile.html', user=user.to_dict())
 
+
+@app.route('/api/update-username', methods=['POST'])
+def update_username():
+    """Modifier le nom d'utilisateur"""
+    print("="*50)
+    print("🔵 Route update-username appelée")
+    print(f"Session user_id: {session.get('user_id')}")
+    print(f"Headers: {dict(request.headers)}")
+    print(f"Data brute: {request.get_data()}")
+    
+    try:
+        data = request.get_json()
+        print(f"JSON parsé: {data}")
+    except Exception as e:
+        print(f"❌ Erreur parsing JSON: {e}")
+        return jsonify({'error': 'Format JSON invalide'}), 400
+    
+    if 'user_id' not in session:
+        print("❌ Utilisateur non connecté")
+        return jsonify({'error': 'Non connecté'}), 401
+    
+    if not data:
+        return jsonify({'error': 'Données invalides'}), 400
+    
+    new_username = data.get('username', '').strip()
+    print(f"Nouveau username: {new_username}")
+    
+    if not new_username:
+        return jsonify({'error': 'Nom d\'utilisateur requis'}), 400
+    
+    if len(new_username) > 80:
+        return jsonify({'error': 'Nom d\'utilisateur trop long (max 80 caractères)'}), 400
+    
+    # Vérifier si le nom d'utilisateur est déjà pris
+    existing_user = User.query.filter_by(username=new_username).first()
+    if existing_user and existing_user.id != session['user_id']:
+        return jsonify({'error': 'Ce nom d\'utilisateur est déjà pris'}), 400
+    
+    try:
+        user = User.query.get(session['user_id'])
+        if not user:
+            return jsonify({'error': 'Utilisateur non trouvé'}), 404
+            
+        old_username = user.username
+        user.username = new_username
+        session['username'] = new_username
+        db.session.commit()
+        
+        print(f"✅ Username changé: {old_username} -> {new_username}")
+        
+        return jsonify({
+            'success': True, 
+            'message': 'Nom d\'utilisateur modifié avec succès'
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        print(f"❌ Erreur BD: {e}")
+        logger.error(f"Erreur modification username: {e}")
+        return jsonify({'error': 'Erreur lors de la modification'}), 500
+        
+        
 # ============================================
 # GESTION DU COMPTE (MOT DE PASSE & SUPPRESSION)
 # ============================================
