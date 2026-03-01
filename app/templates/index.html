@@ -984,6 +984,13 @@
             <div class="filters-container" id="filtersContainer">
                 <h3 class="filters-title">Filtrer</h3>
                 
+                <!-- Actions -->
+<div class="filter-actions">
+    <button class="apply-btn" id="apply-filters-btn">Appliquer</button>
+    <a href="/" class="clear-btn" id="clear-filters-btn" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+        <i class="fas fa-times"></i> Effacer
+    </a>
+</div>             
                 <!-- Groupe Artiste -->
                 <div class="filter-group">
                     <div class="filter-group-label">
@@ -1022,14 +1029,45 @@
                         <div id="movement-dropdown" class="filter-menu-vertical"></div>
                     </div>
                 </div>
-                
-                <!-- Actions -->
-                <div class="filter-actions">
-                    <button class="apply-btn" id="apply-filters-btn">Appliquer</button>
-                    <button class="clear-btn" id="clear-filters-btn">
-                        <i class="fas fa-times"></i> Effacer
-                    </button>
+                <!-- Groupe Type d'œuvre (instance_of) -->
+                <div class="filter-group">
+                    <div class="filter-group-label">
+                        <i class="fas fa-tag"></i> Type d'œuvre
+                    </div>
+                    <div class="filter-dropdown-vertical">
+                        <button class="filter-button-vertical" id="type-dropdown-btn">
+                            Choisir <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div id="type-dropdown" class="filter-menu-vertical"></div>
+                    </div>
                 </div>
+
+                <!-- Groupe Genre -->
+                <div class="filter-group">
+                    <div class="filter-group-label">
+                        <i class="fas fa-paint-brush"></i> Genre
+                    </div>
+                    <div class="filter-dropdown-vertical">
+                        <button class="filter-button-vertical" id="genre-dropdown-btn">
+                            Choisir <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div id="genre-dropdown" class="filter-menu-vertical"></div>
+                    </div>
+                </div>
+
+                <!-- Groupe Copyright -->
+                <div class="filter-group">
+                    <div class="filter-group-label">
+                        <i class="fas fa-copyright"></i> Statut copyright
+                    </div>
+                    <div class="filter-dropdown-vertical">
+                        <button class="filter-button-vertical" id="copyright-dropdown-btn">
+                            Choisir <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div id="copyright-dropdown" class="filter-menu-vertical"></div>
+                    </div>
+                </div>                
+
                 
                 <!-- Tags persistants -->
                 <div id="selected-filters" class="selected-filters-vertical"></div>
@@ -1054,7 +1092,11 @@
         
         <!-- COLONNE DROITE - RÉSULTATS -->
         <div class="results-main">
-            
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+        <button class="apply-filters-top-btn" id="apply-filters-top-btn" style="background: #2c3e50; color: white; border: none; border-radius: 30px; padding: 0.5rem 1.5rem; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fas fa-check"></i> Appliquer les filtres
+        </button>
+    </div>            
             <!-- Message pour les œuvres aléatoires -->
             {% if not query and not artists and not museums and not movements and results %}
             <div class="results-info">
@@ -1101,7 +1143,9 @@
                         
                         <!-- Informations -->
                         <div class="artwork-info">
-                            <div class="artwork-title">{{ artwork.titre[:40] }}</div>
+                            <div class="artwork-title">
+    {{ artwork.titre_fr[:40] if artwork.titre_fr else (artwork.titre_en[:40] if artwork.titre_en else 'Sans titre') }}
+</div>
                             <div class="artwork-artist">{{ artwork.createur }}</div>
                             {% if artwork.date %}
                             <div class="artwork-year">{{ artwork.date[:4] }}</div>
@@ -1222,11 +1266,14 @@
     // ============================================
     // VARIABLES GLOBALES
     // ============================================
-    let selectedFilters = {
-        artists: [],
-        museums: [],
-        movements: []
-    };
+let selectedFilters = {
+    artists: [],
+    museums: [],
+    movements: [],
+    types: [],        // ← AJOUTE
+    genres: [],       // ← AJOUTE
+    copyrights: []    // ← AJOUTE
+};
     
     let suggestions = [];
     let selectedSuggestionIndex = -1;
@@ -1280,7 +1327,9 @@
                 suggestionsBox.style.display = 'none';
                 return;
             }
-            
+
+    
+    
             fetch(`/api/suggestions?q=${encodeURIComponent(query)}`)
                 .then(response => response.json())
                 .then(data => {
@@ -1362,6 +1411,21 @@
             }
         });
     }
+
+
+// Ajoutez ceci dans votre fonction d'initialisation DOMContentLoaded
+function initFilterCheckboxes() {
+    document.addEventListener('change', function(e) {
+        if (e.target.matches('.filter-menu-vertical input[type="checkbox"]')) {
+            // Petit délai pour éviter trop de requêtes
+            clearTimeout(window.filterUpdateTimer);
+            window.filterUpdateTimer = setTimeout(() => {
+                updateAllFilters();
+            }, 300);
+        }
+    });
+}
+
     
     // ============================================
     // GESTION DES DROPDOWNS
@@ -1386,7 +1450,18 @@
     document.getElementById('movement-dropdown-btn')?.addEventListener('click', function() {
         toggleDropdown('movement-dropdown');
     });
-    
+    document.getElementById('type-dropdown-btn')?.addEventListener('click', function() {
+    toggleDropdown('type-dropdown');
+});
+
+document.getElementById('genre-dropdown-btn')?.addEventListener('click', function() {
+    toggleDropdown('genre-dropdown');
+});
+
+document.getElementById('copyright-dropdown-btn')?.addEventListener('click', function() {
+    toggleDropdown('copyright-dropdown');
+});
+
     document.addEventListener('click', function(e) {
         if (!e.target.closest('.filter-dropdown-vertical')) {
             document.querySelectorAll('.filter-menu-vertical').forEach(menu => {
@@ -1394,117 +1469,132 @@
             });
         }
     });
+
+
+// ============================================
+// MISE À JOUR DYNAMIQUE DES FILTRES
+// ============================================
+function updateAllFilters() {
+    collectSelectedFilters();
     
-    // ============================================
-    // GESTION DES FILTRES DYNAMIQUES
-    // ============================================
-    function loadFilterOptions() {
-        const query = document.getElementById('search-input')?.value || '';
-        
-        function buildUrl(basePath) {
-            let url = `${basePath}?q=${encodeURIComponent(query)}`;
-            
-            selectedFilters.artists.forEach(a => {
-                url += `&artist=${encodeURIComponent(a)}`;
-            });
-            selectedFilters.museums.forEach(m => {
-                url += `&museum=${encodeURIComponent(m)}`;
-            });
-            selectedFilters.movements.forEach(m => {
-                url += `&movement=${encodeURIComponent(m)}`;
-            });
-            
-            return url;
-        }
-        
-        // Artistes
-        fetch(buildUrl('/api/artists'))
-            .then(response => response.json())
-            .then(data => {
-                const container = document.getElementById('artist-dropdown');
-                if (!container) return;
-                
-                if (data.length === 0) {
-                    container.innerHTML = '<div class="filter-menu-item">Aucun artiste</div>';
-                } else {
-                    container.innerHTML = data.map(a => {
-                        const id = `artist-${a.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
-                        const checked = selectedFilters.artists.includes(a.name) ? 'checked' : '';
-                        return `
-                            <div class="filter-menu-item">
-                                <input type="checkbox" value="${a.name}" id="${id}" ${checked}>
-                                <label for="${id}">${a.name}</label>
-                                <span class="count">(${a.count})</span>
-                            </div>
-                        `;
-                    }).join('');
-                }
-            });
-        
-        // Musées
-        fetch(buildUrl('/api/museums'))
-            .then(response => response.json())
-            .then(data => {
-                const container = document.getElementById('museum-dropdown');
-                if (!container) return;
-                
-                if (data.length === 0) {
-                    container.innerHTML = '<div class="filter-menu-item">Aucun musée</div>';
-                } else {
-                    container.innerHTML = data.map(m => {
-                        const id = `museum-${m.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
-                        const checked = selectedFilters.museums.includes(m.name) ? 'checked' : '';
-                        return `
-                            <div class="filter-menu-item">
-                                <input type="checkbox" value="${m.name}" id="${id}" ${checked}>
-                                <label for="${id}">${m.name}</label>
-                                <span class="count">(${m.count})</span>
-                            </div>
-                        `;
-                    }).join('');
-                }
-            });
-        
-        // Mouvements
-        fetch(buildUrl('/api/movements'))
-            .then(response => response.json())
-            .then(data => {
-                const container = document.getElementById('movement-dropdown');
-                if (!container) return;
-                
-                if (data.length === 0) {
-                    container.innerHTML = '<div class="filter-menu-item">Aucun mouvement</div>';
-                } else {
-                    container.innerHTML = data.map(m => {
-                        const id = `movement-${m.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
-                        const checked = selectedFilters.movements.includes(m.name) ? 'checked' : '';
-                        return `
-                            <div class="filter-menu-item">
-                                <input type="checkbox" value="${m.name}" id="${id}" ${checked}>
-                                <label for="${id}">${m.name}</label>
-                                <span class="count">(${m.count})</span>
-                            </div>
-                        `;
-                    }).join('');
-                }
-            });
-    }
+    const query = document.getElementById('search-input')?.value || '';
     
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            clearTimeout(window.filterTimer);
-            window.filterTimer = setTimeout(loadFilterOptions, 500);
-        });
-        searchInput.addEventListener('change', loadFilterOptions);
-    }
+    // Construire l'URL avec tous les filtres actuels
+    let url = `/api/filters/update?q=${encodeURIComponent(query)}`;
     
-    document.getElementById('navbar-search-form')?.addEventListener('submit', function(e) {
-        setTimeout(loadFilterOptions, 500);
+    selectedFilters.artists.forEach(a => {
+        url += `&artist=${encodeURIComponent(a)}`;
+    });
+    selectedFilters.museums.forEach(m => {
+        url += `&museum=${encodeURIComponent(m)}`;
+    });
+    selectedFilters.movements.forEach(m => {
+        url += `&movement=${encodeURIComponent(m)}`;
+    });
+    selectedFilters.types.forEach(t => {
+        url += `&type=${encodeURIComponent(t)}`;
+    });
+    selectedFilters.genres.forEach(g => {
+        url += `&genre=${encodeURIComponent(g)}`;
+    });
+    selectedFilters.copyrights.forEach(c => {
+        url += `&copyright=${encodeURIComponent(c)}`;
     });
     
-    document.getElementById('apply-filters-btn')?.addEventListener('click', applyFilters);
-    document.getElementById('clear-filters-btn')?.addEventListener('click', clearAndApply);
+    // Afficher un indicateur de chargement
+    document.querySelectorAll('.filter-menu-vertical').forEach(menu => {
+        menu.innerHTML = '<div class="filter-menu-item">Chargement...</div>';
+    });
     
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            // Mettre à jour chaque dropdown
+            updateFilterDropdown('artist-dropdown', data.artists, 'artist', selectedFilters.artists);
+            updateFilterDropdown('museum-dropdown', data.museums, 'museum', selectedFilters.museums);
+            updateFilterDropdown('movement-dropdown', data.movements, 'movement', selectedFilters.movements);
+            updateFilterDropdown('type-dropdown', data.types, 'type', selectedFilters.types);
+            updateFilterDropdown('genre-dropdown', data.genres, 'genre', selectedFilters.genres);
+            updateFilterDropdown('copyright-dropdown', data.copyrights, 'copyright', selectedFilters.copyrights);
+        })
+        .catch(error => {
+            console.error('Erreur mise à jour filtres:', error);
+            // En cas d'erreur, recharger avec l'ancienne méthode
+            loadFiltersLegacy();
+        });
+}
+
+function updateFilterDropdown(dropdownId, items, type, selectedValues) {
+    const container = document.getElementById(dropdownId);
+    if (!container) return;
+    
+    if (!items || items.length === 0) {
+        container.innerHTML = '<div class="filter-menu-item">Aucun résultat</div>';
+        return;
+    }
+    
+    container.innerHTML = items.map(item => {
+        const id = `${type}-${item.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
+        const checked = selectedValues.includes(item.name) ? 'checked' : '';
+        return `
+            <div class="filter-menu-item">
+                <input type="checkbox" value="${item.name}" id="${id}" ${checked}>
+                <label for="${id}">${item.name}</label>
+                <span class="count">(${item.count})</span>
+            </div>
+        `;
+    }).join('');
+}
+
+// Fallback pour l'ancienne méthode (au cas où)
+function loadFiltersLegacy() {
+    const query = document.getElementById('search-input')?.value || '';
+    
+    function buildUrl(basePath) {
+        let url = `${basePath}?q=${encodeURIComponent(query)}`;
+        selectedFilters.artists.forEach(a => url += `&artist=${encodeURIComponent(a)}`);
+        selectedFilters.museums.forEach(m => url += `&museum=${encodeURIComponent(m)}`);
+        selectedFilters.movements.forEach(m => url += `&movement=${encodeURIComponent(m)}`);
+        return url;
+    }
+    
+    // Artistes
+    fetch(buildUrl('/api/artists'))
+        .then(response => response.json())
+        .then(data => updateFilterDropdown('artist-dropdown', data, 'artist', selectedFilters.artists));
+    
+    // Musées
+    fetch(buildUrl('/api/museums'))
+        .then(response => response.json())
+        .then(data => updateFilterDropdown('museum-dropdown', data, 'museum', selectedFilters.museums));
+    
+    // Mouvements
+    fetch(buildUrl('/api/movements'))
+        .then(response => response.json())
+        .then(data => updateFilterDropdown('movement-dropdown', data, 'movement', selectedFilters.movements));
+    
+    // Types
+    fetch(buildUrl('/api/instance_of'))
+        .then(response => response.json())
+        .then(data => updateFilterDropdown('type-dropdown', data, 'type', selectedFilters.types));
+    
+    // Genres
+    fetch(buildUrl('/api/genres'))
+        .then(response => response.json())
+        .then(data => updateFilterDropdown('genre-dropdown', data, 'genre', selectedFilters.genres));
+    
+    // Copyrights
+    fetch(buildUrl('/api/copyrights'))
+        .then(response => response.json())
+        .then(data => updateFilterDropdown('copyright-dropdown', data, 'copyright', selectedFilters.copyrights));
+}
+
+function loadFilterOptions() {
+    // Essayer d'abord avec la nouvelle méthode
+    updateAllFilters();
+}
+
+
     // ============================================
     // GESTION DES FILTRES SÉLECTIONNÉS
     // ============================================
@@ -1512,6 +1602,9 @@
         selectedFilters.artists = [];
         selectedFilters.museums = [];
         selectedFilters.movements = [];
+    selectedFilters.types = [];      // ← AJOUTER
+    selectedFilters.genres = [];     // ← AJOUTER
+    selectedFilters.copyrights = []; // ← AJOUTER        
         
         document.querySelectorAll('#artist-dropdown input:checked').forEach(cb => {
             selectedFilters.artists.push(cb.value);
@@ -1522,7 +1615,16 @@
         document.querySelectorAll('#movement-dropdown input:checked').forEach(cb => {
             selectedFilters.movements.push(cb.value);
         });
-        
+            // 👇 AJOUTER CES 3 BLOCS
+    document.querySelectorAll('#type-dropdown input:checked').forEach(cb => {
+        selectedFilters.types.push(cb.value);
+    });
+    document.querySelectorAll('#genre-dropdown input:checked').forEach(cb => {
+        selectedFilters.genres.push(cb.value);
+    });
+    document.querySelectorAll('#copyright-dropdown input:checked').forEach(cb => {
+        selectedFilters.copyrights.push(cb.value);
+    });
         updateSelectedFiltersDisplay();
     }
     
@@ -1537,32 +1639,61 @@
         }
     });
     
-    function updateSelectedFiltersDisplay() {
-        const container = document.getElementById('selected-filters');
-        if (!container) return;
-        
-        container.innerHTML = '';
-        
-        selectedFilters.artists.forEach(a => {
-            container.innerHTML += `<span class="selected-filter">${a} <i class="fas fa-times remove-filter" data-type="artist" data-value="${a}"></i></span>`;
-        });
-        selectedFilters.museums.forEach(m => {
-            container.innerHTML += `<span class="selected-filter">${m} <i class="fas fa-times remove-filter" data-type="museum" data-value="${m}"></i></span>`;
-        });
-        selectedFilters.movements.forEach(m => {
-            container.innerHTML += `<span class="selected-filter">${m} <i class="fas fa-times remove-filter" data-type="movement" data-value="${m}"></i></span>`;
-        });
+function updateSelectedFiltersDisplay() {
+    const container = document.getElementById('selected-filters');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    selectedFilters.artists.forEach(a => {
+        container.innerHTML += `<span class="selected-filter">${a} <i class="fas fa-times remove-filter" data-type="artist" data-value="${a}"></i></span>`;
+    });
+    selectedFilters.museums.forEach(m => {
+        container.innerHTML += `<span class="selected-filter">${m} <i class="fas fa-times remove-filter" data-type="museum" data-value="${m}"></i></span>`;
+    });
+    selectedFilters.movements.forEach(m => {
+        container.innerHTML += `<span class="selected-filter">${m} <i class="fas fa-times remove-filter" data-type="movement" data-value="${m}"></i></span>`;
+    });
+    
+    // 👇 AJOUTER CES 3 BLOCS
+    selectedFilters.types.forEach(t => {
+        container.innerHTML += `<span class="selected-filter">${t} <i class="fas fa-times remove-filter" data-type="type" data-value="${t}"></i></span>`;
+    });
+    selectedFilters.genres.forEach(g => {
+        container.innerHTML += `<span class="selected-filter">${g} <i class="fas fa-times remove-filter" data-type="genre" data-value="${g}"></i></span>`;
+    });
+    selectedFilters.copyrights.forEach(c => {
+        container.innerHTML += `<span class="selected-filter">${c} <i class="fas fa-times remove-filter" data-type="copyright" data-value="${c}"></i></span>`;
+    });
+} // ← J'AI ENLEVÉ LES ACCOLADES SUPPLÉMENTAIRES
+    
+function removeFilter(type, value) {
+    if (type === 'artist') {
+        const index = selectedFilters.artists.indexOf(value);
+        if (index !== -1) selectedFilters.artists.splice(index, 1);
+    } else if (type === 'museum') {
+        const index = selectedFilters.museums.indexOf(value);
+        if (index !== -1) selectedFilters.museums.splice(index, 1);
+    } else if (type === 'movement') {
+        const index = selectedFilters.movements.indexOf(value);
+        if (index !== -1) selectedFilters.movements.splice(index, 1);
+    } else if (type === 'type') {        // ← AJOUTER
+        const index = selectedFilters.types.indexOf(value);
+        if (index !== -1) selectedFilters.types.splice(index, 1);
+    } else if (type === 'genre') {       // ← AJOUTER
+        const index = selectedFilters.genres.indexOf(value);
+        if (index !== -1) selectedFilters.genres.splice(index, 1);
+    } else if (type === 'copyright') {   // ← AJOUTER
+        const index = selectedFilters.copyrights.indexOf(value);
+        if (index !== -1) selectedFilters.copyrights.splice(index, 1);
     }
     
-    function removeFilter(type, value) {
-        const index = selectedFilters[`${type}s`].indexOf(value);
-        if (index !== -1) {
-            selectedFilters[`${type}s`].splice(index, 1);
-            const cb = document.querySelector(`input[value="${value}"]`);
-            if (cb) cb.checked = false;
-        }
-        updateSelectedFiltersDisplay();
-    }
+    // Décocher la case correspondante
+    const cb = document.querySelector(`input[value="${value}"]`);
+    if (cb) cb.checked = false;
+    
+    updateSelectedFiltersDisplay();
+}
     
     function clearAndApply() {
         document.querySelectorAll('.filter-menu-vertical input[type="checkbox"]').forEach(cb => {
@@ -1579,27 +1710,39 @@
         applyFilters();
     }
     
-    function applyFilters() {
-        collectSelectedFilters();
-        
-        const urlParams = new URLSearchParams(window.location.search);
-        const q = urlParams.get('q') || '';
-        const sort = document.getElementById('sort').value;
-        
-        let url = `/?q=${encodeURIComponent(q)}&sort=${encodeURIComponent(sort)}`;
-        
-        selectedFilters.artists.forEach(a => {
-            url += `&artist=${encodeURIComponent(a)}`;
-        });
-        selectedFilters.museums.forEach(m => {
-            url += `&museum=${encodeURIComponent(m)}`;
-        });
-        selectedFilters.movements.forEach(m => {
-            url += `&movement=${encodeURIComponent(m)}`;
-        });
-        
-        window.location.href = url;
-    }
+function applyFilters() {
+    collectSelectedFilters();
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const q = urlParams.get('q') || '';
+    const sort = document.getElementById('sort').value;
+    
+    let url = `/?q=${encodeURIComponent(q)}&sort=${encodeURIComponent(sort)}`;
+    
+    // Filtres existants
+    selectedFilters.artists.forEach(a => {
+        url += `&artist=${encodeURIComponent(a)}`;
+    });
+    selectedFilters.museums.forEach(m => {
+        url += `&museum=${encodeURIComponent(m)}`;
+    });
+    selectedFilters.movements.forEach(m => {
+        url += `&movement=${encodeURIComponent(m)}`;
+    });
+    
+    // 👇 AJOUTER CES 3 BLOCS
+    selectedFilters.types.forEach(t => {
+        url += `&type=${encodeURIComponent(t)}`;
+    });
+    selectedFilters.genres.forEach(g => {
+        url += `&genre=${encodeURIComponent(g)}`;
+    });
+    selectedFilters.copyrights.forEach(c => {
+        url += `&copyright=${encodeURIComponent(c)}`;
+    });
+    
+    window.location.href = url;
+}
     
     // ============================================
     // GESTION DU TRI
@@ -1625,7 +1768,18 @@
         
         window.location.href = url;
     });
-    
+// ============================================
+// EVENT LISTENERS POUR LES BOUTONS APPLIQUER
+// ============================================
+document.getElementById('apply-filters-btn')?.addEventListener('click', function(e) {
+    e.preventDefault();
+    applyFilters();
+});
+
+document.getElementById('apply-filters-top-btn')?.addEventListener('click', function(e) {
+    e.preventDefault();
+    applyFilters();
+});    
     // ============================================
     // GESTION DE LA PAGINATION
     // ============================================
@@ -1767,15 +1921,21 @@
         }
     }
     
-    function initFavoriteButtons() {
-        const favoriteIcons = document.querySelectorAll('.favorite-icon');
-        console.log(`Initialisation de ${favoriteIcons.length} boutons favoris`);
+function initFavoriteButtons() {
+    const favoriteIcons = document.querySelectorAll('.favorite-icon');
+    console.log(`Initialisation de ${favoriteIcons.length} boutons favoris`);
+    
+    favoriteIcons.forEach(btn => {
+        // Supprimer l'ancien event listener avant d'en ajouter un nouveau
+        btn.removeEventListener('click', handleFavoriteClick);
+        btn.addEventListener('click', handleFavoriteClick);
         
-        favoriteIcons.forEach(btn => {
-            btn.removeEventListener('click', handleFavoriteClick);
-            btn.addEventListener('click', handleFavoriteClick);
+        // Empêcher le clic de se propager à la carte parente
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
         });
-    }
+    });
+}
     
     function handleFavoriteClick(e) {
         e.preventDefault();
@@ -1820,51 +1980,54 @@
         }
         {% endif %}
     }
+// ============================================
+// GESTION DES CLIQUES SUR LES CARTES
+// ============================================
+function initArtworkCards() {
+    const cards = document.querySelectorAll('.artwork-card');
+    console.log(`Initialisation de ${cards.length} cartes d'œuvres`);
     
-    // ============================================
-    // GESTION DES CLIQUES SUR LES CARTES
-    // ============================================
-    function initArtworkCards() {
-        console.log('Initialisation des cartes...');
-        const cards = document.querySelectorAll('.artwork-card');
-        
-        cards.forEach(card => {
-            card.removeEventListener('click', cardClickHandler);
-            card.addEventListener('click', cardClickHandler);
-        });
+    cards.forEach(card => {
+        // Éviter de dupliquer les event listeners
+        card.removeEventListener('click', handleCardClick);
+        card.addEventListener('click', handleCardClick);
+    });
+}
+
+function handleCardClick(e) {
+    // Ne pas rediriger si on clique sur le bouton favori
+    if (e.target.closest('.favorite-icon')) {
+        e.stopPropagation();
+        return;
     }
     
-    function cardClickHandler(e) {
-        if (e.target.closest('.favorite-icon')) {
-            return;
-        }
-        
-        const href = this.dataset.href;
-        if (href) {
-            window.location.href = href;
-        }
+    const href = this.dataset.href;
+    if (href) {
+        window.location.href = href;
     }
+}    
     
+    
+
     // ============================================
     // INITIALISATION
     // ============================================
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOMContentLoaded - initialisation générale');
-        initFilterToggle();
-        loadFilterOptions();
-        updateSelectedFiltersDisplay();
-        checkAllFavorites();
-        initArtworkCards();
-        initFavoriteButtons();
-        initPagination();
-        initRandomButton();
-    });
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOMContentLoaded - initialisation générale');
+    initFilterToggle();
+    loadFilterOptions();  // Charge les filtres au démarrage
+    updateSelectedFiltersDisplay();
+    checkAllFavorites();
+    initArtworkCards();
+    initFavoriteButtons();
+    initPagination();
+    initRandomButton();
     
-    window.addEventListener('load', function() {
-        console.log('Window load - vérification supplémentaire');
-        initArtworkCards();
-        initFavoriteButtons();
-    });
+    // Initialiser les checkboxes APRÈS avoir chargé les filtres
+    setTimeout(() => {
+        initFilterCheckboxes();
+    }, 500);
+});
     
 })();
     </script>

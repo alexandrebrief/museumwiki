@@ -1071,9 +1071,7 @@
                 
                 <!-- En-tête avec titre et favori -->
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <h1 style="font-size: clamp(1.8rem, 3vw, 2.4rem); margin: 0;">
-    {{ oeuvre.titre_fr or oeuvre.titre_en or oeuvre.titre or 'Sans titre' }}
-</h1>
+                    <h1 style="font-size: clamp(1.8rem, 3vw, 2.4rem); margin: 0;">{{ oeuvre.titre }}</h1>
                     {% if session.user_id %}
                     <div id="favorite-btn" class="favorite-btn" onclick="toggleFavorite()">
                         <i class="far fa-heart" id="favorite-icon"></i>
@@ -1099,25 +1097,11 @@
                             <span class="info-label">Lieu:</span>
                             <span class="info-value">{{ oeuvre.lieu or 'Inconnu' }}</span>
                         </div>
-                                <!-- 👇 NOUVELLE LIGNE POUR LE TYPE D'ŒUVRE -->
-        <div class="info-line">
-            <span class="info-label">Type:</span>
-            <span class="info-value">{{ oeuvre.instance_of or 'Non spécifié' }}</span>
-        </div>
-        <!-- 👇 NOUVELLE LIGNE POUR LE GENRE -->
-        <div class="info-line">
-            <span class="info-label">Genre:</span>
-            <span class="info-value">{{ oeuvre.genre or 'Non spécifié' }}</span>
-        </div>
                         <div class="info-line">
                             <span class="info-label">Mouvement:</span>
                             <span class="info-value">{{ oeuvre.mouvement or 'Non spécifié' }}</span>
                         </div>
                     </div>
-<div class="info-line">
-    <span class="info-label">Copyright:</span>
-    <span class="info-value">{{ oeuvre.copyright or 'Non spécifié' }}</span>
-</div>                
                     {% if oeuvre.wikidata_url %}
                     <a href="{{ oeuvre.wikidata_url }}" target="_blank" class="wikidata-link">
                         <i class="fab fa-wikipedia-w"></i> Voir sur Wikidata

@@ -126,25 +126,32 @@ class Artwork(db.Model):
     id = db.Column(db.String, primary_key=True)
     titre = db.Column(db.String(500))
     createur = db.Column(db.String(200))
-    createur_id = db.Column(db.String(50))
     date = db.Column(db.String(50))
     image_url = db.Column(db.String(500))
     lieu = db.Column(db.String(200))
     genre = db.Column(db.String(200))
     mouvement = db.Column(db.String(200))
     wikidata_url = db.Column(db.String(500))
+    instance_of = db.Column(db.String(200))    # ← À AJOUTER
+    copyright = db.Column(db.String(200))      # ← À AJOUTER
+    titre_fr = db.Column(db.String(500))
+    titre_en = db.Column(db.String(500))
     
     def to_dict(self):
         return {
             'id': self.id,
             'titre': self.titre,
+            'titre_fr': self.titre_fr,
+            'titre_en': self.titre_en,
             'createur': self.createur,
             'date': self.date,
             'image_url': self.image_url,
             'lieu': self.lieu,
             'genre': self.genre,
             'mouvement': self.mouvement,
-            'wikidata_url': self.wikidata_url
+            'wikidata_url': self.wikidata_url,
+            'instance_of': self.instance_of,    # ← AJOUTE
+            'copyright': self.copyright        # ← AJOUTE
         }
 
 
@@ -352,7 +359,7 @@ def send_verification_email(user_email, username, code, token):
         return False
 
 
-def get_filtered_query(query, artists, museums, movements):
+def get_filtered_query(query, artists, museums, movements, types=None, genres=None, copyrights=None):
     """Construit une requête SQLAlchemy filtrée pour les œuvres"""
     q = Artwork.query
     
@@ -382,6 +389,25 @@ def get_filtered_query(query, artists, museums, movements):
         for movement in movements:
             movement_filters.append(Artwork.mouvement.ilike(f"%{movement}%"))
         q = q.filter(db.or_(*movement_filters))
+    
+    # NOUVEAUX FILTRES
+    if types:
+        type_filters = []
+        for type_name in types:
+            type_filters.append(Artwork.instance_of.ilike(f"%{type_name}%"))
+        q = q.filter(db.or_(*type_filters))
+    
+    if genres:
+        genre_filters = []
+        for genre in genres:
+            genre_filters.append(Artwork.genre.ilike(f"%{genre}%"))
+        q = q.filter(db.or_(*genre_filters))
+    
+    if copyrights:
+        copyright_filters = []
+        for copyright in copyrights:
+            copyright_filters.append(Artwork.copyright.ilike(f"%{copyright}%"))
+        q = q.filter(db.or_(*copyright_filters))
     
     return q
 
@@ -483,11 +509,23 @@ def index():
     artists = request.args.getlist('artist')
     museums = request.args.getlist('museum')
     movements = request.args.getlist('movement')
+    
+    # 👇 AJOUTER CES 3 LIGNES
+    types = request.args.getlist('type')
+    genres = request.args.getlist('genre')
+    copyrights = request.args.getlist('copyright')
+    
     sort = request.args.get('sort', 'relevance')
     
-    # S'il y a une recherche ou des filtres, on utilise la recherche normale
-    if query or artists or museums or movements:
-        base_query = get_filtered_query(query, artists, museums, movements)
+    # ✅ CORRECTION ICI : Vérifier TOUS les filtres, pas seulement les anciens
+    if (query or artists or museums or movements or 
+        types or genres or copyrights):  # ← AJOUTER LES NOUVEAUX FILTRES
+        
+        # Passer TOUS les filtres à get_filtered_query
+        base_query = get_filtered_query(
+            query, artists, museums, movements, 
+            types, genres, copyrights  # ← AJOUTER ICI
+        )
         
         if sort == 'date_asc':
             base_query = base_query.order_by(Artwork.date)
@@ -538,7 +576,7 @@ def index():
                 'pages': 1
             })()
     
-    # ✅ AJOUTER ICI : Calculer le nombre de favoris pour chaque œuvre
+    # Calculer le nombre de favoris pour chaque œuvre
     favorite_counts = {}
     for artwork in results_page:
         count = Favorite.query.filter_by(artwork_id=artwork.id).count()
@@ -553,10 +591,11 @@ def index():
                          artists=artists,
                          museums=museums,
                          movements=movements,
+                         types=types,           # ← AJOUTER
+                         genres=genres,         # ← AJOUTER
+                         copyrights=copyrights, # ← AJOUTER
                          sort=sort,
-                         favorite_counts=favorite_counts)  # ← AJOUTÉ ICI
-
-
+                         favorite_counts=favorite_counts)
 @app.route('/oeuvre/<string:oeuvre_id>')
 def oeuvre_detail(oeuvre_id):
     """Page détaillée d'une œuvre"""
@@ -566,7 +605,145 @@ def oeuvre_detail(oeuvre_id):
         return render_template('detail.html', oeuvre=artwork.to_dict())
     else:
         return "Œuvre non trouvée", 404
+        
+@app.route('/api/filters/update')
+def api_filters_update():
+    """Retourne tous les filtres mis à jour en fonction des filtres actuels"""
+    query = request.args.get('q', '')
+    current_artists = request.args.getlist('artist')
+    current_museums = request.args.getlist('museum')
+    current_movements = request.args.getlist('movement')
+    current_types = request.args.getlist('type')
+    current_genres = request.args.getlist('genre')
+    current_copyrights = request.args.getlist('copyright')
+    
+    # Obtenir la requête de base avec tous les filtres actuels
+    base_query = get_filtered_query(
+        query, 
+        current_artists, 
+        current_museums, 
+        current_movements,
+        current_types,
+        current_genres,
+        current_copyrights
+    )
+    
+    # Récupérer les IDs des œuvres filtrées
+    filtered_ids = base_query.with_entities(Artwork.id).subquery()
+    
+    # Fonction helper pour obtenir les filtres avec comptage
+    def get_filter_counts(field, exclude_inconnu=True):
+        filter_query = db.session.query(
+            field.label('name'),
+            func.count(Artwork.id).label('count')
+        ).filter(Artwork.id.in_(filtered_ids))
+        
+        if exclude_inconnu:
+            filter_query = filter_query.filter(
+                field != 'Inconnu',
+                field != '',
+                field.isnot(None)
+            )
+        
+        return filter_query.group_by(field).order_by(func.count(Artwork.id).desc()).limit(30).all()
+    
+    # Récupérer tous les filtres
+    artists = get_filter_counts(Artwork.createur)
+    museums = get_filter_counts(Artwork.lieu)
+    movements = get_filter_counts(Artwork.mouvement)
+    types = get_filter_counts(Artwork.instance_of)
+    genres = get_filter_counts(Artwork.genre)
+    copyrights = get_filter_counts(Artwork.copyright)
+    
+    return jsonify({
+        'artists': [{'name': a.name, 'count': a.count} for a in artists],
+        'museums': [{'name': m.name, 'count': m.count} for m in museums],
+        'movements': [{'name': m.name, 'count': m.count} for m in movements],
+        'types': [{'name': t.name, 'count': t.count} for t in types],
+        'genres': [{'name': g.name, 'count': g.count} for g in genres],
+        'copyrights': [{'name': c.name, 'count': c.count} for c in copyrights]
+    })     
+        
+# ============================================
+# 7. API POUR LES NOUVEAUX FILTRES
+# ============================================
 
+@app.route('/api/instance_of')
+def api_instance_of():
+    """Retourne la liste des types d'œuvres avec leur nombre"""
+    query = request.args.get('q', '')
+    current_artists = request.args.getlist('artist')
+    current_museums = request.args.getlist('museum')
+    current_movements = request.args.getlist('movement')
+    
+    base_query = get_filtered_query(query, current_artists, current_museums, current_movements)
+    
+    results = db.session.query(
+        Artwork.instance_of.label('name'),
+        func.count(Artwork.id).label('count')
+    ).filter(
+        Artwork.instance_of != 'Inconnu',
+        Artwork.instance_of != '',
+        Artwork.instance_of.isnot(None)
+    ).group_by(
+        Artwork.instance_of
+    ).order_by(
+        func.count(Artwork.id).desc()
+    ).limit(30).all()
+    
+    return jsonify([{'name': r.name, 'count': r.count} for r in results])
+
+
+@app.route('/api/genres')
+def api_genres():
+    """Retourne la liste des genres avec leur nombre"""
+    query = request.args.get('q', '')
+    current_artists = request.args.getlist('artist')
+    current_museums = request.args.getlist('museum')
+    current_movements = request.args.getlist('movement')
+    
+    base_query = get_filtered_query(query, current_artists, current_museums, current_movements)
+    
+    results = db.session.query(
+        Artwork.genre.label('name'),
+        func.count(Artwork.id).label('count')
+    ).filter(
+        Artwork.genre != 'Inconnu',
+        Artwork.genre != '',
+        Artwork.genre.isnot(None)
+    ).group_by(
+        Artwork.genre
+    ).order_by(
+        func.count(Artwork.id).desc()
+    ).limit(30).all()
+    
+    return jsonify([{'name': r.name, 'count': r.count} for r in results])
+
+
+@app.route('/api/copyrights')
+def api_copyrights():
+    """Retourne la liste des statuts copyright avec leur nombre"""
+    query = request.args.get('q', '')
+    current_artists = request.args.getlist('artist')
+    current_museums = request.args.getlist('museum')
+    current_movements = request.args.getlist('movement')
+    
+    base_query = get_filtered_query(query, current_artists, current_museums, current_movements)
+    
+    results = db.session.query(
+        Artwork.copyright.label('name'),
+        func.count(Artwork.id).label('count')
+    ).filter(
+        Artwork.copyright != 'Inconnu',
+        Artwork.copyright != '',
+        Artwork.copyright.isnot(None)
+    ).group_by(
+        Artwork.copyright
+    ).order_by(
+        func.count(Artwork.id).desc()
+    ).limit(30).all()
+    
+    return jsonify([{'name': r.name, 'count': r.count} for r in results])
 # ============================================
 # 7. API POUR LES FILTRES
 # ============================================
@@ -578,7 +755,9 @@ def api_artists():
     current_artists = request.args.getlist('artist')
     current_museums = request.args.getlist('museum')
     current_movements = request.args.getlist('movement')
-    
+    current_types = request.args.getlist('type')
+    current_genres = request.args.getlist('genre')
+    current_copyrights = request.args.getlist('copyright')   
     base_query = get_filtered_query(query, current_artists, current_museums, current_movements)
     
     results = db.session.query(
@@ -602,7 +781,9 @@ def api_museums():
     current_artists = request.args.getlist('artist')
     current_museums = request.args.getlist('museum')
     current_movements = request.args.getlist('movement')
-    
+    current_types = request.args.getlist('type')
+    current_genres = request.args.getlist('genre')
+    current_copyrights = request.args.getlist('copyright')
     base_query = get_filtered_query(query, current_artists, current_museums, current_movements)
     
     results = db.session.query(
@@ -626,7 +807,9 @@ def api_movements():
     current_artists = request.args.getlist('artist')
     current_museums = request.args.getlist('museum')
     current_movements = request.args.getlist('movement')
-    
+    current_types = request.args.getlist('type')
+    current_genres = request.args.getlist('genre')
+    current_copyrights = request.args.getlist('copyright')    
     base_query = get_filtered_query(query, current_artists, current_museums, current_movements)
     
     results = db.session.query(
