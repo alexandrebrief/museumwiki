@@ -31,51 +31,40 @@
             color: #1e2b3a;
         }
         
-        /* ===== STYLES SPÉCIFIQUES À REGISTER ===== */
-        .hero-section {
-            padding: 3rem 0 2rem;
-            text-align: center;
-            background: #f5f0e8;
-        }
-        
-        .hero-title {
-            font-size: 2.5rem;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
-        }
-        
-        .register-container {
-            max-width: 500px;
-            margin: 2rem auto;
-            flex: 1;
-        }
-        
-        .register-card {
-            background: white;
-            border-radius: 16px;
-            padding: 2.5rem;
-            box-shadow: 0 4px 12px rgba(44,62,80,0.05);
-        }
+/* ===== STYLES SPÉCIFIQUES À REGISTER ===== */
+.register-container {
+    max-width: 450px;
+    margin: 0 auto;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 150px);  /* Ajuste selon la hauteur de votre navbar/footer */
+    padding: 1rem;
+}
+
+.register-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(44,62,80,0.05);
+    width: 100%;
+}
         
         .register-title {
+            font-family: 'Playfair Display', serif;
             font-size: 1.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             text-align: center;
             color: #2c3e50;
-        }
-        
-        .form-label {
-            color: #2c3e50;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
         }
         
         .form-control {
             border: 1px solid #e0d6c8;
             border-radius: 8px;
-            padding: 0.75rem 1rem;
+            padding: 0.6rem 1rem;
             font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
         }
         
         .form-control:focus {
@@ -84,27 +73,68 @@
             outline: none;
         }
         
+        /* Style pour l'œil */
+        .password-input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .password-input-group .form-control {
+            padding-right: 2.5rem;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            background: transparent;
+            border: none;
+            color: #5d6d7e;
+            cursor: pointer;
+            padding: 0;
+            font-size: 1rem;
+            transition: color 0.2s;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+        }
+        
+        .password-toggle:hover {
+            color: #2c3e50;
+        }
+        
+        .password-toggle:focus {
+            outline: none;
+        }
+        
         .btn-register {
             background: #2c3e50;
             color: #e6d8c3;
             border: none;
-            border-radius: 8px;
-            padding: 0.75rem;
+            border-radius: 30px;
+            padding: 0.6rem 1.5rem;
             font-weight: 500;
-            width: 100%;
-            margin-top: 1rem;
+            width: auto;
+            min-width: 150px;
+            display: block;
+            margin: 1.5rem auto 0;
             transition: all 0.2s;
         }
         
         .btn-register:hover {
             background: #1e2b3a;
             color: #e6d8c3;
+            transform: scale(1.02);
         }
         
         .login-link {
             text-align: center;
             margin-top: 1.5rem;
             color: #5d6d7e;
+            font-size: 0.9rem;
         }
         
         .login-link a {
@@ -117,60 +147,76 @@
             text-decoration: underline;
         }
         
+        /* Exigences du mot de passe en ligne */
         .password-requirements {
-            font-size: 0.85rem;
-            color: #5d6d7e;
+            font-size: 0.75rem;
             margin-top: 0.5rem;
+            margin-bottom: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            color: #5d6d7e;
             padding-left: 0;
             list-style: none;
         }
         
         .password-requirements li {
-            margin-bottom: 0.25rem;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 0;
             transition: color 0.2s;
+        }
+        
+        .password-requirements li i {
+            font-size: 0.75rem;
+            margin-right: 0.3rem;
         }
         
         .password-requirements li.valid {
             color: #28a745;
         }
         
-        .password-requirements li.valid:before {
-            content: "✓ ";
-            font-weight: bold;
-        }
-        
         .password-requirements li.invalid {
             color: #dc3545;
         }
         
-        .password-requirements li.invalid:before {
-            content: "✗ ";
-            font-weight: bold;
-        }
-        
+        /* Alertes centrées */
         .alert {
             border-radius: 8px;
-            margin-bottom: 1.5rem;
+            margin: 0 0 1.5rem 0;
+            font-size: 0.85rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
         
-        .alert-dismissible .btn-close {
-            padding: 0.75rem;
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
         }
         
         .alert ul {
             margin-bottom: 0;
             padding-left: 1.2rem;
+            text-align: left;
+        }
+        
+        .alert-dismissible .btn-close {
+            padding: 0.75rem;
         }
     </style>
 </head>
 <body>
     {% include 'navbar.html' %}
-
-    <div class="hero-section">
-        <div class="container">
-            <h1 class="hero-title">Inscription</h1>
-        </div>
-    </div>
 
     <div class="container register-container">
         <div class="register-card">
@@ -180,6 +226,7 @@
                 {% if messages %}
                     {% for category, message in messages %}
                         <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show" role="alert">
+                            <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
                             {{ message }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
@@ -189,7 +236,8 @@
             
             {% if errors %}
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <ul class="mb-0">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <ul class="mb-0 text-start">
                         {% for error in errors %}
                             <li>{{ error }}</li>
                         {% endfor %}
@@ -200,32 +248,33 @@
             
             <form method="POST" action="/register">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
                 <div class="mb-3">
-                    <label for="username" class="form-label">Nom d'utilisateur</label>
                     <input type="text" class="form-control" id="username" name="username" 
+                           placeholder="Nom d'utilisateur"
                            value="{{ username or '' }}" required autofocus>
                 </div>
                 
                 <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
                     <input type="email" class="form-control" id="email" name="email" 
+                           placeholder="Email"
                            value="{{ email or '' }}" required>
                 </div>
                 
                 <div class="mb-3">
-                    <label for="password" class="form-label">Mot de passe</label>
-                    <input type="password" class="form-control" id="password" name="password" required>
+                    <div class="password-input-group">
+                        <input type="password" class="form-control" id="password" name="password" 
+                               placeholder="Mot de passe" required>
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility()">
+                            <i class="far fa-eye" id="toggleIcon"></i>
+                        </button>
+                    </div>
                     <ul class="password-requirements" id="password-requirements">
-                        <li id="req-length">Au moins 8 caractères</li>
-                        <li id="req-uppercase">Au moins une majuscule</li>
-                        <li id="req-lowercase">Au moins une minuscule</li>
-                        <li id="req-number">Au moins un chiffre</li>
+                        <li id="req-length"><i class="fas fa-circle" style="font-size: 0.4rem;"></i> 8 caractères</li>
+                        <li id="req-uppercase"><i class="fas fa-circle" style="font-size: 0.4rem;"></i> 1 majuscule</li>
+                        <li id="req-lowercase"><i class="fas fa-circle" style="font-size: 0.4rem;"></i> 1 minuscule</li>
+                        <li id="req-number"><i class="fas fa-circle" style="font-size: 0.4rem;"></i> 1 chiffre</li>
                     </ul>
-                </div>
-                
-                <div class="mb-3">
-                    <label for="confirm_password" class="form-label">Confirmer le mot de passe</label>
-                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
                 </div>
                 
                 <button type="submit" class="btn-register">S'inscrire</button>
@@ -241,6 +290,24 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Fonction pour afficher/masquer le mot de passe
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput && toggleIcon) {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    toggleIcon.classList.remove('fa-eye');
+                    toggleIcon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    toggleIcon.classList.remove('fa-eye-slash');
+                    toggleIcon.classList.add('fa-eye');
+                }
+            }
+        }
+
         // Validation en temps réel du mot de passe
         document.getElementById('password').addEventListener('input', function(e) {
             const password = e.target.value;
@@ -250,9 +317,11 @@
             if (password.length >= 8) {
                 lengthReq.classList.add('valid');
                 lengthReq.classList.remove('invalid');
+                lengthReq.innerHTML = '<i class="fas fa-check-circle"></i> 8 caractères';
             } else {
                 lengthReq.classList.add('invalid');
                 lengthReq.classList.remove('valid');
+                lengthReq.innerHTML = '<i class="fas fa-times-circle"></i> 8 caractères';
             }
             
             // Majuscule
@@ -260,9 +329,11 @@
             if (/[A-Z]/.test(password)) {
                 upperReq.classList.add('valid');
                 upperReq.classList.remove('invalid');
+                upperReq.innerHTML = '<i class="fas fa-check-circle"></i> 1 majuscule';
             } else {
                 upperReq.classList.add('invalid');
                 upperReq.classList.remove('valid');
+                upperReq.innerHTML = '<i class="fas fa-times-circle"></i> 1 majuscule';
             }
             
             // Minuscule
@@ -270,9 +341,11 @@
             if (/[a-z]/.test(password)) {
                 lowerReq.classList.add('valid');
                 lowerReq.classList.remove('invalid');
+                lowerReq.innerHTML = '<i class="fas fa-check-circle"></i> 1 minuscule';
             } else {
                 lowerReq.classList.add('invalid');
                 lowerReq.classList.remove('valid');
+                lowerReq.innerHTML = '<i class="fas fa-times-circle"></i> 1 minuscule';
             }
             
             // Chiffre
@@ -280,23 +353,11 @@
             if (/[0-9]/.test(password)) {
                 numberReq.classList.add('valid');
                 numberReq.classList.remove('invalid');
+                numberReq.innerHTML = '<i class="fas fa-check-circle"></i> 1 chiffre';
             } else {
                 numberReq.classList.add('invalid');
                 numberReq.classList.remove('valid');
-            }
-        });
-        
-        // Vérification que les mots de passe correspondent
-        document.getElementById('confirm_password').addEventListener('input', function(e) {
-            const password = document.getElementById('password').value;
-            const confirm = e.target.value;
-            
-            if (password === confirm && password !== '') {
-                this.style.borderColor = '#28a745';
-            } else if (confirm !== '') {
-                this.style.borderColor = '#dc3545';
-            } else {
-                this.style.borderColor = '#e0d6c8';
+                numberReq.innerHTML = '<i class="fas fa-times-circle"></i> 1 chiffre';
             }
         });
 

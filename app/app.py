@@ -667,7 +667,80 @@ def api_filters_update():
 # ============================================
 # 7. API POUR LES NOUVEAUX FILTRES
 # ============================================
-
+@app.route('/api/quick-register', methods=['POST'])
+def quick_register():
+    """Inscription rapide depuis la modale"""
+    data = request.get_json()
+    
+    username = data.get('username', '').strip()
+    email = data.get('email', '').strip().lower()
+    password = data.get('password', '')
+    
+    errors = []
+    
+    # Validations
+    if not username or not email or not password:
+        return jsonify({'error': 'Tous les champs sont obligatoires'}), 400
+    
+    # Validation du mot de passe
+    password_errors = validate_password_strength(password)
+    if password_errors:
+        return jsonify({'errors': password_errors}), 400
+    
+    # Vérifier si l'utilisateur existe déjà
+    existing_user = User.query.filter(
+        (User.username == username) | (User.email == email)
+    ).first()
+    
+    if existing_user:
+        if existing_user.username == username:
+            return jsonify({'error': 'Ce nom d\'utilisateur est déjà pris'}), 400
+        if existing_user.email == email:
+            return jsonify({'error': 'Cet email est déjà utilisé'}), 400
+    
+    try:
+        # Créer l'utilisateur
+        user = User(
+            username=username,
+            email=email,
+            email_verified=False
+        )
+        user.set_password(password)
+        db.session.add(user)
+        db.session.flush()
+        
+        # Créer la vérification
+        code = EmailVerification.generate_code()
+        token = EmailVerification.generate_token()
+        expires_at = datetime.utcnow() + timedelta(hours=24)
+        
+        verification = EmailVerification(
+            user_id=user.id,
+            token=token,
+            code=code,
+            expires_at=expires_at
+        )
+        db.session.add(verification)
+        db.session.commit()
+        
+        # Envoyer l'email
+        if send_verification_email(email, username, code, token):
+            return jsonify({
+                'success': True,
+                'message': 'Inscription réussie ! Un email de vérification vous a été envoyé.',
+                'email': email
+            }), 200
+        else:
+            return jsonify({
+                'success': True,
+                'message': 'Compte créé mais erreur d\'envoi d\'email. Contactez le support.',
+                'email': email
+            }), 200
+            
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Erreur inscription rapide: {e}")
+        return jsonify({'error': 'Erreur lors de l\'inscription'}), 500
 @app.route('/api/instance_of')
 def api_instance_of():
     """Retourne la liste des types d'œuvres avec leur nombre"""
@@ -1014,15 +1087,16 @@ def about():
 # ============================================
 # 9. ROUTES D'AUTHENTIFICATION
 # ============================================
+
 @limiter.limit("3 per minute")
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    """Page d'inscription avec vérification d'email"""
+    """Page d'inscription sans confirmation de mot de passe"""
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         email = request.form.get('email', '').strip()
         password = request.form.get('password', '')
-        confirm_password = request.form.get('confirm_password', '')
+        # ✅ PLUS DE confirm_password
         
         print("\n" + "="*50)
         print(f"🔍 NOUVELLE TENTATIVE D'INSCRIPTION")
@@ -1032,11 +1106,10 @@ def register():
         
         errors = []
         
-        if not username or not email or not password or not confirm_password:
+        # ✅ CORRECTION ICI : SUPPRIMEZ 'or not confirm_password'
+        if not username or not email or not password:
             errors.append("Tous les champs sont obligatoires")
-        
-        if password != confirm_password:
-            errors.append("Les mots de passe ne correspondent pas")
+
         
         password_errors = validate_password_strength(password)
         errors.extend(password_errors)
@@ -1109,6 +1182,10 @@ def register():
             return render_template('register.html', username=username, email=email)
     
     return render_template('register.html')
+
+
+
+
 @limiter.limit("5 per minute")
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -1292,10 +1369,9 @@ def verify_email_pending():
     email = request.args.get('email', '')
     return render_template('verify_email_pending.html', email=email)
 
-
 @app.route('/verify-email')
 def verify_email():
-    """Vérification par lien"""
+    """Vérification par lien avec connexion automatique"""
     token = request.args.get('token', '')
     
     verification = EmailVerification.query.filter_by(
@@ -1311,13 +1387,18 @@ def verify_email():
     verification.used = True
     db.session.commit()
     
-    flash('Email vérifié avec succès ! Vous pouvez maintenant vous connecter.', 'success')
-    return redirect(url_for('login'))
-
+    # ✅ CONNEXION AUTOMATIQUE
+    session['user_id'] = user.id
+    session['username'] = user.username
+    user.last_login = datetime.utcnow()
+    db.session.commit()
+    
+    flash(f'Bienvenue {user.username} ! Votre email a été vérifié.', 'success')
+    return redirect(url_for('index'))
 
 @app.route('/verify-code', methods=['POST'])
 def verify_code():
-    """Vérification par code"""
+    """Vérification par code avec connexion automatique"""
     code = request.form.get('code', '').strip()
     email = request.form.get('email', '')
     
@@ -1334,13 +1415,19 @@ def verify_code():
         flash('Code invalide ou expiré.', 'danger')
         return redirect(url_for('verify_email_pending', email=email))
     
+    # ✅ Marquer l'email comme vérifié
     user.email_verified = True
     verification.used = True
     db.session.commit()
     
-    flash('Email vérifié avec succès ! Vous pouvez maintenant vous connecter.', 'success')
-    return redirect(url_for('login'))
-
+    # ✅ CONNEXION AUTOMATIQUE
+    session['user_id'] = user.id
+    session['username'] = user.username
+    user.last_login = datetime.utcnow()
+    db.session.commit()
+    
+    flash(f'Bienvenue {user.username} ! Votre email a été vérifié.', 'success')
+    return redirect(url_for('index'))
 
 @app.route('/resend-verification', methods=['POST'])
 def resend_verification():
@@ -1385,7 +1472,39 @@ def resend_verification():
 # ============================================
 # 11. ROUTES POUR LES FAVORIS ET NOTES
 # ============================================
-
+@app.route('/api/quick-login', methods=['POST'])
+def quick_login():
+    """Connexion rapide depuis la modale"""
+    data = request.get_json()
+    
+    email = data.get('email', '').strip().lower()
+    password = data.get('password', '')
+    
+    if not email or not password:
+        return jsonify({'error': 'Email et mot de passe requis'}), 400
+    
+    user = User.query.filter_by(email=email).first()
+    
+    if not user or not user.check_password(password):
+        return jsonify({'error': 'Email ou mot de passe incorrect'}), 401
+    
+    if not user.email_verified:
+        return jsonify({'error': 'Veuillez vérifier votre email avant de vous connecter'}), 401
+    
+    # Connexion réussie
+    session['user_id'] = user.id
+    session['username'] = user.username
+    
+    user.last_login = datetime.utcnow()
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'message': 'Connexion réussie',
+        'username': user.username
+    }), 200
+    
+    
 @app.route('/api/favorite/toggle', methods=['POST'])
 def toggle_favorite():
     """Ajoute ou retire un favori"""
