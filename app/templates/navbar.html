@@ -498,7 +498,37 @@
             <!-- Suggestions -->
             <div id="navbar-suggestions" class="suggestions-box"></div>
         </div>
-        
+
+
+<!-- BOUTON DE CHANGEMENT DE LANGUE - À AJOUTER ICI -->
+<div class="nav-item d-flex align-items-center mx-2">
+    <a href="/set-language/fr" class="btn btn-sm {% if session.language == 'fr' %}active-lang{% endif %}" 
+       style="background: {% if session.language == 'fr' %}#e6d8c3{% else %}transparent{% endif %}; 
+              color: {% if session.language == 'fr' %}#2c3e50{% else %}#e6d8c3{% endif %}; 
+              border: 1px solid #e6d8c3; 
+              border-radius: 30px 0 0 30px; 
+              padding: 0.2rem 0.6rem; 
+              font-size: 0.8rem; 
+              text-decoration: none;">
+        FR
+    </a>
+    <a href="/set-language/en" class="btn btn-sm {% if session.language == 'en' %}active-lang{% endif %}" 
+       style="background: {% if session.language == 'en' %}#e6d8c3{% else %}transparent{% endif %}; 
+              color: {% if session.language == 'en' %}#2c3e50{% else %}#e6d8c3{% endif %}; 
+              border: 1px solid #e6d8c3; 
+              border-left: none; 
+              border-radius: 0 30px 30px 0; 
+              padding: 0.2rem 0.6rem; 
+              font-size: 0.8rem; 
+              text-decoration: none;">
+        EN
+    </a>
+</div>
+
+<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    <span class="navbar-toggler-icon"></span>
+</button>
+
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>

@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -1071,8 +1070,8 @@
                 
                 <!-- En-tête avec titre et favori -->
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <h1 style="font-size: clamp(1.8rem, 3vw, 2.4rem); margin: 0;">
-    {{ oeuvre.titre_fr or oeuvre.titre_en or oeuvre.titre or 'Sans titre' }}
+<h1 style="font-size: clamp(1.8rem, 3vw, 2.4rem); margin: 0;">
+    {{ oeuvre.titre or 'Sans titre' }}
 </h1>
                     {% if session.user_id %}
                     <div id="favorite-btn" class="favorite-btn" onclick="toggleFavorite()">
@@ -1081,49 +1080,40 @@
                     {% endif %}
                 </div>
 
-                <!-- BLOC 1 : INFORMATIONS (format compact avec alignement parfait) -->
-                <div class="info-block">
-                    <div class="block-title">
-                        <i class="fas fa-info-circle"></i> Informations
-                    </div>
-                    <div class="info-compact">
-                        <div class="info-line">
-                            <span class="info-label">Artiste:</span>
-                            <span class="info-value">{{ oeuvre.createur }}</span>
-                        </div>
-                        <div class="info-line">
-                            <span class="info-label">Date:</span>
-                            <span class="info-value">{{ oeuvre.date[:4] if oeuvre.date else 'Inconnue' }}</span>
-                        </div>
-                        <div class="info-line">
-                            <span class="info-label">Lieu:</span>
-                            <span class="info-value">{{ oeuvre.lieu or 'Inconnu' }}</span>
-                        </div>
-                                <!-- 👇 NOUVELLE LIGNE POUR LE TYPE D'ŒUVRE -->
+<!-- BLOC 1 : INFORMATIONS (format compact avec alignement parfait) -->
+<div class="info-block">
+    <div class="block-title">
+        <i class="fas fa-info-circle"></i> Informations
+    </div>
+    <div class="info-compact">
+        <div class="info-line">
+            <span class="info-label">Artiste:</span>
+            <span class="info-value">{{ oeuvre.createur or 'Inconnu' }}</span>
+        </div>
+        <div class="info-line">
+            <span class="info-label">Date:</span>
+            <span class="info-value">{{ oeuvre.inception[:4] if oeuvre.inception else 'Inconnue' }}</span>
+        </div>
+        <div class="info-line">
+            <span class="info-label">Musée:</span>
+            <span class="info-value">{{ oeuvre.lieu or 'Inconnu' }}</span>
+        </div>
+        <div class="info-line">
+            <span class="info-label">Lieu:</span>
+            <span class="info-value">{{ oeuvre.lieu or 'Inconnu' }}</span>
+        </div>
         <div class="info-line">
             <span class="info-label">Type:</span>
             <span class="info-value">{{ oeuvre.instance_of or 'Non spécifié' }}</span>
         </div>
-        <!-- 👇 NOUVELLE LIGNE POUR LE GENRE -->
-        <div class="info-line">
-            <span class="info-label">Genre:</span>
-            <span class="info-value">{{ oeuvre.genre or 'Non spécifié' }}</span>
-        </div>
-                        <div class="info-line">
-                            <span class="info-label">Mouvement:</span>
-                            <span class="info-value">{{ oeuvre.mouvement or 'Non spécifié' }}</span>
-                        </div>
-                    </div>
-<div class="info-line">
-    <span class="info-label">Copyright:</span>
-    <span class="info-value">{{ oeuvre.copyright or 'Non spécifié' }}</span>
-</div>                
-                    {% if oeuvre.wikidata_url %}
-                    <a href="{{ oeuvre.wikidata_url }}" target="_blank" class="wikidata-link">
-                        <i class="fab fa-wikipedia-w"></i> Voir sur Wikidata
-                    </a>
-                    {% endif %}
-                </div>
+        
+        {% if oeuvre.url_wikidata %}
+        <a href="{{ oeuvre.url_wikidata }}" target="_blank" class="wikidata-link">
+            <i class="fab fa-wikipedia-w"></i> Voir sur Wikidata
+        </a>
+        {% endif %}
+    </div>
+</div>
 
 <!-- 👇 NOUVEAU BLOC À AJOUTER ICI -->
 {% if not session.user_id %}
@@ -1311,7 +1301,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        const artworkId = '{{ oeuvre.id }}';
+        const artworkId = '{{ oeuvre.id or oeuvre.id_q }}';
         let saveTimeout;
 
         function openImageModal(url) {

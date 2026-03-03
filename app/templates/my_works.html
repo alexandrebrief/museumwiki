@@ -209,7 +209,32 @@
                 grid-template-columns: 1fr !important;
             }
         }
-        
+
+/* Indicateur de chargement */
+#loading-indicator {
+    text-align: center;
+    padding: 2rem;
+    color: #5d6d7e;
+    font-size: 1rem;
+    width: 100%;
+}
+
+#loading-indicator i {
+    margin-right: 0.5rem;
+    color: #2c3e50;
+}
+
+/* Animation du spinner */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+
         /* ===== CARTE D'ŒUVRE ===== */
         .work-card {
             background: white;
@@ -231,7 +256,7 @@
         .work-image {
             width: 100%;
             aspect-ratio: 1/1;
-            object-fit: cover;
+            object-fit: contain;
             background: #f5f0e8;
             display: block;
         }
@@ -498,23 +523,22 @@
                 {% for work in works %}
                 <div class="work-card" onclick="window.location.href='/oeuvre/{{ work.id }}'">
 
-
-<!-- BOUTON FAVORI -->
-<div class="favorite-icon {% if work.is_favorite %}active{% endif %}" 
-     data-artwork-id="{{ work.id }}" 
-     onclick="event.stopPropagation(); toggleFavorite(this, '{{ work.id }}')">
-    <i class="{% if work.is_favorite %}fas{% else %}far{% endif %} fa-heart"></i>
-</div>
+                    <!-- BOUTON FAVORI -->
+                    <div class="favorite-icon {% if work.is_favorite %}active{% endif %}" 
+                         data-artwork-id="{{ work.id }}" 
+                         onclick="event.stopPropagation(); toggleFavorite(this, '{{ work.id }}')">
+                        <i class="{% if work.is_favorite %}fas{% else %}far{% endif %} fa-heart"></i>
+                    </div>
                     
                     <!-- Date en badge -->
                     <div class="rating-date">
                         <i class="far fa-calendar-alt"></i>
-                        {{ work.rating.created_at[:5] }}
+                        {{ work.rating.created_at[:10] if work.rating and work.rating.created_at else '' }}
                     </div>
                     
                     <!-- Image carrée -->
                     {% if work.image_url and work.image_url != '' %}
-                        <img src="{{ work.image_url }}" alt="{{ work.titre }}" class="work-image" loading="lazy">
+                        <img src="{{ work.image_url }}" alt="{{ work.titre or work.titre_fr or work.titre_en or 'Sans titre' }}" class="work-image" loading="lazy">
                     {% else %}
                         <div class="work-image-placeholder">
                             <i class="fas fa-image"></i>
@@ -522,6 +546,7 @@
                     {% endif %}
                     
                     <!-- Notes superposées -->
+                    {% if work.rating %}
                     <div class="rating-overlay">
                         <div class="stars">
                             {% set note = work.rating.note_globale|round(0, 'floor') %}
@@ -549,6 +574,7 @@
                             </div>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
                 {% endfor %}
             </div>
@@ -666,7 +692,7 @@
                         element.querySelector('i').className = 'fas fa-heart';
                     } else {
                         element.classList.remove('active');
-                        element.querySelector('i').className = 'fas fa-heart';
+                        element.querySelector('i').className = 'far fa-heart';
                     }
                 }
             } catch (error) {
@@ -681,6 +707,219 @@
                 bsAlert.close();
             });
         }, 5000);
+        
+        // ===== INFINITE SCROLL =====
+        let currentPage = 1;
+        let isLoading = false;
+        let hasMore = true;
+        const pageSize = 32;
+
+        // Détecter quand l'utilisateur approche du bas
+        window.addEventListener('scroll', function() {
+            if (isLoading || !hasMore) return;
+            
+            // Calculer si on est proche du bas (100px avant la fin)
+            const scrollPosition = window.scrollY + window.innerHeight;
+            const pageHeight = document.documentElement.scrollHeight;
+            
+            if (scrollPosition > pageHeight - 200) {  // 200px avant la fin
+                loadMoreWorks();
+            }
+        });
+
+        // Fonction pour charger plus d'œuvres
+        async function loadMoreWorks() {
+            if (isLoading || !hasMore) return;
+            
+            isLoading = true;
+            currentPage++;
+            
+            // Afficher un indicateur de chargement (optionnel)
+            showLoadingIndicator();
+            
+            try {
+                const response = await fetch(`/api/rated-works?page=${currentPage}&limit=${pageSize}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    if (data.works && data.works.length > 0) {
+                        appendWorks(data.works);
+                        hasMore = data.hasMore;
+                    } else {
+                        hasMore = false;
+                    }
+                }
+            } catch (error) {
+                console.error('Erreur chargement:', error);
+                hasMore = false;
+            } finally {
+                isLoading = false;
+                hideLoadingIndicator();
+            }
+        }
+
+        // Fonction pour ajouter les nouvelles œuvres à la grille
+        function appendWorks(works) {
+            const grid = document.getElementById('works-grid');
+            
+            works.forEach(work => {
+                const card = createWorkCard(work);
+                grid.insertAdjacentHTML('beforeend', card);
+            });
+            
+            // Réappliquer les événements favoris sur les nouvelles cartes
+            attachFavoriteEvents();
+        }
+
+        // Fonction pour créer une carte d'œuvre
+        function createWorkCard(work) {
+            const isFavorite = work.is_favorite ? 'active' : '';
+            const heartIcon = work.is_favorite ? 'fas' : 'far';
+            
+            // Gérer le titre avec fallback
+            const titre = work.titre || work.titre_fr || work.titre_en || 'Sans titre';
+            
+            const imageHtml = work.image_url && work.image_url !== '' 
+                ? `<img src="${work.image_url}" alt="${titre}" class="work-image" loading="lazy">`
+                : `<div class="work-image-placeholder"><i class="fas fa-image"></i></div>`;
+            
+            // Calcul des étoiles
+            const note = work.rating ? Math.floor(work.rating.note_globale) : 0;
+            let stars = '';
+            for (let i = 0; i < 5; i++) {
+                if (i < note) {
+                    stars += '<i class="fas fa-star"></i>';
+                } else {
+                    stars += '<i class="far fa-star empty"></i>';
+                }
+            }
+            
+            // Date formatée
+            const date = work.rating && work.rating.created_at ? work.rating.created_at.substring(0, 10) : '';
+            
+            // Notes détaillées
+            const technique = work.rating ? work.rating.note_technique : 0;
+            const originalite = work.rating ? work.rating.note_originalite : 0;
+            const emotion = work.rating ? work.rating.note_emotion : 0;
+            
+            return `
+                <div class="work-card" onclick="window.location.href='/oeuvre/${work.id}'">
+                    <div class="favorite-icon ${isFavorite}" 
+                         data-artwork-id="${work.id}" 
+                         onclick="event.stopPropagation(); toggleFavorite(this, '${work.id}')">
+                        <i class="${heartIcon} fa-heart"></i>
+                    </div>
+                    <div class="rating-date">
+                        <i class="far fa-calendar-alt"></i>
+                        ${date}
+                    </div>
+                    ${imageHtml}
+                    <div class="rating-overlay">
+                        <div class="stars">${stars}</div>
+                        <div class="details">
+                            <div class="detail-item">
+                                <i class="fas fa-paint-brush"></i>
+                                <span>${technique}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-lightbulb"></i>
+                                <span>${originalite}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-heart"></i>
+                                <span>${emotion}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Fonction pour attacher les événements favoris aux nouvelles cartes
+        function attachFavoriteEvents() {
+            document.querySelectorAll('.favorite-icon').forEach(el => {
+                // Si déjà attaché, on évite de dupliquer
+                if (!el.hasAttribute('data-listener')) {
+                    el.setAttribute('data-listener', 'true');
+                    // L'événement est déjà inline dans le HTML
+                }
+            });
+        }
+
+        // Indicateur de chargement (optionnel)
+        function showLoadingIndicator() {
+            let indicator = document.getElementById('loading-indicator');
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'loading-indicator';
+                indicator.className = 'text-center my-4';
+                indicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Chargement...';
+                document.querySelector('.works-container').appendChild(indicator);
+            }
+            indicator.style.display = 'block';
+        }
+
+        function hideLoadingIndicator() {
+            const indicator = document.getElementById('loading-indicator');
+            if (indicator) {
+                indicator.style.display = 'none';
+            }
+        }
+
+        // Bouton "Retour en haut" (optionnel)
+        function addBackToTopButton() {
+            const btn = document.createElement('button');
+            btn.id = 'back-to-top';
+            btn.innerHTML = '<i class="fas fa-arrow-up"></i>';
+            btn.style.cssText = `
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                background: #2c3e50;
+                color: #e6d8c3;
+                border: none;
+                cursor: pointer;
+                display: none;
+                z-index: 1000;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            `;
+            
+            btn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+            
+            document.body.appendChild(btn);
+            
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 500) {
+                    btn.style.display = 'block';
+                } else {
+                    btn.style.display = 'none';
+                }
+            });
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Vos initialisations existantes
+            const savedView = localStorage.getItem('worksViewPreference');
+            if (savedView) {
+                changeView(parseInt(savedView));
+            } else {
+                changeView(4);
+            }
+            
+            const savedMobile = localStorage.getItem('mobileViewPreference');
+            if (savedMobile) {
+                setMobileColumns(parseInt(savedMobile));
+            }
+            
+            // Ajouter le bouton retour en haut
+            addBackToTopButton();
+        });
     </script>
 </body>
 </html>

@@ -83,7 +83,153 @@
             background: #d4c9b9 !important;
             transform: scale(1.05);
         }
-        
+/* ===== STYLES POUR LES BOUTONS DE VUE ===== */
+.view-toggle {
+    display: flex;
+    gap: 0.3rem;
+    background: white;
+    padding: 0.2rem;
+    border-radius: 40px;
+    border: 1px solid #e0d6c8;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.view-btn {
+    background: transparent;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #5d6d7e;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.view-btn i {
+    font-size: 0.9rem;
+}
+
+.view-btn.active {
+    background: #2c3e50;
+    color: #e6d8c3;
+    box-shadow: 0 2px 8px rgba(44,62,80,0.2);
+}
+
+.view-btn:hover:not(.active) {
+    background: #f5f0e8;
+    color: #2c3e50;
+}
+
+/* Masquer les boutons 8,4,2 sur mobile */
+@media (max-width: 600px) {
+    .view-toggle {
+        display: none !important;
+    }
+    .mobile-toggle {
+        display: flex !important;
+        width: 100%;
+    }
+}
+
+.mobile-btn {
+    background: transparent;
+    border: none;
+    padding: 0.3rem 1.2rem;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #5d6d7e;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    flex: 1;
+}
+
+.mobile-btn i {
+    font-size: 0.9rem;
+}
+
+.mobile-btn.active {
+    background: #2c3e50;
+    color: #e6d8c3;
+    box-shadow: 0 2px 8px rgba(44,62,80,0.2);
+}
+
+/* Styles pour la grille dynamique */
+.works-grid {
+    display: grid;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
+}
+
+.works-grid.grid-8 {
+    grid-template-columns: repeat(8, 1fr);
+}
+
+.works-grid.grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.works-grid.grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* Tablette */
+@media (max-width: 1200px) {
+    .works-grid.grid-8 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .works-grid.grid-8 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .works-grid.grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .works-grid.grid-8,
+    .works-grid.grid-4,
+    .works-grid.grid-2 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .works-grid.mobile-1 {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Images carrées */
+.work-image {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: contain;
+    background: #f5f0e8;
+    display: block;
+}
+
+.work-image-placeholder {
+    width: 100%;
+    aspect-ratio: 1/1;
+    background: linear-gradient(145deg, #e6d8c3, #d4c9b9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #5d6d7e;
+    font-size: 2rem;
+}        
         /* ============================================
            BARRE DE RECHERCHE
            ============================================ */
@@ -1048,7 +1194,18 @@
                         <div id="museum-dropdown" class="filter-menu-vertical"></div>
                     </div>
                 </div>
-                
+                <!-- Groupe Type d'œuvre (instance_of) -->
+                <div class="filter-group">
+                    <div class="filter-group-label">
+                        <i class="fas fa-tag"></i> Type d'œuvre
+                    </div>
+                    <div class="filter-dropdown-vertical">
+                        <button class="filter-button-vertical" id="type-dropdown-btn">
+                            Choisir <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div id="type-dropdown" class="filter-menu-vertical"></div>
+                    </div>
+                </div>                
                 <!-- Groupe Mouvement -->
                 <div class="filter-group">
                     <div class="filter-group-label">
@@ -1061,44 +1218,9 @@
                         <div id="movement-dropdown" class="filter-menu-vertical"></div>
                     </div>
                 </div>
-                <!-- Groupe Type d'œuvre (instance_of) -->
-                <div class="filter-group">
-                    <div class="filter-group-label">
-                        <i class="fas fa-tag"></i> Type d'œuvre
-                    </div>
-                    <div class="filter-dropdown-vertical">
-                        <button class="filter-button-vertical" id="type-dropdown-btn">
-                            Choisir <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div id="type-dropdown" class="filter-menu-vertical"></div>
-                    </div>
-                </div>
 
-                <!-- Groupe Genre -->
-                <div class="filter-group">
-                    <div class="filter-group-label">
-                        <i class="fas fa-paint-brush"></i> Genre
-                    </div>
-                    <div class="filter-dropdown-vertical">
-                        <button class="filter-button-vertical" id="genre-dropdown-btn">
-                            Choisir <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div id="genre-dropdown" class="filter-menu-vertical"></div>
-                    </div>
-                </div>
 
-                <!-- Groupe Copyright -->
-                <div class="filter-group">
-                    <div class="filter-group-label">
-                        <i class="fas fa-copyright"></i> Statut copyright
-                    </div>
-                    <div class="filter-dropdown-vertical">
-                        <button class="filter-button-vertical" id="copyright-dropdown-btn">
-                            Choisir <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div id="copyright-dropdown" class="filter-menu-vertical"></div>
-                    </div>
-                </div>                
+
 
                 
                 <!-- Tags persistants -->
@@ -1124,7 +1246,31 @@
         
         <!-- COLONNE DROITE - RÉSULTATS -->
         <div class="results-main">
-       
+    <!-- BOUTONS DE CHANGEMENT DE VUE (à ajouter) -->
+    {% if results %}
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <!-- Boutons desktop (8,4,2) -->
+        <div class="view-toggle" style="display: flex; gap: 0.3rem; background: white; padding: 0.2rem; border-radius: 40px; border: 1px solid #e0d6c8;">
+            <button class="view-btn" onclick="changeView(8)" id="view-8">
+                <i class="fas fa-th"></i> 8
+            </button>
+            <button class="view-btn active" onclick="changeView(4)" id="view-4">
+                <i class="fas fa-th-large"></i> 4
+            </button>
+            <button class="view-btn" onclick="changeView(2)" id="view-2">
+                <i class="fas fa-list"></i> 2
+            </button>
+        </div>
+        
+        <!-- Boutons mobile (2,1) - cachés par défaut -->
+        <div class="mobile-toggle" id="mobileToggle" style="display: none; gap: 0.5rem; background: white; padding: 0.2rem; border-radius: 40px; border: 1px solid #e0d6c8;">
+            <button class="mobile-btn active" onclick="setMobileColumns(2)"><i class="fas fa-th-large"></i> 2</button>
+            <button class="mobile-btn" onclick="setMobileColumns(1)"><i class="fas fa-list"></i> 1</button>
+        </div>
+    </div>
+    {% endif %}     
+    
+    
             <!-- Message pour les œuvres aléatoires -->
             {% if not query and not artists and not museums and not movements and results %}
             <div class="results-info">
@@ -1151,54 +1297,37 @@
             {% if results %}
                 
                 <!-- Grille des œuvres -->
-                <div class="artworks-grid">
-                    {% for artwork in results %}
-                    <div class="artwork-card" data-href="/oeuvre/{{ artwork.id }}" style="cursor: pointer; position: relative;">
-                        
-                        <!-- BOUTON FAVORI -->
-                        <div class="favorite-icon" data-artwork-id="{{ artwork.id }}">
-                            <i class="far fa-heart" id="favorite-icon-{{ artwork.id }}"></i>
-                        </div>
-                        
-                        <!-- Image -->
-                        {% if artwork.image_url and artwork.image_url != '' %}
-                        <img src="{{ artwork.image_url }}" class="artwork-image" loading="lazy">
-                        {% else %}
-                        <div class="artwork-image-placeholder">
-                            <i class="fas fa-image"></i>
-                        </div>
-                        {% endif %}
-                        
-                        <!-- Informations -->
-                        <div class="artwork-info">
-                            <div class="artwork-title">
-    {{ artwork.titre_fr[:40] if artwork.titre_fr else (artwork.titre_en[:40] if artwork.titre_en else 'Sans titre') }}
-</div>
-                            <div class="artwork-artist">{{ artwork.createur }}</div>
-                            {% if artwork.date %}
-                            <div class="artwork-year">{{ artwork.date[:4] }}</div>
-                            {% endif %}
-                            {% if artwork.lieu and artwork.lieu != 'Inconnu' %}
-<div class="artwork-museum">
-    {{ artwork.lieu[:30] }}
-    {% if artwork.pays and artwork.pays != 'Inconnu' %}
-        <span style="color: #8e9aab; font-size: 0.7rem;"> ({{ artwork.pays }})</span>
+                <div class="works-grid grid-4" id="works-grid">
+{% for artwork in results %}
+<div class="work-card" onclick="window.location.href='/oeuvre/{{ artwork.id }}'" style="cursor: pointer; position: relative; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(44,62,80,0.05); border: 1px solid #e0d6c8;">
+    
+    <!-- BOUTON FAVORI -->
+    <div class="favorite-icon" data-artwork-id="{{ artwork.id }}" onclick="event.stopPropagation(); toggleFavorite('{{ artwork.id }}', this)">
+        <i class="far fa-heart" id="favorite-icon-{{ artwork.id }}"></i>
+    </div>
+    
+    <!-- Image carrée -->
+    {% if artwork.image_url and artwork.image_url != '' %}
+    <img src="{{ artwork.image_url }}" alt="{{ artwork.titre_fr or artwork.titre_en or 'Sans titre' }}" class="work-image" loading="lazy">
+    {% else %}
+    <div class="work-image-placeholder">
+        <i class="fas fa-image"></i>
+    </div>
     {% endif %}
-</div>
-{% endif %}
+    
 
-                            <!-- Badge de popularité -->
-                            {% if not query and not artists and not museums and not movements %}
-                                {% if favorite_counts[artwork.id] > 0 %}
-                                <div class="popular-badge">
-                                    <i class="fas fa-heart" style="color: #dc3545;"></i> 
-                                    {{ favorite_counts[artwork.id] }}
-                                </div>
-                                {% endif %}
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% endfor %}
+
+<!-- Informations - SANS LA DATE -->
+<div style="padding: 0.4rem;">
+<div style="font-family: 'Playfair Display', serif; font-size: 0.9rem; font-weight: 600; color: #2c3e50; margin-bottom: 0.15rem; line-height: 1.2;">
+    {{ artwork.titre[:40] if artwork.titre else 'Sans titre' }}
+</div>
+    <div style="font-size: 0.8rem; color: #5d6d7e; margin-bottom: 0.15rem;">{{ artwork.createur }}</div>
+    
+
+    </div>
+</div>
+{% endfor %}
                 </div>
 
                 <!-- Pagination -->
@@ -1671,8 +1800,8 @@ let selectedFilters = {
     museums: [],
     movements: [],
     types: [],        // ← AJOUTE
-    genres: [],       // ← AJOUTE
-    copyrights: []    // ← AJOUTE
+
+
 };
     
     let suggestions = [];
@@ -1854,13 +1983,7 @@ function initFilterCheckboxes() {
     toggleDropdown('type-dropdown');
 });
 
-document.getElementById('genre-dropdown-btn')?.addEventListener('click', function() {
-    toggleDropdown('genre-dropdown');
-});
 
-document.getElementById('copyright-dropdown-btn')?.addEventListener('click', function() {
-    toggleDropdown('copyright-dropdown');
-});
 
     document.addEventListener('click', function(e) {
         if (!e.target.closest('.filter-dropdown-vertical')) {
@@ -2408,7 +2531,7 @@ function handleCardClick(e) {
         window.location.href = href;
     }
 }    
-    
+ 
     
 
     // ============================================
@@ -2439,7 +2562,101 @@ document.addEventListener('DOMContentLoaded', function() {
         initFilterCheckboxes();
     }, 500);
 });
+
+
+
+// ===== GESTION DU CHANGEMENT DE VUE =====
+let currentMobileColumns = 2;
+
+function changeView(columns) {
+    console.log('changeView appelé avec', columns);
+    const grid = document.getElementById('works-grid');
+    const btn8 = document.getElementById('view-8');
+    const btn4 = document.getElementById('view-4');
+    const btn2 = document.getElementById('view-2');
     
+    if (!grid) {
+        console.error('Grille non trouvée');
+        return;
+    }
+    
+    // Mettre à jour les classes de la grille
+    grid.classList.remove('grid-8', 'grid-4', 'grid-2');
+    grid.classList.add(`grid-${columns}`);
+    
+    // Mettre à jour les boutons actifs
+    if (btn8) btn8.classList.remove('active');
+    if (btn4) btn4.classList.remove('active');
+    if (btn2) btn2.classList.remove('active');
+    
+    if (columns === 8 && btn8) btn8.classList.add('active');
+    if (columns === 4 && btn4) btn4.classList.add('active');
+    if (columns === 2 && btn2) btn2.classList.add('active');
+    
+    localStorage.setItem('indexViewPreference', columns);
+}
+
+function setMobileColumns(columns) {
+    console.log('setMobileColumns appelé avec', columns);
+    currentMobileColumns = columns;
+    
+    const grid = document.getElementById('works-grid');
+    if (!grid) {
+        console.error('Grille non trouvée');
+        return;
+    }
+    
+    grid.classList.remove('mobile-1');
+    if (columns === 1) {
+        grid.classList.add('mobile-1');
+    }
+    
+    const btns = document.querySelectorAll('.mobile-btn');
+    btns.forEach(btn => btn.classList.remove('active'));
+    
+    if (btns.length > 0) {
+        if (columns === 2) {
+            btns[0].classList.add('active');
+        } else {
+            btns[1].classList.add('active');
+        }
+    }
+    
+    localStorage.setItem('indexMobilePreference', columns);
+}
+
+// Ajouter les écouteurs d'événements pour les boutons
+document.addEventListener('DOMContentLoaded', function() {
+    // Charger les préférences
+    const savedView = localStorage.getItem('indexViewPreference');
+    if (savedView) {
+        changeView(parseInt(savedView));
+    } else {
+        changeView(4);
+    }
+    
+    const savedMobile = localStorage.getItem('indexMobilePreference');
+    if (savedMobile) {
+        setMobileColumns(parseInt(savedMobile));
+    }
+    
+    // Ajouter les événements aux boutons
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const columns = parseInt(this.id.split('-')[1]);
+            changeView(columns);
+        });
+    });
+
+    document.querySelectorAll('.mobile-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const columns = this.textContent.trim() === '2' ? 2 : 1;
+            setMobileColumns(columns);
+        });
+    });
+});
 })();
     </script>
 </body>
