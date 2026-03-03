@@ -118,6 +118,195 @@ security_logger.addHandler(handler)
 # ============================================
 # 3. MODÈLES DE BASE DE DONNÉES
 # ============================================
+# Modèle pour les tokens de réinitialisation
+class PasswordReset(db.Model):
+    __tablename__ = 'password_resets'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    token = db.Column(db.String(100), unique=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    expires_at = db.Column(db.DateTime, nullable=False)
+    used = db.Column(db.Boolean, default=False)
+    
+    user = db.relationship('User', backref='password_resets')
+    
+    @staticmethod
+    def generate_token():
+        return secrets.token_urlsafe(32)
+    
+    def is_valid(self):
+        return not self.used and datetime.utcnow() < self.expires_at
+
+
+# Fonction pour envoyer l'email de réinitialisation
+def send_reset_email(user_email, username, reset_link):
+    """Envoie un email de réinitialisation de mot de passe"""
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {{
+                font-family: 'Inter', sans-serif;
+                background-color: #f5f0e8;
+                margin: 0;
+                padding: 20px;
+            }}
+            .container {{
+                max-width: 600px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 16px;
+                padding: 30px;
+                box-shadow: 0 4px 12px rgba(44,62,80,0.05);
+            }}
+            h1 {{
+                font-family: 'Playfair Display', serif;
+                color: #2c3e50;
+                font-size: 24px;
+                margin-bottom: 20px;
+            }}
+            .button {{
+                background: #2c3e50;
+                color: #e6d8c3;
+                padding: 12px 24px;
+                text-decoration: none;
+                border-radius: 8px;
+                display: inline-block;
+                margin: 20px 0;
+            }}
+            .footer {{
+                margin-top: 30px;
+                color: #5d6d7e;
+                font-size: 12px;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Réinitialisation de votre mot de passe</h1>
+            <p>Bonjour {username},</p>
+            <p>Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le lien ci-dessous pour créer un nouveau mot de passe :</p>
+            
+            <a href="{reset_link}" class="button">Réinitialiser mon mot de passe</a>
+            
+            <p>Ce lien expirera dans 24 heures.</p>
+            
+            <div class="footer">
+                <p>Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>
+                <p>© 2025 MuseumWiki · Collection d'œuvres d'art · Données Wikidata</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    
+    message = Mail(
+        from_email=FROM_EMAIL,
+        to_emails=user_email,
+        subject='Bluetocus - Confirmation de votre email',
+        html_content=html_content
+    )
+    
+    try:
+        sg = SendGridAPIClient(SENDGRID_API_KEY)
+        response = sg.send(message)
+        logger.info(f"Email envoyé à {user_email}, statut: {response.status_code}")
+        return True
+    except Exception as e:
+        logger.error(f"Erreur d'envoi d'email: {e}")
+        return False
+
+
+# Route API pour mot de passe oublié
+@app.route('/api/forgot-password', methods=['POST'])
+def forgot_password():
+    """Demande de réinitialisation de mot de passe"""
+    data = request.get_json()
+    email = data.get('email', '').strip().lower()
+    
+    if not email:
+        return jsonify({'error': 'Email requis'}), 400
+    
+    user = User.query.filter_by(email=email).first()
+    
+    # Toujours répondre de la même façon pour éviter de révéler si l'email existe
+    if not user:
+        return jsonify({'message': 'Si cet email existe, un lien de réinitialisation a été envoyé'}), 200
+    
+    # Désactiver les anciens tokens
+    old_resets = PasswordReset.query.filter_by(user_id=user.id, used=False).all()
+    for r in old_resets:
+        r.used = True
+    
+    # Créer un nouveau token
+    token = PasswordReset.generate_token()
+    expires_at = datetime.utcnow() + timedelta(hours=24)
+    
+    reset = PasswordReset(
+        user_id=user.id,
+        token=token,
+        expires_at=expires_at
+    )
+    db.session.add(reset)
+    db.session.commit()
+    
+    # Créer le lien de réinitialisation
+    reset_link = f"{BASE_URL}/reset-password?token={token}"
+    
+    # Envoyer l'email
+    if send_reset_email(email, user.username, reset_link):
+        return jsonify({'message': 'Un email de réinitialisation a été envoyé'}), 200
+    else:
+        return jsonify({'error': "Erreur lors de l'envoi de l'email"}), 500
+
+
+# Page de réinitialisation de mot de passe
+@app.route('/reset-password', methods=['GET', 'POST'])
+def reset_password():
+    """Page de réinitialisation de mot de passe"""
+    token = request.args.get('token', '')
+    
+    if request.method == 'POST':
+        token = request.form.get('token', '')
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
+        
+        reset = PasswordReset.query.filter_by(token=token, used=False).first()
+        
+        if not reset or not reset.is_valid():
+            flash('Lien de réinitialisation invalide ou expiré', 'danger')
+            return redirect(url_for('login'))
+        
+        if password != confirm_password:
+            flash('Les mots de passe ne correspondent pas', 'danger')
+            return render_template('reset_password.html', token=token)
+        
+        password_errors = validate_password_strength(password)
+        if password_errors:
+            for error in password_errors:
+                flash(error, 'danger')
+            return render_template('reset_password.html', token=token)
+        
+        user = reset.user
+        user.set_password(password)
+        reset.used = True
+        db.session.commit()
+        
+        flash('Mot de passe modifié avec succès ! Vous pouvez vous connecter', 'success')
+        return redirect(url_for('login'))
+    
+    # GET - afficher le formulaire
+    reset = PasswordReset.query.filter_by(token=token, used=False).first()
+    if not reset or not reset.is_valid():
+        flash('Lien de réinitialisation invalide ou expiré', 'danger')
+        return redirect(url_for('login'))
+    
+    return render_template('reset_password.html', token=token)
+
+
 class Artwork(db.Model):
     __tablename__ = 'artworks'
     
@@ -169,8 +358,8 @@ class Artwork(db.Model):
     height = db.Column(db.Float)
     
     # Copyright
-    copyright_status = db.Column(db.String(200))
-    copyright_en = db.Column(db.String(200))
+    copyright_status_fr = db.Column(db.String(200))
+    copyright_status_en = db.Column(db.String(200))
     
     # URL Wikidata
     url_wikidata = db.Column(db.String(500))
@@ -246,7 +435,7 @@ class Artwork(db.Model):
     @property
     def copyright(self):
         """Retourne le copyright en français (alias)"""
-        return self.copyright_status or self.copyright_en or 'Inconnu'
+        return self.copyright_status_fr or self.copyright_status_en or 'Inconnu'
     
     def to_dict(self):
         """Convertit l'objet en dictionnaire pour les templates"""
@@ -281,8 +470,8 @@ class Artwork(db.Model):
             'instance_of_fr': self.instance_of_fr,
             'instance_of_en': self.instance_of_en,
             'copyright': self.copyright,
-            'copyright_status': self.copyright_status,
-            'copyright_en': self.copyright_en,
+            'copyright_status_fr': self.copyright_status_fr,
+            'copyright_status_en': self.copyright_status_en,
             'width': self.width,
             'height': self.height
         }
@@ -476,7 +665,7 @@ def send_verification_email(user_email, username, code, token):
     message = Mail(
         from_email=FROM_EMAIL,
         to_emails=user_email,
-        subject='MuseumWiki - Vérification de votre email',
+        subject='Bluetocus - Confirmation de votre email',
         html_content=html_content
     )
     
@@ -556,11 +745,11 @@ def get_filtered_query(query, artists, museums, movements, types=None, genres=No
     if copyrights:
         copyright_filters = []
         for copyright in copyrights:
-            copyright_filters.append(Artwork.copyright_status.ilike(f"%{copyright}%"))
-            copyright_filters.append(Artwork.copyright_en.ilike(f"%{copyright}%"))
+            copyright_filters.append(Artwork.copyright_status_fr.ilike(f"%{copyright}%"))
+            copyright_filters.append(Artwork.copyright_status_en.ilike(f"%{copyright}%"))
         q = q.filter(db.or_(*copyright_filters))
-    
-    return q
+
+    return q  # ← MAINTENANT BIEN INDENTÉ AU NIVEAU DE LA FONCTION
 
 
 def handle_unverified_user(user, email):
@@ -794,7 +983,11 @@ def oeuvre_detail(oeuvre_id):
         return render_template('detail.html', oeuvre=artwork.to_dict())
     else:
         return "Œuvre non trouvée", 404
-        
+@app.route('/28012003')
+def kathy_page():
+    return render_template('28012003.html')
+    
+    
 @app.route('/api/filters/update')
 def api_filters_update():
     """Retourne tous les filtres mis à jour en fonction des filtres actuels"""
@@ -820,56 +1013,46 @@ def api_filters_update():
     # Récupérer les IDs des œuvres filtrées
     filtered_ids = base_query.with_entities(Artwork.id).subquery()
     
-
-# Dans api_filters_update, remplace la fonction helper
-def get_filter_counts_bilingual(field_fr, field_en):
-    """Retourne les filtres dans la langue de la session"""
-    filter_query = db.session.query(
-        field_fr.label('name_fr'),
-        field_en.label('name_en'),
-        func.count(Artwork.id).label('count')
-    ).filter(Artwork.id.in_(filtered_ids))
+    def get_filter_counts_bilingual(field_fr, field_en):
+        """Retourne les filtres dans la langue de la session"""
+        filter_query = db.session.query(
+            field_fr.label('name_fr'),
+            field_en.label('name_en'),
+            func.count(Artwork.id).label('count')
+        ).filter(Artwork.id.in_(filtered_ids))
+        
+        filter_query = filter_query.filter(
+            field_fr != 'Inconnu',
+            field_fr != '',
+            field_fr.isnot(None)
+        )
+        
+        results = filter_query.group_by(field_fr, field_en).order_by(func.count(Artwork.id).desc()).limit(30).all()
+        
+        formatted_results = []
+        for r in results:
+            if session.get('language') == 'fr':
+                name = r.name_fr or r.name_en or 'Inconnu'
+            else:
+                name = r.name_en or r.name_fr or 'Unknown'
+            formatted_results.append({'name': name, 'count': r.count})
+        
+        return formatted_results
     
-    # Exclure les valeurs vides ou inconnues
-    filter_query = filter_query.filter(
-        field_fr != 'Inconnu',
-        field_fr != '',
-        field_fr.isnot(None),
-        field_fr != 'None',
-        field_fr != 'null'
-    )
-    
-    # Grouper et ordonner
-    results = filter_query.group_by(field_fr, field_en).order_by(func.count(Artwork.id).desc()).limit(30).all()
-    
-    # Formater selon la langue de la session
-    formatted_results = []
-    for r in results:
-        if session.get('language') == 'fr':
-            name = r.name_fr or r.name_en or 'Inconnu'
-        else:
-            name = r.name_en or r.name_fr or 'Unknown'
-        formatted_results.append({'name': name, 'count': r.count})
-    
-    return formatted_results
-
-
-
-    
-    # Récupérer tous les filtres en français uniquement
-    artists_fr = get_filter_counts_fr(Artwork.creator_fallback_fr)
-    museums_fr = get_filter_counts_fr(Artwork.collection_fr)  # Utiliser collection_fr pour les musées
-    movements_fr = get_filter_counts_fr(Artwork.movement_fr)
-    types_fr = get_filter_counts_fr(Artwork.instance_of_fr)  # ← FORCÉ EN FRANÇAIS
+    # Récupérer tous les filtres
+    artists = get_filter_counts_bilingual(Artwork.creator_fallback_fr, Artwork.creator_fallback_en)
+    museums = get_filter_counts_bilingual(Artwork.collection_fr, Artwork.collection_en)
+    movements = get_filter_counts_bilingual(Artwork.movement_fr, Artwork.movement_en)
+    types = get_filter_counts_bilingual(Artwork.instance_of_fr, Artwork.instance_of_en)
     
     return jsonify({
-        'artists': artists_fr,
-        'museums': museums_fr,
-        'movements': movements_fr,
-        'types': types_fr,
-        'genres': [],  # Vide car supprimé
-        'copyrights': []  # Vide car supprimé
-    })   
+        'artists': artists,
+        'museums': museums,
+        'movements': movements,
+        'types': types,
+        'genres': [],
+        'copyrights': []
+    })
         
 # ============================================
 # 7. API POUR LES NOUVEAUX FILTRES
@@ -988,10 +1171,9 @@ def api_instance_of():
     
     return jsonify(formatted_results)
 
-
+"""
 @app.route('/api/genres')
 def api_genres():
-    """Retourne la liste des genres avec leur nombre"""
     query = request.args.get('q', '')
     current_artists = request.args.getlist('artist')
     current_museums = request.args.getlist('museum')
@@ -1027,7 +1209,7 @@ def api_genres():
         formatted_results.append({'name': name, 'count': r.count})
     
     return jsonify(formatted_results)
-
+"""
 
 @app.route('/api/copyrights')
 def api_copyrights():
@@ -1039,25 +1221,23 @@ def api_copyrights():
     
     base_query = get_filtered_query(query, current_artists, current_museums, current_movements)
     
-    # Récupérer les IDs filtrés
     filtered_ids = base_query.with_entities(Artwork.id).subquery()
     
     results = db.session.query(
-        Artwork.copyright_status.label('name_fr'),
-        Artwork.copyright_en.label('name_en'),
+        Artwork.copyright_status_fr.label('name_fr'),
+        Artwork.copyright_status_en.label('name_en'),
         func.count(Artwork.id).label('count')
     ).filter(
         Artwork.id.in_(filtered_ids),
-        Artwork.copyright_status != 'Inconnu',
-        Artwork.copyright_status != '',
-        Artwork.copyright_status.isnot(None)
+        Artwork.copyright_status_fr != 'Inconnu',
+        Artwork.copyright_status_fr != '',
+        Artwork.copyright_status_fr.isnot(None)
     ).group_by(
-        Artwork.copyright_status, Artwork.copyright_en
+        Artwork.copyright_status_fr, Artwork.copyright_status_en
     ).order_by(
         func.count(Artwork.id).desc()
     ).limit(30).all()
     
-    # Formater selon la langue
     formatted_results = []
     for r in results:
         if session.get('language') == 'fr':
@@ -1200,70 +1380,80 @@ def api_movements():
 
 @app.route('/api/suggestions')
 def suggestions():
-    """API pour l'autocomplete"""
+    """API pour l'autocomplete - résultats dans la langue de la session"""
     query = request.args.get('q', '').strip()
     if len(query) < 2:
         return jsonify([])
     
     search = f"%{query}%"
-    
-    # Artistes (fallback français puis anglais)
-    artists_fr = db.session.query(Artwork.creator_fallback_fr).filter(
-        Artwork.creator_fallback_fr.ilike(search),
-        Artwork.creator_fallback_fr != 'Artiste inconnu'
-    ).distinct().limit(2).all()
-    
-    artists_en = db.session.query(Artwork.creator_fallback_en).filter(
-        Artwork.creator_fallback_en.ilike(search),
-        Artwork.creator_fallback_en != 'Unknown artist'
-    ).distinct().limit(2).all()
-    
-    # Titres (fallback français puis anglais)
-    titles_fr = db.session.query(Artwork.label_fallback_fr).filter(
-        Artwork.label_fallback_fr.ilike(search),
-        Artwork.label_fallback_fr != 'Titre inconnu'
-    ).distinct().limit(2).all()
-    
-    titles_en = db.session.query(Artwork.label_fallback_en).filter(
-        Artwork.label_fallback_en.ilike(search),
-        Artwork.label_fallback_en != 'Unknown title'
-    ).distinct().limit(2).all()
-    
-    # Musées (lieux)
-    museums_fr = db.session.query(Artwork.location_fr).filter(
-        Artwork.location_fr.ilike(search),
-        Artwork.location_fr != 'Lieu inconnu'
-    ).distinct().limit(2).all()
-    
-    museums_en = db.session.query(Artwork.location_en).filter(
-        Artwork.location_en.ilike(search),
-        Artwork.location_en != 'Unknown location'
-    ).distinct().limit(2).all()
+    lang = session.get('language', 'fr')  # Langue de la session (défaut: fr)
     
     suggestions_list = []
     
-    # Ajouter avec catégorie selon la langue
-    lang = session.get('language', 'fr')
+    # 1. RECHERCHE PAR ID (toujours affiché)
+    id_results = db.session.query(Artwork.id).filter(
+        Artwork.id.ilike(search)
+    ).distinct().limit(2).all()
     
-    for a in artists_fr:
-        suggestions_list.append({'texte': a[0], 'categorie': 'artiste'})
-    for a in artists_en:
-        if not any(s['texte'] == a[0] for s in suggestions_list if s['categorie'] == 'artiste'):
-            suggestions_list.append({'texte': a[0], 'categorie': 'artiste'})
+    for id_result in id_results:
+        suggestions_list.append({'texte': id_result[0], 'categorie': 'id'})
     
-    for t in titles_fr:
-        suggestions_list.append({'texte': t[0], 'categorie': 'œuvre'})
-    for t in titles_en:
-        if not any(s['texte'] == t[0] for s in suggestions_list if s['categorie'] == 'œuvre'):
-            suggestions_list.append({'texte': t[0], 'categorie': 'œuvre'})
+    # 2. ARTISTES - selon la langue
+    if lang == 'fr':
+        artists = db.session.query(Artwork.creator_fallback_fr).filter(
+            Artwork.creator_fallback_fr.ilike(search),
+            Artwork.creator_fallback_fr != 'Artiste inconnu',
+            Artwork.creator_fallback_fr != ''
+        ).distinct().limit(4).all()
+        artist_field = 'creator_fallback_fr'
+    else:
+        artists = db.session.query(Artwork.creator_fallback_en).filter(
+            Artwork.creator_fallback_en.ilike(search),
+            Artwork.creator_fallback_en != 'Unknown artist',
+            Artwork.creator_fallback_en != ''
+        ).distinct().limit(4).all()
+        artist_field = 'creator_fallback_en'
     
-    for m in museums_fr:
-        suggestions_list.append({'texte': m[0], 'categorie': 'musée'})
-    for m in museums_en:
-        if not any(s['texte'] == m[0] for s in suggestions_list if s['categorie'] == 'musée'):
-            suggestions_list.append({'texte': m[0], 'categorie': 'musée'})
+    for artist in artists:
+        suggestions_list.append({'texte': artist[0], 'categorie': 'artiste'})
     
-    return jsonify(suggestions_list[:9])
+    # 3. TITRES - selon la langue
+    if lang == 'fr':
+        titles = db.session.query(Artwork.label_fallback_fr).filter(
+            Artwork.label_fallback_fr.ilike(search),
+            Artwork.label_fallback_fr != 'Titre inconnu',
+            Artwork.label_fallback_fr != ''
+        ).distinct().limit(4).all()
+    else:
+        titles = db.session.query(Artwork.label_fallback_en).filter(
+            Artwork.label_fallback_en.ilike(search),
+            Artwork.label_fallback_en != 'Unknown title',
+            Artwork.label_fallback_en != ''
+        ).distinct().limit(4).all()
+    
+    for title in titles:
+        suggestions_list.append({'texte': title[0], 'categorie': 'œuvre'})
+    
+    # 4. MUSÉES - selon la langue
+    if lang == 'fr':
+        museums = db.session.query(Artwork.collection_fr).filter(
+            Artwork.collection_fr.ilike(search),
+            Artwork.collection_fr != 'Inconnu',
+            Artwork.collection_fr != ''
+        ).distinct().limit(4).all()
+    else:
+        museums = db.session.query(Artwork.collection_en).filter(
+            Artwork.collection_en.ilike(search),
+            Artwork.collection_en != 'Unknown',
+            Artwork.collection_en != ''
+        ).distinct().limit(4).all()
+    
+    for museum in museums:
+        suggestions_list.append({'texte': museum[0], 'categorie': 'musée'})
+    
+    return jsonify(suggestions_list[:12])
+
+
 
 # ============================================
 # 8. ROUTES PAGES STATIQUES
@@ -1304,56 +1494,10 @@ def get_comments(artwork_id):
     
     return jsonify(comments)
 
-@app.route('/stats')
-def statistics():
-    """Page de statistiques"""
-    try:
-        total_oeuvres = Artwork.query.count()
-        
-        # Utiliser les champs fallback
-        total_artistes = db.session.query(Artwork.creator_fallback_fr).filter(
-            Artwork.creator_fallback_fr != 'Artiste inconnu'
-        ).distinct().count()
-        
-        total_musees = db.session.query(Artwork.location_fr).filter(
-            Artwork.location_fr != 'Lieu inconnu'
-        ).distinct().count()
-        
-        top_artistes_data = db.session.query(
-            Artwork.creator_fallback_fr.label('nom'),
-            func.count(Artwork.id).label('count')
-        ).filter(
-            Artwork.creator_fallback_fr != 'Artiste inconnu'
-        ).group_by(
-            Artwork.creator_fallback_fr
-        ).order_by(
-            func.count(Artwork.id).desc()
-        ).limit(30).all()
-        
-        top_musees_data = db.session.query(
-            Artwork.location_fr.label('nom'),
-            func.count(Artwork.id).label('count')
-        ).filter(
-            Artwork.location_fr != 'Lieu inconnu'
-        ).group_by(
-            Artwork.location_fr
-        ).order_by(
-            func.count(Artwork.id).desc()
-        ).limit(30).all()
-        
-        last_update = datetime.now().strftime('%d/%m/%Y à %H:%M')
-        
-        return render_template('stats.html',
-                             total_oeuvres=total_oeuvres,
-                             total_artistes=total_artistes,
-                             total_musees=total_musees,
-                             top_artistes=top_artistes_data,
-                             top_musees=top_musees_data,
-                             last_update=last_update)
-    except Exception as e:
-        print(f"❌ Erreur dans stats: {e}")
-        return f"Erreur: {e}", 500
-
+@app.route('/surprise')
+def surprise():
+    """Page easter egg surprise"""
+    return render_template('surprise.html')
 
 @app.route('/about')
 def about():
@@ -2068,38 +2212,33 @@ def get_rating(artwork_id):
         
 @app.route('/api/rated-works')
 def get_rated_works():
+    if 'user_id' not in session:
+        return jsonify({'works': [], 'hasMore': False})
+    
     page = int(request.args.get('page', 1))
     limit = int(request.args.get('limit', 32))
     offset = (page - 1) * limit
     
-    # Récupérer les œuvres notées par l'utilisateur
-    works = db.session.query(WorkRating)\
-        .filter_by(user_id=current_user.id)\
-        .order_by(WorkRating.created_at.desc())\
+    ratings = Rating.query.filter_by(user_id=session['user_id'])\
+        .order_by(Rating.created_at.desc())\
         .offset(offset)\
         .limit(limit + 1)\
         .all()
     
-    has_more = len(works) > limit
-    works = works[:limit]
+    has_more = len(ratings) > limit
+    ratings = ratings[:limit]
     
-    # Formater les données
     works_data = []
-    for rating in works:
-        work = rating.artwork
-        works_data.append({
-            'id': work.id,
-            'titre': work.titre,
-            'image_url': work.image_url,
-            'is_favorite': work.is_favorite(current_user.id),
-            'rating': {
-                'note_globale': rating.note_globale,
-                'note_technique': rating.note_technique,
-                'note_originalite': rating.note_originalite,
-                'note_emotion': rating.note_emotion,
-                'created_at': rating.created_at.strftime('%Y-%m-%d')
-            }
-        })
+    for rating in ratings:
+        artwork = Artwork.query.get(rating.artwork_id)
+        if artwork:
+            work_data = artwork.to_dict()
+            work_data['rating'] = rating.to_dict()
+            work_data['is_favorite'] = Favorite.query.filter_by(
+                user_id=session['user_id'],
+                artwork_id=artwork.id
+            ).first() is not None
+            works_data.append(work_data)
     
     return jsonify({
         'works': works_data,

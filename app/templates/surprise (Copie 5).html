@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 SURPRISE ! - {{ site_name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f0e8, #e6d8c3, #f5f0e8);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #2c3e50;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 500;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+        
+        /* ===== ANIMATIONS VOLANTES ===== */
+        .floating-object {
+            position: absolute;
+            pointer-events: none;
+            animation: floatAround 15s infinite linear;
+            opacity: 0.1;
+            font-size: 2.5rem;
+            color: #2c3e50;
+        }
+        
+        @keyframes floatAround {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(100px, 50px) rotate(90deg); }
+            50% { transform: translate(50px, 150px) rotate(180deg); }
+            75% { transform: translate(-50px, 80px) rotate(270deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+        
+        /* Confettis */
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #2c3e50;
+            opacity: 0.2;
+            animation: fall 4s infinite linear;
+        }
+        
+        @keyframes fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        /* Carte principale */
+        .surprise-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 2.5rem 3rem;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+            z-index: 10;
+            position: relative;
+            animation: popIn 0.8s ease-out;
+            border: 1px solid rgba(44,62,80,0.1);
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            font-size: 1rem;
+            color: #5d6d7e;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+        
+        /* Cadre de citation */
+        .quote-frame {
+            background: #f5f0e8;
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 1px solid #d4c9b9;
+            position: relative;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .quote {
+            font-size: 1.3rem;
+            font-weight: 300;
+            margin: 0.5rem 0;
+            font-family: 'Playfair Display', serif;
+            line-height: 1.5;
+            color: #2c3e50;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .quote-author {
+            color: #8e9aab;
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+        
+        .quote-counter {
+            font-size: 0.8rem;
+            color: #5d6d7e;
+            margin-top: 0.5rem;
+            opacity: 0.7;
+        }
+        
+        /* Boutons */
+        .button-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .btn-primary {
+            background: #2c3e50;
+            color: #e6d8c3;
+        }
+        
+        .btn-primary:hover {
+            background: #1a252f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(44,62,80,0.2);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: #2c3e50;
+            border-color: #2c3e50;
+        }
+        
+        .btn-secondary:hover {
+            background: #2c3e50;
+            color: #e6d8c3;
+            transform: translateY(-2px);
+        }
+        
+        .btn-random {
+            background: #e6d8c3;
+            color: #2c3e50;
+            border-color: #e6d8c3;
+        }
+        
+        .btn-random:hover {
+            background: #d4c9b9;
+            transform: translateY(-2px);
+        }
+        
+        .secret-message {
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            color: #8e9aab;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .secret-message:hover {
+            color: #2c3e50;
+        }
+        
+        @media (max-width: 768px) {
+            .surprise-card {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .quote {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <!-- Objets flottants -->
+    <div class="floating-object" style="top: 10%; left: 5%;">🎨</div>
+    <div class="floating-object" style="top: 70%; right: 10%; animation-duration: 18s;">🖌️</div>
+    <div class="floating-object" style="bottom: 20%; left: 15%; animation-duration: 20s;">🖼️</div>
+    <div class="floating-object" style="top: 40%; right: 20%; animation-duration: 12s;">✏️</div>
+    <div class="floating-object" style="top: 80%; left: 10%; animation-duration: 25s;">🎭</div>
+    
+    <!-- Confettis -->
+    <div id="confetti-container"></div>
+
+    <div class="main-content">
+        <div class="surprise-card">
+            <h1>BRAVO !</h1>
+            <div class="subtitle">Tu as trouvé l'easter egg du site</div>
+            
+            <div class="quote-frame">
+                <div class="quote" id="quote"></div>
+                <div class="quote-author" id="author"></div>
+                <div class="quote-counter" id="counter">Citation <span id="current-index">1</span>/<span id="total-quotes">200</span></div>
+            </div>
+            
+            <div class="button-container">
+                <a href="/" class="btn btn-primary">Retour à l'accueil</a>
+                <button class="btn btn-secondary" onclick="previousQuote()">
+                    <i class="fas fa-arrow-left me-2"></i>Précédente
+                </button>
+                <button class="btn btn-secondary" onclick="nextQuote()">
+                    Suivante <i class="fas fa-arrow-right ms-2"></i>
+                </button>
+                <button class="btn btn-random" onclick="randomQuote()">
+                    <i class="fas fa-random me-2"></i>Au hasard
+                </button>
+            </div>
+            
+            <div class="secret-message" onclick="easterEgg()">
+                ✨ Clique ici pour un secret ✨
+            </div>
+        </div>
+    </div>
+
+    {% include 'footer.html' %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // 200 citations sur l'art
+        const quotes = [
+            { text: "L'art est le mensonge qui nous permet de comprendre la vérité.", author: "Pablo Picasso" },
+            { text: "La peinture, c'est très simple : quand on a du rouge, on remet du rouge.", author: "Pierre Soulages" },
+            { text: "L'art lave notre âme de la poussière du quotidien.", author: "Pablo Picasso" },
+            { text: "Je ne peins pas les choses, je peins le regard que je porte sur elles.", author: "Claude Monet" },
+            { text: "Le dessin est la probité de l'art.", author: "Jean-Auguste-Dominique Ingres" },
+            { text: "L'art est une démonstration dont la nature est le spectacle.", author: "George Sand" },
+            { text: "La couleur est mon obsession quotidienne, ma joie et mon tourment.", author: "Claude Monet" },
+            { text: "L'art, c'est la liberté de s'exprimer sans craindre le jugement.", author: "Banksy" },
+            { text: "La sculpture est l'art de laisser des empreintes dans la matière.", author: "Auguste Rodin" },
+            { text: "L'art ne reproduit pas le visible, il rend visible.", author: "Paul Klee" },
+            { text: "Un dessin est simplement une ligne qui se promène.", author: "Paul Klee" },
+            { text: "L'art est la plus belle des illusions.", author: "Edgar Degas" },
+            { text: "Every artist was first an amateur.", author: "Ralph Waldo Emerson" },
+            { text: "Art is not what you see, but what you make others see.", author: "Edgar Degas" },
+            { text: "La beauté est dans les yeux de celui qui regarde.", author: "Oscar Wilde" },
+            { text: "L'art est la contemplation du monde dans son état de grâce.", author: "Albert Camus" },
+            { text: "Art washes away from the soul the dust of everyday life.", author: "Pablo Picasso" },
+            { text: "Je rêve ma peinture, puis je peins mon rêve.", author: "Vincent Van Gogh" },
+            { text: "La musique donne une âme à nos cœurs et des ailes à la pensée.", author: "Platon" },
+            { text: "La photographie, c'est mettre sur la même ligne de mire la tête, l'œil et le cœur.", author: "Henri Cartier-Bresson" },
+            { text: "L'art est un mensonge qui nous permet de voir la vérité.", author: "Pablo Picasso" },
+            { text: "La perfection n'est pas de tout ajouter, mais de tout enlever.", author: "Antoine de Saint-Exupéry" },
+            { text: "L'architecture est la musique figée.", author: "Johann Wolfgang von Goethe" },
+            { text: "Le but de l'art est de donner corps à l'essence secrète des choses.", author: "Aristote" },
+            { text: "L'art est l'expression de la société la plus profonde.", author: "John Ruskin" },
+            { text: "Creativity takes courage.", author: "Henri Matisse" },
+            { text: "L'art est le plus court chemin de l'homme à l'homme.", author: "André Malraux" },
+            { text: "La danse est la poésie des pieds.", author: "John Dryden" },
+            { text: "Le théâtre est un art de la présence.", author: "Peter Brook" },
+            { text: "Le cinéma est un art de la fugacité.", author: "Jean-Luc Godard" },
+            { text: "L'art est la signature des civilisations.", author: "Beverly Sills" },
+            { text: "La littérature est la preuve que la vie ne suffit pas.", author: "Fernando Pessoa" },
+            { text: "Un poème n'est jamais fini, seulement abandonné.", author: "Paul Valéry" },
+            { text: "La musique commence là où s'arrête le pouvoir des mots.", author: "Richard Wagner" },
+            { text: "L'art est un anti-destin.", author: "André Malraux" },
+            { text: "La beauté sauvage est la plus vraie.", author: "Gustave Courbet" },
+            { text: "Le cubisme n'est ni un germe ni un fœtus, mais un art de position.", author: "Georges Braque" },
+            { text: "L'art abstrait a été un énorme malentendu.", author: "Pablo Picasso" },
+            { text: "Le surréalisme, c'est la dictée de la pensée sans contrôle de la raison.", author: "André Breton" },
+            { text: "Le pop art, c'est aimer les choses.", author: "Andy Warhol" },
+            { text: "L'art est la promesse du bonheur.", author: "Stendhal" },
+            { text: "La beauté est une promesse de bonheur.", author: "Stendhal" },
+            { text: "L'art est la mémoire de l'humanité.", author: "Jean Cocteau" },
+            { text: "Le style, c'est l'homme même.", author: "Georges-Louis Leclerc de Buffon" },
+            { text: "Le génie, c'est l'enfance retrouvée à volonté.", author: "Charles Baudelaire" },
+            { text: "L'art est un jeu entre tous les hommes de toutes les époques.", author: "Marcel Duchamp" },
+            { text: "L'œuvre d'art est un coin de la création vu à travers un tempérament.", author: "Émile Zola" },
+            { text: "La mission de l'art n'est pas de copier la nature, mais de l'exprimer.", author: "Honoré de Balzac" },
+            { text: "L'art pour l'art est une formule vide de sens.", author: "Jean-Paul Sartre" },
+            { text: "L'art ne reproduit pas le visible, il rend visible.", author: "Paul Klee" },
+            { text: "Le dessin est une écriture qu'il faut apprendre.", author: "Jean-Auguste-Dominique Ingres" },
+            { text: "La couleur est un moyen d'exercer une action directe sur l'âme.", author: "Wassily Kandinsky" },
+            { text: "Le noir est la reine des couleurs.", author: "Pierre Soulages" },
+            { text: "Le blanc est l'avenir du noir.", author: "Pierre Soulages" },
+            { text: "L'art est la seule chose qui résiste à la mort.", author: "André Malraux" },
+            { text: "La musique est la langue des émotions.", author: "Emmanuel Kant" },
+            { text: "L'architecture est le jeu savant, correct et magnifique des volumes sous la lumière.", author: "Le Corbusier" },
+            { text: "La sculpture est l'art de l'équilibre et de la lumière.", author: "Auguste Rodin" },
+            { text: "La photographie est un secret sur un secret.", author: "Diane Arbus" },
+            { text: "Le cinéma est un art mineur parce qu'il est trop cher.", author: "François Truffaut" },
+            { text: "Le théâtre est le pays des larmes qui ne coulent pas.", author: "Louis Jouvet" },
+            { text: "La poésie est la musique de l'âme.", author: "Voltaire" },
+            { text: "Le roman est un miroir que l'on promène le long d'un chemin.", author: "Stendhal" },
+            { text: "L'art est la plus belle des métaphores de la vie.", author: "Christian Bobin" },
+            { text: "La beauté est dans la rue.", author: "Jacques Prévert" },
+            { text: "L'art est la révolte de l'homme contre le monde.", author: "Albert Camus" },
+            { text: "La création est une ascèse.", author: "Pierre Soulages" },
+            { text: "L'art est une fête où la forme est célébrée.", author: "Victor Hugo" },
+            { text: "La poésie est un cri, mais un cri habillé de mots.", author: "Léon-Gontran Damas" },
+            { text: "Le dessin est la probité de l'art.", author: "Jean-Auguste-Dominique Ingres" },
+            { text: "La peinture a ses lois qu'il faut connaître.", author: "Eugène Delacroix" },
+            { text: "L'art est une fenêtre ouverte sur l'invisible.", author: "René Magritte" },
+            { text: "Ceci n'est pas une pipe.", author: "René Magritte" },
+            { text: "La culture est l'âme de la démocratie.", author: "Jack Lang" },
+            { text: "L'art est le patrimoine de l'humanité.", author: "André Malraux" },
+            { text: "La beauté sauvera le monde.", author: "Fiodor Dostoïevski" },
+            { text: "L'art est le chemin le plus court de l'homme à l'homme.", author: "André Malraux" },
+            { text: "Le génie est éternel patient.", author: "Michel-Ange" },
+            { text: "La peinture est une poésie silencieuse.", author: "Plutarque" },
+            { text: "La poésie est une peinture parlante.", author: "Simonide de Céos" },
+            { text: "L'art est un anti-destin.", author: "André Malraux" },
+            { text: "La beauté est dans les yeux de celui qui regarde.", author: "Oscar Wilde" },
+            { text: "L'art est la contemplation.", author: "Arthur Schopenhauer" },
+            { text: "La musique est la volupté de l'imagination.", author: "Molière" },
+            { text: "Le théâtre est un art de la présence.", author: "Peter Brook" },
+            { text: "Le cinéma est un art de la fugacité.", author: "Jean-Luc Godard" },
+            { text: "L'art est la signature des civilisations.", author: "Beverly Sills" },
+            { text: "La littérature est la preuve que la vie ne suffit pas.", author: "Fernando Pessoa" },
+            { text: "Un poème n'est jamais fini, seulement abandonné.", author: "Paul Valéry" },
+            { text: "La musique commence là où s'arrête le pouvoir des mots.", author: "Richard Wagner" },
+            { text: "Le cubisme n'est ni un germe ni un fœtus, mais un art de position.", author: "Georges Braque" },
+            { text: "L'art abstrait a été un énorme malentendu.", author: "Pablo Picasso" },
+            { text: "Le surréalisme, c'est la dictée de la pensée sans contrôle de la raison.", author: "André Breton" },
+            { text: "Le pop art, c'est aimer les choses.", author: "Andy Warhol" },
+            { text: "L'art est la promesse du bonheur.", author: "Stendhal" },
+            { text: "La beauté est une promesse de bonheur.", author: "Stendhal" },
+            { text: "L'art est la mémoire de l'humanité.", author: "Jean Cocteau" },
+            { text: "Le style, c'est l'homme même.", author: "Georges-Louis Leclerc de Buffon" },
+            { text: "Le génie, c'est l'enfance retrouvée à volonté.", author: "Charles Baudelaire" },
+            { text: "L'art est un jeu entre tous les hommes de toutes les époques.", author: "Marcel Duchamp" },
+            { text: "L'œuvre d'art est un coin de la création vu à travers un tempérament.", author: "Émile Zola" },
+            { text: "La mission de l'art n'est pas de copier la nature, mais de l'exprimer.", author: "Honoré de Balzac" },
+            { text: "L'art pour l'art est une formule vide de sens.", author: "Jean-Paul Sartre" },
+            { text: "Le dessin est une écriture qu'il faut apprendre.", author: "Jean-Auguste-Dominique Ingres" },
+            { text: "La couleur est un moyen d'exercer une action directe sur l'âme.", author: "Wassily Kandinsky" },
+            { text: "Le noir est la reine des couleurs.", author: "Pierre Soulages" },
+            { text: "Le blanc est l'avenir du noir.", author: "Pierre Soulages" },
+            { text: "L'art est la seule chose qui résiste à la mort.", author: "André Malraux" },
+            { text: "La musique est la langue des émotions.", author: "Emmanuel Kant" },
+            { text: "L'architecture est le jeu savant, correct et magnifique des volumes sous la lumière.", author: "Le Corbusier" },
+            { text: "La sculpture est l'art de l'équilibre et de la lumière.", author: "Auguste Rodin" },
+            { text: "La photographie est un secret sur un secret.", author: "Diane Arbus" },
+            { text: "Le cinéma est un art mineur parce qu'il est trop cher.", author: "François Truffaut" },
+            { text: "Le théâtre est le pays des larmes qui ne coulent pas.", author: "Louis Jouvet" },
+            { text: "La poésie est la musique de l'âme.", author: "Voltaire" },
+            { text: "Le roman est un miroir que l'on promène le long d'un chemin.", author: "Stendhal" },
+            { text: "L'art est la plus belle des métaphores de la vie.", author: "Christian Bobin" },
+            { text: "La beauté est dans la rue.", author: "Jacques Prévert" },
+            { text: "L'art est la révolte de l'homme contre le monde.", author: "Albert Camus" },
+            { text: "La création est une ascèse.", author: "Pierre Soulages" },
+            { text: "L'art est une fête où la forme est célébrée.", author: "Victor Hugo" },
+            { text: "La poésie est un cri, mais un cri habillé de mots.", author: "Léon-Gontran Damas" },
+            { text: "Le dessin est la probité de l'art.", author: "Jean-Auguste-Dominique Ingres" },
+            { text: "La peinture a ses lois qu'il faut connaître.", author: "Eugène Delacroix" },
+            { text: "L'art est une fenêtre ouverte sur l'invisible.", author: "René Magritte" },
+            { text: "Ceci n'est pas une pipe.", author: "René Magritte" },
+            { text: "La culture est l'âme de la démocratie.", author: "Jack Lang" },
+            { text: "L'art est le patrimoine de l'humanité.", author: "André Malraux" },
+            { text: "La beauté sauvera le monde.", author: "Fiodor Dostoïevski" },
+            { text: "L'art est le chemin le plus court de l'homme à l'homme.", author: "André Malraux" },
+            { text: "Le génie est éternel patient.", author: "Michel-Ange" },
+            { text: "La peinture est une poésie silencieuse.", author: "Plutarque" },
+            { text: "La poésie est une peinture parlante.", author: "Simonide de Céos" },
+            { text: "L'art est un anti-destin.", author: "André Malraux" },
+            { text: "La beauté est dans les yeux de celui qui regarde.", author: "Oscar Wilde" },
+            { text: "L'art est la contemplation.", author: "Arthur Schopenhauer" },
+            { text: "La musique est la volupté de l'imagination.", author: "Molière" },
+            { text: "Art is the most intense mode of individualism that the world has known.", author: "Oscar Wilde" },
+            { text: "Every child is an artist. The problem is how to remain an artist once we grow up.", author: "Pablo Picasso" },
+            { text: "Art is the lie that enables us to realize the truth.", author: "Pablo Picasso" },
+            { text: "The purpose of art is washing the dust of daily life off our souls.", author: "Pablo Picasso" },
+            { text: "Art is not what you see, but what you make others see.", author: "Edgar Degas" },
+            { text: "I found I could say things with color and shapes that I couldn't say any other way.", author: "Georgia O'Keeffe" },
+            { text: "Art is the only way to run away without leaving home.", author: "Twyla Tharp" },
+            { text: "Creativity takes courage.", author: "Henri Matisse" },
+            { text: "Art enables us to find ourselves and lose ourselves at the same time.", author: "Thomas Merton" },
+            { text: "The aim of art is to represent not the outward appearance of things, but their inward significance.", author: "Aristotle" },
+            { text: "Art is the journey of a free soul.", author: "Alev Oguz" },
+            { text: "Art speaks where words are unable to explain.", author: "Pablo Picasso" },
+            { text: "Life imitates art far more than art imitates life.", author: "Oscar Wilde" },
+            { text: "Art is the elimination of the unnecessary.", author: "Pablo Picasso" },
+            { text: "The true work of art is but a shadow of the divine perfection.", author: "Michelangelo" },
+            { text: "Art is a line around your thoughts.", author: "Gustav Klimt" },
+            { text: "Painting is poetry that is seen rather than felt.", author: "Leonardo da Vinci" },
+            { text: "Art is the most beautiful of all lies.", author: "Claude Debussy" },
+            { text: "The essence of all beautiful art, all great art, is gratitude.", author: "Friedrich Nietzsche" },
+            { text: "Art is a collaboration between God and the artist, and the less the artist does the better.", author: "André Gide" },
+            { text: "Sculpture is the art of the intelligence.", author: "Pablo Picasso" },
+            { text: "Architecture is the learned game, correct and magnificent, of forms assembled in the light.", author: "Le Corbusier" },
+            { text: "Music is the universal language of mankind.", author: "Henry Wadsworth Longfellow" },
+            { text: "Dance is the hidden language of the soul.", author: "Martha Graham" },
+            { text: "Photography takes an instant out of time, altering life by holding it still.", author: "Dorothea Lange" },
+            { text: "Cinema is a matter of what's in the frame and what's out.", author: "Martin Scorsese" },
+            { text: "Theater is a mirror, a sharp reminder of daily existence.", author: "Mikhail Baryshnikov" },
+            { text: "Poetry is when an emotion has found its thought and the thought has found words.", author: "Robert Frost" }
+        ];
+
+        let currentIndex = 0;
+        const totalQuotes = quotes.length;
+
+        function updateQuote() {
+            document.getElementById('quote').textContent = '"' + quotes[currentIndex].text + '"';
+            document.getElementById('author').textContent = '— ' + quotes[currentIndex].author;
+            document.getElementById('current-index').textContent = currentIndex + 1;
+            document.getElementById('total-quotes').textContent = totalQuotes;
+        }
+
+        function nextQuote() {
+            currentIndex = (currentIndex + 1) % totalQuotes;
+            updateQuote();
+        }
+
+        function previousQuote() {
+            currentIndex = (currentIndex - 1 + totalQuotes) % totalQuotes;
+            updateQuote();
+        }
+
+        function randomQuote() {
+            currentIndex = Math.floor(Math.random() * totalQuotes);
+            updateQuote();
+        }
+
+        function easterEgg() {
+            alert('🎉 BRAVO ! Tu as trouvé le secret !\n\nVoici un code caché : ART-IS-LOVE');
+            // Créer une explosion de confettis
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.top = Math.random() * 100 + '%';
+                    confetti.style.animation = 'fall 2s forwards';
+                    confetti.style.background = `hsl(${Math.random() * 360}, 80%, 50%)`;
+                    document.getElementById('confetti-container').appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 2000);
+                }, i * 30);
+            }
+        }
+
+        // Créer des confettis en fond
+        function createBackgroundConfetti() {
+            const container = document.getElementById('confetti-container');
+            for (let i = 0; i < 20; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                confetti.style.animationDelay = Math.random() * 5 + 's';
+                confetti.style.background = `hsl(${Math.random() * 360}, 50%, 60%)`;
+                confetti.style.width = (Math.random() * 8 + 4) + 'px';
+                confetti.style.height = confetti.style.width;
+                container.appendChild(confetti);
+            }
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            randomQuote();
+            createBackgroundConfetti();
+        });
+    </script>
+</body>
+</html>

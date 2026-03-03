@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easter Egg - MuseumWiki</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0b1a2a, #1e2f3f);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Particules de feu d'artifice */
+        .firework-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #e6d8c3;
+            pointer-events: none;
+            opacity: 0;
+            animation: explode 2s ease-out forwards;
+        }
+        
+        @keyframes explode {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+        
+        /* Étoiles scintillantes */
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: twinkle 3s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.5); }
+        }
+        
+        /* Carte principale */
+        .easter-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 3rem 4rem;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4), 0 0 0 1px #e6d8c3 inset;
+            text-align: center;
+            max-width: 600px;
+            z-index: 10;
+            position: relative;
+            animation: appear 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        @keyframes appear {
+            0% { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0); opacity: 1; }
+        }
+        
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            color: #8e9aab;
+            margin-bottom: 2.5rem;
+            font-weight: 300;
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 1.5rem;
+        }
+        
+        .bravo {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .quote-container {
+            background: #f9f5f0;
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            margin: 2rem 0;
+            border-left: 4px solid #2c3e50;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .quote-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            font-style: italic;
+            margin-bottom: 1rem;
+            transition: opacity 0.5s ease;
+        }
+        
+        .quote-author {
+            color: #8e9aab;
+            font-size: 1rem;
+            font-weight: 300;
+            text-align: right;
+            border-top: 1px dashed #d4c9b9;
+            padding-top: 1rem;
+            margin-top: 0.5rem;
+        }
+        
+        .button-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0 1rem;
+        }
+        
+        .btn {
+            padding: 0.8rem 2rem;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+        
+        .btn-primary {
+            background: #2c3e50;
+            color: #e6d8c3;
+        }
+        
+        .btn-primary:hover {
+            background: #1a2a38;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(44,62,80,0.3);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: #2c3e50;
+            border-color: #2c3e50;
+        }
+        
+        .btn-secondary:hover {
+            background: #f0e8dc;
+            transform: translateY(-2px);
+        }
+        
+        .stats-mini {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0 1rem;
+            padding: 1rem 0;
+            border-top: 1px solid #eaeaea;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2c3e50;
+            line-height: 1;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: #8e9aab;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 0.3rem;
+        }
+        
+        .signature {
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: #b7aa9a;
+            letter-spacing: 1px;
+        }
+        
+        .signature span {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .signature span:hover {
+            color: #2c3e50;
+            text-decoration: underline;
+        }
+        
+        .fade-out {
+            opacity: 0;
+        }
+        
+        .fade-in {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Conteneur pour les étoiles -->
+    <div id="stars"></div>
+    
+    <!-- Conteneur pour le feu d'artifice -->
+    <div id="fireworks"></div>
+    
+    <div class="easter-card">
+        <h1>MuseumWiki</h1>
+        <div class="bravo">Bravo !</div>
+        <div class="subtitle">Tu as découvert l'easter egg du site</div>
+        
+        <div class="quote-container" id="quoteContainer">
+            <div class="quote-text" id="quoteText">
+                L'art est le plus beau des mensonges.
+            </div>
+            <div class="quote-author" id="quoteAuthor">
+                Claude Debussy
+            </div>
+        </div>
+        
+        <div class="button-container">
+            <button class="btn btn-primary" onclick="newQuote()">
+                Nouvelle citation
+            </button>
+            <a href="/" class="btn btn-secondary">
+                Retour à la galerie
+            </a>
+        </div>
+        
+        <div class="stats-mini">
+            <div class="stat-item">
+                <div class="stat-number" id="visitorCount">42</div>
+                <div class="stat-label">Explorateurs</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">∞</div>
+                <div class="stat-label">Inspiration</div>
+            </div>
+        </div>
+        
+        <div class="signature">
+            <span onclick="secretFireworks()">✦ ✦ ✦</span>
+        </div>
+    </div>
+    
+    <script>
+        // Base de citations sur l'art
+        const quotes = [
+            {
+                text: "L'art est le plus beau des mensonges.",
+                author: "Claude Debussy"
+            },
+            {
+                text: "L'art lave notre âme de la poussière du quotidien.",
+                author: "Pablo Picasso"
+            },
+            {
+                text: "L'art est la contemplation du monde dans un état de grâce.",
+                author: "Marcel Proust"
+            },
+            {
+                text: "L'art est la seule chose qui résiste à la mort.",
+                author: "André Malraux"
+            },
+            {
+                text: "La peinture, c'est très simple : quand on a du rouge, on met du rouge.",
+                author: "Pierre Soulages"
+            },
+            {
+                text: "L'art ne reproduit pas le visible, il rend visible.",
+                author: "Paul Klee"
+            },
+            {
+                text: "La couleur est un moyen d'exercer une influence directe sur l'âme.",
+                author: "Wassily Kandinsky"
+            },
+            {
+                text: "Le dessin est la probité de l'art.",
+                author: "Jean-Auguste-Dominique Ingres"
+            },
+            {
+                text: "L'art est fait pour troubler, la science rassure.",
+                author: "Georges Braque"
+            },
+            {
+                text: "La sculpture est l'art de laisser des traces dans l'espace.",
+                author: "Auguste Rodin"
+            },
+            {
+                text: "L'art est la plus belle des métaphores de la vie.",
+                author: "Françoise Sagan"
+            },
+            {
+                text: "Chaque enfant est un artiste. Le problème, c'est de rester un artiste en grandissant.",
+                author: "Pablo Picasso"
+            }
+        ];
+        
+        // Créer des étoiles en fond
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        // Feu d'artifice initial
+        function launchFireworks() {
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => createFirework(), i * 50);
+            }
+        }
+        
+        function createFirework() {
+            const container = document.getElementById('fireworks');
+            const colors = ['#e6d8c3', '#dc3545', '#ffc107', '#3498db', '#2c3e50', '#9b59b6', '#e67e22'];
+            
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'firework-particle';
+                
+                // Position de départ (centre de l'écran avec un peu d'aléatoire)
+                const startX = window.innerWidth / 2 + (Math.random() - 0.5) * 200;
+                const startY = window.innerHeight / 2 + (Math.random() - 0.5) * 200;
+                
+                // Direction aléatoire
+                const angle = (i / 30) * Math.PI * 2;
+                const distance = 100 + Math.random() * 150;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+                
+                particle.style.left = startX + 'px';
+                particle.style.top = startY + 'px';
+                particle.style.setProperty('--tx', tx + 'px');
+                particle.style.setProperty('--ty', ty + 'px');
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.width = (3 + Math.random() * 4) + 'px';
+                particle.style.height = particle.style.width;
+                
+                container.appendChild(particle);
+                
+                // Nettoyer après animation
+                setTimeout(() => {
+                    particle.remove();
+                }, 2000);
+            }
+        }
+        
+        // Changer de citation avec animation
+        function newQuote() {
+            const quoteText = document.getElementById('quoteText');
+            const quoteAuthor = document.getElementById('quoteAuthor');
+            const container = document.getElementById('quoteContainer');
+            
+            // Animation de fondu
+            quoteText.style.opacity = '0';
+            quoteAuthor.style.opacity = '0';
+            
+            setTimeout(() => {
+                const randomIndex = Math.floor(Math.random() * quotes.length);
+                quoteText.textContent = quotes[randomIndex].text;
+                quoteAuthor.textContent = quotes[randomIndex].author;
+                
+                quoteText.style.opacity = '1';
+                quoteAuthor.style.opacity = '1';
+            }, 300);
+        }
+        
+        // Compteur de visites (aléatoire pour l'effet)
+        function updateVisitorCount() {
+            const countElement = document.getElementById('visitorCount');
+            const random = Math.floor(Math.random() * 100) + 1;
+            countElement.textContent = random;
+        }
+        
+        // Secret : relancer un feu d'artifice
+        function secretFireworks() {
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => createFirework(), i * 30);
+            }
+        }
+        
+        // Initialisation
+        createStars();
+        launchFireworks();
+        updateVisitorCount();
+        
+        // Changer le compteur toutes les 10 secondes
+        setInterval(updateVisitorCount, 10000);
+        
+        // Changer la citation toutes les 15 secondes
+        setInterval(newQuote, 15000);
+    </script>
+</body>
+</html>

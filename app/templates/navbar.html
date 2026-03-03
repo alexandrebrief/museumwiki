@@ -462,127 +462,190 @@
             }
         }
         
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 0.4rem 0;
-            }
-            
-            .navbar-brand {
-                font-size: 1.3rem;
-            }
-        }
+/* ===== RÉDUCTION DES MARGES POUR BLUETOCUS SUR MOBILE ===== */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0.2rem 0 !important;
+    }
+    
+    .navbar-mobile-top,
+    .d-lg-none > div:first-child {
+        padding: 0.3 !important;
+        margin: 0.3 !important;
+    }
+    
+    .navbar-brand,
+    .d-lg-none .navbar-brand,
+    .mobile-brand {
+        margin: 0 !important;
+        padding: 0.4 !important;
+        line-height: 1.2 !important;
+        font-size: 1.2rem !important;
+    }
+    
+    /* Réduire l'espace entre le logo et la barre de recherche */
+    .d-lg-none > div:first-child {
+        margin-bottom: 0.5 !important;
+        padding-bottom: 0.5 !important;
+    }
+    
+    .d-lg-none > div:last-child {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+}
+
+
+
     </style>
     
-    <div class="container">
-        <!-- Logo / Nom du site -->
-        <a class="navbar-brand" href="/">{{ site_name }}</a>
-        
-        <!-- Barre de recherche -->
-        <div class="navbar-search">
-            <form action="/" method="get" class="d-flex align-items-center w-100" autocomplete="off" id="navbar-search-form">
-                <input type="text" 
-                       name="q" 
-                       id="navbar-search-input"
-                       class="search-input" 
-                       placeholder="Rechercher..."
-                       value="{{ query if query else '' }}">
-                {% if query %}
-                <button type="button" class="clear-search" onclick="window.clearNavbarSearch ? clearNavbarSearch() : window.location.href='/'">
-                    <i class="fas fa-times"></i>
-                </button>
-                {% endif %}
-                <button type="submit" class="search-button">
+<div class="container">
+
+    
+<!-- Version mobile : 2 niveaux -->
+<div class="d-lg-none w-100">
+    <!-- Niveau 1 : Logo centré -->
+    <div style="display: flex; justify-content: center; align-items: center; width: 100%; padding: 0.2rem 0;">
+        <a class="navbar-brand" href="/" style="font-size: 1.3rem; margin: 0;">{{ site_name }}</a>
+    </div>
+    
+    <!-- Niveau 2 : Barre recherche, FR/EN, icône compte -->
+    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0.2rem 0.5rem 0.4rem 0.5rem; gap: 0.5rem;">
+        <!-- Barre de recherche à gauche -->
+        <div style="flex: 1; min-width: 0;">
+            <form action="/" method="get" style="display: flex; align-items: center; background: rgba(255,255,255,0.15); border-radius: 30px; padding: 0.1rem 0.1rem 0.1rem 0.6rem; border: 1px solid rgba(255,255,255,0.2);">
+                <input type="text" name="q" placeholder="Rechercher..." value="{{ query if query else '' }}" style="background: transparent; border: none; color: white; width: 100%; padding: 0.3rem 0; font-size: 0.8rem; outline: none;">
+                <button type="submit" style="background: transparent; border: none; color: white; padding: 0.2rem 0.5rem;">
                     <i class="fas fa-search"></i>
                 </button>
             </form>
-            <!-- Suggestions -->
-            <div id="navbar-suggestions" class="suggestions-box"></div>
         </div>
-
-
-<!-- BOUTON DE CHANGEMENT DE LANGUE - À AJOUTER ICI -->
-<div class="nav-item d-flex align-items-center mx-2">
-    <a href="/set-language/fr" class="btn btn-sm {% if session.language == 'fr' %}active-lang{% endif %}" 
-       style="background: {% if session.language == 'fr' %}#e6d8c3{% else %}transparent{% endif %}; 
-              color: {% if session.language == 'fr' %}#2c3e50{% else %}#e6d8c3{% endif %}; 
-              border: 1px solid #e6d8c3; 
-              border-radius: 30px 0 0 30px; 
-              padding: 0.2rem 0.6rem; 
-              font-size: 0.8rem; 
-              text-decoration: none;">
-        FR
-    </a>
-    <a href="/set-language/en" class="btn btn-sm {% if session.language == 'en' %}active-lang{% endif %}" 
-       style="background: {% if session.language == 'en' %}#e6d8c3{% else %}transparent{% endif %}; 
-              color: {% if session.language == 'en' %}#2c3e50{% else %}#e6d8c3{% endif %}; 
-              border: 1px solid #e6d8c3; 
-              border-left: none; 
-              border-radius: 0 30px 30px 0; 
-              padding: 0.2rem 0.6rem; 
-              font-size: 0.8rem; 
-              text-decoration: none;">
-        EN
-    </a>
-</div>
-
-<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-    <span class="navbar-toggler-icon"></span>
-</button>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
         
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-            
-
-{% if session.username %}
-    <!-- Utilisateur connecté - AVATAR AVEC PREMIÈRE LETTRE -->
-    <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 0;">
-            <div class="user-avatar">
-                {{ session.username[0]|upper }}
-            </div>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-account dropdown-menu-end" aria-labelledby="userDropdown">
-            <li>
-                <a class="dropdown-item-account" href="/profile">
-                    <i class="far fa-id-card"></i> Mon profil
-                </a>
-            </li>
-            <li>
-                <a class="dropdown-item-account" href="/mes-oeuvres">
-                    <i class="far fa-star"></i> Mes œuvres notées
-                </a>
-            </li>
-            <li>
-                <a class="dropdown-item-account" href="/favoris">
-                    <i class="far fa-heart"></i> Mes favoris
-                </a>
-            </li>                            
-            <li><hr class="dropdown-divider-account"></li>
-            <li>
-                <a class="dropdown-item-account" href="/logout?next={{ request.path }}">
-                    <i class="fas fa-sign-out-alt"></i> Déconnexion
-                </a>
-            </li>
-        </ul>
-    </li>
-{% else %}
-    <!-- Utilisateur non connecté - ICONE QUI OUVRE LA MODALE D'INSCRIPTION -->
-    <li class="nav-item">
-        <a class="nav-link" href="#" onclick="openRegisterModal(); return false;" style="display: flex; align-items: center; gap: 5px; color: #e6d8c3;" title="S'inscrire / Se connecter">
-            <i class="far fa-user-circle" style="font-size: 1.3rem;"></i>
-        </a>
-    </li>
-{% endif %}
-
-                
-                
-            </ul>
+        <!-- FR/EN au milieu -->
+        <div class="d-flex align-items-center" style="flex-shrink: 0;">
+            <a href="/set-language/fr" class="btn btn-sm {% if session.language == 'fr' %}active-lang{% endif %}" 
+               style="background: {% if session.language == 'fr' %}#e6d8c3{% else %}transparent{% endif %}; 
+                      color: {% if session.language == 'fr' %}#2c3e50{% else %}#e6d8c3{% endif %}; 
+                      border: 1px solid #e6d8c3; 
+                      border-radius: 30px 0 0 30px; 
+                      padding: 0.15rem 0.4rem; 
+                      font-size: 0.7rem; 
+                      text-decoration: none;">
+                FR
+            </a>
+            <a href="/set-language/en" class="btn btn-sm {% if session.language == 'en' %}active-lang{% endif %}" 
+               style="background: {% if session.language == 'en' %}#e6d8c3{% else %}transparent{% endif %}; 
+                      color: {% if session.language == 'en' %}#2c3e50{% else %}#e6d8c3{% endif %}; 
+                      border: 1px solid #e6d8c3; 
+                      border-left: none; 
+                      border-radius: 0 30px 30px 0; 
+                      padding: 0.15rem 0.4rem; 
+                      font-size: 0.7rem; 
+                      text-decoration: none;">
+                EN
+            </a>
+        </div>
+        
+        <!-- Icône compte à droite -->
+        <div style="flex-shrink: 0;">
+            {% if session.username %}
+            <a href="/profile" style="display: flex; align-items: center; text-decoration: none;">
+                <div class="user-avatar" style="width: 28px; height: 28px; font-size: 0.8rem;">
+                    {{ session.username[0]|upper }}
+                </div>
+            </a>
+            {% else %}
+            <a href="#" onclick="openRegisterModal(); return false;" style="display: flex; align-items: center; color: #e6d8c3; text-decoration: none;">
+                <i class="far fa-user-circle" style="font-size: 1.2rem;"></i>
+            </a>
+            {% endif %}
         </div>
     </div>
+</div>
+
+    
+<!-- Version desktop (inchangée) -->
+<div class="d-none d-lg-flex align-items-center w-100">
+    <!-- LOGO À AJOUTER ICI -->
+    <a class="navbar-brand" href="/" style="margin-right: 1rem;">{{ site_name }}</a>
+    
+    <!-- Barre de recherche desktop -->
+    <div class="navbar-search" style="flex: 0 1 400px;">
+        <form action="/" method="get" class="d-flex align-items-center w-100" autocomplete="off" id="navbar-search-form">
+            <input type="text" name="q" id="navbar-search-input" class="search-input" placeholder="Rechercher..." value="{{ query if query else '' }}">
+            {% if query %}
+            <button type="button" class="clear-search" onclick="window.clearNavbarSearch ? clearNavbarSearch() : window.location.href='/'">
+                <i class="fas fa-times"></i>
+            </button>
+            {% endif %}
+            <button type="submit" class="search-button">
+                <i class="fas fa-search"></i>
+            </button>
+        </form>
+        <div id="navbar-suggestions" class="suggestions-box"></div>
+    </div>
+    
+    <!-- FR/EN desktop -->
+    <div class="nav-item d-flex align-items-center mx-2">
+        <a href="/set-language/fr" class="btn btn-sm {% if session.language == 'fr' %}active-lang{% endif %}" 
+           style="background: {% if session.language == 'fr' %}#e6d8c3{% else %}transparent{% endif %}; 
+                  color: {% if session.language == 'fr' %}#2c3e50{% else %}#e6d8c3{% endif %}; 
+                  border: 1px solid #e6d8c3; 
+                  border-radius: 30px 0 0 30px; 
+                  padding: 0.2rem 0.6rem; 
+                  font-size: 0.8rem; 
+                  text-decoration: none;">
+            FR
+        </a>
+        <a href="/set-language/en" class="btn btn-sm {% if session.language == 'en' %}active-lang{% endif %}" 
+           style="background: {% if session.language == 'en' %}#e6d8c3{% else %}transparent{% endif %}; 
+                  color: {% if session.language == 'en' %}#2c3e50{% else %}#e6d8c3{% endif %}; 
+                  border: 1px solid #e6d8c3; 
+                  border-left: none; 
+                  border-radius: 0 30px 30px 0; 
+                  padding: 0.2rem 0.6rem; 
+                  font-size: 0.8rem; 
+                  text-decoration: none;">
+            EN
+        </a>
+    </div>
+    
+    <!-- Menu desktop -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+            {% if session.username %}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 0;">
+                    <div class="user-avatar">
+                        {{ session.username[0]|upper }}
+                    </div>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-account dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item-account" href="/profile"><i class="far fa-id-card"></i> Mon profil</a></li>
+                    <li><a class="dropdown-item-account" href="/mes-oeuvres"><i class="far fa-star"></i> Mes œuvres notées</a></li>
+                    <li><a class="dropdown-item-account" href="/favoris"><i class="far fa-heart"></i> Mes favoris</a></li>
+                    <li><hr class="dropdown-divider-account"></li>
+                    <li><a class="dropdown-item-account" href="/logout?next={{ request.path }}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+                </ul>
+            </li>
+            {% else %}
+            <li class="nav-item">
+                <a class="nav-link" href="#" onclick="openRegisterModal(); return false;" style="display: flex; align-items: center; gap: 5px; color: #e6d8c3;" title="S'inscrire / Se connecter">
+                    <i class="far fa-user-circle" style="font-size: 1.3rem;"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</div>
+    
+    <!-- Supprimer l'ancien bouton toggler et les doublons -->
+    <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">...</button> -->
+</div>
+
+    
+    
+    
 </nav>
 
 <script>

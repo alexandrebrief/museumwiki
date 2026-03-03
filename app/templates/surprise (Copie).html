@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 SURPRISE ! - MuseumWiki</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #2c3e50, #1a252f);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Confettis animés */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #e6d8c3;
+            opacity: 0.6;
+            animation: fall 3s infinite linear;
+        }
+        
+        @keyframes fall {
+            0% { transform: translateY(-100px) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
+        
+        /* Pinceaux qui tournent */
+        .floating-brushes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .brush {
+            position: absolute;
+            font-size: 3rem;
+            color: rgba(230, 216, 195, 0.2);
+            animation: float 6s infinite ease-in-out;
+        }
+        
+        .brush:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .brush:nth-child(2) { top: 70%; right: 15%; animation-delay: 1s; }
+        .brush:nth-child(3) { bottom: 20%; left: 20%; animation-delay: 2s; }
+        .brush:nth-child(4) { top: 40%; right: 30%; animation-delay: 3s; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+        
+        /* Carte principale */
+        .surprise-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 3rem 4rem;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3), 0 0 0 2px #e6d8c3 inset;
+            text-align: center;
+            max-width: 600px;
+            z-index: 10;
+            position: relative;
+            animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #2c3e50, #e6d8c3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #5d6d7e;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+        
+        .artwork-reveal {
+            background: #f5f0e8;
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 2px dashed #2c3e50;
+            position: relative;
+        }
+        
+        .artwork-reveal::before {
+            content: "🎨";
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c3e50;
+            color: #e6d8c3;
+            padding: 0.2rem 1rem;
+            border-radius: 30px;
+            font-size: 1.2rem;
+        }
+        
+        .quote {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin: 1rem 0;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .quote-author {
+            color: #8e9aab;
+            font-size: 0.9rem;
+        }
+        
+        .stats-mini {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            line-height: 1;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #8e9aab;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .fun-fact {
+            background: #e6d8c3;
+            border-radius: 50px;
+            padding: 1rem 2rem;
+            color: #2c3e50;
+            font-weight: 500;
+            margin: 2rem 0;
+            font-size: 0.95rem;
+            animation: glow 2s infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(230, 216, 195, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(230, 216, 195, 0.8); }
+        }
+        
+        .button-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        .btn {
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .btn-primary {
+            background: #2c3e50;
+            color: #e6d8c3;
+        }
+        
+        .btn-primary:hover {
+            background: #1a252f;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(44,62,80,0.3);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: #2c3e50;
+            border-color: #2c3e50;
+        }
+        
+        .btn-secondary:hover {
+            background: #2c3e50;
+            color: #e6d8c3;
+            transform: translateY(-3px);
+        }
+        
+        .secret-message {
+            margin-top: 2rem;
+            font-size: 0.7rem;
+            color: #8e9aab;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .secret-message:hover {
+            color: #2c3e50;
+            transform: scale(1.1);
+        }
+        
+        /* Palette de couleurs animée */
+        .color-palette {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .color-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            animation: bounce 1s infinite;
+        }
+        
+        .color-dot:nth-child(1) { background: #2c3e50; animation-delay: 0s; }
+        .color-dot:nth-child(2) { background: #e6d8c3; animation-delay: 0.1s; }
+        .color-dot:nth-child(3) { background: #dc3545; animation-delay: 0.2s; }
+        .color-dot:nth-child(4) { background: #ffc107; animation-delay: 0.3s; }
+        .color-dot:nth-child(5) { background: #3498db; animation-delay: 0.4s; }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Confettis aléatoires -->
+    <div id="confetti-container"></div>
+    
+    <!-- Pinceaux flottants -->
+    <div class="floating-brushes">
+        <div class="brush">🖌️</div>
+        <div class="brush">🎨</div>
+        <div class="brush">🖼️</div>
+        <div class="brush">✏️</div>
+    </div>
+    
+    <div class="surprise-card">
+        <h1>SURPRISE !</h1>
+        <div class="subtitle">Tu as trouvé le coin secret de MuseumWiki</div>
+        
+        <div class="color-palette">
+            <div class="color-dot"></div>
+            <div class="color-dot"></div>
+            <div class="color-dot"></div>
+            <div class="color-dot"></div>
+            <div class="color-dot"></div>
+        </div>
+        
+        <div class="artwork-reveal">
+            <div class="quote">
+                "L'art lave notre âme de la poussière du quotidien."
+            </div>
+            <div class="quote-author">— Pablo Picasso</div>
+        </div>
+        
+        <div class="stats-mini">
+            <div class="stat-item">
+                <div class="stat-number">42</div>
+                <div class="stat-label">Chefs-d'œuvre cachés</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">∞</div>
+                <div class="stat-label">Heures de bonheur</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">7</div>
+                <div class="stat-label">Muses inspirées</div>
+            </div>
+        </div>
+        
+        <div class="fun-fact" id="fun-fact">
+            🎭 Le savais-tu ? La Joconde n'a pas de sourcils car c'était la mode à la Renaissance !
+        </div>
+        
+        <div class="button-container">
+            <a href="/" class="btn btn-primary">← Retour à la galerie</a>
+            <a href="#" class="btn btn-secondary" onclick="newFact()">🎲 Nouveau fun fact</a>
+        </div>
+        
+        <div class="secret-message" onclick="easterEgg()">
+            🤫 Clique ici si tu veux un autre secret...
+        </div>
+    </div>
+    
+    <script>
+        // Créer des confettis
+        function createConfetti() {
+            const container = document.getElementById('confetti-container');
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                confetti.style.background = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                container.appendChild(confetti);
+            }
+        }
+        
+        // Base de données de fun facts artistiques
+        const funFacts = [
+            "🎭 La Joconde n'a pas de sourcils car c'était la mode à la Renaissance !",
+            "🖌️ Van Gogh n'a vendu qu'un seul tableau de son vivant.",
+            "🎨 Picasso a créé plus de 50 000 œuvres d'art dans sa vie.",
+            "🏛️ Le Louvre a été construit comme une forteresse au 12ème siècle.",
+            "🌈 Le tableau le plus cher du monde vaut plus de 450 millions de dollars.",
+            "📸 La première photographie a été prise en 1826 et a nécessité 8 heures de pose.",
+            "🎭 Michel-Ange a peint la chapelle Sixtine debout, pas couché !",
+            "🖼️ Il y a 7 Jocondes dans le monde, mais une seule est la vraie.",
+            "🎨 Salvador Dalí avait un fourmilier comme animal de compagnie.",
+            "🏺 Les statues grecques étaient à l'origine peintes de couleurs vives."
+        ];
+        
+        function newFact() {
+            const factElement = document.getElementById('fun-fact');
+            const randomIndex = Math.floor(Math.random() * funFacts.length);
+            factElement.textContent = funFacts[randomIndex];
+            factElement.style.animation = 'none';
+            factElement.offsetHeight;
+            factElement.style.animation = 'glow 2s infinite';
+        }
+        
+        function easterEgg() {
+            // Changer les couleurs aléatoirement
+            document.body.style.background = `linear-gradient(135deg, hsl(${Math.random() * 360}, 50%, 30%), hsl(${Math.random() * 360}, 50%, 20%))`;
+            
+            // Afficher un message
+            alert('🎉 BRAVO ! Tu as trouvé un easter egg dans l\'easter egg !');
+            
+            // Ajouter une animation de secouage
+            document.querySelector('.surprise-card').style.animation = 'shake 0.5s';
+            setTimeout(() => {
+                document.querySelector('.surprise-card').style.animation = 'popIn 0.6s';
+            }, 500);
+        }
+        
+        // Animation shake
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Initialisation
+        createConfetti();
+        
+        // Changer le fun fact toutes les 10 secondes
+        setInterval(newFact, 10000);
+    </script>
+</body>
+</html>

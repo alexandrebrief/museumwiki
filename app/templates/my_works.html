@@ -490,7 +490,7 @@
     <div class="container works-container">
         <div class="works-header">
             <div class="header-left">
-                <h1 class="works-title">Mes notes</h1>
+                <h1 class="works-title">Mes œuvres</h1>
                 <p class="works-subtitle">{{ works|length }} œuvre(s) notée(s)</p>
             </div>
             
@@ -579,14 +579,7 @@
                 {% endfor %}
             </div>
         {% else %}
-            <div class="empty-state">
-                <i class="far fa-star"></i>
-                <h3>Aucune note</h3>
-                <p>Explorez les œuvres et donnez votre avis</p>
-                <a href="/" class="btn-explore">
-                    <i class="fas fa-search me-2"></i>Explorer
-                </a>
-            </div>
+
         {% endif %}
     </div>
 

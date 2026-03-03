@@ -231,8 +231,58 @@
             <div class="register-link">
                 Pas encore de compte ? <a href="/register">S'inscrire</a>
             </div>
+            
+            <!-- Lien mot de passe oublié -->
+<div class="forgot-password-link" style="text-align: center; margin-top: 0.8rem;">
+    <a href="#" onclick="showForgotPasswordModal(); return false;" style="color: #8e9aab; font-size: 0.8rem; text-decoration: none;">
+        <i class="fas fa-key me-1"></i>Mot de passe oublié ?
+    </a>
+</div>
+
+
         </div>
     </div>
+
+
+<!-- Modal Mot de passe oublié -->
+<div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+        <div class="modal-content" style="border-radius: 16px;">
+            <div class="modal-header" style="border-bottom: 1px solid #f0e8dc;">
+                <h5 class="modal-title" style="font-family: 'Playfair Display', serif; color: #2c3e50;">Mot de passe oublié</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="forgotMessages"></div>
+                
+                <p style="color: #5d6d7e; font-size: 0.9rem; margin-bottom: 1.5rem;">
+                    Entrez votre email, nous vous enverrons un lien pour réinitialiser votre mot de passe.
+                </p>
+                
+                <form id="forgotPasswordForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    
+                    <div class="mb-4">
+                        <input type="email" class="form-control" id="forgot-email" name="email" 
+                               placeholder="Votre email" required
+                               style="border-radius: 8px; font-size: 0.9rem; padding: 0.6rem;">
+                    </div>
+                    
+                    <button type="submit" class="btn" id="forgotSubmitBtn"
+                            style="background: #2c3e50; color: #e6d8c3; border-radius: 30px; padding: 0.6rem 1.5rem; font-weight: 500; border: none; width: 100%;">
+                        Envoyer le lien
+                    </button>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <p style="font-size: 0.75rem; color: #8e9aab;">
+                        Vous recevrez un email avec les instructions.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
     {% include 'footer.html' %}
 
@@ -263,6 +313,82 @@
                 bsAlert.close();
             });
         }, 5000);
+        
+        // Fonction pour ouvrir la modale
+function showForgotPasswordModal() {
+    // Réinitialiser le formulaire
+    document.getElementById('forgotPasswordForm')?.reset();
+    document.getElementById('forgotMessages').innerHTML = '';
+    
+    // Ouvrir la modale
+    const forgotModal = new bootstrap.Modal(document.getElementById('forgotPasswordModal'));
+    forgotModal.show();
+}
+
+// Soumission du formulaire mot de passe oublié
+document.addEventListener('DOMContentLoaded', function() {
+    const forgotForm = document.getElementById('forgotPasswordForm');
+    if (forgotForm) {
+        forgotForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('forgot-email').value;
+            const messagesDiv = document.getElementById('forgotMessages');
+            const submitBtn = document.getElementById('forgotSubmitBtn');
+            
+            // Désactiver le bouton
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi...';
+            
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                
+                const response = await fetch('/api/forgot-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    messagesDiv.innerHTML = `
+                        <div class="alert alert-success text-center" role="alert" style="font-size: 0.85rem;">
+                            <i class="fas fa-check-circle"></i> ${data.message}
+                        </div>
+                    `;
+                    
+                    // Fermer la modale après 3 secondes
+                    setTimeout(() => {
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('forgotPasswordModal'));
+                        modal.hide();
+                    }, 3000);
+                    
+                } else {
+                    messagesDiv.innerHTML = `
+                        <div class="alert alert-danger text-center" role="alert" style="font-size: 0.85rem;">
+                            <i class="fas fa-exclamation-circle"></i> ${data.error || 'Une erreur est survenue'}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                messagesDiv.innerHTML = `
+                    <div class="alert alert-danger text-center" role="alert" style="font-size: 0.85rem;">
+                        <i class="fas fa-exclamation-circle"></i> Erreur de connexion
+                    </div>
+                `;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Envoyer le lien';
+            }
+        });
+    }
+});
+        
     </script>
 </body>
 </html>

@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 SURPRISE ! - MuseumWiki</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #2c3e50, #1a252f);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* ===== ANIMATIONS VOLANTES ===== */
+        .floating-object {
+            position: absolute;
+            pointer-events: none;
+            animation: floatAround 15s infinite linear;
+            opacity: 0.15;
+            font-size: 3rem;
+            color: #e6d8c3;
+        }
+        
+        @keyframes floatAround {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate(100px, 50px) rotate(90deg);
+            }
+            50% {
+                transform: translate(50px, 150px) rotate(180deg);
+            }
+            75% {
+                transform: translate(-50px, 80px) rotate(270deg);
+            }
+            100% {
+                transform: translate(0, 0) rotate(360deg);
+            }
+        }
+        
+        /* Confettis */
+        .confetti {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #e6d8c3;
+            opacity: 0.4;
+            animation: fall 4s infinite linear;
+        }
+        
+        @keyframes fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        /* Particules scintillantes */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ffd700;
+            border-radius: 50%;
+            animation: twinkle 3s infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+        
+        /* Vagues de couleurs */
+        .wave {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent 30%, rgba(230, 216, 195, 0.1) 50%, transparent 70%);
+            animation: wave 10s infinite linear;
+            pointer-events: none;
+        }
+        
+        @keyframes wave {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        /* Pinceaux qui tournent */
+        .floating-brushes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .brush {
+            position: absolute;
+            font-size: 3rem;
+            color: rgba(230, 216, 195, 0.15);
+            animation: spinFloat 12s infinite ease-in-out;
+        }
+        
+        .brush:nth-child(1) { top: 10%; left: 5%; animation-delay: 0s; }
+        .brush:nth-child(2) { top: 80%; right: 10%; animation-delay: 2s; }
+        .brush:nth-child(3) { bottom: 15%; left: 15%; animation-delay: 4s; }
+        .brush:nth-child(4) { top: 30%; right: 25%; animation-delay: 6s; }
+        .brush:nth-child(5) { top: 60%; left: 20%; animation-delay: 8s; }
+        .brush:nth-child(6) { bottom: 40%; right: 5%; animation-delay: 10s; }
+        
+        @keyframes spinFloat {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg) scale(1);
+            }
+            33% {
+                transform: translateY(-30px) rotate(120deg) scale(1.2);
+            }
+            66% {
+                transform: translateY(20px) rotate(240deg) scale(0.8);
+            }
+        }
+        
+        /* Carte principale */
+        .surprise-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 3rem 4rem;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3), 0 0 0 2px #e6d8c3 inset;
+            text-align: center;
+            max-width: 700px;
+            z-index: 10;
+            position: relative;
+            animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0); opacity: 1; }
+        }
+        
+        /* Titre avec animation */
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #2c3e50, #e6d8c3, #2c3e50);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            animation: gradientShift 5s infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #5d6d7e;
+            margin-bottom: 2rem;
+            font-style: italic;
+            animation: fadePulse 3s infinite;
+        }
+        
+        @keyframes fadePulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; text-shadow: 0 0 5px #e6d8c3; }
+        }
+        
+        /* Cadre de citation */
+        .quote-frame {
+            background: linear-gradient(145deg, #f5f0e8, #ffffff);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            border: 3px solid #2c3e50;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            animation: frameGlow 3s infinite;
+        }
+        
+        @keyframes frameGlow {
+            0%, 100% { box-shadow: 0 10px 20px rgba(0,0,0,0.1), 0 0 0 0 rgba(230, 216, 195, 0.5); }
+            50% { box-shadow: 0 10px 30px rgba(0,0,0,0.2), 0 0 20px 5px rgba(230, 216, 195, 0.8); }
+        }
+        
+        .quote-frame::before {
+            content: "“";
+            position: absolute;
+            top: -20px;
+            left: 20px;
+            font-size: 5rem;
+            color: #2c3e50;
+            opacity: 0.2;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .quote-frame::after {
+            content: "”";
+            position: absolute;
+            bottom: -50px;
+            right: 20px;
+            font-size: 5rem;
+            color: #2c3e50;
+            opacity: 0.2;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .quote {
+            font-size: 1.8rem;
+            font-weight: 300;
+            margin: 1rem 0;
+            font-family: 'Playfair Display', serif;
+            line-height: 1.4;
+            color: #2c3e50;
+            animation: quoteReveal 1s;
+        }
+        
+        @keyframes quoteReveal {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .quote-author {
+            color: #8e9aab;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            font-style: italic;
+        }
+        
+        /* Boutons */
+        .button-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        
+        .btn {
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            cursor: pointer;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-primary {
+            background: #2c3e50;
+            color: #e6d8c3;
+        }
+        
+        .btn-primary:hover {
+            background: #1a252f;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(44,62,80,0.3);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: #2c3e50;
+            border-color: #2c3e50;
+        }
+        
+        .btn-secondary:hover {
+            background: #2c3e50;
+            color: #e6d8c3;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(44,62,80,0.2);
+        }
+        
+        /* Message secret */
+        .secret-message {
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: #8e9aab;
+            cursor: pointer;
+            transition: all 0.3s;
+            animation: subtlePulse 3s infinite;
+        }
+        
+        .secret-message:hover {
+            color: #2c3e50;
+            transform: scale(1.1);
+            text-shadow: 0 0 5px #e6d8c3;
+        }
+        
+        @keyframes subtlePulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        
+        /* Cercles animés */
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(230,216,195,0.2) 0%, transparent 70%);
+            animation: expandContract 8s infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes expandContract {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.5); opacity: 0.1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Objets flottants -->
+    <div class="floating-object" style="top: 10%; left: 5%;">🖌️</div>
+    <div class="floating-object" style="top: 70%; right: 10%; animation-duration: 18s;">🎨</div>
+    <div class="floating-object" style="bottom: 20%; left: 15%; animation-duration: 20s;">🖼️</div>
+    <div class="floating-object" style="top: 40%; right: 20%; animation-duration: 12s;">✏️</div>
+    <div class="floating-object" style="top: 80%; left: 10%; animation-duration: 25s;">🖍️</div>
+    <div class="floating-object" style="bottom: 30%; right: 15%; animation-duration: 22s;">📐</div>
+    
+    <!-- Confettis -->
+    <div id="confetti-container"></div>
+    
+    <!-- Particules -->
+    <div id="particles-container"></div>
+    
+    <!-- Cercles animés -->
+    <div class="circle" style="width: 300px; height: 300px; top: 10%; left: 5%;"></div>
+    <div class="circle" style="width: 500px; height: 500px; bottom: 10%; right: 5%;"></div>
+    <div class="circle" style="width: 200px; height: 200px; top: 50%; left: 50%;"></div>
+    
+    <!-- Vague de couleur -->
+    <div class="wave" style="top: 50%; left: 50%;"></div>
+    
+    <!-- Pinceaux flottants -->
+    <div class="floating-brushes">
+        <div class="brush">🖌️</div>
+        <div class="brush">🎨</div>
+        <div class="brush">🖼️</div>
+        <div class="brush">✏️</div>
+        <div class="brush">🖍️</div>
+        <div class="brush">📐</div>
+    </div>
+    
+    <div class="surprise-card">
+        <h1>BRAVO !</h1>
+        <div class="subtitle">Tu es arrivé sur l'easter egg de mon site</div>
+        
+        <div class="quote-frame">
+            <div class="quote" id="quote">
+                "L'art est le mensonge qui nous permet de comprendre la vérité."
+            </div>
+            <div class="quote-author" id="author">— Pablo Picasso</div>
+        </div>
+        
+        <div class="button-container">
+            <a href="/" class="btn btn-primary">Retour à la galerie</a>
+            <button class="btn btn-secondary" onclick="newQuote()">Nouvelle citation</button>
+        </div>
+        
+        <div class="secret-message" onclick="easterEgg()">
+            ✨ Clique ici pour un autre secret ✨
+        </div>
+    </div>
+    
+    <script>
+        // Créer des confettis
+        function createConfetti() {
+            const container = document.getElementById('confetti-container');
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                confetti.style.animationDelay = Math.random() * 5 + 's';
+                confetti.style.background = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                confetti.style.width = (Math.random() * 10 + 5) + 'px';
+                confetti.style.height = (Math.random() * 10 + 5) + 'px';
+                container.appendChild(confetti);
+            }
+        }
+        
+        // Créer des particules
+        function createParticles() {
+            const container = document.getElementById('particles-container');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+        
+        // Base de citations d'art
+        const quotes = [
+            {
+                text: "L'art est le mensonge qui nous permet de comprendre la vérité.",
+                author: "Pablo Picasso"
+            },
+            {
+                text: "La peinture, c'est très simple : quand on a du rouge, on remet du rouge.",
+                author: "Pierre Soulages"
+            },
+            {
+                text: "L'art lave notre âme de la poussière du quotidien.",
+                author: "Pablo Picasso"
+            },
+            {
+                text: "Je ne peins pas les choses, je peins le regard que je porte sur elles.",
+                author: "Claude Monet"
+            },
+            {
+                text: "Le dessin est la probité de l'art.",
+                author: "Jean-Auguste-Dominique Ingres"
+            },
+            {
+                text: "L'art est une démonstration dont la nature est le spectacle.",
+                author: "George Sand"
+            },
+            {
+                text: "La couleur est mon obsession quotidienne, ma joie et mon tourment.",
+                author: "Claude Monet"
+            },
+            {
+                text: "L'art, c'est la liberté de s'exprimer sans craindre le jugement.",
+                author: "Banksy"
+            },
+            {
+                text: "La sculpture est l'art de laisser des empreintes dans la matière.",
+                author: "Auguste Rodin"
+            },
+            {
+                text: "L'art ne reproduit pas le visible, il rend visible.",
+                author: "Paul Klee"
+            },
+            {
+                text: "Un dessin est simplement une ligne qui se promène.",
+                author: "Paul Klee"
+            },
+            {
+                text: "L'art est la plus belle des illusions.",
+                author: "Edgar Degas"
+            }
+        ];
+        
+        function newQuote() {
+            const quoteElement = document.getElementById('quote');
+            const authorElement = document.getElementById('author');
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            
+            // Animation de changement
+            quoteElement.style.animation = 'none';
+            authorElement.style.animation = 'none';
+            quoteElement.offsetHeight;
+            authorElement.offsetHeight;
+            
+            quoteElement.textContent = '"' + quotes[randomIndex].text + '"';
+            authorElement.textContent = '— ' + quotes[randomIndex].author;
+            
+            quoteElement.style.animation = 'quoteReveal 1s';
+            authorElement.style.animation = 'quoteReveal 1s';
+        }
+        
+        function easterEgg() {
+            // Changer les couleurs aléatoirement
+            document.body.style.background = `linear-gradient(135deg, hsl(${Math.random() * 360}, 50%, 30%), hsl(${Math.random() * 360}, 50%, 20%))`;
+            
+            // Afficher un message
+            alert('🎉 SUPER ! Tu as trouvé un easter egg dans l\'easter egg !');
+            
+            // Ajouter une animation de secouage
+            document.querySelector('.surprise-card').style.animation = 'shake 0.5s';
+            setTimeout(() => {
+                document.querySelector('.surprise-card').style.animation = 'popIn 0.8s';
+            }, 500);
+            
+            // Créer une explosion de confettis
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = '50%';
+                    confetti.style.top = '50%';
+                    confetti.style.animation = 'fall 2s forwards';
+                    confetti.style.background = `hsl(${Math.random() * 360}, 80%, 60%)`;
+                    document.getElementById('confetti-container').appendChild(confetti);
+                }, i * 50);
+            }
+        }
+        
+        // Animation shake
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+                20%, 40%, 60%, 80% { transform: translateX(10px); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Initialisation
+        createConfetti();
+        createParticles();
+        
+        // Changer la citation toutes les 15 secondes
+        setInterval(newQuote, 15000);
+    </script>
+</body>
+</html>
