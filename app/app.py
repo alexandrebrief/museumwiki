@@ -311,58 +311,56 @@ class Artwork(db.Model):
     __tablename__ = 'artworks'
     
     # Identifiants
-    id_q = db.Column(db.String)  # <http://...> - PLUS de primary_key
-    id = db.Column(db.String, primary_key=True)  # Q1000128 - MAINTENANT clé primaire
+    id = db.Column(db.String(50), primary_key=True)  # Q1000128
     
     # Labels / Titres
-    label_fr = db.Column(db.String(500))
-    label_en = db.Column(db.String(500))
-    label_fallback_fr = db.Column(db.String(500))
-    label_fallback_en = db.Column(db.String(500))
+    label_fr = db.Column(db.Text)  # VARCHAR(500) → TEXT
+    label_en = db.Column(db.Text)
+    label_fallback_fr = db.Column(db.Text)
+    label_fallback_en = db.Column(db.Text)
     
     # Créateurs
-    creator_fr = db.Column(db.String(200))
-    creator_en = db.Column(db.String(200))
-    creator_fallback_fr = db.Column(db.String(200))
-    creator_fallback_en = db.Column(db.String(200))
+    creator_fr = db.Column(db.Text)
+    creator_en = db.Column(db.Text)
+    creator_fallback_fr = db.Column(db.Text)
+    creator_fallback_en = db.Column(db.Text)
     
     # Dates et images
-    inception = db.Column(db.String(50))
-    image_url = db.Column(db.String(500))
+    inception = db.Column(db.Text)  
+    image_url = db.Column(db.Text)  
     
     # Collections et lieux
-    collection_fr = db.Column(db.String(200))
-    collection_en = db.Column(db.String(200))
-    location_fr = db.Column(db.String(200))
-    location_en = db.Column(db.String(200))
+    collection_fr = db.Column(db.Text)
+    collection_en = db.Column(db.Text)
+    location_fr = db.Column(db.Text)
+    location_en = db.Column(db.Text)
     
     # Type d'œuvre
-    instance_of_fr = db.Column(db.String(200))
-    instance_of_q = db.Column(db.String(200))
-    instance_of_en = db.Column(db.String(200))
+    instance_of_fr = db.Column(db.Text)
+    instance_of_en = db.Column(db.Text)
     
     # Matériaux
-    made_from_material_fr = db.Column(db.String(500))
-    made_from_material_en = db.Column(db.String(500))
+    made_from_material_fr = db.Column(db.Text)
+    made_from_material_en = db.Column(db.Text)
     
     # Genres
-    genre_fr = db.Column(db.String(500))
-    genre_en = db.Column(db.String(500))
+    genre_fr = db.Column(db.Text)
+    genre_en = db.Column(db.Text)
     
     # Mouvements
-    movement_fr = db.Column(db.String(500))
-    movement_en = db.Column(db.String(500))
+    movement_fr = db.Column(db.Text)
+    movement_en = db.Column(db.Text)
     
-    # Dimensions
+    # Dimensions (ceux-ci restent FLOAT)
     width = db.Column(db.Float)
     height = db.Column(db.Float)
     
     # Copyright
-    copyright_status_fr = db.Column(db.String(200))
-    copyright_status_en = db.Column(db.String(200))
+    copyright_status_fr = db.Column(db.Text)
+    copyright_status_en = db.Column(db.Text)
     
     # URL Wikidata
-    url_wikidata = db.Column(db.String(500))
+    url_wikidata = db.Column(db.Text)  
     
     # Propriétés pour l'affichage multilingue
     @property
@@ -441,11 +439,10 @@ class Artwork(db.Model):
         """Convertit l'objet en dictionnaire pour les templates"""
         return {
             'id': self.id,
-            'id_q': self.id_q,
             'titre': self.titre,
             'titre_fr': self.titre_fr,
             'titre_en': self.titre_en,
-            'createur': self.createur,
+            'createur': self.createur,  
             'creator_fr': self.creator_fr,
             'creator_en': self.creator_en,
             'creator_fallback_fr': self.creator_fallback_fr,
@@ -643,19 +640,19 @@ def send_verification_email(user_email, username, code, token):
     </head>
     <body>
         <div class="container">
-            <h1>Bienvenue sur MuseumWiki, {username} !</h1>
-            <p>Merci de vous être inscrit. Pour activer votre compte, veuillez utiliser le code de vérification ci-dessous :</p>
+            <h1>Bienvenue sur Bluetocus, {username} !</h1>
+            <p>Veuillez utiliser le code de vérification ci-dessous :</p>
             
             <div class="code">{code}</div>
             
-            <p>Ou cliquez sur le lien suivant :</p>
+            <p>Le lien de vérification:</p>
             <a href="{verification_link}" class="button">Vérifier mon email</a>
             
             <p>Ce code et ce lien expireront dans 24 heures.</p>
             
             <div class="footer">
-                <p>Si vous n'avez pas créé de compte sur MuseumWiki, ignorez cet email.</p>
-                <p>© 2025 MuseumWiki · Collection d'œuvres d'art · Données Wikidata</p>
+                <p>Si vous n'avez pas créé de compte sur Bluetocus, ignorez cet email.</p>
+                <p>© 2026 Bluetocus</p>
             </div>
         </div>
     </body>
@@ -850,7 +847,7 @@ def set_language(lang):
 
 @app.route('/')
 def index():
-    """Page d'accueil avec recherche, filtres et tris"""
+    """Page d'accueil avec recherche, filtres, tris et scroll infini"""
     query = request.args.get('q', '')
     page = request.args.get('page', 1, type=int)
     per_page = 20
@@ -864,6 +861,9 @@ def index():
     copyrights = request.args.getlist('copyright')
     
     sort = request.args.get('sort', 'relevance')
+    
+    # Détection des requêtes AJAX pour le scroll infini
+    is_ajax = request.args.get('ajax', '0') == '1'
     
     # Vérifier TOUS les filtres
     if (query or artists or museums or movements or 
@@ -951,6 +951,39 @@ def index():
         artwork_dict = artwork.to_dict()
         results_dicts.append(artwork_dict)
     
+    # 👇 SI C'EST UNE REQUÊTE AJAX (SCROLL INFINI), ON RENVOIE SEULEMENT LES CARTES
+    if is_ajax:
+        from flask import render_template_string
+        
+        card_template = '''
+        {% for artwork in results %}
+        <a href="/oeuvre/{{ artwork.id }}" class="work-card" style="text-decoration: none; color: inherit; display: block; position: relative; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(44,62,80,0.05); border: 1px solid #e0d6c8;">
+            <!-- BOUTON FAVORI -->
+            <div class="favorite-icon" data-artwork-id="{{ artwork.id }}" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorite('{{ artwork.id }}', this)">
+                <i class="far fa-heart" id="favorite-icon-{{ artwork.id }}"></i>
+            </div>
+            
+            <!-- Image carrée -->
+            {% if artwork.image_url and artwork.image_url != '' %}
+            <img src="{{ artwork.image_url }}" alt="{{ artwork.titre_fr or artwork.titre_en or 'Sans titre' }}" class="work-image" loading="lazy" style="width: 100%; aspect-ratio: 1/1; object-fit: contain; background: #f5f0e8;">
+            {% else %}
+            <div class="work-image-placeholder" style="width: 100%; aspect-ratio: 1/1; background: linear-gradient(145deg, #e6d8c3, #d4c9b9); display: flex; align-items: center; justify-content: center; color: #5d6d7e; font-size: 2rem;">
+                <i class="fas fa-image"></i>
+            </div>
+            {% endif %}
+            
+            <!-- Informations -->
+            <div style="padding: 0.4rem;">
+                <div class="artwork-title" title="{{ artwork.titre }}">{{ artwork.titre if artwork.titre else 'Sans titre' }}</div>
+                <div class="artwork-artist" title="{{ artwork.createur }}">{{ artwork.createur }}</div>
+            </div>
+        </a>
+        {% endfor %}
+        '''
+        
+        return render_template_string(card_template, results=results_dicts)
+    
+    # 👇 SINON (REQUÊTE NORMALE), ON RENVOIE LA PAGE COMPLÈTE
     return render_template('index.html', 
                          query=query,
                          results=results_dicts,
@@ -1416,7 +1449,24 @@ def suggestions():
     
     for artist in artists:
         suggestions_list.append({'texte': artist[0], 'categorie': 'artiste'})
+
+    # 4. MUSÉES - selon la langue
+    if lang == 'fr':
+        museums = db.session.query(Artwork.collection_fr).filter(
+            Artwork.collection_fr.ilike(search),
+            Artwork.collection_fr != 'Inconnu',
+            Artwork.collection_fr != ''
+        ).distinct().limit(4).all()
+    else:
+        museums = db.session.query(Artwork.collection_en).filter(
+            Artwork.collection_en.ilike(search),
+            Artwork.collection_en != 'Unknown',
+            Artwork.collection_en != ''
+        ).distinct().limit(4).all()
     
+    for museum in museums:
+        suggestions_list.append({'texte': museum[0], 'categorie': 'musée'})
+
     # 3. TITRES - selon la langue
     if lang == 'fr':
         titles = db.session.query(Artwork.label_fallback_fr).filter(
@@ -1434,22 +1484,7 @@ def suggestions():
     for title in titles:
         suggestions_list.append({'texte': title[0], 'categorie': 'œuvre'})
     
-    # 4. MUSÉES - selon la langue
-    if lang == 'fr':
-        museums = db.session.query(Artwork.collection_fr).filter(
-            Artwork.collection_fr.ilike(search),
-            Artwork.collection_fr != 'Inconnu',
-            Artwork.collection_fr != ''
-        ).distinct().limit(4).all()
-    else:
-        museums = db.session.query(Artwork.collection_en).filter(
-            Artwork.collection_en.ilike(search),
-            Artwork.collection_en != 'Unknown',
-            Artwork.collection_en != ''
-        ).distinct().limit(4).all()
-    
-    for museum in museums:
-        suggestions_list.append({'texte': museum[0], 'categorie': 'musée'})
+
     
     return jsonify(suggestions_list[:12])
 
@@ -1494,10 +1529,10 @@ def get_comments(artwork_id):
     
     return jsonify(comments)
 
-@app.route('/surprise')
-def surprise():
+@app.route('/easteregg')
+def easteregg():
     """Page easter egg surprise"""
-    return render_template('surprise.html')
+    return render_template('easteregg.html')
 
 @app.route('/about')
 def about():
