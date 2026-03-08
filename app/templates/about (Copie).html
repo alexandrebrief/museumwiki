@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ site_name }} - À propos</title>
+    
+    <!-- ===== STYLES EXTERNES ===== -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- ===== STYLE PRINCIPAL ===== -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        /* ===== VARIABLES LOCALES ===== */
+        .about-page {
+            --accent-soft: rgba(230, 216, 195, 0.1);
+            --card-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.2);
+            --transition-slow: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        
+        /* ===== LAYOUT - CORRECTION SCROLL ===== */
+        .about-page {
+            background: var(--background);
+            position: relative;
+            overflow: visible;  /* Changé de hidden à visible */
+            padding: 4rem 0;
+            width: 100%;
+        }
+        
+        body {
+            overflow-y: auto !important;  /* Force le scroll */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Éléments décoratifs - ajustés */
+        .about-page::before {
+            content: '';
+            position: fixed;  /* Changé de absolute à fixed */
+            top: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-soft) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 0;
+            animation: float 20s infinite alternate ease-in-out;
+            pointer-events: none;  /* Empêche l'interférence avec le scroll */
+        }
+        
+        .about-page::after {
+            content: '';
+            position: fixed;  /* Changé de absolute à fixed */
+            bottom: -30%;
+            left: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--accent-soft) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 0;
+            animation: float 25s infinite alternate-reverse ease-in-out;
+            pointer-events: none;  /* Empêche l'interférence avec le scroll */
+        }
+        
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 30px) scale(1.1); }
+        }
+        
+        .about-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        /* ===== HEADER ===== */
+        .about-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .about-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 500;
+            color: var(--secondary);
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .about-header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 2px;
+            background: var(--secondary);
+            opacity: 0.3;
+        }
+        
+        .about-header .subtitle {
+            color: var(--text-light);
+            font-size: 1.2rem;
+            font-weight: 300;
+            max-width: 600px;
+            margin: 1.5rem auto 0;
+            line-height: 1.6;
+        }
+        
+        /* ===== CARTES ===== */
+        .about-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin-bottom: 2.5rem;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition-slow);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+            animation-delay: calc(var(--card-index, 0) * 0.1s);
+        }
+        
+        .about-card:nth-child(1) { --card-index: 1; }
+        .about-card:nth-child(2) { --card-index: 2; }
+        .about-card:nth-child(3) { --card-index: 3; }
+        
+        .about-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--secondary);
+            box-shadow: 0 30px 50px -20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .about-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--secondary), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .about-card:hover::before {
+            opacity: 1;
+        }
+        
+        .about-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 500;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.01em;
+        }
+        
+        .about-card p {
+            color: var(--text);
+            line-height: 1.8;
+            font-size: 1rem;
+            margin-bottom: 1.2rem;
+        }
+        
+        .about-card p:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* ===== STATISTIQUES ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-item {
+            background: var(--primary-dark);
+            border-radius: 20px;
+            padding: 1.8rem 1rem;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: var(--transition-slow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-item:hover {
+            transform: scale(1.02);
+            border-color: var(--secondary);
+        }
+        
+        .stat-item::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: var(--accent-soft);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+            z-index: 0;
+        }
+        
+        .stat-item:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .stat-icon {
+            font-size: 2rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-item:hover .stat-icon {
+            transform: scale(1.1);
+        }
+        
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--secondary);
+            line-height: 1.2;
+            margin-bottom: 0.3rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-soft);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .stat-number .empty {
+            color: var(--text-soft);
+            font-family: 'Inter', sans-serif;
+            font-size: 1.8rem;
+            opacity: 0.5;
+        }
+        
+        /* ===== TECHNOLOGIES ===== */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+        
+        .tech-item {
+            background: var(--primary-dark);
+            border-radius: 16px;
+            padding: 1.5rem 0.5rem;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: var(--transition-slow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tech-item:hover {
+            transform: translateY(-3px);
+            border-color: var(--secondary);
+        }
+        
+        .tech-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--accent-soft), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .tech-item:hover::before {
+            left: 100%;
+        }
+        
+        .tech-icon {
+            font-size: 2rem;
+            color: var(--secondary);
+            margin-bottom: 0.8rem;
+            position: relative;
+            z-index: 1;
+            transition: transform 0.3s ease;
+        }
+        
+        .tech-item:hover .tech-icon {
+            transform: scale(1.1);
+        }
+        
+        .tech-name {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--secondary);
+            margin-bottom: 0.3rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .tech-desc {
+            font-size: 0.75rem;
+            color: var(--text-soft);
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* ===== METADATA ===== */
+        .about-metadata {
+            text-align: center;
+            margin: 3rem 0 1rem;
+            padding: 1rem;
+            color: var(--text-soft);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            opacity: 0;
+            animation: fadeIn 1s ease 1s forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .about-metadata i {
+            color: var(--secondary);
+            margin-right: 0.5rem;
+            animation: spin 4s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .about-page {
+                padding: 2rem 0;
+            }
+            
+            .about-header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            .tech-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .about-card {
+                padding: 1.8rem;
+            }
+            
+            .about-card h2 {
+                font-size: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-grid,
+            .tech-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .about-header h1 {
+                font-size: 2rem;
+            }
+            
+            .about-container {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="about-page">
+        <div class="about-container">
+            
+            <!-- Header avec animation -->
+            <div class="about-header">
+                <h1>{{ site_name }}</h1>
+                <div class="subtitle">
+                    L'art à portée de main, la décoration au bout des doigts
+                </div>
+            </div>
+            
+            <!-- Carte Mission -->
+            <div class="about-card">
+                <h2>Notre mission</h2>
+                <p>
+                    Bluetocus est né d'une idée simple : rendre l'art accessible à tous, 
+                    transformer chaque œuvre en une découverte personnelle. 
+                    Nous croyons que l'art n'est pas seulement fait pour être observé, 
+                    mais pour être collectionné, partagé et intégré dans notre quotidien.
+                </p>
+                <p style="color: var(--text-light);">
+                    Que vous soyez amateur éclairé ou novice curieux, 
+                    Bluetocus vous invite à explorer, noter et créer votre propre galerie virtuelle.
+                </p>
+            </div>
+            
+            <!-- Statistiques -->
+            <div class="about-card">
+                <h2>La collection</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-paint-brush"></i>
+                        </div>
+                        <div class="stat-number">
+                            {% if total_oeuvres %}
+                                {{ total_oeuvres }}
+                            {% else %}
+                                <span class="empty">—</span>
+                            {% endif %}
+                        </div>
+                        <div class="stat-label">Œuvres</div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-astronaut"></i>
+                        </div>
+                        <div class="stat-number">
+                            {% if total_artistes %}
+                                {{ total_artistes }}
+                            {% else %}
+                                <span class="empty">—</span>
+                            {% endif %}
+                        </div>
+                        <div class="stat-label">Artistes</div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-landmark"></i>
+                        </div>
+                        <div class="stat-number">
+                            {% if total_musees %}
+                                {{ total_musees }}
+                            {% else %}
+                                <span class="empty">—</span>
+                            {% endif %}
+                        </div>
+                        <div class="stat-label">Musées</div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-number">
+                            {% if total_users %}
+                                {{ total_users }}
+                            {% else %}
+                                <span class="empty">—</span>
+                            {% endif %}
+                        </div>
+                        <div class="stat-label">Membres</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Technologies -->
+            <div class="about-card">
+                <h2>Technologies</h2>
+                <div class="tech-grid">
+                    <div class="tech-item">
+                        <div class="tech-icon">
+                            <i class="fas fa-flask"></i>
+                        </div>
+                        <div class="tech-name">Flask</div>
+                        <div class="tech-desc">Python</div>
+                    </div>
+                    
+                    <div class="tech-item">
+                        <div class="tech-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="tech-name">PostgreSQL</div>
+                        <div class="tech-desc">Base de données</div>
+                    </div>
+                    
+                    <div class="tech-item">
+                        <div class="tech-icon">
+                            <i class="fab fa-bootstrap"></i>
+                        </div>
+                        <div class="tech-name">Bootstrap</div>
+                        <div class="tech-desc">Interface</div>
+                    </div>
+                    
+                    <div class="tech-item">
+                        <div class="tech-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div class="tech-name">HTML/CSS</div>
+                        <div class="tech-desc">Frontend</div>
+                    </div>
+                    
+                    <div class="tech-item">
+                        <div class="tech-icon">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <div class="tech-name">Wikidata</div>
+                        <div class="tech-desc">Source</div>
+                    </div>
+                    
+                    <div class="tech-item">
+                        <div class="tech-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="tech-name">SendGrid</div>
+                        <div class="tech-desc">Emails</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Metadata avec animation -->
+            <div class="about-metadata">
+                <i class="fas fa-sync-alt"></i>
+                Dernière mise à jour : {{ last_update|default('mars 2026') }}
+            </div>
+            
+        </div>
+    </div>
+
+    {% include 'footer.html' %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

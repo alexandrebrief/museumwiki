@@ -1,0 +1,2798 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta name="csrf-token" content="{{ csrf_token() }}"> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ site_name }} - Recherche d'œuvres</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* ============================================
+           STYLES GÉNÉRAUX
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f5f0e8;
+    color: #2c3e50;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+}
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 500;
+            color: #1e2b3a;
+        }
+
+
+/* ============================================
+   STRUCTURE DE LA PAGE - POUR LE FOOTER
+   ============================================ */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container.main-layout {
+    flex: 1 0 auto;
+    width: 100%;
+    max-width: 1400px; /* ou la largeur que tu veux */
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.footer {
+    background: #2c3e50;
+    color: #e6d8c3;
+    padding: 1.5rem 0;
+    margin-top: auto;  /* ← CECI EST CRUCIAL */
+    text-align: center;
+    font-size: 0.85rem;
+    width: 100%;
+}
+
+        /* ============================================
+           NAVBAR (conservée inchangée)
+           ============================================ */
+        .navbar {
+            background: #2c3e50 !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 0.8rem 0;
+        }
+        
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #e6d8c3 !important;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-link {
+            color: #e6d8c3 !important;
+            font-weight: 400;
+            margin: 0 15px;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover {
+            border-bottom-color: #e6d8c3;
+        }
+        
+        .nav-link.active {
+            border-bottom-color: #e6d8c3;
+            font-weight: 500;
+        }
+        
+        .btn-login {
+            background: #e6d8c3 !important;
+            color: #2c3e50 !important;
+            border-radius: 30px !important;
+            padding: 0.5rem 1.5rem !important;
+            font-weight: 600 !important;
+            margin-left: 1rem !important;
+            border: none !important;
+        }
+        
+        .btn-login:hover {
+            background: #d4c9b9 !important;
+            transform: scale(1.05);
+        }
+/* ===== STYLES POUR LES BOUTONS DE VUE ===== */
+.view-toggle {
+    display: flex;
+    gap: 0.3rem;
+    background: white;
+    padding: 0.2rem;
+    border-radius: 40px;
+    border: 1px solid #e0d6c8;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.view-btn {
+    background: transparent;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #5d6d7e;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.view-btn i {
+    font-size: 0.9rem;
+}
+
+.view-btn.active {
+    background: #2c3e50;
+    color: #e6d8c3;
+    box-shadow: 0 2px 8px rgba(44,62,80,0.2);
+}
+
+.view-btn:hover:not(.active) {
+    background: #f5f0e8;
+    color: #2c3e50;
+}
+
+/* Masquer les boutons 8,4,2 sur mobile */
+@media (max-width: 600px) {
+    .view-toggle {
+        display: none !important;
+    }
+    .mobile-toggle {
+        display: flex !important;
+        width: 100%;
+    }
+}
+
+.mobile-btn {
+    background: transparent;
+    border: none;
+    padding: 0.3rem 1.2rem;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #5d6d7e;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    flex: 1;
+}
+
+.mobile-btn i {
+    font-size: 0.9rem;
+}
+
+.mobile-btn.active {
+    background: #2c3e50;
+    color: #e6d8c3;
+    box-shadow: 0 2px 8px rgba(44,62,80,0.2);
+}
+
+/* Styles pour la grille dynamique */
+.works-grid {
+    display: grid;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
+}
+
+.works-grid.grid-8 {
+    grid-template-columns: repeat(8, 1fr);
+}
+
+.works-grid.grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.works-grid.grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* Tablette */
+@media (max-width: 1200px) {
+    .works-grid.grid-8 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .works-grid.grid-8 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .works-grid.grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .works-grid.grid-8,
+    .works-grid.grid-4,
+    .works-grid.grid-2 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .works-grid.mobile-1 {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Images carrées */
+.work-image {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: contain;
+    background: #faf3e8;
+    display: block;
+}
+
+.work-image-placeholder {
+    width: 100%;
+    aspect-ratio: 1/1;
+    background: linear-gradient(145deg, #e6d8c3, #d4c9b9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #5d6d7e;
+    font-size: 2rem;
+}        
+        /* ============================================
+           BARRE DE RECHERCHE
+           ============================================ */
+        .navbar-search {
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.15);
+            border-radius: 30px;
+            padding: 0.3rem 0.3rem 0.3rem 1rem;
+            margin: 0 1rem;
+            flex: 0 1 400px;
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+        }
+        
+        .navbar-search input {
+            background: transparent;
+            border: none;
+            color: white;
+            width: 100%;
+            padding: 0.4rem 0;
+            font-size: 0.95rem;
+        }
+        
+        .navbar-search input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .navbar-search input:focus {
+            outline: none;
+        }
+        
+        .clear-search {
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.5);
+            padding: 0.2rem 0.5rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+            order: -1;
+        }
+        
+        .clear-search:hover {
+            color: rgba(255,255,255,0.9);
+        }
+        
+        .search-button {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        
+        .search-button:hover {
+            transform: scale(1.1);
+        }
+        
+        
+/* ===== STYLE POUR L'ŒIL DANS LES MODALES ===== */
+.password-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input-group .form-control {
+    padding-right: 2.5rem;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    background: transparent;
+    border: none;
+    color: #5d6d7e;
+    cursor: pointer;
+    padding: 0;
+    font-size: 1.1rem;
+    transition: color 0.2s;
+    z-index: 10;
+}
+
+.password-toggle:hover {
+    color: #2c3e50;
+}
+
+.password-toggle:focus {
+    outline: none;
+}        
+        /* ============================================
+           SUGGESTIONS
+           ============================================ */
+        .suggestions-box {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #d4c9b9;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(44,62,80,0.1);
+            z-index: 10000;
+            max-height: 250px;
+            overflow-y: auto;
+            margin-top: 5px;
+        }
+        
+        .suggestion-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0e8dc;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+        
+        .suggestion-item.selected {
+            background: #f0e8dc;
+            border-left: 3px solid #2c3e50;
+        }
+        
+        .suggestion-item:hover {
+            background: #f5f0e8;
+        }
+        
+        .suggestion-item strong {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .suggestion-item small {
+            color: #8e9aab;
+            margin-left: 8px;
+            font-size: 0.75rem;
+        }
+        
+        /* ============================================
+           LAYOUT PRINCIPAL - 2 COLONNES
+           ============================================ */
+        .main-layout {
+            display: flex;
+            gap: 1.5rem;
+     margin-top: 2rem;
+        }
+.container.main-layout {
+    flex: 1 0 auto;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0.5rem 15px 0 15px;  /* ← Réduit de 1rem à 0.5rem */
+}
+
+        /* Colonne gauche - Filtres (réduite) */
+        .filters-sidebar {
+            width: 240px;
+            flex-shrink: 0;
+        }
+        
+        /* Colonne droite - Résultats */
+        .results-main {
+            flex: 1;
+        }
+        
+        /* ============================================
+           BOUTON TOGGLE FILTRES (mobile)
+           ============================================ */
+        .filter-toggle-btn {
+            display: none;
+            width: 100%;
+            padding: 0.6rem;
+            background: white;
+            border: 1px solid #d4c9b9;
+            border-radius: 30px;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+        }
+        
+        .filter-toggle-btn:hover {
+            background: #f5f0e8;
+        }
+        
+        .filter-toggle-btn i {
+            margin-right: 0.5rem;
+        }
+        
+        /* ============================================
+           FILTRES - VERTICAUX (version réduite)
+           ============================================ */
+        .filters-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 4px 12px rgba(44,62,80,0.05);
+        }
+        
+        .filters-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+            color: #2c3e50;
+            padding-bottom: 0.4rem;
+            border-bottom: 2px solid #f0e8dc;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .filter-group {
+            margin-bottom: 1rem;
+        }
+        
+        .filter-group-label {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        
+        .filter-group-label i {
+            color: #8e9aab;
+            font-size: 0.8rem;
+        }
+        
+        .filter-dropdown-vertical {
+    position: relative;
+    min-width: 120px;
+}
+        
+        .filter-button-vertical {
+    width: 100%;
+    background: white;
+    border: 1px solid #d4c9b9;
+    border-radius: 30px;
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    color: #2c3e50;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    white-space: nowrap;
+}
+
+        
+        .filter-button-vertical:hover {
+            background: #f0e8dc;
+        }
+        
+        .filter-menu-vertical {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: auto;  /* ← Changé de '0' à 'auto' */
+    min-width: 220px;
+    max-width: 300px;  /* ← AJOUTÉ : largeur maximale */
+    max-height: 250px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #d4c9b9;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 1000;
+    margin-top: 3px;
+    padding: 0.3rem 0;
+}
+        
+        .filter-menu-vertical.show {
+            display: block;
+        }
+        
+        .filter-menu-item {
+            padding: 0.3rem 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.75rem;
+        }
+        
+        .filter-menu-item:hover {
+            background: #f5f0e8;
+        }
+        
+        .filter-menu-item input {
+            accent-color: #2c3e50;
+            width: 12px;
+            height: 12px;
+        }
+        
+        .filter-menu-item label {
+            flex: 1;
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .filter-menu-item .count {
+            color: #8e9aab;
+            font-size: 0.7rem;
+        }
+        
+        /* Actions des filtres */
+        .filter-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.8rem;
+        }
+        
+        .filter-actions .apply-btn {
+            flex: 2;
+            padding: 0.4rem;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-actions .apply-btn:hover {
+            background: #1e2b3a;
+        }
+        
+        .filter-actions .clear-btn {
+            flex: 1;
+            padding: 0.4rem;
+            background: white;
+            color: #8e9aab;
+            border: 1px solid #d4c9b9;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            font-size: 0.7rem;
+            transition: all 0.2s;
+        }
+        
+        .filter-actions .clear-btn:hover {
+            background: #f5f0e8;
+            color: #2c3e50;
+        }
+        
+        .filter-actions .clear-btn i {
+            font-size: 0.6rem;
+        }
+        
+        /* Tri */
+        .sort-vertical {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f0e8dc;
+        }
+        
+        .sort-vertical select {
+    padding: 0.4rem 1.8rem 0.4rem 1rem;
+    border: 1px solid #d4c9b9;
+    border-radius: 30px;
+    background: white;
+    color: #2c3e50;
+    font-size: 0.85rem;  /* ← MÊME TAILLE QUE LES FILTRES */
+    font-family: 'Inter', sans-serif;  /* ← MÊME POLICE QUE LES FILTRES */
+    font-weight: 400;  /* ← MÊME ÉPAISSEUR */
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%232c3e50' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    min-width: 120px;
+}
+        
+        /* Tags persistants */
+        .selected-filters-vertical {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px;
+            margin-top: 0.8rem;
+        }
+        
+        .selected-filter {
+            background: #2c3e50;
+            color: white;
+            padding: 0.15rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .selected-filter i {
+            cursor: pointer;
+            font-size: 0.6rem;
+            opacity: 0.8;
+        }
+        
+        .selected-filter i:hover {
+            opacity: 1;
+        }
+/* ============================================
+   TRONCATURE DU TEXTE
+   ============================================ */
+.artwork-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.15rem;
+    line-height: 1.2;
+}
+
+.artwork-artist {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    font-size: 0.8rem;
+    color: #5d6d7e;
+    margin-bottom: 0.15rem;
+}        
+        /* ============================================
+           BOUTON FAVORI
+           ============================================ */
+        .favorite-icon {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 10;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .favorite-icon i {
+            color: #dc3545;
+            transition: all 0.2s;
+ 
+        }
+
+        .favorite-icon:hover {
+            transform: scale(1.1);
+            background: white;
+        }
+
+        .favorite-icon:hover i {
+            -webkit-text-stroke: 0.8px #dc3545;
+        }
+
+        .favorite-icon.active i {
+            color: #dc3545;
+            -webkit-text-stroke: 0;
+            -webkit-text-fill-color: #dc3545;
+        }
+
+        .favorite-icon.loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .favorite-icon.loading i {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .artwork-card {
+            position: relative;
+            display: block;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        /* ============================================
+           RÉSULTATS
+           ============================================ */
+        .results-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid #d4c9b9;
+            font-size: 0.85rem;
+            color: #5d6d7e;
+        }
+        
+        .results-count {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .artworks-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        
+        .artwork-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(44,62,80,0.05);
+            transition: transform 0.2s;
+        }
+        
+        .artwork-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(44,62,80,0.1);
+        }
+        
+        .artwork-image {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+        
+        .artwork-image-placeholder {
+            width: 100%;
+            height: 160px;
+            background: linear-gradient(145deg, #e6d8c3, #d4c9b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5d6d7e;
+            font-size: 0.75rem;
+        }
+        
+        .artwork-info {
+            padding: 0.4rem;
+        }
+        
+        .artwork-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.15rem;
+            line-height: 1.2;
+        }
+        
+        .artwork-artist {
+            font-size: 0.8rem;
+            color: #5d6d7e;
+            margin-bottom: 0.15rem;
+        }
+        
+        .artwork-year {
+            font-size: 0.7rem;
+            color: #8e9aab;
+            margin-bottom: 0.15rem;
+        }
+        
+        .artwork-museum {
+            font-size: 0.7rem;
+            color: #8e9aab;
+        }
+        
+        .popular-badge {
+            margin-top: 0.4rem;
+            font-size: 0.7rem;
+            color: #5d6d7e;
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+        }
+        
+        /* Bouton 20 œuvres au hasard */
+        .random-button {
+            background: transparent;
+            border: 1px solid #2c3e50;
+            color: #2c3e50;
+            border-radius: 30px;
+            padding: 0.3rem 1rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+        
+        .random-button:hover {
+            background: #2c3e50;
+            color: #e6d8c3;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(44,62,80,0.2);
+        }
+        
+        .random-button i {
+            font-size: 0.85rem;
+            transition: transform 0.3s;
+        }
+        
+        .random-button:hover i {
+            transform: rotate(180deg);
+        }
+        
+        .random-button.loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .random-button.loading i {
+            animation: spin 1s infinite linear;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ============================================
+           PAGINATION
+           ============================================ */
+        .pagination {
+            margin: 2rem 0;
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+        }
+        
+        .page-link {
+            padding: 0.3rem 0.7rem;
+            border-radius: 6px;
+            color: #5d6d7e;
+            background: white;
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: inline-block;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .page-link:hover {
+            background: #f0e8dc;
+            border-color: #d4c9b9;
+        }
+        
+        .page-item.active .page-link {
+            background: #2c3e50;
+            color: white;
+            border-color: #2c3e50;
+        }
+        
+        .page-item.disabled .page-link {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        .ellipsis {
+            padding: 0.3rem 0.7rem;
+            color: #8e9aab;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 2.5rem;
+            color: #8e9aab;
+            background: white;
+            border-radius: 12px;
+            font-size: 0.9rem;
+        }
+        
+        /* ============================================
+           FOOTER
+           ============================================ */
+        .footer {
+            background: #2c3e50;
+            color: #e6d8c3;
+            padding: 1.5rem 0;
+            margin-top: auto;
+            text-align: center;
+            font-size: 0.85rem;
+            width: 100%;
+        }
+        
+        /* ============================================
+           MODAL DE CONNEXION
+           ============================================ */
+        .modal-content {
+            border-radius: 16px;
+            border: none;
+        }
+        
+        .modal-header {
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .modal-title {
+            font-family: 'Playfair Display', serif;
+            color: #2c3e50;
+            font-size: 1.2rem;
+        }
+        
+        .modal-footer {
+            border-top: 1px solid #eaeaea;
+        }
+        
+        .modal-footer .btn {
+            border-radius: 30px;
+            padding: 0.4rem 1.2rem;
+            font-size: 0.9rem;
+        }
+        
+        .modal-footer .btn-primary {
+            background: #2c3e50;
+            border: none;
+        }
+        
+        .modal-footer .btn-primary:hover {
+            background: #1e2b3a;
+        }
+        
+        .modal-body i {
+            font-size: 2.5rem;
+        }
+        
+        .modal-body p {
+            font-size: 0.95rem;
+        }
+        
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 1100px) {
+            .artworks-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .navbar-search {
+                order: 3;
+                width: 100%;
+                margin: 0.5rem 0;
+            }
+            
+    .navbar-collapse {
+        background: white !important;  /* Change transparent en white */
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        padding: 0.5rem 0;
+    }
+            
+            .main-layout {
+                flex-direction: column;
+            }
+            
+            .filters-sidebar {
+                width: 100%;
+            }
+            
+            .filter-toggle-btn {
+                display: block;
+            }
+            
+            .filters-container {
+                display: none;
+            }
+            
+            .filters-container.show {
+                display: block;
+            }
+            
+            .artworks-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .artworks-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .artworks-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-info {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: flex-start;
+            }
+        }
+
+/* ============================================
+   ESPACE ENTRE LES RÉSULTATS ET LE FOOTER
+   ============================================ */
+.results-main {
+    margin-bottom: 1rem;  /* Ajoute un espace sous les résultats */
+}
+
+/* Alternative si vous voulez plus d'espace */
+.main-layout {
+    margin-bottom: 1rem;
+}
+
+/* Pour mobile, un peu moins d'espace */
+@media (max-width: 768px) {
+    .results-main {
+        margin-bottom: 1.5rem;
+    }
+}
+
+
+/* ============================================
+   MOBILE - IMAGES CARRÉES (VERSION MOINS HAUTE)
+   ============================================ */
+@media (max-width: 768px) {
+    .artwork-image {
+        width: 100%;
+        height: 220px;  /* Réduit de 280px à 220px */
+        object-fit: cover;
+    }
+    
+    .artwork-image-placeholder {
+        width: 100%;
+        height: 220px;
+    }
+}
+
+@media (max-width: 480px) {
+    .artwork-image {
+        height: 260px;  /* Réduit de 320px à 260px */
+    }
+    
+    .artwork-image-placeholder {
+        height: 260px;
+    }
+    
+    .artwork-info {
+        padding: 0.8rem;
+    }
+    
+    .artwork-title {
+        font-size: 1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+/* Pour que les cartes prennent toute la largeur sur mobile */
+@media (max-width: 480px) {
+    .artworks-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .artwork-card {
+        width: 100%;
+        margin: 0;
+    }
+}
+
+/* ============================================
+   RÉDUIRE L'ESPACE SOUS L'IMAGE SUR MOBILE
+   ============================================ */
+@media (max-width: 768px) {
+    /* Réduire le padding de la zone d'info */
+    .artwork-info {
+        padding: 0.6rem !important;  /* Moins d'espace */
+    }
+    
+    /* Réduire les marges entre les éléments */
+    .artwork-title {
+        margin-bottom: 0.1rem !important;
+        font-size: 0.95rem !important;
+    }
+    
+    .artwork-artist {
+        margin-bottom: 0.1rem !important;
+        font-size: 0.85rem !important;
+    }
+    
+    .artwork-year, .artwork-museum {
+        margin-bottom: 0.1rem !important;
+        font-size: 0.75rem !important;
+    }
+    
+    /* Réduire l'espace du badge de popularité */
+    .popular-badge {
+        margin-top: 0.2rem !important;
+        padding: 0.1rem 0 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .artwork-info {
+        padding: 0.4rem !important;  /* Encore moins sur très petit */
+    }
+    
+    .artwork-title {
+        font-size: 0.9rem !important;
+    }
+    
+    .artwork-artist {
+        font-size: 0.8rem !important;
+    }
+}
+
+
+
+
+
+
+
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    {% include 'navbar.html' %}
+
+    <!-- LAYOUT PRINCIPAL -->
+    <div class="container main-layout">
+        
+        <!-- COLONNE GAUCHE - FILTRES -->
+        <div class="filters-sidebar">
+            <!-- Bouton toggle pour mobile -->
+            <button class="filter-toggle-btn" id="filterToggleBtn">
+                <i class="fas fa-sliders-h"></i> Filtres et tri
+            </button>
+            
+            <!-- Conteneur des filtres -->
+            <div class="filters-container" id="filtersContainer">
+                <h3 class="filters-title">Filtrer</h3>
+                
+                <!-- Actions -->
+<div class="filter-actions">
+    <button class="apply-btn" id="apply-filters-btn">Appliquer</button>
+    <a href="/" class="clear-btn" id="clear-filters-btn" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+        <i class="fas fa-times"></i> Effacer
+    </a>
+</div>             
+                <!-- Groupe Artiste -->
+                <div class="filter-group">
+                    <div class="filter-group-label">
+                        <i class="fas fa-user-astronaut"></i> Artiste
+                    </div>
+                    <div class="filter-dropdown-vertical">
+                        <button class="filter-button-vertical" id="artist-dropdown-btn">
+                            Choisir <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div id="artist-dropdown" class="filter-menu-vertical"></div>
+                    </div>
+                </div>
+                
+                <!-- Groupe Musée -->
+                <div class="filter-group">
+                    <div class="filter-group-label">
+                        <i class="fas fa-landmark"></i> Musée
+                    </div>
+                    <div class="filter-dropdown-vertical">
+                        <button class="filter-button-vertical" id="museum-dropdown-btn">
+                            Choisir <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div id="museum-dropdown" class="filter-menu-vertical"></div>
+                    </div>
+                </div>
+                <!-- Groupe Type d'œuvre (instance_of) -->
+                <div class="filter-group">
+                    <div class="filter-group-label">
+                        <i class="fas fa-tag"></i> Type d'œuvre
+                    </div>
+                    <div class="filter-dropdown-vertical">
+                        <button class="filter-button-vertical" id="type-dropdown-btn">
+                            Choisir <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div id="type-dropdown" class="filter-menu-vertical"></div>
+                    </div>
+                </div>                
+                <!-- Groupe Mouvement -->
+                <div class="filter-group">
+                    <div class="filter-group-label">
+                        <i class="fas fa-palette"></i> Mouvement
+                    </div>
+                    <div class="filter-dropdown-vertical">
+                        <button class="filter-button-vertical" id="movement-dropdown-btn">
+                            Choisir <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div id="movement-dropdown" class="filter-menu-vertical"></div>
+                    </div>
+                </div>
+
+
+
+
+                
+                <!-- Tags persistants -->
+                <div id="selected-filters" class="selected-filters-vertical"></div>
+                
+                <!-- Tri -->
+                <div class="sort-vertical">
+                    <div class="filter-group-label">
+                        <i class="fas fa-sort"></i> Trier
+                    </div>
+                    <select id="sort">
+                        <option value="relevance" {% if sort == 'relevance' %}selected{% endif %}>Pertinence</option>
+                        <option value="date_asc" {% if sort == 'date_asc' %}selected{% endif %}>Date ↑ (ancien)</option>
+                        <option value="date_desc" {% if sort == 'date_desc' %}selected{% endif %}>Date ↓ (récent)</option>
+                        <option value="title_asc" {% if sort == 'title_asc' %}selected{% endif %}>Titre A → Z</option>
+                        <option value="title_desc" {% if sort == 'title_desc' %}selected{% endif %}>Titre Z → A</option>
+                        <option value="artist_asc" {% if sort == 'artist_asc' %}selected{% endif %}>Artiste A → Z</option>
+                        <option value="artist_desc" {% if sort == 'artist_desc' %}selected{% endif %}>Artiste Z → A</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- COLONNE DROITE - RÉSULTATS -->
+        <div class="results-main">
+
+
+
+<!-- BOUTONS DE CHANGEMENT DE VUE ET ALÉATOIRE -->
+{% if results %}
+
+<!-- Version desktop : bouton aléatoire à gauche, boutons 8/4/2 à droite -->
+<div class="desktop-view" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    
+    <!-- Message pour les œuvres aléatoires (à gauche sur desktop) -->
+    {% if not query and not artists and not museums and not movements and results %}
+    <div style="display: flex; align-items: center;">
+        <button class="random-button" id="random-btn" title="20 œuvres au hasard" style="margin: 0;">
+            <i class="fas fa-random"></i>
+            20 Œuvres au hasard
+        </button>
+        {% if total_pages > 1 %}
+        <span style="margin-left: 1rem;">Page {{ page }} sur {{ total_pages }}</span>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    <!-- Boutons desktop (8,4,2) - à droite sur desktop -->
+    <div class="view-toggle" style="display: flex; gap: 0.3rem; background: white; padding: 0.2rem; border-radius: 40px; border: 1px solid #e0d6c8; width: fit-content; margin-left: auto;">
+        <button class="view-btn" onclick="changeView(8)" id="view-8">
+            <i class="fas fa-th"></i> 8
+        </button>
+        <button class="view-btn active" onclick="changeView(4)" id="view-4">
+            <i class="fas fa-th-large"></i> 4
+        </button>
+        <button class="view-btn" onclick="changeView(2)" id="view-2">
+            <i class="fas fa-list"></i> 2
+        </button>
+    </div>
+</div>
+
+<!-- Version mobile : bouton aléatoire au-dessus, boutons 2/1 en dessous -->
+<div class="mobile-view" style="display: none; flex-direction: column; gap: 0.8rem; margin-bottom: 1rem;">
+    
+    <!-- Message pour les œuvres aléatoires (en haut sur mobile) - MÊME BOUTON -->
+    {% if not query and not artists and not museums and not movements and results %}
+    <div style="width: 100%;">
+        <button class="random-button" id="random-btn-mobile" title="20 œuvres au hasard" style="width: 100%; justify-content: center;" onclick="document.getElementById('random-btn').click()">
+            <i class="fas fa-random"></i>
+            20 Œuvres au hasard
+        </button>
+    </div>
+    {% endif %}
+    
+    <!-- Boutons mobile (2,1) - en dessous du bouton aléatoire -->
+    <div class="mobile-toggle" id="mobileToggle" style="display: flex; gap: 0.5rem; background: white; padding: 0.2rem; border-radius: 40px; border: 1px solid #e0d6c8; width: 100%;">
+        <button class="mobile-btn active" onclick="setMobileColumns(2)"><i class="fas fa-th-large"></i> 2</button>
+        <button class="mobile-btn" onclick="setMobileColumns(1)"><i class="fas fa-list"></i> 1</button>
+    </div>
+</div>
+
+{% endif %}
+
+<!-- Informations de recherche -->
+{% if query or museums or movements or artists %}
+<div class="results-info">
+    <span class="results-count">
+        {% if query %}"{{ query }}" - {% endif %}
+        {{ count }} résultat(s)
+    </span>
+    {% if total_pages > 1 %}
+    <span>Page {{ page }} sur {{ total_pages }}</span>
+    {% endif %}
+</div>
+{% endif %}
+
+<style>
+    /* Cacher la version mobile sur desktop, cacher la version desktop sur mobile */
+    @media (min-width: 601px) {
+        .mobile-view {
+            display: none !important;
+        }
+    }
+    
+    @media (max-width: 600px) {
+        .desktop-view {
+            display: none !important;
+        }
+        .mobile-view {
+            display: flex !important;
+        }
+    }
+</style>
+
+
+            <!-- Section des résultats -->
+            {% if results %}
+
+                <!-- Grille des œuvres -->
+                <div class="works-grid grid-4" id="works-grid">
+                    {% for artwork in results %}
+                    <a href="/oeuvre/{{ artwork.id }}" class="work-card" style="text-decoration: none; color: inherit; display: block; position: relative; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(44,62,80,0.05); border: 1px solid #e0d6c8;">
+                        
+                        <!-- BOUTON FAVORI -->
+                        <div class="favorite-icon" data-artwork-id="{{ artwork.id }}" onclick="event.preventDefault(); event.stopPropagation(); toggleFavorite('{{ artwork.id }}', this)">
+                            <i class="far fa-heart" id="favorite-icon-{{ artwork.id }}"></i>
+                        </div>
+                        
+                        <!-- Image carrée -->
+                        {% if artwork.image_url and artwork.image_url != '' %}
+                        <img src="{{ artwork.image_url }}" alt="{{ artwork.titre_fr or artwork.titre_en or 'Sans titre' }}" class="work-image" loading="lazy" style="width: 100%; aspect-ratio: 1/1; object-fit: contain; background: #f5f0e8;">
+                        {% else %}
+                        <div class="work-image-placeholder" style="width: 100%; aspect-ratio: 1/1; background: linear-gradient(145deg, #e6d8c3, #d4c9b9); display: flex; align-items: center; justify-content: center; color: #5d6d7e; font-size: 2rem;">
+                            <i class="fas fa-image"></i>
+                        </div>
+                        {% endif %}
+
+                        <!-- Informations -->
+                        <div style="padding: 0.4rem;">
+                            <!-- TITRE avec troncature -->
+                            <div class="artwork-title" title="{{ artwork.titre }}">
+                                {{ artwork.titre[:40] if artwork.titre else 'Sans titre' }}
+                            </div>
+                            
+                            <!-- ARTISTE avec troncature -->
+                            <div class="artwork-artist" title="{{ artwork.createur }}">
+                                {{ artwork.createur }}
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+
+            {% else %}
+                <!-- Aucun résultat - complètement vide -->
+            {% endif %}
+
+        </div>  <!-- Fermeture de results-main -->
+    </div>  <!-- Fermeture de main-layout -->
+
+    <!-- FOOTER -->
+    {% include 'footer.html' %}
+    
+<!-- MODAL D'INSCRIPTION AVEC FORMULAIRE COMPLET -->
+<div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+        <div class="modal-content" style="border-radius: 16px;">
+            <div class="modal-header" style="border-bottom: 1px solid #f0e8dc;">
+                <h5 class="modal-title" style="font-family: 'Playfair Display', serif; color: #2c3e50; text-align: center; width: 100%;">Inscription</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Messages d'erreur/succès -->
+                <div id="registerMessages"></div>
+                
+                <form id="quickRegisterForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="modal-username" name="username" 
+                               placeholder="Nom d'utilisateur"
+                               style="border-radius: 8px; font-size: 0.9rem; padding: 0.6rem;" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <input type="email" class="form-control" id="modal-email" name="email" 
+                               placeholder="Email"
+                               style="border-radius: 8px; font-size: 0.9rem; padding: 0.6rem;" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="password-input-group" style="position: relative;">
+                            <input type="password" class="form-control" id="modal-password" name="password" 
+                                   placeholder="Mot de passe"
+                                   style="border-radius: 8px; font-size: 0.9rem; padding: 0.6rem; padding-right: 2.5rem;" required>
+<button type="button" class="password-toggle" onclick="toggleModalPasswordVisibility()" 
+        style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: #5d6d7e; cursor: pointer; padding: 0; font-size: 1rem; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;">
+    <i class="far fa-eye" id="modalToggleIcon" style="font-size: 1rem;"></i>
+</button>
+                        </div>
+<!-- Exigences du mot de passe en ligne -->
+<div class="password-requirements" id="modal-password-requirements" 
+     style="font-size: 0.75rem; margin-top: 0.5rem; margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; color: #5d6d7e;">
+    <span id="modal-req-length" style="display: inline-flex; align-items: center;">
+        <i class="fas fa-circle" style="font-size: 0.4rem; margin-right: 0.3rem; color: currentColor;"></i> 8 caractères
+    </span>
+    <span id="modal-req-uppercase" style="display: inline-flex; align-items: center;">
+        <i class="fas fa-circle" style="font-size: 0.4rem; margin-right: 0.3rem; color: currentColor;"></i> 1 majuscule
+    </span>
+    <span id="modal-req-lowercase" style="display: inline-flex; align-items: center;">
+        <i class="fas fa-circle" style="font-size: 0.4rem; margin-right: 0.3rem; color: currentColor;"></i> 1 minuscule
+    </span>
+    <span id="modal-req-number" style="display: inline-flex; align-items: center;">
+        <i class="fas fa-circle" style="font-size: 0.4rem; margin-right: 0.3rem; color: currentColor;"></i> 1 chiffre
+    </span>
+</div>
+                    
+<button type="submit" class="btn" id="modalRegisterBtn"
+        style="background: #2c3e50; color: #e6d8c3; border-radius: 30px; padding: 0.6rem 1.5rem; font-weight: 500; border: none; width: auto; min-width: 150px; display: block; margin: 0 auto;">
+    S'inscrire
+</button>
+                
+                <div class="mt-3 text-center">
+                    <p style="font-size: 0.8rem; color: #5d6d7e;">
+                        Déjà membre ? 
+                        <a href="/login" style="color: #2c3e50; text-decoration: none; font-weight: 500;">
+                            Se connecter
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>    
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- AJOUTEZ CES FONCTIONS ICI, AVANT L'AUTRE SCRIPT -->
+<script>
+// Fonctions globales pour l'œil
+function toggleModalPasswordVisibility() {
+    const passwordInput = document.getElementById('modal-password');
+    const toggleIcon = document.getElementById('modalToggleIcon');
+    
+    if (passwordInput && toggleIcon) {
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        }
+    }
+}
+
+function toggleLoginPasswordVisibility() {
+    const passwordInput = document.getElementById('modal-login-password');
+    const toggleIcon = document.getElementById('loginToggleIcon');
+    
+    if (passwordInput && toggleIcon) {
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        }
+    }
+}
+</script>
+    
+    <script>
+(function() {
+
+
+
+
+
+// Fonction pour basculer de la modale connexion vers inscription
+function switchToRegisterModal() {
+    // Fermer la modale de connexion
+    const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+    loginModal.hide();
+    
+    // Ouvrir la modale d'inscription
+    const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
+    registerModal.show();
+}
+
+// Fonction pour basculer de la modale inscription vers connexion
+function switchToLoginModal() {
+    // Fermer la modale d'inscription
+    const registerModal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
+    registerModal.hide();
+    
+    // Ouvrir la modale de connexion
+    const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+    loginModal.show();
+}
+
+
+
+// Mot de passe oublié
+function showForgotPassword() {
+    alert('Fonctionnalité à venir : Réinitialisation du mot de passe');
+}
+
+
+
+// Validation en temps réel du mot de passe
+function initModalPasswordValidation() {
+    const passwordInput = document.getElementById('modal-password');
+    if (!passwordInput) return;
+    
+    passwordInput.addEventListener('input', function(e) {
+        const password = e.target.value;
+        
+        // Longueur
+        const lengthReq = document.getElementById('modal-req-length');
+        if (password.length >= 8) {
+            lengthReq.style.color = '#28a745';
+            lengthReq.innerHTML = '<i class="fas fa-check-circle" style="font-size: 0.75rem; margin-right: 0.3rem;"></i> 8 caractères';
+        } else {
+            lengthReq.style.color = '#dc3545';
+            lengthReq.innerHTML = '<i class="fas fa-times-circle" style="font-size: 0.75rem; margin-right: 0.3rem;"></i> 8 caractères';
+        }
+        
+        // Majuscule
+        const upperReq = document.getElementById('modal-req-uppercase');
+        if (/[A-Z]/.test(password)) {
+            upperReq.style.color = '#28a745';
+            upperReq.innerHTML = '<i class="fas fa-check-circle" style="font-size: 0.75rem; margin-right: 0.3rem;"></i> 1 majuscule';
+        } else {
+            upperReq.style.color = '#dc3545';
+            upperReq.innerHTML = '<i class="fas fa-times-circle" style="font-size: 0.75rem; margin-right: 0.3rem;"></i> 1 majuscule';
+        }
+        
+        // Minuscule
+        const lowerReq = document.getElementById('modal-req-lowercase');
+        if (/[a-z]/.test(password)) {
+            lowerReq.style.color = '#28a745';
+            lowerReq.innerHTML = '<i class="fas fa-check-circle" style="font-size: 0.75rem; margin-right: 0.3rem;"></i> 1 minuscule';
+        } else {
+            lowerReq.style.color = '#dc3545';
+            lowerReq.innerHTML = '<i class="fas fa-times-circle" style="font-size: 0.75rem; margin-right: 0.3rem;"></i> 1 minuscule';
+        }
+        
+        // Chiffre
+        const numberReq = document.getElementById('modal-req-number');
+        if (/[0-9]/.test(password)) {
+            numberReq.style.color = '#28a745';
+            numberReq.innerHTML = '<i class="fas fa-check-circle" style="font-size: 0.75rem; margin-right: 0.3rem;"></i> 1 chiffre';
+        } else {
+            numberReq.style.color = '#dc3545';
+            numberReq.innerHTML = '<i class="fas fa-times-circle" style="font-size: 0.75rem; margin-right: 0.3rem;"></i> 1 chiffre';
+        }
+    });
+}
+
+// Soumission du formulaire d'inscription
+function initModalRegisterForm() {
+    const form = document.getElementById('quickRegisterForm');
+    if (!form) return;
+    
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const username = document.getElementById('modal-username').value;
+        const email = document.getElementById('modal-email').value;
+        const password = document.getElementById('modal-password').value;
+        const messagesDiv = document.getElementById('registerMessages');
+        const submitBtn = document.getElementById('modalRegisterBtn');
+        
+        // Validation rapide
+        if (password.length < 8 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
+            messagesDiv.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show text-center" role="alert" 
+                     style="font-size: 0.85rem; margin: 1rem 0; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <i class="fas fa-exclamation-circle" style="font-size: 1.2rem;"></i>
+                    <span>Le mot de passe ne respecte pas les exigences de sécurité.</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="position: static; margin-left: 0.5rem;"></button>
+                </div>
+            `;
+            return;
+        }
+        
+        // Désactiver le bouton pendant l'envoi
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inscription...';
+        
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            
+            const response = await fetch('/api/quick-register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({
+                    username: username,
+                    email: email,
+                    password: password
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                // ✅ Succès (centré)
+                messagesDiv.innerHTML = `
+                    <div class="alert alert-success text-center" role="alert" 
+                         style="font-size: 0.85rem; margin: 1rem 0; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <i class="fas fa-check-circle" style="font-size: 1.2rem;"></i> 
+                        <span>${data.message || 'Inscription réussie ! Un email de vérification vous a été envoyé.'}</span>
+                    </div>
+                `;
+                
+                // Fermer la modale après 2 secondes
+                setTimeout(() => {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
+                    modal.hide();
+                    
+                    if (data.email) {
+                        window.location.href = `/verify-email-pending?email=${encodeURIComponent(data.email)}`;
+                    }
+                }, 2000);
+                
+            } else {
+                // ❌ Erreur (centrée)
+                let errorMessage = data.error || 'Erreur lors de l\'inscription';
+                if (data.errors) {
+                    errorMessage = '<ul class="text-start mb-0" style="display: inline-block;">' + 
+                                   data.errors.map(e => `<li>${e}</li>`).join('') + 
+                                   '</ul>';
+                }
+                
+                messagesDiv.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show text-center" role="alert" 
+                         style="font-size: 0.85rem; margin: 1rem 0;">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <i class="fas fa-exclamation-circle" style="font-size: 1.2rem;"></i>
+                            <span>${errorMessage}</span>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="position: absolute; top: 0.5rem; right: 0.5rem;"></button>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('Erreur:', error);
+            messagesDiv.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show text-center" role="alert" 
+                     style="font-size: 0.85rem; margin: 1rem 0; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <i class="fas fa-exclamation-circle" style="font-size: 1.2rem;"></i>
+                    <span>Erreur de connexion. Veuillez réessayer.</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="position: static; margin-left: 0.5rem;"></button>
+                </div>
+            `;
+        } finally {
+            // Réactiver le bouton
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'S\'inscrire';
+        }
+    });
+}
+
+// ============================================
+// GESTION DE LA CONNEXION RAPIDE
+// ============================================
+
+
+
+
+// Soumission du formulaire de connexion
+function initModalLoginForm() {
+    const form = document.getElementById('quickLoginForm');
+    if (!form) return;
+    
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('modal-login-email').value;
+        const password = document.getElementById('modal-login-password').value;
+        const messagesDiv = document.getElementById('loginMessages');
+        const submitBtn = document.getElementById('modalLoginBtn');
+        
+        // Désactiver le bouton pendant l'envoi
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion...';
+        
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            
+            const response = await fetch('/api/quick-login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                // Succès
+                messagesDiv.innerHTML = `
+                    <div class="alert alert-success" role="alert" style="font-size: 0.85rem;">
+                        <i class="fas fa-check-circle"></i> Connexion réussie ! Redirection...
+                    </div>
+                `;
+                
+                // Fermer la modale après 1 seconde et recharger
+                setTimeout(() => {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+                    modal.hide();
+                    window.location.reload();
+                }, 1000);
+                
+            } else {
+                // Erreur
+                messagesDiv.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="font-size: 0.85rem;">
+                        ${data.error || 'Email ou mot de passe incorrect'}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('Erreur:', error);
+            messagesDiv.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert" style="font-size: 0.85rem;">
+                    Erreur de connexion. Veuillez réessayer.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+        } finally {
+            // Réactiver le bouton
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Se connecter';
+        }
+    });
+}
+
+
+
+
+    // ============================================
+    // VARIABLES GLOBALES
+    // ============================================
+let selectedFilters = {
+    artists: [],
+    museums: [],
+    movements: [],
+    types: [],        // ← AJOUTE
+
+
+};
+    
+
+    let selectedSuggestionIndex = -1;
+
+    // 👇 AJOUTE CES VARIABLES ICI (dans la IIFE)
+    let isLoading = false;
+    let currentPage = {{ page }};
+    let totalPages = {{ total_pages }};
+    let hasMore = currentPage < totalPages;
+    let scrollTriggered = false;
+
+    // Récupérer les filtres depuis l'URL au chargement
+    (function initFiltersFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        selectedFilters.artists = urlParams.getAll('artist');
+        selectedFilters.museums = urlParams.getAll('museum');
+        selectedFilters.movements = urlParams.getAll('movement');
+    })();
+
+function initInfiniteScroll() {
+    console.log('Initialisation du scroll infini');
+    console.log('currentPage:', currentPage);
+    console.log('totalPages:', totalPages);
+    console.log('hasMore:', hasMore);
+    
+    // Vérifier si la sentinelle existe déjà
+    if (document.getElementById('scroll-sentinel')) {
+        console.log('Sentinelle déjà existante');
+        return;
+    }
+    
+    // Créer un élément sentinelle pour détecter la fin
+    const sentinel = document.createElement('div');
+    sentinel.id = 'scroll-sentinel';
+    sentinel.style.height = '10px';
+    sentinel.style.width = '100%';
+    sentinel.style.marginTop = '20px';
+    sentinel.style.background = 'transparent';
+    
+    // Ajouter le sentinel APRÈS la grille
+    const grid = document.getElementById('works-grid');
+    if (grid && grid.parentNode) {
+        grid.parentNode.insertBefore(sentinel, grid.nextSibling);
+        console.log('✅ Sentinelle ajoutée');
+    } else {
+        console.error('❌ Grille ou parent non trouvé');
+        return;
+    }
+    
+    // Observer le sentinel
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            console.log('Intersection détectée!', entry.isIntersecting);
+            if (entry.isIntersecting && hasMore && !isLoading && !scrollTriggered) {
+                console.log('🟢 Fin de page détectée, chargement...');
+                scrollTriggered = true;
+                loadMoreWorks();
+            }
+        });
+    }, {
+        root: null,
+        rootMargin: '200px',  // Augmenté pour charger plus tôt
+        threshold: 0.1
+    });
+    
+    observer.observe(sentinel);
+}
+
+
+
+
+async function loadMoreWorks() {
+    if (isLoading || !hasMore) {
+        scrollTriggered = false;
+        return;
+    }
+    
+    isLoading = true;
+    const nextPage = currentPage + 1;
+    
+    console.log(`📥 Chargement de la page ${nextPage}...`);
+    showLoadingIndicator();
+    
+    try {
+        // Construire l'URL avec les filtres actuels
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('page', nextPage);
+        urlParams.set('ajax', '1');  // Important !
+        
+        const sort = document.getElementById('sort')?.value || 'relevance';
+        urlParams.set('sort', sort);
+        
+        const response = await fetch(`/?${urlParams.toString()}`);
+        
+        if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+        
+        const html = await response.text();
+        
+        if (!html || html.trim() === '') {
+            console.log('Plus de résultats');
+            hasMore = false;
+            hideLoadingIndicator();
+            showEndMessage();
+            return;
+        }
+        
+        // Créer un conteneur temporaire
+        const temp = document.createElement('div');
+        temp.innerHTML = html;
+        
+        // Récupérer les nouvelles cartes
+        const newCards = temp.querySelectorAll('#works-grid > a');
+        
+        console.log(`📦 ${newCards.length} nouvelles cartes reçues`);
+        
+        if (newCards.length === 0) {
+            hasMore = false;
+            hideLoadingIndicator();
+            showEndMessage();
+            return;
+        }
+        
+        const grid = document.getElementById('works-grid');
+        newCards.forEach(card => {
+            // Cloner pour éviter les problèmes
+            grid.appendChild(card.cloneNode(true));
+        });
+        
+        currentPage = nextPage;
+        
+        // Essayer de trouver le total des pages dans la réponse
+        const totalPagesMatch = html.match(/sur (\d+)/);
+        if (totalPagesMatch) {
+            totalPages = parseInt(totalPagesMatch[1]);
+        }
+        
+        hasMore = currentPage < totalPages;
+        
+        console.log(`✅ Page ${currentPage}/${totalPages} chargée`);
+        
+        // Réinitialiser les événements
+        initFavoriteButtons();
+        initArtworkCards();
+        checkAllFavorites();
+        
+    } catch (error) {
+        console.error('❌ Erreur chargement:', error);
+    } finally {
+        isLoading = false;
+        scrollTriggered = false;
+        hideLoadingIndicator();
+    }
+}
+
+
+
+
+    function showLoadingIndicator() {
+        hideLoadingIndicator();
+        const indicator = document.createElement('div');
+        indicator.id = 'loading-indicator';
+        indicator.innerHTML = `
+            <div style="text-align: center; padding: 20px; color: #5d6d7e;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; margin-right: 10px;"></i>
+                Chargement...
+            </div>
+        `;
+        const grid = document.getElementById('works-grid');
+        if (grid) {
+            grid.parentNode.insertBefore(indicator, grid.nextSibling);
+        }
+    }
+
+    function hideLoadingIndicator() {
+        const existing = document.getElementById('loading-indicator');
+        if (existing) existing.remove();
+    }
+
+    function showEndMessage() {
+        const endMsg = document.createElement('div');
+        endMsg.id = 'end-message';
+        endMsg.innerHTML = `
+            <div style="text-align: center; padding: 30px; color: #8e9aab; border-top: 1px solid #d4c9b9; margin-top: 20px;">
+                <i class="fas fa-check-circle" style="font-size: 1.2rem; margin-right: 8px;"></i>
+                Vous avez vu toutes les œuvres
+            </div>
+        `;
+        const grid = document.getElementById('works-grid');
+        if (grid) {
+            grid.parentNode.insertBefore(endMsg, grid.nextSibling);
+        }
+    }
+
+
+
+    // ============================================
+    // FONCTIONS GÉNÉRALES
+    // ============================================
+    
+    window.clearSearch = function() {
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            searchInput.value = '';
+            window.location.href = '/';
+        }
+    };
+    
+    // ============================================
+    // TOGGLE FILTRES MOBILE
+    // ============================================
+    function initFilterToggle() {
+        const toggleBtn = document.getElementById('filterToggleBtn');
+        const filtersContainer = document.getElementById('filtersContainer');
+        
+        if (toggleBtn && filtersContainer) {
+            toggleBtn.addEventListener('click', function() {
+                filtersContainer.classList.toggle('show');
+            });
+        }
+    }
+    
+
+    
+    // ============================================
+    // GESTION DES DROPDOWNS
+    // ============================================
+    function toggleDropdown(id) {
+        document.querySelectorAll('.filter-menu-vertical').forEach(menu => {
+            if (menu.id !== id) {
+                menu.classList.remove('show');
+            }
+        });
+        document.getElementById(id).classList.toggle('show');
+    }
+    
+    document.getElementById('artist-dropdown-btn')?.addEventListener('click', function() {
+        toggleDropdown('artist-dropdown');
+    });
+    
+    document.getElementById('museum-dropdown-btn')?.addEventListener('click', function() {
+        toggleDropdown('museum-dropdown');
+    });
+    
+    document.getElementById('movement-dropdown-btn')?.addEventListener('click', function() {
+        toggleDropdown('movement-dropdown');
+    });
+    document.getElementById('type-dropdown-btn')?.addEventListener('click', function() {
+    toggleDropdown('type-dropdown');
+});
+
+
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.filter-dropdown-vertical')) {
+            document.querySelectorAll('.filter-menu-vertical').forEach(menu => {
+                menu.classList.remove('show');
+            });
+        }
+    });
+
+
+// ============================================
+// MISE À JOUR DYNAMIQUE DES FILTRES
+// ============================================
+function updateAllFilters() {
+    collectSelectedFilters();
+    
+    const query = document.getElementById('search-input')?.value || '';
+    
+    // Construire l'URL avec tous les filtres actuels
+    let url = `/api/filters/update?q=${encodeURIComponent(query)}`;
+    
+    selectedFilters.artists.forEach(a => {
+        url += `&artist=${encodeURIComponent(a)}`;
+    });
+    selectedFilters.museums.forEach(m => {
+        url += `&museum=${encodeURIComponent(m)}`;
+    });
+    selectedFilters.movements.forEach(m => {
+        url += `&movement=${encodeURIComponent(m)}`;
+    });
+    selectedFilters.types.forEach(t => {
+        url += `&type=${encodeURIComponent(t)}`;
+    });
+    selectedFilters.genres.forEach(g => {
+        url += `&genre=${encodeURIComponent(g)}`;
+    });
+    selectedFilters.copyrights.forEach(c => {
+        url += `&copyright=${encodeURIComponent(c)}`;
+    });
+    
+    // Afficher un indicateur de chargement
+    document.querySelectorAll('.filter-menu-vertical').forEach(menu => {
+        menu.innerHTML = '<div class="filter-menu-item">Chargement...</div>';
+    });
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            // Mettre à jour chaque dropdown
+            updateFilterDropdown('artist-dropdown', data.artists, 'artist', selectedFilters.artists);
+            updateFilterDropdown('museum-dropdown', data.museums, 'museum', selectedFilters.museums);
+            updateFilterDropdown('movement-dropdown', data.movements, 'movement', selectedFilters.movements);
+            updateFilterDropdown('type-dropdown', data.types, 'type', selectedFilters.types);
+            updateFilterDropdown('genre-dropdown', data.genres, 'genre', selectedFilters.genres);
+            updateFilterDropdown('copyright-dropdown', data.copyrights, 'copyright', selectedFilters.copyrights);
+        })
+        .catch(error => {
+            console.error('Erreur mise à jour filtres:', error);
+            // En cas d'erreur, recharger avec l'ancienne méthode
+            loadFiltersLegacy();
+        });
+}
+
+function updateFilterDropdown(dropdownId, items, type, selectedValues) {
+    const container = document.getElementById(dropdownId);
+    if (!container) return;
+    
+    if (!items || items.length === 0) {
+        container.innerHTML = '<div class="filter-menu-item">Aucun résultat</div>';
+        return;
+    }
+    
+    container.innerHTML = items.map(item => {
+        const id = `${type}-${item.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
+        const checked = selectedValues.includes(item.name) ? 'checked' : '';
+        return `
+            <div class="filter-menu-item">
+                <input type="checkbox" value="${item.name}" id="${id}" ${checked}>
+                <label for="${id}">${item.name}</label>
+                <span class="count">(${item.count})</span>
+            </div>
+        `;
+    }).join('');
+}
+
+// Fallback pour l'ancienne méthode (au cas où)
+function loadFiltersLegacy() {
+    const query = document.getElementById('search-input')?.value || '';
+    
+    function buildUrl(basePath) {
+        let url = `${basePath}?q=${encodeURIComponent(query)}`;
+        selectedFilters.artists.forEach(a => url += `&artist=${encodeURIComponent(a)}`);
+        selectedFilters.museums.forEach(m => url += `&museum=${encodeURIComponent(m)}`);
+        selectedFilters.movements.forEach(m => url += `&movement=${encodeURIComponent(m)}`);
+        return url;
+    }
+    
+    // Artistes
+    fetch(buildUrl('/api/artists'))
+        .then(response => response.json())
+        .then(data => updateFilterDropdown('artist-dropdown', data, 'artist', selectedFilters.artists));
+    
+    // Musées
+    fetch(buildUrl('/api/museums'))
+        .then(response => response.json())
+        .then(data => updateFilterDropdown('museum-dropdown', data, 'museum', selectedFilters.museums));
+    
+    // Mouvements
+    fetch(buildUrl('/api/movements'))
+        .then(response => response.json())
+        .then(data => updateFilterDropdown('movement-dropdown', data, 'movement', selectedFilters.movements));
+    
+    // Types
+    fetch(buildUrl('/api/instance_of'))
+        .then(response => response.json())
+        .then(data => updateFilterDropdown('type-dropdown', data, 'type', selectedFilters.types));
+    
+    // Genres
+    fetch(buildUrl('/api/genres'))
+        .then(response => response.json())
+        .then(data => updateFilterDropdown('genre-dropdown', data, 'genre', selectedFilters.genres));
+    
+    // Copyrights
+    fetch(buildUrl('/api/copyrights'))
+        .then(response => response.json())
+        .then(data => updateFilterDropdown('copyright-dropdown', data, 'copyright', selectedFilters.copyrights));
+}
+
+function loadFilterOptions() {
+    // Essayer d'abord avec la nouvelle méthode
+    updateAllFilters();
+}
+
+
+    // ============================================
+    // GESTION DES FILTRES SÉLECTIONNÉS
+    // ============================================
+    function collectSelectedFilters() {
+        selectedFilters.artists = [];
+        selectedFilters.museums = [];
+        selectedFilters.movements = [];
+    selectedFilters.types = [];      // ← AJOUTER
+    selectedFilters.genres = [];     // ← AJOUTER
+    selectedFilters.copyrights = []; // ← AJOUTER        
+        
+        document.querySelectorAll('#artist-dropdown input:checked').forEach(cb => {
+            selectedFilters.artists.push(cb.value);
+        });
+        document.querySelectorAll('#museum-dropdown input:checked').forEach(cb => {
+            selectedFilters.museums.push(cb.value);
+        });
+        document.querySelectorAll('#movement-dropdown input:checked').forEach(cb => {
+            selectedFilters.movements.push(cb.value);
+        });
+            // 👇 AJOUTER CES 3 BLOCS
+    document.querySelectorAll('#type-dropdown input:checked').forEach(cb => {
+        selectedFilters.types.push(cb.value);
+    });
+    document.querySelectorAll('#genre-dropdown input:checked').forEach(cb => {
+        selectedFilters.genres.push(cb.value);
+    });
+    document.querySelectorAll('#copyright-dropdown input:checked').forEach(cb => {
+        selectedFilters.copyrights.push(cb.value);
+    });
+        updateSelectedFiltersDisplay();
+    }
+    
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-filter') || 
+            e.target.parentElement?.classList.contains('remove-filter')) {
+            
+            const icon = e.target.closest('.remove-filter') || e.target;
+            const type = icon.dataset.type;
+            const value = icon.dataset.value;
+            removeFilter(type, value);
+        }
+    });
+    
+function updateSelectedFiltersDisplay() {
+    const container = document.getElementById('selected-filters');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    selectedFilters.artists.forEach(a => {
+        container.innerHTML += `<span class="selected-filter">${a} <i class="fas fa-times remove-filter" data-type="artist" data-value="${a}"></i></span>`;
+    });
+    selectedFilters.museums.forEach(m => {
+        container.innerHTML += `<span class="selected-filter">${m} <i class="fas fa-times remove-filter" data-type="museum" data-value="${m}"></i></span>`;
+    });
+    selectedFilters.movements.forEach(m => {
+        container.innerHTML += `<span class="selected-filter">${m} <i class="fas fa-times remove-filter" data-type="movement" data-value="${m}"></i></span>`;
+    });
+    
+    // 👇 AJOUTER CES 3 BLOCS
+    selectedFilters.types.forEach(t => {
+        container.innerHTML += `<span class="selected-filter">${t} <i class="fas fa-times remove-filter" data-type="type" data-value="${t}"></i></span>`;
+    });
+    selectedFilters.genres.forEach(g => {
+        container.innerHTML += `<span class="selected-filter">${g} <i class="fas fa-times remove-filter" data-type="genre" data-value="${g}"></i></span>`;
+    });
+    selectedFilters.copyrights.forEach(c => {
+        container.innerHTML += `<span class="selected-filter">${c} <i class="fas fa-times remove-filter" data-type="copyright" data-value="${c}"></i></span>`;
+    });
+} // ← J'AI ENLEVÉ LES ACCOLADES SUPPLÉMENTAIRES
+    
+function removeFilter(type, value) {
+    if (type === 'artist') {
+        const index = selectedFilters.artists.indexOf(value);
+        if (index !== -1) selectedFilters.artists.splice(index, 1);
+    } else if (type === 'museum') {
+        const index = selectedFilters.museums.indexOf(value);
+        if (index !== -1) selectedFilters.museums.splice(index, 1);
+    } else if (type === 'movement') {
+        const index = selectedFilters.movements.indexOf(value);
+        if (index !== -1) selectedFilters.movements.splice(index, 1);
+    } else if (type === 'type') {        // ← AJOUTER
+        const index = selectedFilters.types.indexOf(value);
+        if (index !== -1) selectedFilters.types.splice(index, 1);
+    } else if (type === 'genre') {       // ← AJOUTER
+        const index = selectedFilters.genres.indexOf(value);
+        if (index !== -1) selectedFilters.genres.splice(index, 1);
+    } else if (type === 'copyright') {   // ← AJOUTER
+        const index = selectedFilters.copyrights.indexOf(value);
+        if (index !== -1) selectedFilters.copyrights.splice(index, 1);
+    }
+    
+    // Décocher la case correspondante
+    const cb = document.querySelector(`input[value="${value}"]`);
+    if (cb) cb.checked = false;
+    
+    updateSelectedFiltersDisplay();
+}
+    
+    function clearAndApply() {
+        document.querySelectorAll('.filter-menu-vertical input[type="checkbox"]').forEach(cb => {
+            cb.checked = false;
+        });
+        
+        selectedFilters = {
+            artists: [],
+            museums: [],
+            movements: []
+        };
+        
+        updateSelectedFiltersDisplay();
+        applyFilters();
+    }
+    
+function applyFilters() {
+    collectSelectedFilters();
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const q = urlParams.get('q') || '';
+    const sort = document.getElementById('sort').value;
+    
+    let url = `/?q=${encodeURIComponent(q)}&sort=${encodeURIComponent(sort)}`;
+    
+    // Filtres existants
+    selectedFilters.artists.forEach(a => {
+        url += `&artist=${encodeURIComponent(a)}`;
+    });
+    selectedFilters.museums.forEach(m => {
+        url += `&museum=${encodeURIComponent(m)}`;
+    });
+    selectedFilters.movements.forEach(m => {
+        url += `&movement=${encodeURIComponent(m)}`;
+    });
+    
+    // 👇 AJOUTER CES 3 BLOCS
+    selectedFilters.types.forEach(t => {
+        url += `&type=${encodeURIComponent(t)}`;
+    });
+    selectedFilters.genres.forEach(g => {
+        url += `&genre=${encodeURIComponent(g)}`;
+    });
+    selectedFilters.copyrights.forEach(c => {
+        url += `&copyright=${encodeURIComponent(c)}`;
+    });
+    
+    window.location.href = url;
+}
+    
+    // ============================================
+    // GESTION DU TRI
+    // ============================================
+    document.getElementById('sort')?.addEventListener('change', function() {
+        collectSelectedFilters();
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const q = urlParams.get('q') || '';
+        const sort = this.value;
+        
+        let url = `/?q=${encodeURIComponent(q)}&sort=${encodeURIComponent(sort)}`;
+        
+        selectedFilters.artists.forEach(a => {
+            url += `&artist=${encodeURIComponent(a)}`;
+        });
+        selectedFilters.museums.forEach(m => {
+            url += `&museum=${encodeURIComponent(m)}`;
+        });
+        selectedFilters.movements.forEach(m => {
+            url += `&movement=${encodeURIComponent(m)}`;
+        });
+        
+        window.location.href = url;
+    });
+// ============================================
+// EVENT LISTENERS POUR LES BOUTONS APPLIQUER
+// ============================================
+document.getElementById('apply-filters-btn')?.addEventListener('click', function(e) {
+    e.preventDefault();
+    applyFilters();
+});
+
+document.getElementById('apply-filters-top-btn')?.addEventListener('click', function(e) {
+    e.preventDefault();
+    applyFilters();
+});    
+    // ============================================
+    // GESTION DE LA PAGINATION
+    // ============================================
+    function initPagination() {
+        document.querySelectorAll('.page-link[data-page]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const page = parseInt(this.dataset.page);
+                changePage(page);
+            });
+        });
+        
+        document.getElementById('prev-page')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (!this.closest('.page-item').classList.contains('disabled')) {
+                changePage({{ page - 1 }});
+            }
+        });
+        
+        document.getElementById('next-page')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (!this.closest('.page-item').classList.contains('disabled')) {
+                changePage({{ page + 1 }});
+            }
+        });
+    }
+    
+    function changePage(page) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const q = urlParams.get('q') || '';
+        const sort = document.getElementById('sort').value;
+        
+        let url = `/?q=${encodeURIComponent(q)}&page=${page}&sort=${encodeURIComponent(sort)}`;
+        
+        selectedFilters.artists.forEach(a => {
+            url += `&artist=${encodeURIComponent(a)}`;
+        });
+        selectedFilters.museums.forEach(m => {
+            url += `&museum=${encodeURIComponent(m)}`;
+        });
+        selectedFilters.movements.forEach(m => {
+            url += `&movement=${encodeURIComponent(m)}`;
+        });
+        
+        window.location.href = url;
+    }
+    
+    // ============================================
+    // BOUTON 20 ŒUVRES AU HASARD
+    // ============================================
+    function initRandomButton() {
+        const randomBtn = document.getElementById('random-btn');
+        if (!randomBtn) return;
+        
+        randomBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            this.classList.add('loading');
+            const icon = this.querySelector('i');
+            const originalIcon = icon.className;
+            icon.className = 'fas fa-spinner';
+            
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const currentPage = parseInt(urlParams.get('page')) || 1;
+                const totalPages = {{ total_pages }};
+                
+                let randomPage = currentPage;
+                while (randomPage === currentPage && totalPages > 1) {
+                    randomPage = Math.floor(Math.random() * totalPages) + 1;
+                }
+                
+                let url = `/?page=${randomPage}`;
+                window.location.href = url;
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                this.classList.remove('loading');
+                icon.className = originalIcon;
+            }
+        });
+    }
+    
+    // ============================================
+    // GESTION DES FAVORIS
+    // ============================================
+    
+async function toggleFavorite(artworkId, element) {
+    {% if not session.user_id %}
+    // Au lieu de loginModal, on utilise registerModal
+    const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
+    registerModal.show();
+    return;
+    {% endif %}
+    
+    const parent = element.closest('.favorite-icon');
+    const icon = element;
+    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    if (!csrfToken) {
+        console.error('Token CSRF manquant');
+        return;
+    }
+    
+    parent.classList.add('loading');
+    
+    try {
+        const response = await fetch('/api/favorite/toggle', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({ artwork_id: artworkId })
+        });
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                // Rediriger vers login si nécessaire
+                window.location.href = '/login';
+                return;
+            }
+            throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.favorite) {
+            parent.classList.add('active');
+            icon.className = 'fas fa-heart';
+        } else {
+            parent.classList.remove('active');
+            icon.className = 'far fa-heart';
+        }
+        
+    } catch (error) {
+        console.error('❌ Erreur toggle favori:', error);
+        alert('Erreur lors de la modification des favoris.');
+    } finally {
+        parent.classList.remove('loading');
+    }
+}
+    
+function initFavoriteButtons() {
+    const favoriteIcons = document.querySelectorAll('.favorite-icon');
+    console.log(`Initialisation de ${favoriteIcons.length} boutons favoris`);
+    
+    favoriteIcons.forEach(btn => {
+        // Supprimer l'ancien event listener avant d'en ajouter un nouveau
+        btn.removeEventListener('click', handleFavoriteClick);
+        btn.addEventListener('click', handleFavoriteClick);
+        
+        // Empêcher le clic de se propager à la carte parente
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    });
+}
+    
+    function handleFavoriteClick(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const artworkId = this.dataset.artworkId;
+        const icon = this.querySelector('i');
+        
+        if (!artworkId || !icon) {
+            console.error('Données manquantes pour le favori');
+            return;
+        }
+        
+        toggleFavorite(artworkId, icon);
+    }
+    
+    async function checkAllFavorites() {
+        {% if session.user_id %}
+        try {
+            console.log('Vérification des favoris existants...');
+            const response = await fetch('/api/favorites/list');
+            
+            if (!response.ok) {
+                throw new Error(`Erreur HTTP: ${response.status}`);
+            }
+            
+            const favorites = await response.json();
+            console.log(`${favorites.length} favoris trouvés`);
+            
+            favorites.forEach(artworkId => {
+                const parent = document.querySelector(`.favorite-icon[data-artwork-id="${artworkId}"]`);
+                const icon = parent?.querySelector('i');
+                
+                if (parent && icon) {
+                    parent.classList.add('active');
+                    icon.className = 'fas fa-heart';
+                }
+            });
+            
+        } catch (error) {
+            console.error('❌ Erreur chargement favoris:', error);
+        }
+        {% endif %}
+    }
+// ============================================
+// GESTION DES CLIQUES SUR LES CARTES (avec support CTRL+clic)
+// ============================================
+function initArtworkCards() {
+    const cards = document.querySelectorAll('.work-card');
+    console.log(`Initialisation de ${cards.length} cartes d'œuvres`);
+    
+    cards.forEach(card => {
+        card.removeEventListener('click', handleCardClick);
+        card.addEventListener('click', handleCardClick);
+    });
+}
+
+function handleCardClick(e) {
+    // Ne pas rediriger si on clique sur le bouton favori
+    if (e.target.closest('.favorite-icon')) {
+        e.stopPropagation();
+        return;
+    }
+    
+    const href = this.dataset.href;
+    if (!href) return;
+    
+    // Vérifier si CTRL est pressé (ou Cmd sur Mac)
+    if (e.ctrlKey || e.metaKey) {
+        // Ouvrir dans un nouvel onglet
+        window.open(href, '_blank');
+    } else {
+        // Navigation normale
+        window.location.href = href;
+    }
+}
+ 
+// Pour le clic molette (très pratique !)
+document.addEventListener('mousedown', function(e) {
+    const card = e.target.closest('.work-card');
+    if (card && e.button === 1) { // 1 = clic molette
+        e.preventDefault();
+        window.open(card.dataset.href, '_blank');
+    }
+});    
+
+// ============================================
+// INITIALISATION - UN SEUL BLOC
+// ============================================
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOMContentLoaded - initialisation générale');
+    
+    // 1. TES INITIALISATIONS EXISTANTES
+    initFilterToggle();
+    loadFilterOptions();
+    updateSelectedFiltersDisplay();
+    checkAllFavorites();
+    initArtworkCards();
+    initFavoriteButtons();
+    initPagination();
+    initRandomButton();
+    initModalPasswordValidation();
+    initModalRegisterForm();
+    initModalLoginForm();
+    
+// 2. SCROLL INFINI
+const grid = document.getElementById('works-grid');
+console.log('Grid children:', grid?.children.length);
+console.log('totalPages:', totalPages);
+
+if (grid && grid.children.length > 0) {
+    console.log('🚀 Lancement du scroll infini');
+    initInfiniteScroll();
+} else {
+    console.log('❌ Scroll infini non lancé - conditions non remplies');
+}
+    
+    // 3. CHARGER LES PRÉFÉRENCES DE VUE
+    const savedView = localStorage.getItem('indexViewPreference');
+    if (savedView) {
+        changeView(parseInt(savedView));
+    } else {
+        changeView(4);
+    }
+    
+    const savedMobile = localStorage.getItem('indexMobilePreference');
+    if (savedMobile) {
+        setMobileColumns(parseInt(savedMobile));
+    }
+    
+    // 4. AJOUTER LES ÉVÉNEMENTS AUX BOUTONS DE VUE
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const columns = parseInt(this.id.split('-')[1]);
+            changeView(columns);
+        });
+    });
+
+    document.querySelectorAll('.mobile-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const columns = this.textContent.trim() === '2' ? 2 : 1;
+            setMobileColumns(columns);
+        });
+    });
+    
+    // 5. CHECKBOXES (avec délai)
+    setTimeout(() => {
+        initFilterCheckboxes();
+    }, 500);
+});
+
+// ===== GESTION DU CHANGEMENT DE VUE =====
+let currentMobileColumns = 2;
+
+function changeView(columns) {
+    console.log('changeView appelé avec', columns);
+    const grid = document.getElementById('works-grid');
+    const btn8 = document.getElementById('view-8');
+    const btn4 = document.getElementById('view-4');
+    const btn2 = document.getElementById('view-2');
+    
+    if (!grid) {
+        console.error('Grille non trouvée');
+        return;
+    }
+    
+    grid.classList.remove('grid-8', 'grid-4', 'grid-2');
+    grid.classList.add(`grid-${columns}`);
+    
+    if (btn8) btn8.classList.remove('active');
+    if (btn4) btn4.classList.remove('active');
+    if (btn2) btn2.classList.remove('active');
+    
+    if (columns === 8 && btn8) btn8.classList.add('active');
+    if (columns === 4 && btn4) btn4.classList.add('active');
+    if (columns === 2 && btn2) btn2.classList.add('active');
+    
+    localStorage.setItem('indexViewPreference', columns);
+}
+
+function setMobileColumns(columns) {
+    console.log('setMobileColumns appelé avec', columns);
+    currentMobileColumns = columns;
+    
+    const grid = document.getElementById('works-grid');
+    if (!grid) {
+        console.error('Grille non trouvée');
+        return;
+    }
+    
+    grid.classList.remove('mobile-1');
+    if (columns === 1) {
+        grid.classList.add('mobile-1');
+    }
+    
+    const btns = document.querySelectorAll('.mobile-btn');
+    btns.forEach(btn => btn.classList.remove('active'));
+    
+    if (btns.length > 0) {
+        if (columns === 2) {
+            btns[0].classList.add('active');
+        } else {
+            btns[1].classList.add('active');
+        }
+    }
+    
+    localStorage.setItem('indexMobilePreference', columns);
+}
+
+})(); // ← FERMETURE DE LA IIFE
+</script>
+</body>
+</html>

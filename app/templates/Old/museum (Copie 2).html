@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorer les musées - {{ site_name }}</title>
+    
+    <!-- Styles existants -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* Variables de couleur */
+        :root {
+            --primary: #2c3e50;
+            --primary-dark: #1a2634;
+            --secondary: #e6d8c3;
+            --background: #f5f0e8;
+            --surface: #ffffff;
+            --text: #2c3e50;
+            --text-light: #5d6d7e;
+            --text-soft: #8e9aab;
+            --border: #e0d6c8;
+            --border-light: #f0e8dc;
+            --hover: #f5f0e8;
+        }
+
+        body {
+            background-color: var(--background);
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ===== HERO SIMPLE ===== */
+        .page-header {
+            margin: 2rem 0 1.5rem 0;
+        }
+
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        /* ===== FILTRE PAYS (DÉROULANT) ===== */
+        .filters-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            border: 1px solid var(--border-light);
+        }
+
+        .filter-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-weight: 500;
+            color: var(--primary);
+            min-width: 60px;
+        }
+
+        .filter-select {
+            flex: 1;
+            min-width: 250px;
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            background: white;
+            color: var(--text);
+            font-size: 0.95rem;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232c3e50' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .reset-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 0.7rem 1.5rem;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .reset-btn:hover {
+            background: var(--hover);
+            border-color: var(--text-light);
+        }
+
+        /* ===== VILLES (GRILLE COMPACTE) ===== */
+        .cities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+        }
+
+        .city-chip {
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: 40px;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .city-chip:hover {
+            border-color: var(--secondary);
+            background: var(--hover);
+            transform: translateY(-1px);
+        }
+
+        .city-chip.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .city-chip .count {
+            background: rgba(44,62,80,0.1);
+            padding: 0.2rem 0.6rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .city-chip.active .count {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        /* ===== MUSÉES ===== */
+        .museums-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .museums-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: var(--primary);
+        }
+
+        .museums-count {
+            background: var(--secondary);
+            color: var(--primary);
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .museums-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .museum-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .museum-item:hover {
+            border-color: var(--secondary);
+            box-shadow: 0 4px 12px rgba(44,62,80,0.05);
+            transform: translateX(3px);
+        }
+
+        .museum-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: var(--secondary);
+            font-size: 1.2rem;
+        }
+
+        .museum-info {
+            flex: 1;
+        }
+
+        .museum-name {
+            font-weight: 500;
+            color: var(--primary);
+            margin-bottom: 0.2rem;
+        }
+
+        .museum-location {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .museum-location i {
+            color: var(--secondary);
+            width: 14px;
+            font-size: 0.7rem;
+        }
+
+        .museum-stats {
+            font-size: 0.75rem;
+            color: var(--text-soft);
+            margin-top: 0.2rem;
+        }
+
+        .museum-arrow {
+            color: var(--primary);
+            opacity: 0.3;
+            transition: all 0.2s;
+            margin-left: 0.5rem;
+        }
+
+        .museum-item:hover .museum-arrow {
+            opacity: 1;
+            transform: translateX(3px);
+        }
+
+        /* ===== ÉTATS ===== */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+        }
+
+        .loading i {
+            margin-right: 0.5rem;
+        }
+
+        /* ===== BANDEAU LANGUE ===== */
+        .lang-notice {
+            background: var(--secondary);
+            color: var(--primary);
+            text-align: center;
+            padding: 0.5rem;
+            font-size: 0.85rem;
+            border-radius: 30px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="container page-header">
+        <h1 class="page-title">
+            <i class="fas fa-landmark me-2"></i>Explorer les musées
+        </h1>
+        <p class="page-subtitle">
+            {{ total_museums }} musées référencés dans {{ total_countries }} pays
+        </p>
+        
+        <!-- Bandeau langue (discret) -->
+        <div class="lang-notice" id="lang-notice" style="display: none;">
+            <i class="fas fa-globe me-2"></i>
+            Les noms s'affichent en <span id="current-lang">français</span>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <!-- FILTRE PAYS (DÉROULANT) -->
+        <div class="filters-card">
+            <div class="filter-row">
+                <span class="filter-label">
+                    <i class="fas fa-globe me-2"></i>Pays
+                </span>
+                <select id="country-select" class="filter-select">
+                    <option value="">Tous les pays</option>
+                </select>
+                <button class="reset-btn" id="reset-filters" onclick="resetFilters()">
+                    <i class="fas fa-times"></i> Réinitialiser
+                </button>
+            </div>
+        </div>
+
+        <!-- VILLES (apparaît quand un pays est sélectionné) -->
+        <div id="cities-section" style="display: none;">
+            <h3 class="museums-title mb-3">
+                <i class="fas fa-city me-2"></i>
+                Villes en <span id="selected-country-name"></span>
+            </h3>
+            <div id="cities-container" class="cities-grid"></div>
+        </div>
+
+        <!-- MUSÉES -->
+        <div class="museums-header">
+            <h3 class="museums-title" id="museums-title">
+                <i class="fas fa-landmark me-2"></i>Tous les musées
+            </h3>
+            <span class="museums-count" id="museums-count">0</span>
+        </div>
+
+        <div id="museums-container" class="museums-list">
+            <div class="loading">
+                <i class="fas fa-spinner fa-spin"></i> Chargement des musées...
+            </div>
+        </div>
+    </div>
+
+    {% include 'footer.html' %}
+
+    <script>
+        // ===== CONFIGURATION LANGUE =====
+        const currentLang = '{{ session.get("language", "fr") }}';
+        console.log('🌍 Langue actuelle:', currentLang);
+        
+        // Afficher le bandeau si nécessaire
+        if (currentLang !== 'fr') {
+            document.getElementById('lang-notice').style.display = 'block';
+            document.getElementById('current-lang').textContent = 
+                currentLang === 'en' ? 'anglais' : currentLang;
+        }
+
+        // ===== ÉTAT GLOBAL =====
+        let allMuseums = [];
+        let allCountries = [];
+        let allCities = [];
+        let currentCountry = '';
+        let currentCity = '';
+
+        // ===== CHARGEMENT INITIAL =====
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCountries();
+            loadMuseums();
+        });
+
+        // ===== CHARGER LES PAYS =====
+        async function loadCountries() {
+            try {
+                const response = await fetch(`/api/museums/countries?lang=${currentLang}`);
+                allCountries = await response.json();
+                
+                const select = document.getElementById('country-select');
+                
+                // Option par défaut
+                select.innerHTML = '<option value="">Tous les pays</option>';
+                
+                // Ajouter les pays
+                allCountries.sort((a, b) => a.name.localeCompare(b.name));
+                allCountries.forEach(country => {
+                    select.innerHTML += `<option value="${country.name}">${country.name} (${country.count})</option>`;
+                });
+                
+            } catch (error) {
+                console.error('Erreur chargement pays:', error);
+            }
+        }
+
+        // ===== CHARGER LES MUSÉES =====
+        async function loadMuseums() {
+            try {
+                const response = await fetch(`/api/museums/list?lang=${currentLang}`);
+                allMuseums = await response.json();
+                displayMuseums(allMuseums);
+                
+                // Mettre à jour le compteur total
+                document.getElementById('museums-count').textContent = 
+                    `${allMuseums.length} musée${allMuseums.length > 1 ? 's' : ''}`;
+                
+            } catch (error) {
+                console.error('Erreur chargement musées:', error);
+                document.getElementById('museums-container').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h4>Erreur de chargement</h4>
+                        <p>Veuillez rafraîchir la page</p>
+                    </div>
+                `;
+            }
+        }
+
+        // ===== CHANGEMENT DE PAYS =====
+        document.getElementById('country-select').addEventListener('change', function(e) {
+            currentCountry = e.target.value;
+            currentCity = ''; // Reset ville
+            loadCities(currentCountry);
+            filterMuseums();
+        });
+
+        // ===== CHARGER LES VILLES =====
+        async function loadCities(countryName) {
+            const citiesSection = document.getElementById('cities-section');
+            
+            if (!countryName) {
+                citiesSection.style.display = 'none';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/museums/cities?country=${encodeURIComponent(countryName)}&lang=${currentLang}`);
+                const cities = await response.json();
+                allCities = cities;
+                
+                const container = document.getElementById('cities-container');
+                document.getElementById('selected-country-name').textContent = countryName;
+                
+                if (cities.length === 0) {
+                    container.innerHTML = '<div class="empty-state small">Aucune ville trouvée</div>';
+                } else {
+                    container.innerHTML = cities.map(city => `
+                        <div class="city-chip" onclick="selectCity('${city.name}')">
+                            <span><i class="fas fa-map-marker-alt me-1"></i>${city.name}</span>
+                            <span class="count">${city.museum_count}</span>
+                        </div>
+                    `).join('');
+                }
+                
+                citiesSection.style.display = 'block';
+                
+            } catch (error) {
+                console.error('Erreur chargement villes:', error);
+            }
+        }
+
+        // ===== SÉLECTIONNER UNE VILLE =====
+        function selectCity(cityName) {
+            currentCity = currentCity === cityName ? '' : cityName;
+            
+            // Mettre à jour l'affichage des villes
+            document.querySelectorAll('.city-chip').forEach(chip => {
+                if (chip.textContent.includes(cityName)) {
+                    chip.classList.toggle('active', currentCity === cityName);
+                } else {
+                    chip.classList.remove('active');
+                }
+            });
+            
+            filterMuseums();
+        }
+
+        // ===== FILTRER LES MUSÉES =====
+        function filterMuseums() {
+            let filtered = allMuseums;
+            
+            if (currentCountry) {
+                filtered = filtered.filter(m => m.pays === currentCountry);
+            }
+            
+            if (currentCity) {
+                filtered = filtered.filter(m => m.ville === currentCity);
+            }
+            
+            displayMuseums(filtered);
+            
+            // Mettre à jour le titre
+            const title = document.getElementById('museums-title');
+            if (currentCity) {
+                title.innerHTML = `<i class="fas fa-landmark me-2"></i>Musées à ${currentCity}`;
+            } else if (currentCountry) {
+                title.innerHTML = `<i class="fas fa-landmark me-2"></i>Musées en ${currentCountry}`;
+            } else {
+                title.innerHTML = `<i class="fas fa-landmark me-2"></i>Tous les musées`;
+            }
+            
+            document.getElementById('museums-count').textContent = 
+                `${filtered.length} musée${filtered.length > 1 ? 's' : ''}`;
+        }
+
+        // ===== AFFICHER LES MUSÉES =====
+        function displayMuseums(museums) {
+            const container = document.getElementById('museums-container');
+            
+            if (museums.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-landmark"></i>
+                        <h4>Aucun musée trouvé</h4>
+                        <p>Essayez de modifier vos filtres</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = museums.map(museum => `
+                <div class="museum-item" onclick="exploreMuseum('${museum.id}', '${museum.nom.replace(/'/g, "\\'")}')">
+                    <div class="museum-icon">
+                        <i class="fas fa-museum"></i>
+                    </div>
+                    <div class="museum-info">
+                        <div class="museum-name">${museum.nom}</div>
+                        <div class="museum-location">
+                            <span><i class="fas fa-map-marker-alt"></i> ${museum.ville || 'Ville inconnue'}</span>
+                            <span><i class="fas fa-globe"></i> ${museum.pays || 'Pays inconnu'}</span>
+                        </div>
+                        <div class="museum-stats">
+                            <i class="fas fa-painting me-1"></i>${museum.oeuvres_count || 0} œuvres
+                        </div>
+                    </div>
+                    <div class="museum-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ===== EXPLORER UN MUSÉE =====
+        function exploreMuseum(museumId, museumName) {
+            window.location.href = `/?museum=${encodeURIComponent(museumName)}`;
+        }
+
+        // ===== RÉINITIALISER LES FILTRES =====
+        function resetFilters() {
+            currentCountry = '';
+            currentCity = '';
+            document.getElementById('country-select').value = '';
+            document.getElementById('cities-section').style.display = 'none';
+            displayMuseums(allMuseums);
+            
+            document.getElementById('museums-title').innerHTML = 
+                `<i class="fas fa-landmark me-2"></i>Tous les musées`;
+            document.getElementById('museums-count').textContent = 
+                `${allMuseums.length} musée${allMuseums.length > 1 ? 's' : ''}`;
+        }
+    </script>
+</body>
+</html>

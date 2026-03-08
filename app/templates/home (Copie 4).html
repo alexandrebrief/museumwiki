@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+{% if session.language == 'en' %}
+<html lang="en">
+{% else %}
+<html lang="fr">
+{% endif %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ site_name }} - Votre musée idéal</title>
+    
+    <!-- Fonts premium -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* ===== STYLES MIXÉS ===== */
+        :root {
+            /* Thème sombre (défaut) */
+            --primary-dark: #2c3e50;
+            --primary-darker: #1a2634;
+            --secondary-dark: #e6d8c3;
+            --bg-dark: #0f1a24;
+            --surface-dark: #1e2a36;
+            --text-dark: #e6d8c3;
+            --text-light-dark: #b8a99a;
+            
+            /* Thème clair */
+            --primary-light: #4a6b8a;
+            --primary-lighter: #e6f0fa;
+            --secondary-light: #f5ebe0;
+            --bg-light: #f8f5f0;
+            --surface-light: #ffffff;
+            --text-light: #2c3e50;
+            --text-lighter: #5d6d7e;
+            
+            /* Couleurs communes */
+            --accent: #c44545;
+            --gold: #d4af37;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+            --shadow-hover: 0 8px 20px rgba(0,0,0,0.15);
+            --border: rgba(0,0,0,0.1);
+        }
+
+        /* Application du thème via les classes */
+        body.theme-dark {
+            --primary: var(--primary-dark);
+            --primary-hover: var(--primary-darker);
+            --secondary: var(--secondary-dark);
+            --background: var(--bg-dark);
+            --surface: var(--surface-dark);
+            --text: var(--text-dark);
+            --text-muted: var(--text-light-dark);
+            --border-color: rgba(230,216,195,0.15);
+            --shadow: 0 4px 12px rgba(0,0,0,0.3);
+            --shadow-hover: 0 8px 20px rgba(0,0,0,0.5);
+            --input-bg: rgba(255,255,255,0.1);
+        }
+
+        body.theme-light {
+            --primary: var(--primary-light);
+            --primary-hover: var(--primary-dark);
+            --secondary: var(--secondary-light);
+            --background: var(--bg-light);
+            --surface: var(--surface-light);
+            --text: var(--text-light);
+            --text-muted: var(--text-lighter);
+            --border-color: #e0d6c8;
+            --shadow: 0 4px 12px rgba(0,0,0,0.05);
+            --shadow-hover: 0 8px 20px rgba(0,0,0,0.1);
+            --input-bg: #f0e8e0;
+        }
+
+body {
+    background-color: var(--background);
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
+
+}
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.02em;
+            transition: color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+.container-fluid {
+    width: 100%;
+    padding: 0 2rem;
+
+}
+
+        /* ===== HERO CINÉMATIQUE ===== */
+        .hero-cinema {
+            height: 85vh;
+            min-height: 700px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 3rem;
+            overflow: hidden;
+            border-bottom: 1px solid var(--gold);
+        }
+
+        .hero-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.7) saturate(1.1);
+            transform: scale(1.1);
+            transition: transform 0.1s ease-out, filter 0.3s ease;
+            z-index: 0;
+        }
+
+        .theme-light .hero-backdrop {
+            filter: brightness(0.9) saturate(1);
+        }
+
+        .hero-backdrop::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, var(--background) 0%, transparent 30%, transparent 70%, var(--background) 100%);
+            transition: background 0.3s ease;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 3rem;
+            width: 100%;
+        }
+
+        .hero-eyebrow {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 5.5rem;
+            font-weight: 900;
+            line-height: 1;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.2);
+            max-width: 800px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 3.5rem;
+            margin: 3rem 0;
+        }
+
+        .hero-stat {
+            text-align: left;
+        }
+
+        .hero-stat-number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--gold);
+            line-height: 1;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .hero-stat-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        /* ===== BARRE DE RECHERCHE ===== */
+        .hero-search-wrapper {
+            margin-top: 3rem;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .hero-search-card {
+            background: var(--surface);
+            border-radius: 60px;
+            padding: 0.3rem 0.3rem 0.3rem 1.5rem;
+            border: 2px solid var(--gold);
+            display: flex;
+            align-items: center;
+            box-shadow: var(--shadow-hover);
+            transition: all 0.3s;
+        }
+
+        .hero-search-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(212,175,55,0.3);
+        }
+
+        .hero-search-icon {
+            color: var(--gold);
+            font-size: 1.1rem;
+            margin-right: 0.5rem;
+        }
+
+        .hero-search-input {
+            flex: 1;
+            border: none;
+            padding: 0.8rem 0;
+            background: transparent;
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        .hero-search-input::placeholder {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .hero-search-input:focus {
+            outline: none;
+        }
+
+        .hero-search-btn {
+            background: var(--gold);
+            color: var(--primary-dark);
+            border: none;
+            border-radius: 60px;
+            padding: 0.8rem 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .hero-search-btn:hover {
+            background: #e6c200;
+            transform: scale(1.02);
+        }
+
+        /* Suggestions */
+        .hero-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--gold);
+            border-radius: 20px;
+            margin-top: 0.5rem;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: var(--shadow-hover);
+        }
+
+        .hero-suggestions.visible {
+            display: block;
+        }
+
+        .hero-suggestion-item {
+            padding: 0.8rem 1.2rem;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            transition: background 0.2s;
+        }
+
+        .hero-suggestion-item:hover {
+            background: var(--gold);
+            color: var(--primary-dark);
+        }
+
+        .hero-suggestion-item i {
+            color: var(--gold);
+            width: 20px;
+        }
+
+        .hero-suggestion-item:hover i {
+            color: var(--primary-dark);
+        }
+
+        .hero-suggestion-category {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-left: auto;
+        }
+
+
+
+
+
+
+        /* ===== SECTION HEADER ===== */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin: 3rem 0 1.5rem;
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 0.8rem;
+        }
+        
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+        
+        .section-link {
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: color 0.2s;
+            font-weight: 500;
+        }
+        
+        .section-link:hover {
+            color: var(--primary);
+        }
+        
+        .section-link i {
+            margin-left: 0.3rem;
+            transition: transform 0.2s;
+        }
+        
+        .section-link:hover i {
+            transform: translateX(5px);
+        }
+
+        /* ===== MOSAÏQUE 3 LIGNES ===== */
+.mosaic-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.5rem;
+    margin: 2rem 0;
+    min-width: 0;      /* AJOUTE ÇA */
+    width: 100%;       /* AJOUTE ÇA */
+}
+        
+        .mosaic-item {
+            aspect-ratio: 2/3;
+            position: relative;
+            overflow: hidden;
+            border-radius: 6px;
+            box-shadow: var(--shadow);
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .mosaic-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .mosaic-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: var(--surface);
+            display: block;
+        }
+        
+        .mosaic-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+            padding: 1rem 0.5rem 0.5rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+            color: white;
+            font-size: 0.75rem;
+            pointer-events: none;
+        }
+        
+        .mosaic-item:hover .mosaic-overlay {
+            opacity: 1;
+        }
+
+        /* Placeholder */
+        .mosaic-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, var(--surface), var(--primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+        }
+        
+        .mosaic-placeholder i {
+            font-size: 1.5rem;
+        }
+
+        /* ===== HORIZONTAL SCROLL ===== */
+        .horizontal-scroll {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding: 0.5rem 0 1.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--gold) var(--border-color);
+        }
+        
+        .horizontal-scroll::-webkit-scrollbar {
+            height: 5px;
+        }
+        
+        .horizontal-scroll::-webkit-scrollbar-track {
+            background: var(--border-color);
+            border-radius: 10px;
+        }
+        
+        .horizontal-scroll::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 10px;
+        }
+        
+        .scroll-item {
+            flex: 0 0 160px;
+            background: var(--surface);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .scroll-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--gold);
+        }
+        
+        .scroll-item img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            background: var(--surface);
+            display: block;
+        }
+        
+        .scroll-item-info {
+            padding: 0.6rem;
+        }
+        
+        .scroll-item-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .scroll-item-artist {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 0.1rem;
+        }
+
+/* ===== CARTES AMÉLIORÉES POUR "MIEUX NOTÉES" ===== */
+.top-rated-item {
+    flex: 0 0 180px;
+    background: var(--surface);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+}
+
+.top-rated-item:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--gold);
+}
+
+.top-rated-image-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1/1;
+    overflow: hidden;
+}
+
+.top-rated-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+    display: block;
+}
+
+.top-rated-item:hover img {
+    transform: scale(1.05);
+}
+
+.top-rated-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--gold);
+    color: var(--primary-dark);
+    padding: 0.3rem 0.6rem;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    z-index: 2;
+}
+
+.top-rated-rank {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: 2px solid var(--gold);
+    z-index: 2;
+}
+
+.top-rated-info {
+    padding: 0.8rem;
+    position: relative;
+    background: var(--surface);
+}
+
+.top-rated-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0.2rem;
+}
+
+.top-rated-artist {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0.3rem;
+}
+
+.top-rated-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.3rem;
+    font-size: 0.7rem;
+}
+
+.top-rated-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    background: rgba(212,175,55,0.1);
+    padding: 0.2rem 0.5rem;
+    border-radius: 30px;
+    color: var(--gold);
+    font-weight: 600;
+}
+
+.top-rated-favorites {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    color: var(--accent);
+}
+
+.top-rated-favorites i {
+    font-size: 0.65rem;
+}
+
+.top-rated-year {
+    position: absolute;
+    bottom: 0.8rem;
+    right: 0.8rem;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    background: rgba(0,0,0,0.3);
+    padding: 0.1rem 0.4rem;
+    border-radius: 30px;
+}
+
+
+        .rating-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            background: var(--surface);
+            padding: 0.15rem 0.4rem;
+            border-radius: 30px;
+            font-size: 0.65rem;
+            color: var(--gold);
+            margin-top: 0.3rem;
+            border: 1px solid var(--gold);
+        }
+
+        .favorite-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            font-size: 0.65rem;
+            color: var(--accent);
+            margin-top: 0.2rem;
+        }
+
+        /* ===== CRITIQUES COMPACTES ===== */
+        .reviews-compact {
+            display: grid;
+            gap: 0.6rem;
+            margin: 1.5rem 0;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+        
+        .review-item {
+            background: var(--surface);
+            border-radius: 10px;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+            font-size: 0.75rem;
+        }
+        
+        .review-item:hover {
+            border-color: var(--gold);
+        }
+        
+        .review-header {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-bottom: 0.2rem;
+            flex-wrap: wrap;
+        }
+        
+        .review-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--gold));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.6rem;
+            flex-shrink: 0;
+        }
+        
+        .review-user {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.7rem;
+        }
+        
+        .review-work {
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.7rem;
+        }
+        
+        .review-work:hover {
+            text-decoration: underline;
+        }
+        
+        .review-rating {
+            margin-left: auto;
+            color: var(--gold);
+            font-weight: 600;
+            font-size: 0.6rem;
+            background: var(--surface);
+            padding: 0.1rem 0.4rem;
+            border-radius: 30px;
+            border: 1px solid var(--gold);
+        }
+        
+        .review-comment {
+            color: var(--text-muted);
+            font-style: italic;
+            margin: 0.2rem 0 0;
+            padding-left: 0.3rem;
+            border-left: 2px solid var(--gold);
+            font-size: 0.65rem;
+            line-height: 1.2;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+        }
+
+        /* ===== MUSÉES COMPACTS ===== */
+        .museums-compact {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.6rem;
+            margin: 1.5rem 0;
+        }
+        
+        .museum-item {
+            background: var(--surface);
+            border-radius: 8px;
+            padding: 0.8rem 0.3rem;
+            border: 1px solid var(--border-color);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .museum-item:hover {
+            border-color: var(--gold);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .museum-icon {
+            font-size: 1.2rem;
+            margin-bottom: 0.2rem;
+        }
+        
+        .museum-name {
+            color: var(--text);
+            font-size: 0.7rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .museum-location {
+            color: var(--text-muted);
+            font-size: 0.6rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .museum-count {
+            color: var(--gold);
+            font-size: 0.55rem;
+            margin-top: 0.1rem;
+        }
+
+        /* ===== CALL TO ACTION ===== */
+        .cta-premium {
+            text-align: center;
+            padding: 4rem 0;
+            margin: 4rem 0;
+            border-top: 1px solid var(--gold);
+            border-bottom: 1px solid var(--gold);
+            background: var(--surface);
+        }
+        
+        .cta-premium h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 1rem;
+        }
+        
+        .cta-premium p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+/* Bouton favori sur les cartes */
+.top-rated-favorite-btn {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 3;
+    border: 1px solid var(--gold);
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.top-rated-item:hover .top-rated-favorite-btn {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.top-rated-favorite-btn:hover {
+    background: var(--accent);
+    transform: scale(1.1);
+}
+
+.top-rated-favorite-btn.active {
+    background: var(--accent);
+    color: white;
+}
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .hero-title { font-size: 4rem; }
+            .mosaic-grid { grid-template-columns: repeat(4, 1fr); }
+            .museums-compact { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        @media (max-width: 900px) {
+            .hero-title { font-size: 3rem; }
+            .mosaic-grid { grid-template-columns: repeat(3, 1fr); }
+            .museums-compact { grid-template-columns: repeat(3, 1fr); }
+            .hero-stats { flex-wrap: wrap; gap: 2rem; }
+        }
+
+        @media (max-width: 768px) {
+            .hero-cinema { height: 70vh; min-height: 600px; }
+            .hero-title { font-size: 2.5rem; }
+            .hero-search-wrapper { max-width: 100%; }
+            .museums-compact { grid-template-columns: repeat(2, 1fr); }
+            .reviews-compact { grid-template-columns: 1fr; }
+        }
+
+/* Règles d'optimisation de performance - appliquées SEULEMENT aux éléments avec la classe perf-optimized */
+.perf-optimized {
+    overflow-x: hidden;
+    /* Tu peux ajouter d'autres optimisations ici si besoin */
+    box-sizing: border-box;
+    max-width: 100vw;
+}
+
+
+        
+        
+</style>
+</head>
+<body class="theme-dark">
+        {% include 'navbar.html' %}
+    
+    <!-- HERO CINÉMATIQUE - avec perf-optimized -->
+    <div class="hero-cinema" id="hero">
+        {% if mosaic_artworks and mosaic_artworks|length > 0 %}
+<div class="hero-backdrop" id="heroBackdrop" 
+     style="background-image: url('{{ mosaic_artworks[0].image_url }}');">
+</div>
+        {% endif %}
+        
+        <div class="hero-content">
+            <div class="hero-eyebrow">Bienvenue sur</div>
+            <h1 class="hero-title">BlueGreenCliff<br></h1>
+            <p class="hero-subtitle">
+                Découvrez, collectionnez et partagez les œuvres.<br>
+                Rejoignez une communauté de passionnés d'art.
+            </p>
+            
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-number">{{ total_oeuvres }}</div>
+                    <div class="hero-stat-label">Œuvres</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">{{ total_artistes }}</div>
+                    <div class="hero-stat-label">Artistes</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">{{ total_musees }}</div>
+                    <div class="hero-stat-label">Musées</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">{{ total_users }}</div>
+                    <div class="hero-stat-label">Membres</div>
+                </div>
+            </div>
+            
+            <!-- BARRE DE RECHERCHE AVEC SUGGESTIONS -->
+            <div class="hero-search-wrapper">
+                <div class="hero-search-card">
+                    <i class="fas fa-search hero-search-icon"></i>
+                    <input type="text" id="hero-search-input" class="hero-search-input" 
+                           placeholder="Rechercher une œuvre, un artiste, un musée..." autocomplete="off">
+                    <button class="hero-search-btn" id="hero-search-btn">
+                        Rechercher
+                    </button>
+                </div>
+                
+                <!-- Suggestions -->
+                <div id="hero-suggestions" class="hero-suggestions"></div>
+            </div>
+        </div>
+    </div>
+
+<!-- MOSAÏQUE 2 LIGNES (12 œuvres au lieu de 18) -->
+<div class="container-fluid perf-optimized">
+    <div class="section-header">
+        <h2 class="section-title">Explorer</h2>
+        <a href="/" class="section-link">Voir tout <i class="fas fa-arrow-right"></i></a>
+    </div>
+    
+    <div class="mosaic-grid" style="grid-template-columns: repeat(6, 1fr);">  <!-- On garde 6 colonnes -->
+        {% set count = namespace(value=0) %}
+        {% for artwork in mosaic_artworks %}
+            {% if count.value < 12 %}  <!-- 12 au lieu de 18 -->
+                {% if artwork.image_url and artwork.image_url != '' %}
+                <a href="/oeuvre/{{ artwork.id }}" class="mosaic-item">
+<img src="https://images.weserv.nl/?url={{ artwork.image_url|urlencode }}&w=300&h=400&fit=cover&a=attention&output=jpg&q=80&we" 
+     alt="{{ artwork.titre if artwork.titre else 'Sans titre' }}" 
+     loading="lazy">
+                    <div class="mosaic-overlay">
+                        <div style="font-weight: 600;">{{ artwork.titre|truncate(30) if artwork.titre else 'Sans titre' }}</div>
+                        <div style="font-size: 0.6rem; opacity: 0.8;">{{ artwork.createur|truncate(20) if artwork.createur else 'Artiste inconnu' }}</div>
+                    </div>
+                </a>
+                {% set count.value = count.value + 1 %}
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        
+        <!-- Si pas assez d'images, on complète avec des placeholders -->
+        {% for i in range(12 - count.value) %}
+        <div class="mosaic-item">
+            <div class="mosaic-placeholder">
+                <i class="fas fa-image"></i>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- SECTION ŒUVRES LES MIEUX NOTÉES - 8 ŒUVRES -->
+    <div class="section-header">
+        <h2 class="section-title">Mieux notées</h2>
+        <a href="/?sort=rating_desc" class="section-link">Toutes les notes <i class="fas fa-arrow-right"></i></a>
+    </div>
+
+    <div class="horizontal-scroll">
+        {% set displayed = 0 %}
+        {% for artwork in top_rated %}
+            {% if artwork.image_url and artwork.image_url != '' and displayed < 10 %}  <!-- 8 au lieu de 15 -->
+                {% set displayed = displayed + 1 %}
+                <a href="/oeuvre/{{ artwork.id }}" class="top-rated-item">
+                    <div class="top-rated-image-container">
+                        <img src="https://images.weserv.nl/?url={{ artwork.image_url|urlencode }}&w=200&h=200&fit=cover&a=attention&output=jpg&q=80" 
+                             alt="{{ artwork.titre if artwork.titre else 'Sans titre' }}" 
+                             loading="lazy"
+                             onerror="this.onerror=null; this.src='{{ artwork.image_url }}';">
+                        
+                        {% if artwork.avg_rating %}
+                        <div class="top-rated-badge">
+                            <i class="fas fa-star"></i> {{ artwork.avg_rating|round(1) }}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="top-rated-rank">{{ loop.index }}</div>
+                    </div>
+                    
+                    <div class="top-rated-info">
+                        <div class="top-rated-title">{{ artwork.titre|truncate(25) if artwork.titre else 'Sans titre' }}</div>
+                        <div class="top-rated-artist">{{ artwork.createur|truncate(25) if artwork.createur else 'Artiste inconnu' }}</div>
+                        
+                        <div class="top-rated-stats">
+                            {% if artwork.avg_rating %}
+                            <div class="top-rated-rating">
+                                <i class="fas fa-star"></i> {{ artwork.avg_rating|round(1) }}/5
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if artwork.date %}
+                        <div class="top-rated-year">{{ artwork.date[:4] if artwork.date else '' }}</div>
+                        {% endif %}
+                    </div>
+                </a>
+            {% endif %}
+        {% endfor %}
+        
+        {% if displayed == 0 %}
+            <div style="color: var(--text-muted); padding: 2rem; text-align: center; width: 100%;">
+                Aucune œuvre avec image pour le moment.
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- SECTION FAVORIS POPULAIRES - 8 ŒUVRES -->
+    <div class="section-header">
+        <h2 class="section-title">Favoris des membres</h2>
+        <a href="/?sort=popular" class="section-link">Plus de favoris <i class="fas fa-arrow-right"></i></a>
+    </div>
+    
+    <div class="horizontal-scroll">
+        {% set displayed = 0 %}
+        {% for artwork in popular_favorites %}
+            {% if artwork.image_url and artwork.image_url != '' and displayed < 10 %}  <!-- 8 au lieu de 15 -->
+                {% set displayed = displayed + 1 %}
+                <a href="/oeuvre/{{ artwork.id }}" class="top-rated-item">
+                    <div class="top-rated-image-container">
+                        <img src="https://images.weserv.nl/?url={{ artwork.image_url|urlencode }}&w=200&h=200&fit=cover&a=attention&output=jpg&q=80" 
+                             alt="{{ artwork.titre if artwork.titre else 'Sans titre' }}" 
+                             loading="lazy"
+                             onerror="this.onerror=null; this.src='{{ artwork.image_url }}';">
+                        
+                        {% if artwork.favorites_count %}
+                        <div class="top-rated-badge" style="background: var(--accent);">
+                            <i class="fas fa-heart"></i> {{ artwork.favorites_count }}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="top-rated-rank">{{ loop.index }}</div>
+                    </div>
+                    
+                    <div class="top-rated-info">
+                        <div class="top-rated-title">{{ artwork.titre|truncate(25) if artwork.titre else 'Sans titre' }}</div>
+                        <div class="top-rated-artist">{{ artwork.createur|truncate(25) if artwork.createur else 'Artiste inconnu' }}</div>
+                        
+                        <div class="top-rated-stats">
+                            {% if artwork.avg_rating %}
+                            <div class="top-rated-rating">
+                                <i class="fas fa-star"></i> {{ artwork.avg_rating|round(1) }}/5
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if artwork.date %}
+                        <div class="top-rated-year">{{ artwork.date[:4] if artwork.date else '' }}</div>
+                        {% endif %}
+                    </div>
+                </a>
+            {% endif %}
+        {% endfor %}
+        
+        {% if displayed == 0 %}
+            <div style="color: var(--text-muted); padding: 2rem; text-align: center; width: 100%;">
+                Aucune œuvre avec image pour le moment.
+            </div>
+        {% endif %}
+    </div>
+
+        <!-- SECTION DERNIÈRES CRITIQUES -->
+        <div class="section-header">
+            <h2 class="section-title">Dernières critiques</h2>
+            <a href="/reviews" class="section-link">Toutes <i class="fas fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="reviews-compact">
+            {% if recent_reviews %}
+                {% for review in recent_reviews[:8] %}
+                    {% if review and review.username and review.artwork and review.artwork.image_url %}
+                    <div class="review-item">
+                        <div class="review-header">
+                            <div class="review-avatar">{{ review.username[0]|upper if review.username else '?' }}</div>
+                            <div class="review-user">{{ review.username if review.username else 'Anonyme' }}</div>
+                            {% if review.artwork and review.artwork.id %}
+                            <a href="/oeuvre/{{ review.artwork.id }}" class="review-work">
+                                {{ review.artwork.titre|truncate(12) if review.artwork.titre else 'Œuvre' }}
+                            </a>
+                            {% endif %}
+                            <div class="review-rating">
+                                <i class="fas fa-star"></i> {{ review.note_globale|round(1) if review.note_globale else '?' }}
+                            </div>
+                        </div>
+                        {% if review.commentaire %}
+                        <div class="review-comment">"{{ review.commentaire|truncate(50) }}"</div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div style="color: var(--text-muted); padding: 2rem; text-align: center; grid-column: 1/-1;">
+                    Aucune critique pour le moment.
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- SECTION MUSÉES -->
+        <div class="section-header">
+            <h2 class="section-title">Musées à explorer</h2>
+            <a href="/museums" class="section-link">Tous <i class="fas fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="museums-compact">
+            {% if featured_museums %}
+                {% for museum in featured_museums[:12] %}
+                <a href="/museum/{{ museum.id }}" class="museum-item">
+                    <div class="museum-icon">🏛️</div>
+                    <div class="museum-name">{{ museum.nom|truncate(15) if museum.nom else 'Musée' }}</div>
+                    <div class="museum-location">
+                        {% if museum.ville and museum.pays %}
+                            {{ museum.ville|truncate(10) }}
+                        {% elif museum.ville %}
+                            {{ museum.ville|truncate(10) }}
+                        {% elif museum.pays %}
+                            {{ museum.pays|truncate(10) }}
+                        {% endif %}
+                    </div>
+                    <div class="museum-count">{{ museum.oeuvres_count if museum.oeuvres_count else 0 }}</div>
+                </a>
+                {% endfor %}
+            {% else %}
+                <div style="color: var(--text-muted); padding: 2rem; text-align: center; grid-column: 1/-1;">
+                    Aucun musée pour le moment.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- CALL TO ACTION -->
+    {% if not session.user_id %}
+    <div class="cta-premium">
+        <h2>Prêt à commencer votre collection ?</h2>
+        <p>Rejoignez une communauté de passionnés et découvrez des milliers d'œuvres.</p>
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+            <a href="/register" class="hero-cta-primary">
+                <i class="fas fa-user-plus"></i> Créer un compte gratuit
+            </a>
+            <a href="/login" class="hero-cta-secondary">
+                <i class="fas fa-sign-in-alt"></i> Se connecter
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    {% include 'footer.html' %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ===== RECHERCHE AVEC SUGGESTIONS =====
+        const searchInput = document.getElementById('hero-search-input');
+        const searchBtn = document.getElementById('hero-search-btn');
+        const suggestionsContainer = document.getElementById('hero-suggestions');
+        let searchTimeout;
+
+        // Fonction de recherche
+        function performSearch() {
+            const query = searchInput.value.trim();
+            if (query) {
+                window.location.href = `/research?q=${encodeURIComponent(query)}`;
+            } else {
+                window.location.href = '/research';
+            }
+        }
+
+        // Recherche au clic sur le bouton
+        searchBtn.addEventListener('click', performSearch);
+
+        // Recherche avec la touche Entrée
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                performSearch();
+            }
+        });
+
+        // Suggestions en temps réel
+        searchInput.addEventListener('input', function() {
+            const query = this.value.trim();
+            
+            clearTimeout(searchTimeout);
+            
+            if (query.length < 2) {
+                suggestionsContainer.classList.remove('visible');
+                return;
+            }
+
+            searchTimeout = setTimeout(() => {
+                fetch(`/api/search-suggestions?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (hasResults(data)) {
+                            displaySuggestions(data);
+                        } else {
+                            suggestionsContainer.classList.remove('visible');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur suggestions:', error);
+                    });
+            }, 300);
+        });
+
+        function hasResults(data) {
+            return data.artistes?.length > 0 || 
+                   data.oeuvres?.length > 0 || 
+                   data.musees?.length > 0 || 
+                   data.villes?.length > 0 || 
+                   data.pays?.length > 0;
+        }
+
+        function displaySuggestions(data) {
+            suggestionsContainer.innerHTML = '';
+            
+            // Artistes
+            if (data.artistes && data.artistes.length > 0) {
+                data.artistes.slice(0, 3).forEach(item => {
+                    addSuggestionItem(item.nom, 'artiste', 'fa-user', item.oeuvres_count);
+                });
+            }
+            
+            // Œuvres
+            if (data.oeuvres && data.oeuvres.length > 0) {
+                data.oeuvres.slice(0, 2).forEach(item => {
+                    addSuggestionItem(item.titre, 'œuvre', 'fa-paint-brush', null, item.id);
+                });
+            }
+            
+            // Musées
+            if (data.musees && data.musees.length > 0) {
+                data.musees.slice(0, 2).forEach(item => {
+                    const subtitle = item.ville ? `${item.ville} • ${item.oeuvres_count || 0} œuvre(s)` : `${item.oeuvres_count || 0} œuvre(s)`;
+                    addSuggestionItem(item.nom, 'musée', 'fa-landmark', subtitle, null, item.id);
+                });
+            }
+            
+            // Villes
+            if (data.villes && data.villes.length > 0) {
+                data.villes.slice(0, 2).forEach(item => {
+                    const subtitle = `${item.musees_count || 0} musée(s) • ${item.oeuvres_count || 0} œuvre(s)`;
+                    addSuggestionItem(item.nom, 'ville', 'fa-city', subtitle);
+                });
+            }
+            
+            // Pays
+            if (data.pays && data.pays.length > 0) {
+                data.pays.slice(0, 2).forEach(item => {
+                    const subtitle = `${item.musees_count || 0} musée(s) • ${item.oeuvres_count || 0} œuvre(s)`;
+                    addSuggestionItem(item.nom, 'pays', 'fa-flag', subtitle);
+                });
+            }
+            
+            if (suggestionsContainer.children.length > 0) {
+                suggestionsContainer.classList.add('visible');
+            } else {
+                suggestionsContainer.classList.remove('visible');
+            }
+        }
+
+        function addSuggestionItem(text, category, icon, subtitle, id, museumId) {
+            const div = document.createElement('div');
+            div.className = 'hero-suggestion-item';
+            
+            let html = `
+                <i class="fas ${icon}"></i>
+                <div style="flex:1">
+                    <div>${text}</div>
+            `;
+            
+            if (subtitle) {
+                html += `<div style="font-size:0.7rem; opacity:0.8">${subtitle}</div>`;
+            }
+            
+            html += `</div>
+                <span class="hero-suggestion-category">${category}</span>
+            `;
+            
+            div.innerHTML = html;
+            
+            div.addEventListener('click', () => {
+                if (category === 'œuvre' && id) {
+                    window.location.href = `/oeuvre/${id}`;
+                } else if (category === 'musée' && museumId) {
+                    window.location.href = `/?museum=${encodeURIComponent(text)}`;
+                } else if (category === 'artiste') {
+                    window.location.href = `/?artist=${encodeURIComponent(text)}`;
+                } else if (category === 'ville') {
+                    window.location.href = `/?city=${encodeURIComponent(text)}`;
+                } else if (category === 'pays') {
+                    window.location.href = `/?country=${encodeURIComponent(text)}`;
+                } else {
+                    searchInput.value = text;
+                    suggestionsContainer.classList.remove('visible');
+                    performSearch();
+                }
+            });
+            
+            suggestionsContainer.appendChild(div);
+        }
+
+        // Cacher les suggestions en cliquant ailleurs
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.hero-search-wrapper')) {
+                suggestionsContainer.classList.remove('visible');
+            }
+        });
+
+        // Effet parallaxe
+        document.addEventListener('scroll', function() {
+            const hero = document.getElementById('heroBackdrop');
+            if (hero) {
+                const scrolled = window.pageYOffset;
+                hero.style.transform = `scale(1.1) translateY(${scrolled * 0.1}px)`;
+            }
+        });
+
+        // Animation au scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.section-header, .mosaic-grid, .horizontal-scroll, .reviews-compact, .museums-compact').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'all 0.6s ease';
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ site_name }} - Votre musée idéal</title>
+    
+    <!-- Fonts premium -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        /* ===== STYLES MIXÉS ===== */
+        :root {
+            --primary: #2c3e50;
+            --primary-dark: #1a2634;
+            --secondary: #e6d8c3;
+            --background: #0f1a24;
+            --surface: #1e2a36;
+            --text: #e6d8c3;
+            --text-light: #b8a99a;
+            --accent: #c44545;
+            --gold: #d4af37;
+            --border: rgba(230,216,195,0.15);
+            --star: #ffc107;
+        }
+
+        body {
+            background-color: var(--background);
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -0.02em;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .container-fluid {
+            width: 100%;
+            padding: 0 2rem;
+        }
+
+        /* ===== HERO CINÉMATIQUE (de home3) ===== */
+        .hero-cinema {
+            height: 85vh;
+            min-height: 700px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 3rem;
+            overflow: hidden;
+            border-bottom: 1px solid var(--gold);
+        }
+
+        .hero-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.35) saturate(1.3);
+            transform: scale(1.1);
+            transition: transform 0.1s ease-out;
+            z-index: 0;
+        }
+
+        .hero-backdrop::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, var(--background) 0%, transparent 30%, transparent 70%, var(--background) 100%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 3rem;
+            width: 100%;
+        }
+
+        .hero-eyebrow {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 5.5rem;
+            font-weight: 900;
+            line-height: 1;
+            color: white;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+            max-width: 800px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 3.5rem;
+            margin: 3rem 0;
+        }
+
+        .hero-stat {
+            text-align: left;
+        }
+
+        .hero-stat-number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--gold);
+            line-height: 1;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .hero-stat-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.6);
+            margin-top: 0.3rem;
+        }
+
+        .hero-cta-group {
+            margin-top: 3rem;
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .hero-cta-primary {
+            background: var(--gold);
+            color: var(--primary-dark);
+            padding: 1rem 2.5rem;
+            border-radius: 40px;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+        }
+
+        .hero-cta-primary:hover {
+            background: #e6c200;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(212,175,55,0.3);
+        }
+
+        .hero-cta-secondary {
+            background: transparent;
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 40px;
+            border: 1px solid rgba(255,255,255,0.3);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .hero-cta-secondary:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            transform: translateY(-3px);
+        }
+
+        /* ===== SECTION HEADER (de home2 adapté) ===== */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin: 3rem 0 1.5rem;
+            border-bottom: 2px solid rgba(212,175,55,0.3);
+            padding-bottom: 0.8rem;
+        }
+        
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+        
+        .section-link {
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: color 0.2s;
+            font-weight: 500;
+        }
+        
+        .section-link:hover {
+            color: white;
+        }
+        
+        .section-link i {
+            margin-left: 0.3rem;
+            transition: transform 0.2s;
+        }
+        
+        .section-link:hover i {
+            transform: translateX(5px);
+        }
+
+        /* ===== MOSAÏQUE DENSE (de home2) ===== */
+        .mosaic-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.4rem;
+            margin: 2rem 0;
+        }
+        
+        .mosaic-item {
+            aspect-ratio: 2/3;
+            position: relative;
+            overflow: hidden;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .mosaic-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 25px rgba(212,175,55,0.2);
+            z-index: 10;
+        }
+        
+        .mosaic-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .mosaic-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%);
+            padding: 1rem 0.5rem 0.5rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            color: white;
+            font-size: 0.75rem;
+            pointer-events: none;
+        }
+        
+        .mosaic-item:hover .mosaic-overlay {
+            opacity: 1;
+        }
+
+        /* ===== HORIZONTAL SCROLL (de home2) ===== */
+        .horizontal-scroll {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding: 0.5rem 0 1.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--gold) var(--border);
+        }
+        
+        .horizontal-scroll::-webkit-scrollbar {
+            height: 5px;
+        }
+        
+        .horizontal-scroll::-webkit-scrollbar-track {
+            background: var(--border);
+            border-radius: 10px;
+        }
+        
+        .horizontal-scroll::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 10px;
+        }
+        
+        .scroll-item {
+            flex: 0 0 180px;
+            background: var(--surface);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border: 1px solid rgba(212,175,55,0.1);
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .scroll-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(212,175,55,0.15);
+            border-color: var(--gold);
+        }
+        
+        .scroll-item img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            background: var(--primary-dark);
+        }
+        
+        .scroll-item-info {
+            padding: 0.8rem;
+        }
+        
+        .scroll-item-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .scroll-item-artist {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 0.2rem;
+        }
+        
+        .rating-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            background: rgba(0,0,0,0.5);
+            padding: 0.2rem 0.5rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            color: var(--gold);
+            margin-top: 0.5rem;
+            border: 1px solid rgba(212,175,55,0.3);
+        }
+
+        .favorite-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            font-size: 0.7rem;
+            color: var(--accent);
+            margin-top: 0.3rem;
+        }
+
+        /* ===== CRITIQUES (de home2) ===== */
+        .reviews-grid {
+            display: grid;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .review-card {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(212,175,55,0.15);
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .review-card:hover {
+            border-color: var(--gold);
+            transform: translateX(5px);
+        }
+        
+        .review-header {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .review-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--gold));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .review-meta {
+            flex: 1;
+        }
+        
+        .review-user {
+            font-weight: 700;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .review-work {
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .review-work:hover {
+            text-decoration: underline;
+        }
+        
+        .review-rating {
+            background: rgba(212,175,55,0.1);
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            color: var(--gold);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .review-comment {
+            color: var(--text-light);
+            font-style: italic;
+            margin: 0.5rem 0 0;
+            padding-left: 0.5rem;
+            border-left: 2px solid var(--gold);
+            font-size: 0.95rem;
+        }
+
+        /* ===== MUSÉES EN GRILLE (de home3) ===== */
+        .museums-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .museum-card {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 2rem 1.5rem;
+            border: 1px solid rgba(212,175,55,0.15);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .museum-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), transparent);
+        }
+        
+        .museum-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--gold);
+            box-shadow: 0 20px 30px rgba(212,175,55,0.15);
+        }
+        
+        .museum-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .museum-name {
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .museum-location {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .museum-count {
+            color: var(--gold);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* ===== CALL TO ACTION (de home3) ===== */
+        .cta-premium {
+            text-align: center;
+            padding: 5rem 0;
+            margin: 5rem 0;
+            border-top: 1px solid rgba(212,175,55,0.2);
+            border-bottom: 1px solid rgba(212,175,55,0.2);
+            background: radial-gradient(circle at center, rgba(212,175,55,0.05) 0%, transparent 70%);
+        }
+        
+        .cta-premium h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .cta-premium p {
+            color: var(--text-light);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .hero-title { font-size: 4rem; }
+            .mosaic-grid { grid-template-columns: repeat(4, 1fr); }
+            .museums-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 900px) {
+            .hero-title { font-size: 3rem; }
+            .mosaic-grid { grid-template-columns: repeat(3, 1fr); }
+            .hero-stats { flex-wrap: wrap; gap: 2rem; }
+        }
+
+        @media (max-width: 768px) {
+            .hero-cinema { height: 70vh; min-height: 600px; }
+            .hero-title { font-size: 2.5rem; }
+            .hero-cta-group { flex-direction: column; }
+            .museums-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <!-- HERO CINÉMATIQUE (de home3) -->
+    <div class="hero-cinema" id="hero">
+        {% if mosaic_artworks and mosaic_artworks|length > 0 %}
+        <div class="hero-backdrop" id="heroBackdrop" 
+             style="background-image: url('{{ mosaic_artworks[0].image_url }}');">
+        </div>
+        {% endif %}
+        
+        <div class="hero-content">
+            <div class="hero-eyebrow">Bluegreencliff présente</div>
+            <h1 class="hero-title">Votre musée<br>idéal</h1>
+            <p class="hero-subtitle">
+                Découvrez, collectionnez et partagez les œuvres qui vous touchent.<br>
+                Rejoignez une communauté de passionnés d'art.
+            </p>
+            
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-number">{{ total_oeuvres }}</div>
+                    <div class="hero-stat-label">Œuvres</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">{{ total_artistes }}</div>
+                    <div class="hero-stat-label">Artistes</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">{{ total_musees }}</div>
+                    <div class="hero-stat-label">Musées</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">{{ total_users }}</div>
+                    <div class="hero-stat-label">Membres</div>
+                </div>
+            </div>
+            
+            {% if not session.user_id %}
+            <div class="hero-cta-group">
+                <a href="#" class="hero-cta-primary" data-bs-toggle="modal" data-bs-target="#registerModal">
+                    <i class="fas fa-pen-fancy"></i> Commencer l'expérience
+                </a>
+                <a href="/about" class="hero-cta-secondary">
+                    <i class="fas fa-info-circle"></i> En savoir plus
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <!-- MOSAÏQUE DENSE "DÉCOUVRIR" (de home2) -->
+        <div class="section-header">
+            <h2 class="section-title">Découvrir</h2>
+            <a href="/" class="section-link">Voir tout <i class="fas fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="mosaic-grid">
+            {% for artwork in mosaic_artworks[:12] %}
+            <a href="/oeuvre/{{ artwork.id }}" class="mosaic-item">
+                {% if artwork.image_url %}
+                <img src="{{ artwork.image_url }}" alt="{{ artwork.titre }}" loading="lazy">
+                <div class="mosaic-overlay">
+                    <div style="font-weight: 600;">{{ artwork.titre|truncate(30) }}</div>
+                    <div style="font-size: 0.6rem; opacity: 0.8;">{{ artwork.createur|truncate(20) }}</div>
+                </div>
+                {% else %}
+                <div style="width:100%; height:100%; background: linear-gradient(145deg, var(--surface), var(--primary-dark)); display: flex; align-items: center; justify-content: center; color: var(--text-light);">
+                    <i class="fas fa-image" style="font-size: 1.5rem;"></i>
+                </div>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+
+        <!-- SECTION ŒUVRES LES MIEUX NOTÉES -->
+        <div class="section-header">
+            <h2 class="section-title">Mieux notées</h2>
+            <a href="/?sort=rating_desc" class="section-link">Toutes les notes <i class="fas fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="horizontal-scroll">
+            {% for artwork in top_rated %}
+            <a href="/oeuvre/{{ artwork.id }}" class="scroll-item">
+                {% if artwork.image_url %}
+                <img src="{{ artwork.image_url }}" alt="{{ artwork.titre }}" loading="lazy">
+                {% else %}
+                <div style="width:100%; aspect-ratio:1/1; background: linear-gradient(145deg, var(--surface), var(--primary-dark)); display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-image" style="color: var(--text-light);"></i>
+                </div>
+                {% endif %}
+                <div class="scroll-item-info">
+                    <div class="scroll-item-title">{{ artwork.titre|truncate(25) }}</div>
+                    <div class="scroll-item-artist">{{ artwork.createur|truncate(25) }}</div>
+                    {% if artwork.avg_rating %}
+                    <div class="rating-badge">
+                        <i class="fas fa-star"></i> {{ artwork.avg_rating|round(1) }}
+                    </div>
+                    {% endif %}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+
+        <!-- SECTION FAVORIS POPULAIRES -->
+        <div class="section-header">
+            <h2 class="section-title">Favoris des membres</h2>
+            <a href="/?sort=popular" class="section-link">Plus de favoris <i class="fas fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="horizontal-scroll">
+            {% for artwork in popular_favorites %}
+            <a href="/oeuvre/{{ artwork.id }}" class="scroll-item">
+                {% if artwork.image_url %}
+                <img src="{{ artwork.image_url }}" alt="{{ artwork.titre }}" loading="lazy">
+                {% else %}
+                <div style="width:100%; aspect-ratio:1/1; background: linear-gradient(145deg, var(--surface), var(--primary-dark));"></div>
+                {% endif %}
+                <div class="scroll-item-info">
+                    <div class="scroll-item-title">{{ artwork.titre|truncate(25) }}</div>
+                    <div class="scroll-item-artist">{{ artwork.createur|truncate(25) }}</div>
+                    {% if artwork.favorites_count %}
+                    <div class="favorite-badge">
+                        <i class="fas fa-heart" style="color: var(--accent);"></i> {{ artwork.favorites_count }} favoris
+                    </div>
+                    {% endif %}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+
+        <!-- SECTION DERNIÈRES CRITIQUES -->
+        <div class="section-header">
+            <h2 class="section-title">Dernières critiques</h2>
+            <a href="/reviews" class="section-link">Toutes les critiques <i class="fas fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="reviews-grid">
+            {% for review in recent_reviews %}
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="review-avatar">
+                        {{ review.username[0]|upper }}
+                    </div>
+                    <div class="review-meta">
+                        <div class="review-user">{{ review.username }}</div>
+                        <div>
+                            <span style="color: var(--text-light);">a noté</span>
+                            <a href="/oeuvre/{{ review.artwork.id }}" class="review-work">
+                                {{ review.artwork.titre }}
+                            </a>
+                        </div>
+                    </div>
+                    <div class="review-rating">
+                        <i class="fas fa-star"></i> {{ review.note_globale|round(1) }}/5
+                    </div>
+                </div>
+                {% if review.commentaire %}
+                <p class="review-comment">
+                    "{{ review.commentaire|truncate(150) }}"
+                </p>
+                {% endif %}
+                <div style="font-size: 0.7rem; color: var(--text-light); margin-top: 0.5rem;">
+                    {{ review.created_at }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- SECTION MUSÉES EN VEDETTE -->
+        <div class="section-header">
+            <h2 class="section-title">Musées à explorer</h2>
+            <a href="/museums" class="section-link">Tous les musées <i class="fas fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="museums-grid">
+            {% for museum in featured_museums %}
+            <a href="/museum/{{ museum.id }}" class="museum-card">
+                <div class="museum-icon">🏛️</div>
+                <div class="museum-name">{{ museum.nom|truncate(35) }}</div>
+                <div class="museum-location">{{ museum.ville }}, {{ museum.pays }}</div>
+                <div class="museum-count">{{ museum.oeuvres_count }} œuvres</div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- CALL TO ACTION PREMIUM -->
+    {% if not session.user_id %}
+    <div class="cta-premium">
+        <h2>Prêt à commencer votre collection ?</h2>
+        <p>Rejoignez une communauté de passionnés et découvrez des milliers d'œuvres.</p>
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+            <a href="#" class="hero-cta-primary" data-bs-toggle="modal" data-bs-target="#registerModal">
+                <i class="fas fa-user-plus"></i> Créer un compte gratuit
+            </a>
+            <a href="#" class="hero-cta-secondary" data-bs-toggle="modal" data-bs-target="#loginModal">
+                <i class="fas fa-sign-in-alt"></i> Se connecter
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    {% include 'footer.html' %}
+
+    <!-- MODALES (copier depuis home2) -->
+    <!-- ... tes modales ici ... -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Effet parallaxe sur le hero (de home3)
+        document.addEventListener('scroll', function() {
+            const hero = document.getElementById('heroBackdrop');
+            if (hero) {
+                const scrolled = window.pageYOffset;
+                hero.style.transform = `scale(1.1) translateY(${scrolled * 0.1}px)`;
+            }
+        });
+
+        // Animation au scroll pour les sections
+        document.addEventListener('DOMContentLoaded', function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+            document.querySelectorAll('.section-header, .mosaic-grid, .horizontal-scroll, .reviews-grid, .museums-grid').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'all 0.6s ease';
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>

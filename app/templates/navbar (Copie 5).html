@@ -1,0 +1,606 @@
+<nav class="navbar">
+    <style>
+        /* ===== NAVBAR MINIMALISTE ===== */
+        .navbar {
+            background: rgba(10, 18, 26, 0.85) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 0.5rem 0;
+            width: 100%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .navbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Logo */
+        .navbar-brand {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 300;
+            color: #e6d8c3 !important;
+            text-decoration: none;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            border-right: 1px solid rgba(212, 175, 55, 0.15);
+            padding-right: 1.5rem;
+            margin-right: 1.5rem;
+            transition: color 0.2s;
+            flex-shrink: 0;
+        }
+
+        .navbar-brand:hover {
+            color: #d4af37 !important;
+        }
+
+        /* Navigation */
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            flex-shrink: 0;
+        }
+
+        .nav-link {
+            color: #e6d8c3 !important;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+            border-bottom-color: #d4af37;
+        }
+
+        .nav-link.active {
+            color: #d4af37 !important;
+            border-bottom-color: #d4af37;
+        }
+
+        /* Barre de recherche */
+        .search-wrapper {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+            margin: 0 1.5rem;
+        }
+
+        .search-minimal {
+            display: flex;
+            align-items: center;
+            background: transparent;
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 30px;
+            padding: 0.1rem 0.1rem 0.1rem 1.2rem;
+            width: 100%;
+            transition: all 0.3s;
+            height: 40px;
+        }
+
+        .search-minimal:focus-within {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .search-minimal input {
+            background: transparent;
+            border: none;
+            color: white;
+            width: 100%;
+            padding: 0.2rem 0;
+            font-size: 0.95rem;
+            font-weight: 300;
+        }
+
+        .search-minimal input::placeholder {
+            color: rgba(230, 216, 195, 0.4);
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        .search-minimal input:focus {
+            outline: none;
+        }
+
+        .search-minimal button {
+            background: transparent;
+            border: none;
+            color: #e6d8c3;
+            padding: 0.2rem 1.5rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .search-minimal button:hover {
+            color: #d4af37;
+            transform: scale(1.1);
+        }
+
+        /* Actions droite */
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        /* Bouton thème */
+        .theme-switcher {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e6d8c3;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .theme-switcher:hover {
+            border-color: #d4af37;
+            color: #d4af37;
+            transform: scale(1.05);
+        }
+
+        /* Bouton langue */
+        .lang-switcher {
+            display: flex;
+            align-items: center;
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 30px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .lang-btn {
+            padding: 0.3rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 400;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+            color: #e6d8c3;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .lang-btn.fr {
+            border-radius: 30px 0 0 30px;
+        }
+
+        .lang-btn.en {
+            border-radius: 0 30px 30px 0;
+            border-left: 1px solid rgba(212, 175, 55, 0.15);
+        }
+
+        .lang-btn.active {
+            background: #d4af37;
+            color: #0f1a24;
+            font-weight: 500;
+        }
+
+        .lang-btn:hover:not(.active) {
+            background: rgba(212, 175, 55, 0.2);
+            color: white;
+        }
+
+        /* Compte utilisateur */
+        .user-minimal {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar-minimal {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e6d8c3;
+            font-size: 0.9rem;
+            font-weight: 400;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .user-avatar-minimal:hover {
+            border-color: #d4af37;
+            color: #d4af37;
+            transform: scale(1.05);
+        }
+
+        .user-avatar-minimal.has-user {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: #d4af37;
+            color: #d4af37;
+            font-weight: 500;
+        }
+
+        .login-minimal {
+            color: #e6d8c3;
+            text-decoration: none;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0.4rem 1rem;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            white-space: nowrap;
+        }
+
+        .login-minimal:hover {
+            opacity: 1;
+            color: white;
+            border-color: #d4af37;
+        }
+
+        .login-minimal i {
+            font-size: 1rem;
+        }
+
+        /* Dropdown */
+        .dropdown-minimal {
+            position: relative;
+        }
+
+        .dropdown-menu-minimal {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: rgba(10, 18, 26, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 8px;
+            margin-top: 8px;
+            min-width: 180px;
+            display: none;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .dropdown-menu-minimal.show {
+            display: block;
+        }
+
+        .dropdown-item-minimal {
+            padding: 0.7rem 1rem;
+            color: #e6d8c3;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 0.8rem;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.05);
+            transition: all 0.2s;
+        }
+
+        .dropdown-item-minimal:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item-minimal i {
+            color: #d4af37;
+            font-size: 0.8rem;
+            width: 18px;
+            opacity: 0.7;
+        }
+
+        .dropdown-item-minimal:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: white;
+            padding-left: 1.5rem;
+        }
+
+        .dropdown-divider-minimal {
+            height: 1px;
+            background: rgba(212, 175, 55, 0.15);
+            margin: 0.3rem 0;
+        }
+
+        /* Suggestions */
+        .suggestions-minimal {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(10, 18, 26, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 16px;
+            margin-top: 8px;
+            display: none;
+            z-index: 1000;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .suggestions-section {
+            padding: 0.5rem 0;
+        }
+
+        .suggestions-section:not(:last-child) {
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .suggestions-section-header {
+            padding: 0.5rem 1rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #d4af37;
+            opacity: 0.7;
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .suggestion-minimal-item {
+            padding: 0.8rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #e6d8c3;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .suggestion-minimal-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: white;
+            padding-left: 1.5rem;
+        }
+
+        .suggestion-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #d4af37;
+            font-size: 1rem;
+        }
+
+        .suggestion-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .suggestion-title {
+            font-weight: 400;
+        }
+
+        .suggestion-subtitle {
+            font-size: 0.7rem;
+            color: #b8a99a;
+            margin-top: 0.2rem;
+        }
+
+        /* Version mobile */
+        @media (max-width: 992px) {
+            .navbar .container {
+                flex-wrap: wrap;
+                padding: 0.5rem 1rem;
+            }
+
+            .mobile-top-minimal {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+
+            .mobile-brand-minimal {
+                font-size: 1.1rem;
+                letter-spacing: 3px;
+                color: #e6d8c3;
+                text-decoration: none;
+                text-transform: uppercase;
+            }
+
+            .mobile-actions-minimal {
+                display: flex;
+                align-items: center;
+                gap: 0.8rem;
+            }
+
+            .mobile-search-minimal {
+                flex: 1;
+                min-width: 0;
+                position: relative;
+            }
+
+            .mobile-search-form-minimal {
+                display: flex;
+                align-items: center;
+                border: 1px solid rgba(212, 175, 55, 0.15);
+                border-radius: 30px;
+                padding: 0.1rem 0.1rem 0.1rem 1rem;
+                height: 38px;
+            }
+
+            .mobile-search-input-minimal {
+                background: transparent;
+                border: none;
+                color: white;
+                width: 100%;
+                padding: 0.2rem 0;
+                font-size: 0.9rem;
+                outline: none;
+            }
+
+            .mobile-search-input-minimal::placeholder {
+                color: rgba(230, 216, 195, 0.3);
+                font-style: italic;
+            }
+
+            .mobile-search-btn-minimal {
+                background: transparent;
+                border: none;
+                color: #e6d8c3;
+                padding: 0.2rem 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            .mobile-actions-right {
+                display: flex;
+                gap: 0.5rem;
+                align-items: center;
+            }
+
+            .mobile-suggestions-minimal {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(10, 18, 26, 0.95);
+                backdrop-filter: blur(12px);
+                border: 1px solid rgba(212, 175, 55, 0.15);
+                border-radius: 8px;
+                margin-top: 5px;
+                display: none;
+                z-index: 1000;
+                max-height: 400px;
+                overflow-y: auto;
+            }
+        }
+    </style>
+
+    <div class="container">
+        <!-- VERSION DESKTOP -->
+        <div class="d-none d-lg-flex align-items-center w-100" style="gap: 0;">
+            <!-- Logo -->
+            <a class="navbar-brand" href="/">Bluegreencliff</a>
+            
+            <!-- Navigation -->
+            <ul class="nav-links">
+                <li><a href="/research" class="nav-link {% if request.path == '/research' %}active{% endif %}">Explorer</a></li>
+            </ul>
+            
+            <!-- Recherche -->
+            <div class="search-wrapper">
+                <form action="/" method="get" class="search-minimal" autocomplete="off" id="search-form">
+                    <input type="text" name="q" id="search-input" placeholder="Rechercher..." value="{{ query if query else '' }}">
+                    <button type="submit"><i class="fas fa-search"></i></button>
+                </form>
+                <div class="suggestions-minimal" id="suggestions-container"></div>
+            </div>
+            
+            <!-- Actions droite -->
+            <div class="navbar-actions">
+                <!-- Thème -->
+                <div class="theme-switcher" onclick="toggleTheme()">
+                    <i class="fas fa-moon" id="theme-icon"></i>
+                </div>
+                
+                <!-- Langue -->
+                <div class="lang-switcher">
+                    <a href="/set-language/fr" class="lang-btn fr {% if session.language == 'fr' %}active{% endif %}">FR</a>
+                    <a href="/set-language/en" class="lang-btn en {% if session.language == 'en' %}active{% endif %}">EN</a>
+                </div>
+                
+                <!-- Compte -->
+                <div class="user-minimal">
+                    {% if session.username %}
+                    <div class="dropdown-minimal">
+                        <a href="#" onclick="toggleDropdown(event)" class="user-avatar-minimal has-user">
+                            {{ session.username[0]|upper }}
+                        </a>
+                        <div class="dropdown-menu-minimal" id="userDropdown">
+                            <a href="/profile" class="dropdown-item-minimal"><i class="far fa-id-card"></i> Profil</a>
+                            <a href="/mes-oeuvres" class="dropdown-item-minimal"><i class="far fa-star"></i> Notes</a>
+                            <a href="/favoris" class="dropdown-item-minimal"><i class="far fa-heart"></i> Favoris</a>
+                            <div class="dropdown-divider-minimal"></div>
+                            <a href="/logout?next={{ request.path }}" class="dropdown-item-minimal"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <a href="#" class="login-minimal" onclick="openRegisterModal(); return false;">
+                        <i class="far fa-user-circle"></i> Compte
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- VERSION MOBILE -->
+        <div class="d-lg-none w-100">
+            <div class="mobile-top-minimal">
+                <a class="mobile-brand-minimal" href="/">Bluegreencliff</a>
+                <div class="mobile-actions-minimal">
+                    <div class="mobile-actions-right">
+                        <!-- Thème mobile -->
+                        <div class="theme-switcher" onclick="toggleTheme()" style="width: 32px; height: 32px;">
+                            <i class="fas fa-moon" id="mobile-theme-icon"></i>
+                        </div>
+                        
+                        <!-- Langue mobile -->
+                        <div class="lang-switcher" style="margin-right: 0;">
+                            <a href="/set-language/fr" class="lang-btn fr {% if session.language == 'fr' %}active{% endif %}" style="padding: 0.2rem 0.6rem; font-size: 0.7rem;">FR</a>
+                            <a href="/set-language/en" class="lang-btn en {% if session.language == 'en' %}active{% endif %}" style="padding: 0.2rem 0.6rem; font-size: 0.7rem;">EN</a>
+                        </div>
+                        
+                        <!-- Compte mobile -->
+                        {% if session.username %}
+                        <a href="/profile" class="user-avatar-minimal has-user" style="width: 32px; height: 32px;">
+                            {{ session.username[0]|upper }}
+                        </a>
+                        {% else %}
+                        <a href="#" onclick="openRegisterModal(); return false;" style="color: #e6d8c3; font-size: 1.2rem;">
+                            <i class="far fa-user-circle"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <div class="mobile-search-minimal" style="flex: 1;">
+                    <form action="/" method="get" class="mobile-search-form-minimal" id="mobile-search-form">
+                        <input type="text" name="q" class="mobile-search-input-minimal" id="mobile-search-input"
+                               placeholder="Rechercher..." value="{{ query if query else '' }}">
+                        <button type="submit" class="mobile-search-btn-minimal">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                    <div class="mobile-suggestions-minimal" id="mobile-suggestions-container"></div>
+                </div>
+                <a href="/research" class="nav-link" style="font-size: 0.8rem; white-space: nowrap; padding: 0.2rem 0.5rem;">Explorer</a>
+            </div>
+        </div>
+    </div>
+</nav>

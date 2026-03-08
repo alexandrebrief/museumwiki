@@ -1,91 +1,93 @@
-<footer class="footer">
+<footer class="footer-minimal">
     <div class="container">
-        <!-- Structure en 2 colonnes -->
-        <div class="footer-row">
-            <!-- Colonne gauche : vide -->
-            <div class="footer-left"></div>
+        <div class="footer-content">
+            <!-- À propos -->
+            <a href="/about" class="footer-link">À propos</a>
             
-            <!-- Colonne centrale : À propos -->
-            <div class="footer-center">
-                <a href="/about">À propos</a>
-            </div>
-            
-            <!-- Colonne droite : Copyright -->
-            <div class="footer-right">
-                <span class="copyright">© {{ current_year }} {{ site_name }}. All rights reserved.</span>
-            </div>
+            <!-- Copyright -->
+            <span class="footer-copyright">© {{ current_year }} {{ site_name }}</span>
         </div>
     </div>
 </footer>
 
 <style>
-.footer {
-    background: #2c3e50;
-    color: #e6d8c3;
-    padding: 0.4rem 0;  /* Réduit de 1rem à 0.6rem */
+.footer-minimal {
+    background: rgba(15, 26, 36, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(212, 175, 55, 0.15);
+    padding: 1rem 0;
     margin-top: auto;
-    font-size: 0.75rem;  /* Réduit de 0.8rem à 0.75rem */
     width: 100%;
+    font-family: 'Inter', sans-serif;
 }
 
-.footer-row {
+.footer-minimal .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.footer-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
 }
 
-.footer-left, .footer-center, .footer-right {
-    flex: 1;
-    display: flex;
-    align-items: center;
-}
-
-.footer-left {
-    justify-content: flex-start;
-}
-
-.footer-center {
-    justify-content: center;
-}
-
-.footer-right {
-    justify-content: flex-end;
-}
-
-.footer a {
+.footer-link {
     color: #e6d8c3;
     text-decoration: none;
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 0.3rem 0;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s;
+    opacity: 0.7;
+}
+
+.footer-link:hover {
+    color: white;
+    border-bottom-color: #d4af37;
+    opacity: 1;
+}
+
+.footer-copyright {
+    color: #e6d8c3;
+    font-size: 0.6rem;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    opacity: 0.5;
     transition: opacity 0.2s;
-    padding: 0.1rem 0.2rem;  /* Réduit de 0.2rem 0.3rem */
-    font-size: 0.75rem;  /* Ajouté pour cohérence */
 }
 
-.footer a:hover {
+.footer-copyright:hover {
     opacity: 0.8;
-    text-decoration: underline;
-}
-
-.copyright {
-    font-size: 0.65rem;  /* Réduit de 0.7rem à 0.65rem */
-    opacity: 0.8;
-    white-space: nowrap;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .footer-row {
-        flex-direction: column;
-        gap: 0.3rem;  /* Réduit de 0.5rem à 0.3rem */
+    .footer-minimal {
+        padding: 0.8rem 0;
     }
     
-    .footer-left, .footer-center, .footer-right {
-        justify-content: center;
+    .footer-minimal .container {
+        padding: 0 1rem;
+    }
+    
+    .footer-content {
+        flex-direction: column;
+        gap: 0.5rem;
         text-align: center;
     }
     
-    .footer {
-        padding: 0.4rem 0;  /* Encore plus réduit sur mobile */
+    .footer-link {
+        font-size: 0.65rem;
+    }
+    
+    .footer-copyright {
+        font-size: 0.55rem;
     }
 }
 </style>

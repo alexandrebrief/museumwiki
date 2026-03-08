@@ -2,42 +2,59 @@
 <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Créer un compte</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+            <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+            
             <div class="modal-body">
+                <h2 class="modal-title">Créer un compte</h2>
+                <p class="modal-subtitle">Rejoignez la communauté</p>
+                
                 <form method="POST" action="/register" id="register-form">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     
-                    <div class="mb-3">
+                    <div class="form-group">
                         <label for="modal-username" class="form-label">Nom d'utilisateur</label>
-                        <input type="text" class="form-control" id="modal-username" name="username" required>
+                        <input type="text" class="form-input" id="modal-username" name="username" required placeholder="ex: jean_dupond">
                     </div>
                     
-                    <div class="mb-3">
+                    <div class="form-group">
                         <label for="modal-email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="modal-email" name="email" required>
+                        <input type="email" class="form-input" id="modal-email" name="email" required placeholder="ex: jean@email.com">
                     </div>
                     
-                    <div class="mb-3">
+                    <div class="form-group">
                         <label for="modal-password" class="form-label">Mot de passe</label>
-                        <input type="password" class="form-control" id="modal-password" name="password" required>
-                        <ul class="password-requirements" id="modal-password-requirements" style="font-size: 0.75rem; list-style: none; padding-left: 0; margin-top: 0.5rem;">
-                            <li id="modal-req-length" class="invalid">✓ 8 caractères minimum</li>
-                            <li id="modal-req-uppercase" class="invalid">✓ Une majuscule</li>
-                            <li id="modal-req-lowercase" class="invalid">✓ Une minuscule</li>
-                            <li id="modal-req-number" class="invalid">✓ Un chiffre</li>
+                        <input type="password" class="form-input" id="modal-password" name="password" required placeholder="••••••••">
+                        
+                        <ul class="password-requirements" id="modal-password-requirements">
+                            <li id="modal-req-length" class="invalid">
+                                <i class="fas fa-circle"></i>
+                                <span>8 caractères minimum</span>
+                            </li>
+                            <li id="modal-req-uppercase" class="invalid">
+                                <i class="fas fa-circle"></i>
+                                <span>Une majuscule</span>
+                            </li>
+                            <li id="modal-req-lowercase" class="invalid">
+                                <i class="fas fa-circle"></i>
+                                <span>Une minuscule</span>
+                            </li>
+                            <li id="modal-req-number" class="invalid">
+                                <i class="fas fa-circle"></i>
+                                <span>Un chiffre</span>
+                            </li>
                         </ul>
                     </div>
                     
-                    <button type="submit" class="btn-register" style="width: 100%; background: #2c3e50; color: #e6d8c3; border: none; border-radius: 8px; padding: 0.75rem; font-weight: 500;">
+                    <button type="submit" class="btn-submit">
                         S'inscrire
                     </button>
                 </form>
                 
-                <div class="login-link text-center mt-3" style="font-size: 0.85rem;">
-                    Déjà un compte ? <a href="#" onclick="switchToLoginModal(); return false;">Se connecter</a>
+                <div class="login-prompt">
+                    Déjà un compte ? 
+                    <a href="#" onclick="switchToLoginModal(); return false;">Se connecter</a>
                 </div>
             </div>
         </div>
@@ -45,19 +62,188 @@
 </div>
 
 <style>
+/* ===== MODALE MINIMALISTE ===== */
+.modal-content {
+    background: rgba(15, 26, 36, 0.98);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 24px;
+    padding: 2rem;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.modal-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    background: transparent;
+    color: #e6d8c3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    opacity: 0.6;
+}
+
+.modal-close:hover {
+    opacity: 1;
+    border-color: #d4af37;
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    padding: 0;
+}
+
+.modal-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: white;
+    margin: 0 0 0.3rem 0;
+    letter-spacing: -0.5px;
+}
+
+.modal-subtitle {
+    font-size: 0.9rem;
+    color: #b8a99a;
+    margin-bottom: 2rem;
+    font-weight: 300;
+}
+
+/* ===== FORMULAIRE ===== */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #b8a99a;
+    margin-bottom: 0.4rem;
+    font-weight: 300;
+}
+
+.form-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    padding: 0.5rem 0;
+    color: white;
+    font-size: 0.95rem;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+}
+
+.form-input:focus {
+    outline: none;
+    border-bottom-color: #d4af37;
+}
+
+.form-input::placeholder {
+    color: rgba(230, 216, 195, 0.3);
+    font-style: italic;
+    font-size: 0.85rem;
+}
+
+/* ===== EXIGENCES MOT DE PASSE ===== */
+.password-requirements {
+    list-style: none;
+    padding: 0;
+    margin: 0.8rem 0 0 0;
+}
+
 .password-requirements li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.7rem;
+    margin-bottom: 0.3rem;
+    transition: all 0.2s;
+}
+
+.password-requirements li i {
+    font-size: 0.4rem;
+    width: 12px;
+}
+
+.password-requirements li.invalid {
     color: #dc3545;
-    font-size: 0.75rem;
-    margin-bottom: 0.2rem;
-    transition: color 0.2s;
 }
 
 .password-requirements li.valid {
     color: #28a745;
 }
 
-.password-requirements li.invalid {
-    color: #dc3545;
+.password-requirements li.valid i {
+    color: #28a745;
+}
+
+/* ===== BOUTON ===== */
+.btn-submit {
+    width: 100%;
+    background: transparent;
+    border: 1px solid #d4af37;
+    border-radius: 40px;
+    padding: 0.8rem;
+    color: #e6d8c3;
+    font-size: 0.9rem;
+    font-weight: 400;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin: 1rem 0 1.5rem;
+}
+
+.btn-submit:hover {
+    background: #d4af37;
+    color: #0f1a24;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+/* ===== LIEN DE CONNEXION ===== */
+.login-prompt {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #b8a99a;
+    border-top: 1px solid rgba(212, 175, 55, 0.1);
+    padding-top: 1.5rem;
+}
+
+.login-prompt a {
+    color: #d4af37;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s;
+    margin-left: 0.3rem;
+}
+
+.login-prompt a:hover {
+    border-bottom-color: #d4af37;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 576px) {
+    .modal-content {
+        padding: 1.5rem;
+    }
+    
+    .modal-title {
+        font-size: 1.5rem;
+    }
 }
 </style>
 
@@ -69,41 +255,49 @@ document.getElementById('modal-password')?.addEventListener('input', function(e)
     // Longueur
     const lengthReq = document.getElementById('modal-req-length');
     if (password.length >= 8) {
-        lengthReq.classList.add('valid');
         lengthReq.classList.remove('invalid');
+        lengthReq.classList.add('valid');
+        lengthReq.querySelector('i').className = 'fas fa-check-circle';
     } else {
-        lengthReq.classList.add('invalid');
         lengthReq.classList.remove('valid');
+        lengthReq.classList.add('invalid');
+        lengthReq.querySelector('i').className = 'fas fa-circle';
     }
     
     // Majuscule
     const upperReq = document.getElementById('modal-req-uppercase');
     if (/[A-Z]/.test(password)) {
-        upperReq.classList.add('valid');
         upperReq.classList.remove('invalid');
+        upperReq.classList.add('valid');
+        upperReq.querySelector('i').className = 'fas fa-check-circle';
     } else {
-        upperReq.classList.add('invalid');
         upperReq.classList.remove('valid');
+        upperReq.classList.add('invalid');
+        upperReq.querySelector('i').className = 'fas fa-circle';
     }
     
     // Minuscule
     const lowerReq = document.getElementById('modal-req-lowercase');
     if (/[a-z]/.test(password)) {
-        lowerReq.classList.add('valid');
         lowerReq.classList.remove('invalid');
+        lowerReq.classList.add('valid');
+        lowerReq.querySelector('i').className = 'fas fa-check-circle';
     } else {
-        lowerReq.classList.add('invalid');
         lowerReq.classList.remove('valid');
+        lowerReq.classList.add('invalid');
+        lowerReq.querySelector('i').className = 'fas fa-circle';
     }
     
     // Chiffre
     const numberReq = document.getElementById('modal-req-number');
     if (/[0-9]/.test(password)) {
-        numberReq.classList.add('valid');
         numberReq.classList.remove('invalid');
+        numberReq.classList.add('valid');
+        numberReq.querySelector('i').className = 'fas fa-check-circle';
     } else {
-        numberReq.classList.add('invalid');
         numberReq.classList.remove('valid');
+        numberReq.classList.add('invalid');
+        numberReq.querySelector('i').className = 'fas fa-circle';
     }
 });
 </script>

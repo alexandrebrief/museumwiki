@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorer les musées - {{ site_name }}</title>
+    
+    <!-- Styles existants -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* Variables de couleur (harmonisées avec le thème) */
+        :root {
+            --primary: #2c3e50;
+            --primary-dark: #1a2634;
+            --secondary: #e6d8c3;
+            --background: #f5f0e8;
+            --surface: #ffffff;
+            --text: #2c3e50;
+            --text-light: #5d6d7e;
+            --text-soft: #8e9aab;
+            --border: #e0d6c8;
+            --border-light: #f0e8dc;
+            --hover: #f5f0e8;
+        }
+
+        body {
+            background-color: var(--background);
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ===== HERO SECTION ===== */
+        .museum-hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--secondary);
+            padding: 2.5rem 0 3rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 30px 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        /* ===== BARRE DE RECHERCHE ===== */
+        .museum-search {
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .search-input-group {
+            display: flex;
+            background: white;
+            border-radius: 50px;
+            padding: 0.3rem 0.3rem 0.3rem 1.2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+        }
+
+        .search-input-group input {
+            flex: 1;
+            border: none;
+            padding: 0.8rem 0;
+            font-size: 1rem;
+            background: transparent;
+        }
+
+        .search-input-group input:focus {
+            outline: none;
+        }
+
+        .search-input-group button {
+            background: var(--primary);
+            color: var(--secondary);
+            border: none;
+            border-radius: 50px;
+            padding: 0.8rem 1.8rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .search-input-group button:hover {
+            background: var(--primary-dark);
+            transform: scale(1.02);
+        }
+
+        /* ===== FILTRES PAYS ===== */
+        .filters-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title i {
+            color: var(--secondary);
+            background: var(--primary);
+            padding: 0.5rem;
+            border-radius: 50%;
+            font-size: 1rem;
+        }
+
+        .countries-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            border: 1px solid var(--border-light);
+        }
+
+        .country-chip {
+            padding: 0.6rem 1.2rem;
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            font-size: 0.9rem;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .country-chip:hover {
+            background: var(--secondary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .country-chip.active {
+            background: var(--primary);
+            color: var(--secondary);
+            border-color: var(--primary);
+        }
+
+        .country-chip .count {
+            background: rgba(44,62,80,0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .country-chip.active .count {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        /* ===== VILLES ===== */
+        .cities-section {
+            margin-bottom: 2rem;
+        }
+
+        .cities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .city-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.2rem;
+            border: 1px solid var(--border-light);
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .city-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .city-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(44,62,80,0.1);
+            border-color: var(--secondary);
+        }
+
+        .city-card:hover::before {
+            opacity: 1;
+        }
+
+        .city-card.active {
+            border: 2px solid var(--primary);
+            background: #f8f9fa;
+        }
+
+        .city-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .city-stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .city-stats i {
+            color: var(--secondary);
+            width: 16px;
+        }
+
+        /* ===== MUSÉES ===== */
+        .museums-section {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+            border: 1px solid var(--border-light);
+        }
+
+        .museums-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .museums-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: var(--primary);
+        }
+
+        .museums-count {
+            background: var(--secondary);
+            color: var(--primary);
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .museums-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .museum-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
+            transition: all 0.2s;
+            cursor: pointer;
+            background: white;
+        }
+
+        .museum-item:hover {
+            border-color: var(--secondary);
+            box-shadow: 0 4px 12px rgba(44,62,80,0.05);
+            transform: translateX(5px);
+        }
+
+        .museum-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1.2rem;
+            color: var(--secondary);
+            font-size: 1.5rem;
+        }
+
+        .museum-info {
+            flex: 1;
+        }
+
+        .museum-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--primary);
+            margin-bottom: 0.3rem;
+        }
+
+        .museum-details {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .museum-details i {
+            color: var(--secondary);
+            width: 16px;
+            margin-right: 0.3rem;
+        }
+
+        .museum-action {
+            margin-left: 1rem;
+            color: var(--primary);
+            font-size: 1.2rem;
+            opacity: 0.5;
+            transition: all 0.2s;
+        }
+
+        .museum-item:hover .museum-action {
+            opacity: 1;
+            transform: translateX(5px);
+        }
+
+        /* ===== ÉTAT VIDE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        /* ===== LOADING ===== */
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .cities-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .museum-details {
+                flex-direction: column;
+                gap: 0.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <!-- HERO SECTION -->
+    <div class="museum-hero">
+        <div class="container">
+            <div class="text-center">
+                <h1 class="hero-title">
+                    <i class="fas fa-landmark me-3"></i>Explorez les musées
+                </h1>
+                <p class="hero-subtitle">
+                    Découvrez des milliers d'œuvres à travers le monde
+                </p>
+                
+                <!-- Barre de recherche -->
+                <div class="museum-search">
+                    <div class="search-input-group">
+                        <input type="text" id="museum-search-input" 
+                               placeholder="Rechercher un musée par nom, ville ou pays...">
+                        <button onclick="searchMuseum()">
+                            <i class="fas fa-search me-2"></i>Rechercher
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <!-- FILTRES PAYS -->
+        <div class="filters-section">
+            <h2 class="section-title">
+                <i class="fas fa-globe"></i>
+                Explorer par pays
+            </h2>
+            
+            <div class="countries-grid" id="countries-container">
+                <!-- Chargement... -->
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VILLES (apparaît quand un pays est sélectionné) -->
+        <div class="cities-section" id="cities-section" style="display: none;">
+            <h2 class="section-title">
+                <i class="fas fa-city"></i>
+                Villes en <span id="selected-country-name"></span>
+            </h2>
+            
+            <div class="cities-grid" id="cities-container"></div>
+        </div>
+
+        <!-- MUSÉES -->
+        <div class="museums-section">
+            <div class="museums-header">
+                <h3 class="museums-title" id="museums-title">
+                    <i class="fas fa-landmark me-2"></i>Tous les musées
+                </h3>
+                <span class="museums-count" id="museums-count">0 musées</span>
+            </div>
+            
+            <div id="museums-container">
+                <!-- Musées chargés dynamiquement -->
+            </div>
+        </div>
+    </div>
+
+    {% include 'footer.html' %}
+
+    <script>
+        // État global
+        let currentCountry = null;
+        let currentCity = null;
+        let allMuseums = [];
+        
+        // ===== CHARGEMENT INITIAL =====
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCountries();
+            loadMuseums();
+        });
+
+        // ===== CHARGER LES PAYS =====
+        async function loadCountries() {
+            try {
+                const response = await fetch('/api/museums/countries');
+                const countries = await response.json();
+                
+                const container = document.getElementById('countries-container');
+                container.innerHTML = '';
+                
+                // Bouton "Tous les pays"
+                container.innerHTML += `
+                    <div class="country-chip ${!currentCountry ? 'active' : ''}" 
+                         onclick="selectCountry(null)">
+                        <i class="fas fa-globe"></i>
+                        Tous les pays
+                        <span class="count">${countries.reduce((sum, c) => sum + c.count, 0)}</span>
+                    </div>
+                `;
+                
+                // Liste des pays
+                countries.forEach(country => {
+                    container.innerHTML += `
+                        <div class="country-chip ${currentCountry === country.name ? 'active' : ''}" 
+                             onclick="selectCountry('${country.name}')">
+                            <i class="fas fa-flag"></i>
+                            ${country.name}
+                            <span class="count">${country.count}</span>
+                        </div>
+                    `;
+                });
+                
+            } catch (error) {
+                console.error('Erreur chargement pays:', error);
+            }
+        }
+
+        // ===== SÉLECTIONNER UN PAYS =====
+        function selectCountry(countryName) {
+            currentCountry = countryName;
+            currentCity = null; // Reset ville
+            loadCountries(); // Recharger avec le nouveau state
+            loadCities(countryName);
+            filterMuseums();
+            
+            // Afficher la section villes
+            const citiesSection = document.getElementById('cities-section');
+            if (countryName) {
+                citiesSection.style.display = 'block';
+                document.getElementById('selected-country-name').textContent = countryName;
+            } else {
+                citiesSection.style.display = 'none';
+            }
+        }
+
+        // ===== CHARGER LES VILLES =====
+        async function loadCities(countryName) {
+            if (!countryName) return;
+            
+            try {
+                const response = await fetch(`/api/museums/cities?country=${encodeURIComponent(countryName)}`);
+                const cities = await response.json();
+                
+                const container = document.getElementById('cities-container');
+                container.innerHTML = '';
+                
+                if (cities.length === 0) {
+                    container.innerHTML = '<div class="empty-state">Aucune ville trouvée</div>';
+                    return;
+                }
+                
+                cities.forEach(city => {
+                    container.innerHTML += `
+                        <div class="city-card ${currentCity === city.name ? 'active' : ''}" 
+                             onclick="selectCity('${city.name}')">
+                            <div class="city-name">
+                                <i class="fas fa-map-marker-alt me-2"></i>${city.name}
+                            </div>
+                            <div class="city-stats">
+                                <span><i class="fas fa-landmark"></i> ${city.museum_count} musées</span>
+                                <span><i class="fas fa-painting"></i> ${city.artwork_count} œuvres</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+            } catch (error) {
+                console.error('Erreur chargement villes:', error);
+            }
+        }
+
+        // ===== SÉLECTIONNER UNE VILLE =====
+        function selectCity(cityName) {
+            currentCity = cityName;
+            loadCities(currentCountry); // Recharger pour highlight
+            filterMuseums();
+        }
+
+        // ===== CHARGER LES MUSÉES =====
+        async function loadMuseums() {
+            try {
+                const response = await fetch('/api/museums/list');
+                allMuseums = await response.json();
+                filterMuseums();
+            } catch (error) {
+                console.error('Erreur chargement musées:', error);
+            }
+        }
+
+        // ===== FILTRER LES MUSÉES =====
+        function filterMuseums() {
+            let filtered = allMuseums;
+            
+            // Filtre par pays
+            if (currentCountry) {
+                filtered = filtered.filter(m => m.pays === currentCountry);
+            }
+            
+            // Filtre par ville
+            if (currentCity) {
+                filtered = filtered.filter(m => m.ville === currentCity);
+            }
+            
+            displayMuseums(filtered);
+        }
+
+        // ===== AFFICHER LES MUSÉES =====
+        function displayMuseums(museums) {
+            const container = document.getElementById('museums-container');
+            const countSpan = document.getElementById('museums-count');
+            
+            countSpan.textContent = `${museums.length} musée${museums.length > 1 ? 's' : ''}`;
+            
+            if (museums.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-landmark"></i>
+                        <h4>Aucun musée trouvé</h4>
+                        <p>Essayez de modifier vos filtres</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Mettre à jour le titre
+            const title = document.getElementById('museums-title');
+            if (currentCity) {
+                title.innerHTML = `<i class="fas fa-landmark me-2"></i>Musées à ${currentCity}`;
+            } else if (currentCountry) {
+                title.innerHTML = `<i class="fas fa-landmark me-2"></i>Musées en ${currentCountry}`;
+            } else {
+                title.innerHTML = `<i class="fas fa-landmark me-2"></i>Tous les musées`;
+            }
+            
+            container.innerHTML = museums.map(museum => `
+                <div class="museum-item" onclick="exploreMuseum('${museum.id}', '${museum.nom}')">
+                    <div class="museum-icon">
+                        <i class="fas fa-museum"></i>
+                    </div>
+                    <div class="museum-info">
+                        <div class="museum-name">${museum.nom}</div>
+                        <div class="museum-details">
+                            <span><i class="fas fa-map-marker-alt"></i> ${museum.ville || 'Ville inconnue'}</span>
+                            <span><i class="fas fa-globe"></i> ${museum.pays || 'Pays inconnu'}</span>
+                            <span><i class="fas fa-painting"></i> ${museum.oeuvres_count || 0} œuvres</span>
+                        </div>
+                    </div>
+                    <div class="museum-action">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ===== EXPLORER UN MUSÉE =====
+        function exploreMuseum(museumId, museumName) {
+            // Rediriger vers l'index avec le filtre musée
+            window.location.href = `/?museum=${encodeURIComponent(museumName)}`;
+        }
+
+        // ===== RECHERCHE =====
+        function searchMuseum() {
+            const query = document.getElementById('museum-search-input').value.toLowerCase();
+            
+            if (!query) {
+                filterMuseums();
+                return;
+            }
+            
+            const filtered = allMuseums.filter(m => 
+                m.nom.toLowerCase().includes(query) ||
+                (m.ville && m.ville.toLowerCase().includes(query)) ||
+                (m.pays && m.pays.toLowerCase().includes(query))
+            );
+            
+            displayMuseums(filtered);
+        }
+
+        // Debounce pour la recherche
+        let searchTimeout;
+        document.getElementById('museum-search-input').addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(searchMuseum, 300);
+        });
+    </script>
+</body>
+</html>

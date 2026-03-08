@@ -1,0 +1,217 @@
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <!-- Version mobile : 2 niveaux -->
+        <div class="d-lg-none w-100">
+            <!-- Niveau 1 : Logo centré -->
+            <div class="navbar-mobile-top">
+                <a class="navbar-brand" href="/">{{ site_name }}</a>
+            </div>
+            
+            <!-- Niveau 2 : Barre recherche, FR/EN, icône compte -->
+            <div class="navbar-mobile-bottom">
+                <!-- Barre de recherche à gauche -->
+                <div class="mobile-search">
+                    <form action="/" method="get">
+                        <input type="text" name="q" placeholder="Rechercher..." value="{{ query if query else '' }}">
+                        <button type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- FR/EN au milieu -->
+                <div class="mobile-lang">
+                    <a href="/set-language/fr" class="lang-btn {% if session.language == 'fr' %}active{% endif %}">
+                        FR
+                    </a>
+                    <a href="/set-language/en" class="lang-btn {% if session.language == 'en' %}active{% endif %}">
+                        EN
+                    </a>
+                </div>
+                
+                <!-- Icône compte à droite -->
+                <div class="mobile-account">
+                    {% if session.username %}
+                    <a href="/profile">
+                        <div class="user-avatar">{{ session.username[0]|upper }}</div>
+                    </a>
+                    {% else %}
+                    <a href="#" onclick="openRegisterModal(); return false;">
+                        <i class="far fa-user-circle"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Version desktop -->
+        <div class="d-none d-lg-flex align-items-center w-100">
+            <!-- LOGO -->
+            <a class="navbar-brand" href="/">{{ site_name }}</a>
+            
+            <!-- Barre de recherche desktop -->
+            <div class="navbar-search">
+                <form action="/" method="get" id="navbar-search-form">
+                    <input type="text" name="q" id="navbar-search-input" placeholder="Rechercher..." value="{{ query if query else '' }}">
+                    {% if query %}
+                    <button type="button" class="clear-search" onclick="window.clearNavbarSearch ? clearNavbarSearch() : window.location.href='/'">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    {% endif %}
+                    <button type="submit" class="search-button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                <div id="navbar-suggestions" class="suggestions-box"></div>
+            </div>
+            
+            <!-- FR/EN desktop -->
+            <div class="lang-switcher">
+                <a href="/set-language/fr" class="lang-btn {% if session.language == 'fr' %}active{% endif %}">FR</a>
+                <a href="/set-language/en" class="lang-btn {% if session.language == 'en' %}active{% endif %}">EN</a>
+            </div>
+            
+            <!-- Menu desktop -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if session.username %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <div class="user-avatar">{{ session.username[0]|upper }}</div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/profile"><i class="far fa-id-card"></i> Mon profil</a></li>
+                            <li><a class="dropdown-item" href="/mes-oeuvres"><i class="far fa-star"></i> Mes œuvres notées</a></li>
+                            <li><a class="dropdown-item" href="/favoris"><i class="far fa-heart"></i> Mes favoris</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout?next={{ request.path }}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="openRegisterModal(); return false;">
+                            <i class="far fa-user-circle"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+function openRegisterModal() {
+    const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
+    registerModal.show();
+}
+
+// Suggestions
+(function() {
+    const searchInput = document.getElementById('navbar-search-input');
+    const suggestionsBox = document.getElementById('navbar-suggestions');
+    
+    if (!searchInput || !suggestionsBox) return;
+    
+    let navbarSuggestions = [];
+    let selectedIndex = -1;
+    
+    searchInput.addEventListener('input', function(e) {
+        const query = e.target.value;
+        selectedIndex = -1;
+        
+        if (query.length < 2) {
+            suggestionsBox.style.display = 'none';
+            return;
+        }
+        
+        fetch(`/api/suggestions?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                navbarSuggestions = data;
+                if (data.length > 0) {
+                    suggestionsBox.innerHTML = data.map((s, index) => 
+                        `<div class="suggestion-item" data-index="${index}">
+                            <strong>${s.texte}</strong> <small>${s.categorie}</small>
+                        </div>`
+                    ).join('');
+                    
+                    suggestionsBox.querySelectorAll('.suggestion-item').forEach(item => {
+                        item.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            
+                            const index = this.dataset.index;
+                            const suggestion = navbarSuggestions[index];
+                            
+                            let url = '/?';
+                            
+                            if (suggestion.categorie === 'artiste') {
+                                url += `artist=${encodeURIComponent(suggestion.texte)}`;
+                            } else if (suggestion.categorie === 'musée') {
+                                url += `museum=${encodeURIComponent(suggestion.texte)}`;
+                            } else {
+                                url += `q=${encodeURIComponent(suggestion.texte)}`;
+                            }
+                            
+                            suggestionsBox.style.display = 'none';
+                            window.location.href = url;
+                        });
+                    });
+                    
+                    suggestionsBox.style.display = 'block';
+                } else {
+                    suggestionsBox.style.display = 'none';
+                }
+            });
+    });
+    
+    // Navigation clavier
+    searchInput.addEventListener('keydown', function(e) {
+        const items = suggestionsBox.querySelectorAll('.suggestion-item');
+        if (items.length === 0) return;
+        
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+            updateSelected(items);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            selectedIndex = Math.max(selectedIndex - 1, -1);
+            updateSelected(items);
+        } else if (e.key === 'Enter' && selectedIndex >= 0) {
+            e.preventDefault();
+            const suggestion = navbarSuggestions[selectedIndex];
+            
+            let url = '/?';
+            if (suggestion.categorie === 'artiste') url += `artist=${encodeURIComponent(suggestion.texte)}`;
+            else if (suggestion.categorie === 'musée') url += `museum=${encodeURIComponent(suggestion.texte)}`;
+            else url += `q=${encodeURIComponent(suggestion.texte)}`;
+            
+            suggestionsBox.style.display = 'none';
+            window.location.href = url;
+        }
+    });
+    
+    function updateSelected(items) {
+        items.forEach((item, index) => {
+            if (index === selectedIndex) item.classList.add('selected');
+            else item.classList.remove('selected');
+        });
+    }
+    
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('#navbar-search-input') && !e.target.closest('#navbar-suggestions')) {
+            suggestionsBox.style.display = 'none';
+        }
+    });
+})();
+
+window.clearNavbarSearch = function() {
+    const input = document.getElementById('navbar-search-input');
+    if (input) {
+        input.value = '';
+        window.location.href = '/';
+    }
+};
+</script>

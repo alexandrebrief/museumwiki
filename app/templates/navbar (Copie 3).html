@@ -4,7 +4,7 @@
     <style>
         /* ===== NAVBAR MINIMALISTE "GALERIE D'ART" ===== */
         :root {
-            --nav-bg: rgba(10, 18, 26, 0.50); /* Plus transparent */
+            --nav-bg: rgba(10, 18, 26, 0.75); /* Plus transparent */
             --nav-border: rgba(212, 175, 55, 0.15);
             --nav-gold: #d4af37;
             --nav-text: #e6d8c3;
@@ -120,7 +120,7 @@
 
         .search-minimal input::placeholder {
             color: rgba(230, 216, 195, 0.4);
-            font-style: normal;
+            font-style: italic;
             font-size: 0.9rem;
         }
 
@@ -218,15 +218,14 @@
             font-weight: 400;
         }
 
-
-.suggestion-subtitle {
-    font-size: 0.7rem;
-    color: rgba(230, 216, 195, 0.65);
-    margin-top: 0.2rem;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-}
+        .suggestion-subtitle {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            margin-top: 0.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
 
         .suggestion-subtitle i {
             font-size: 0.5rem;
@@ -528,61 +527,6 @@
             color: #333;
         }
 
-
-body.light-theme .suggestion-subtitle {
-    color: #777;
-}
-body.light-theme .suggestion-title {
-    color: #1a1a1a;
-    font-weight: 500;
-}
-body.light-theme .suggestions-section-header {
-    color: var(--nav-gold);
-    opacity: 1;
-    background: rgba(201, 169, 89, 0.08);
-}
-body.light-theme .suggestion-icon {
-    color: var(--nav-gold);
-}
-
-body.light-theme .suggestion-subtitle {
-    color: #666;
-}
-body.light-theme .suggestion-title {
-    color: #1a1a1a;
-}
-body.light-theme .suggestions-section-header {
-    color: var(--nav-gold);
-    opacity: 1;
-}
-
-
-
-
-body.light-theme .login-minimal {
-    color: #2c3e50;
-}
-body.light-theme .login-minimal:hover {
-    color: #2c3e50;
-    border-color: var(--nav-gold);
-    background: rgba(0,0,0,0.08);
-}
-body.light-theme .user-avatar-minimal {
-    color: #2c3e50;
-    border-color: rgba(0,0,0,0.2);
-}
-body.light-theme .user-avatar-minimal:hover {
-    background: rgba(0,0,0,0.08);
-    color: #2c3e50;
-    border-color: var(--nav-gold);
-}
-body.light-theme .user-avatar-minimal.has-user {
-    color: var(--nav-gold);
-    border-color: var(--nav-gold);
-}
-
-
-
         body.light-theme .search-minimal input::placeholder {
             color: rgba(0, 0, 0, 0.3);
         }
@@ -750,7 +694,7 @@ function initSearchSuggestions(inputId, containerId, isMobile = false) {
         lastQuery = query;
 
         debounceTimeout = setTimeout(() => {
-fetch(`/api/search-suggestions?q=${encodeURIComponent(query)}`)
+            fetch(`/api/search-suggestions?q=${encodeURIComponent(query)}`)
                 .then(response => response.json())
                 .then(data => {
                     console.log('Données reçues:', data);

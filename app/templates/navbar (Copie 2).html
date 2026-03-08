@@ -1,0 +1,602 @@
+<nav class="navbar">
+    <style>
+        /* ===== NAVBAR MINIMALISTE "GALERIE D'ART" ===== */
+        :root {
+            --nav-bg: rgba(15, 26, 36, 0.85); /* Plus transparent */
+            --nav-border: rgba(212, 175, 55, 0.15);
+            --nav-gold: #d4af37;
+            --nav-text: #e6d8c3;
+            --nav-hover: white;
+        }
+
+        .navbar {
+            background: var(--nav-bg) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 0.5rem 0;
+            width: 100%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--nav-border);
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Style très épuré, presque invisible */
+        .navbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1400px;
+            padding: 0 2rem;
+        }
+
+        /* Logo ultra simple */
+        .navbar-brand {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 300;
+            color: var(--nav-text) !important;
+            text-decoration: none;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            border-right: 1px solid var(--nav-border);
+            padding-right: 1.5rem;
+            margin-right: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .navbar-brand:hover {
+            color: var(--nav-gold) !important;
+        }
+
+        /* Navigation links - simplifié */
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            margin-left: auto; /* Pousse vers la droite */
+            margin-right: 2rem;
+        }
+
+        .nav-link {
+            color: var(--nav-text) !important;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--nav-hover) !important;
+            border-bottom-color: var(--nav-gold);
+        }
+
+        .nav-link.active {
+            color: var(--nav-gold) !important;
+            border-bottom-color: var(--nav-gold);
+        }
+
+        /* Barre de recherche minimaliste */
+        .search-wrapper {
+            position: relative;
+            margin-right: 1.5rem;
+        }
+
+        .search-minimal {
+            display: flex;
+            align-items: center;
+            background: transparent;
+            border: 1px solid var(--nav-border);
+            border-radius: 30px;
+            padding: 0.1rem 0.1rem 0.1rem 1.2rem;
+            width: 280px;
+            transition: all 0.3s;
+            height: 36px;
+        }
+
+        .search-minimal:focus-within {
+            border-color: var(--nav-gold);
+            width: 320px;
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .search-minimal input {
+            background: transparent;
+            border: none;
+            color: white;
+            width: 100%;
+            padding: 0.2rem 0;
+            font-size: 0.95rem;
+            font-weight: 300;
+        }
+
+        .search-minimal input::placeholder {
+            color: rgba(230, 216, 195, 0.4);
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        .search-minimal input:focus {
+            outline: none;
+        }
+
+        .search-minimal button {
+            background: transparent;
+            border: none;
+            color: var(--nav-text);
+            padding: 0.2rem 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .search-minimal button:hover {
+            color: var(--nav-gold);
+            transform: scale(1.1);
+        }
+
+        /* Suggestions */
+        .suggestions-minimal {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(15, 26, 36, 0.98);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--nav-border);
+            border-radius: 12px;
+            margin-top: 5px;
+            display: none;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .suggestion-minimal-item {
+            padding: 0.6rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.05);
+            font-size: 0.8rem;
+            color: var(--nav-text);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+
+        .suggestion-minimal-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-minimal-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: white;
+            padding-left: 1.5rem;
+        }
+
+        .suggestion-minimal-item small {
+            color: var(--nav-gold);
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            opacity: 0.6;
+        }
+
+        /* Langue */
+        .lang-minimal {
+            display: flex;
+            gap: 0.3rem;
+            margin-right: 1.5rem;
+        }
+
+        .lang-minimal a {
+            color: var(--nav-text);
+            text-decoration: none;
+            font-size: 0.8rem;
+            padding: 0.3rem 0.5rem;
+            border-radius: 3px;
+            transition: all 0.2s;
+            opacity: 0.5;
+        }
+
+        .lang-minimal a.active {
+            opacity: 1;
+            color: var(--nav-gold);
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .lang-minimal a:hover {
+            opacity: 1;
+            color: white;
+        }
+
+        /* Compte utilisateur */
+        .user-minimal {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar-minimal {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--nav-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--nav-text);
+            font-size: 0.9rem;
+            font-weight: 400;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .user-avatar-minimal:hover {
+            border-color: var(--nav-gold);
+            color: var(--nav-gold);
+            transform: scale(1.05);
+        }
+
+        .user-avatar-minimal.has-user {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: var(--nav-gold);
+            color: var(--nav-gold);
+            font-weight: 500;
+        }
+
+        .login-minimal {
+            color: var(--nav-text);
+            text-decoration: none;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0.4rem 1rem;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .login-minimal:hover {
+            opacity: 1;
+            color: white;
+            border-color: var(--nav-gold);
+        }
+
+        .login-minimal i {
+            font-size: 1rem;
+        }
+
+        /* Dropdown minimal */
+        .dropdown-minimal {
+            position: relative;
+        }
+
+        .dropdown-menu-minimal {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: rgba(15, 26, 36, 0.98);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--nav-border);
+            border-radius: 8px;
+            margin-top: 8px;
+            min-width: 180px;
+            display: none;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .dropdown-menu-minimal.show {
+            display: block;
+        }
+
+        .dropdown-item-minimal {
+            padding: 0.7rem 1rem;
+            color: var(--nav-text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 0.8rem;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.05);
+            transition: all 0.2s;
+        }
+
+        .dropdown-item-minimal:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item-minimal i {
+            color: var(--nav-gold);
+            font-size: 0.8rem;
+            width: 18px;
+            opacity: 0.7;
+        }
+
+        .dropdown-item-minimal:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: white;
+            padding-left: 1.5rem;
+        }
+
+        .dropdown-divider-minimal {
+            height: 1px;
+            background: var(--nav-border);
+            margin: 0.3rem 0;
+        }
+
+        /* Version mobile */
+        @media (max-width: 992px) {
+            .navbar .container {
+                flex-wrap: wrap;
+                padding: 0.5rem 1rem;
+            }
+
+            .mobile-top-minimal {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+
+            .mobile-brand-minimal {
+                font-size: 1rem;
+                letter-spacing: 3px;
+                color: var(--nav-text);
+                text-decoration: none;
+                text-transform: uppercase;
+            }
+
+            .mobile-actions-minimal {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .mobile-search-minimal {
+                flex: 1;
+                min-width: 0;
+                position: relative;
+            }
+
+            .mobile-search-form-minimal {
+                display: flex;
+                align-items: center;
+                border: 1px solid var(--nav-border);
+                border-radius: 30px;
+                padding: 0.1rem 0.1rem 0.1rem 1rem;
+                height: 36px;
+            }
+
+            .mobile-search-input-minimal {
+                background: transparent;
+                border: none;
+                color: white;
+                width: 100%;
+                padding: 0.2rem 0;
+                font-size: 0.9rem;
+                outline: none;
+            }
+
+            .mobile-search-input-minimal::placeholder {
+                color: rgba(230, 216, 195, 0.3);
+                font-style: italic;
+            }
+
+            .mobile-search-btn-minimal {
+                background: transparent;
+                border: none;
+                color: var(--nav-text);
+                padding: 0.2rem 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            .mobile-lang-minimal {
+                display: flex;
+                gap: 0.3rem;
+            }
+
+            .mobile-lang-minimal a {
+                color: var(--nav-text);
+                text-decoration: none;
+                font-size: 0.7rem;
+                padding: 0.2rem 0.4rem;
+                opacity: 0.5;
+            }
+
+            .mobile-lang-minimal a.active {
+                opacity: 1;
+                color: var(--nav-gold);
+            }
+
+            .mobile-suggestions-minimal {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(15, 26, 36, 0.98);
+                backdrop-filter: blur(10px);
+                border: 1px solid var(--nav-border);
+                border-radius: 8px;
+                margin-top: 5px;
+                display: none;
+                z-index: 1000;
+            }
+        }
+    </style>
+
+    <div class="container">
+        <!-- VERSION DESKTOP -->
+        <div class="d-none d-lg-flex align-items-center w-100">
+            <!-- Logo minimal -->
+            <a class="navbar-brand" href="/">{{ site_name }}</a>
+            
+            <!-- Navigation - juste un bouton Explorer -->
+            <ul class="nav-links">
+                <li><a href="/research" class="nav-link {% if request.path == '/research' %}active{% endif %}">Explorer</a></li>
+            </ul>
+            
+            <!-- Recherche minimaliste -->
+            <div class="search-wrapper">
+                <form action="/" method="get" class="search-minimal" autocomplete="off">
+                    <input type="text" name="q" placeholder="Rechercher..." value="{{ query if query else '' }}">
+                    <button type="submit"><i class="fas fa-search"></i></button>
+                </form>
+                <div class="suggestions-minimal" id="desktop-suggestions"></div>
+            </div>
+            
+            <!-- Langue minimaliste -->
+            <div class="lang-minimal">
+                <a href="/set-language/fr" class="{% if session.language == 'fr' %}active{% endif %}">FR</a>
+                <a href="/set-language/en" class="{% if session.language == 'en' %}active{% endif %}">EN</a>
+            </div>
+            
+            <!-- Compte minimaliste -->
+            <div class="user-minimal">
+                {% if session.username %}
+                <div class="dropdown-minimal">
+                    <a href="#" onclick="toggleDropdown(event)" class="user-avatar-minimal has-user">
+                        {{ session.username[0]|upper }}
+                    </a>
+                    <div class="dropdown-menu-minimal" id="userDropdown">
+                        <a href="/profile" class="dropdown-item-minimal"><i class="far fa-id-card"></i> Profil</a>
+                        <a href="/mes-oeuvres" class="dropdown-item-minimal"><i class="far fa-star"></i> Notes</a>
+                        <a href="/favoris" class="dropdown-item-minimal"><i class="far fa-heart"></i> Favoris</a>
+                        <div class="dropdown-divider-minimal"></div>
+                        <a href="/logout?next={{ request.path }}" class="dropdown-item-minimal"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+                    </div>
+                </div>
+                {% else %}
+                <a href="#" class="login-minimal" onclick="openRegisterModal(); return false;">
+                    <i class="far fa-user-circle"></i> Compte
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- VERSION MOBILE -->
+        <div class="d-lg-none w-100">
+            <!-- Ligne supérieure : logo + actions -->
+            <div class="mobile-top-minimal">
+                <a class="mobile-brand-minimal" href="/">{{ site_name }}</a>
+                <div class="mobile-actions-minimal">
+                    <!-- Langue -->
+                    <div class="mobile-lang-minimal">
+                        <a href="/set-language/fr" class="{% if session.language == 'fr' %}active{% endif %}">FR</a>
+                        <a href="/set-language/en" class="{% if session.language == 'en' %}active{% endif %}">EN</a>
+                    </div>
+                    
+                    <!-- Compte -->
+                    {% if session.username %}
+                    <a href="/profile" class="user-avatar-minimal has-user">
+                        {{ session.username[0]|upper }}
+                    </a>
+                    {% else %}
+                    <a href="#" onclick="openRegisterModal(); return false;" style="color: var(--nav-text); font-size: 1.2rem;">
+                        <i class="far fa-user-circle"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Ligne inférieure : recherche + lien Explorer -->
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <div class="mobile-search-minimal" style="flex: 1;">
+                    <form action="/" method="get" class="mobile-search-form-minimal">
+                        <input type="text" name="q" class="mobile-search-input-minimal" 
+                               placeholder="Rechercher..." value="{{ query if query else '' }}">
+                        <button type="submit" class="mobile-search-btn-minimal">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                    <div class="mobile-suggestions-minimal"></div>
+                </div>
+                <a href="/research" class="nav-link" style="font-size: 0.8rem; white-space: nowrap; padding: 0.2rem 0.5rem;">Explorer</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+// Simple dropdown toggle
+function toggleDropdown(event) {
+    event.preventDefault();
+    const dropdown = document.getElementById('userDropdown');
+    dropdown.classList.toggle('show');
+}
+
+// Fermer le dropdown en cliquant ailleurs
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('userDropdown');
+    const avatar = document.querySelector('.user-avatar-minimal');
+    
+    if (dropdown && avatar && !avatar.contains(event.target) && !dropdown.contains(event.target)) {
+        dropdown.classList.remove('show');
+    }
+});
+
+// Suggestions avec insensibilité aux accents
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.querySelector('.search-minimal input');
+    const suggestionsBox = document.querySelector('.suggestions-minimal');
+    
+    if (searchInput && suggestionsBox) {
+        searchInput.addEventListener('input', function(e) {
+            const query = e.target.value;
+            
+            // Normaliser la requête pour enlever les accents
+            const normalizedQuery = query.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            
+            if (normalizedQuery.length < 2) {
+                suggestionsBox.style.display = 'none';
+                return;
+            }
+            
+            fetch(`/api/suggestions?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        suggestionsBox.innerHTML = data.map(s => 
+                            `<div class="suggestion-minimal-item" onclick="window.location.href='/?q=${encodeURIComponent(s.texte)}'">
+                                <span>${s.texte}</span>
+                                <small>${s.categorie}</small>
+                            </div>`
+                        ).join('');
+                        suggestionsBox.style.display = 'block';
+                    } else {
+                        suggestionsBox.style.display = 'none';
+                    }
+                });
+        });
+        
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.search-wrapper')) {
+                suggestionsBox.style.display = 'none';
+            }
+        });
+    }
+});
+
+// Fonction d'ouverture de la modale (à définir dans le template principal)
+function openRegisterModal() {
+    // Cette fonction sera définie dans le template principal
+    // Elle doit ouvrir la modale d'inscription/connexion
+    if (typeof bootstrap !== 'undefined') {
+        const modal = document.getElementById('registerModal');
+        if (modal) {
+            const bsModal = new bootstrap.Modal(modal);
+            bsModal.show();
+        }
+    }
+}
+</script>

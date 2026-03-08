@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ site_name }} - Découvrez l'art autrement</title>
+    
+    <!-- Styles (mêmes que index.html) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        /* ===== STYLES SPÉCIFIQUES À LA PAGE D'ACCUEIL ===== */
+        
+        /* Section héros */
+        .hero-section {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: linear-gradient(180deg, rgba(44,62,80,0.3) 0%, rgba(30,43,58,0) 100%);
+            margin-bottom: 2rem;
+        }
+        
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            letter-spacing: -0.5px;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+        
+        /* Statistiques */
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--secondary);
+            line-height: 1.2;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Mosaïque dense (style Letterboxd) */
+        .mosaic-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.3rem;
+            margin: 2rem 0;
+        }
+        
+        .mosaic-item {
+            aspect-ratio: 2/3;
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        
+        .mosaic-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+        
+        .mosaic-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .mosaic-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+            padding: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+            color: white;
+            font-size: 0.7rem;
+            pointer-events: none;
+        }
+        
+        .mosaic-item:hover .mosaic-overlay {
+            opacity: 1;
+        }
+        
+        /* Section avec titre et plus */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin: 2rem 0 1rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+        
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin: 0;
+        }
+        
+        .section-link {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        
+        .section-link:hover {
+            color: var(--secondary);
+        }
+        
+        /* Grille horizontale défilante */
+        .horizontal-scroll {
+            display: flex;
+            gap: 0.8rem;
+            overflow-x: auto;
+            padding: 0.5rem 0 1rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--secondary) var(--border);
+        }
+        
+        .horizontal-scroll::-webkit-scrollbar {
+            height: 4px;
+        }
+        
+        .horizontal-scroll::-webkit-scrollbar-track {
+            background: var(--border);
+            border-radius: 4px;
+        }
+        
+        .horizontal-scroll::-webkit-scrollbar-thumb {
+            background: var(--secondary);
+            border-radius: 4px;
+        }
+        
+        .scroll-item {
+            flex: 0 0 160px;
+            background: var(--surface);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .scroll-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--secondary);
+        }
+        
+        .scroll-item img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            background: var(--primary-dark);
+        }
+        
+        .scroll-item-info {
+            padding: 0.5rem;
+        }
+        
+        .scroll-item-title {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .scroll-item-artist {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .rating-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            background: rgba(0,0,0,0.3);
+            padding: 0.2rem 0.4rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            color: var(--star);
+        }
+        
+        /* Call to action */
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: var(--radius-lg);
+            padding: 3rem;
+            text-align: center;
+            margin: 3rem 0;
+        }
+        
+        .cta-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        .cta-btn {
+            padding: 0.8rem 2rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .cta-btn-primary {
+            background: var(--secondary);
+            color: var(--primary);
+        }
+        
+        .cta-btn-primary:hover {
+            background: #d4c9b9;
+            transform: translateY(-2px);
+        }
+        
+        .cta-btn-secondary {
+            background: transparent;
+            color: var(--secondary);
+            border: 1px solid var(--secondary);
+        }
+        
+        .cta-btn-secondary:hover {
+            background: rgba(230,216,195,0.1);
+            transform: translateY(-2px);
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .mosaic-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.5rem; }
+            .mosaic-grid { grid-template-columns: repeat(3, 1fr); }
+            .cta-section { padding: 2rem; }
+            .cta-buttons { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <!-- SECTION HÉROS -->
+    <div class="hero-section">
+        <h1 class="hero-title">Bluegreencliff</h1>
+        <p class="hero-subtitle">
+            Découvrez, notez et partagez votre passion pour l'art.<br>
+            Comme Letterboxd, mais pour les œuvres d'art.
+        </p>
+        
+        {% if not session.user_id %}
+        <div class="cta-buttons" style="justify-content: center; margin-top: 1.5rem;">
+            <a href="#" class="cta-btn cta-btn-primary" data-bs-toggle="modal" data-bs-target="#registerModal">
+                <i class="fas fa-pen-fancy"></i> Commencer
+            </a>
+            <a href="/about" class="cta-btn cta-btn-secondary">
+                <i class="fas fa-info-circle"></i> En savoir plus
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- STATISTIQUES -->
+    <div class="stats-container">
+        <div class="stat-item">
+            <div class="stat-number">{{ total_oeuvres }}</div>
+            <div class="stat-label">Œuvres</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">{{ total_artistes }}</div>
+            <div class="stat-label">Artistes</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">{{ total_musees }}</div>
+            <div class="stat-label">Musées</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">{{ total_users }}</div>
+            <div class="stat-label">Membres</div>
+        </div>
+    </div>
+
+    <!-- MOSAÏQUE (Œuvres aléatoires avec images) -->
+    <div class="section-header">
+        <h2 class="section-title">Découvrir</h2>
+        <a href="/" class="section-link">Voir tout <i class="fas fa-arrow-right"></i></a>
+    </div>
+    
+    <div class="mosaic-grid">
+        {% for artwork in mosaic_artworks %}
+        <a href="/oeuvre/{{ artwork.id }}" class="mosaic-item">
+            {% if artwork.image_url %}
+            <img src="{{ artwork.image_url }}" alt="{{ artwork.titre }}" loading="lazy">
+            <div class="mosaic-overlay">
+                <div style="font-weight: 600;">{{ artwork.titre|truncate(30) }}</div>
+                <div style="font-size: 0.6rem; opacity: 0.8;">{{ artwork.createur|truncate(20) }}</div>
+            </div>
+            {% else %}
+            <div style="width:100%; height:100%; background: linear-gradient(145deg, var(--surface), var(--primary-dark)); display: flex; align-items: center; justify-content: center; color: var(--text-light);">
+                <i class="fas fa-image" style="font-size: 1.5rem;"></i>
+            </div>
+            {% endif %}
+        </a>
+        {% endfor %}
+    </div>
+
+    <div class="container-fluid px-0">
+        <!-- SECTION ŒUVRES LES MIEUX NOTÉES -->
+        <div class="section-header">
+            <h2 class="section-title">Mieux notées</h2>
+            <a href="/?sort=rating_desc" class="section-link">Toutes les notes <i class="fas fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="horizontal-scroll">
+            {% for artwork in top_rated %}
+            <a href="/oeuvre/{{ artwork.id }}" class="scroll-item">
+                {% if artwork.image_url %}
+                <img src="{{ artwork.image_url }}" alt="{{ artwork.titre }}" loading="lazy">
+                {% else %}
+                <div style="width:100%; aspect-ratio:1/1; background: linear-gradient(145deg, var(--surface), var(--primary-dark)); display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-image" style="color: var(--text-light);"></i>
+                </div>
+                {% endif %}
+                <div class="scroll-item-info">
+                    <div class="scroll-item-title">{{ artwork.titre|truncate(25) }}</div>
+                    <div class="scroll-item-artist">{{ artwork.createur|truncate(25) }}</div>
+                    {% if artwork.avg_rating %}
+                    <div class="rating-badge" style="margin-top: 0.3rem;">
+                        <i class="fas fa-star"></i> {{ artwork.avg_rating|round(1) }}
+                    </div>
+                    {% endif %}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+
+        <!-- SECTION FAVORIS POPULAIRES -->
+        <div class="section-header">
+            <h2 class="section-title">Favoris des membres</h2>
+            <a href="/?sort=popular" class="section-link">Plus de favoris <i class="fas fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="horizontal-scroll">
+            {% for artwork in popular_favorites %}
+            <a href="/oeuvre/{{ artwork.id }}" class="scroll-item">
+                {% if artwork.image_url %}
+                <img src="{{ artwork.image_url }}" alt="{{ artwork.titre }}" loading="lazy">
+                {% else %}
+                <div style="width:100%; aspect-ratio:1/1; background: linear-gradient(145deg, var(--surface), var(--primary-dark));">
+                </div>
+                {% endif %}
+                <div class="scroll-item-info">
+                    <div class="scroll-item-title">{{ artwork.titre|truncate(25) }}</div>
+                    <div class="scroll-item-artist">{{ artwork.createur|truncate(25) }}</div>
+                    {% if artwork.favorites_count %}
+                    <div style="font-size: 0.7rem; color: var(--accent); margin-top: 0.3rem;">
+                        <i class="fas fa-heart"></i> {{ artwork.favorites_count }} favoris
+                    </div>
+                    {% endif %}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+
+        <!-- SECTION DERNIÈRES NOTATIONS -->
+        <div class="section-header">
+            <h2 class="section-title">Dernières critiques</h2>
+            <a href="/reviews" class="section-link">Toutes les critiques <i class="fas fa-arrow-right"></i></a>
+        </div>
+        
+        <div style="display: grid; gap: 1rem; margin: 1rem 0;">
+            {% for review in recent_reviews %}
+            <div style="background: var(--surface); border-radius: var(--radius-lg); padding: 1rem; border: 1px solid var(--border);">
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <div style="flex-shrink: 0; width: 60px; height: 60px; background: var(--primary-dark); border-radius: var(--radius); overflow: hidden;">
+                        {% if review.artwork.image_url %}
+                        <img src="{{ review.artwork.image_url }}" alt="" style="width:100%; height:100%; object-fit:cover;">
+                        {% endif %}
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong style="color: var(--secondary);">{{ review.username }}</strong>
+                                <span style="color: var(--text-light); font-size: 0.8rem;">a noté</span>
+                                <a href="/oeuvre/{{ review.artwork.id }}" style="color: var(--secondary); font-weight: 500; text-decoration: none;">
+                                    {{ review.artwork.titre }}
+                                </a>
+                            </div>
+                            <div class="rating-badge">
+                                <i class="fas fa-star"></i> {{ review.note_globale|round(1) }}
+                            </div>
+                        </div>
+                        {% if review.commentaire %}
+                        <p style="margin: 0.5rem 0 0; color: var(--text-light); font-size: 0.9rem;">
+                            "{{ review.commentaire|truncate(100) }}"
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- SECTION MUSÉES EN VEDETTE -->
+        <div class="section-header">
+            <h2 class="section-title">Musées à explorer</h2>
+            <a href="/museums" class="section-link">Tous les musées <i class="fas fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="horizontal-scroll">
+            {% for museum in featured_museums %}
+            <a href="/museum/{{ museum.id }}" class="scroll-item" style="flex: 0 0 200px;">
+                <div style="aspect-ratio: 16/9; background: linear-gradient(145deg, var(--primary), var(--primary-dark)); display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-landmark" style="font-size: 2rem; color: var(--secondary);"></i>
+                </div>
+                <div class="scroll-item-info">
+                    <div class="scroll-item-title">{{ museum.nom|truncate(30) }}</div>
+                    <div class="scroll-item-artist">{{ museum.ville }}, {{ museum.pays }}</div>
+                    <div style="font-size: 0.7rem; color: var(--text-light); margin-top: 0.3rem;">
+                        {{ museum.oeuvres_count }} œuvres
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- CALL TO ACTION POUR LES NON-CONNECTÉS -->
+    {% if not session.user_id %}
+    <div class="cta-section">
+        <h2 class="cta-title">Rejoignez la communauté</h2>
+        <p style="color: var(--text-light); margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto;">
+            Notez les œuvres, créez vos listes, partagez vos découvertes et discutez avec d'autres passionnés.
+        </p>
+        <div class="cta-buttons">
+            <a href="#" class="cta-btn cta-btn-primary" data-bs-toggle="modal" data-bs-target="#registerModal">
+                <i class="fas fa-user-plus"></i> Créer un compte
+            </a>
+            <a href="#" class="cta-btn cta-btn-secondary" data-bs-toggle="modal" data-bs-target="#loginModal">
+                <i class="fas fa-sign-in-alt"></i> Se connecter
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    {% include 'footer.html' %}
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser les tooltips Bootstrap si besoin
+            const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            tooltips.forEach(t => new bootstrap.Tooltip(t));
+        });
+    </script>
+</body>
+</html>

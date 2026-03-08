@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ site_name }} - Votre musée idéal</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        /* ===== STYLES SPÉCIFIQUES ===== */
+        :root {
+            --primary: #2c3e50;
+            --primary-dark: #1a2634;
+            --secondary: #e6d8c3;
+            --background: #0f1a24;
+            --surface: #1e2a36;
+            --text: #e6d8c3;
+            --text-light: #b8a99a;
+            --accent: #c44545;
+            --gold: #d4af37;
+        }
+
+        body {
+            background-color: var(--background);
+            background-image: radial-gradient(circle at 10% 20%, rgba(44,62,80,0.3) 0%, transparent 30%);
+        }
+
+        /* Hero section cinématique */
+        .hero-cinema {
+            height: 90vh;
+            min-height: 700px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 4rem;
+            overflow: hidden;
+        }
+
+        .hero-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.4) saturate(1.2);
+            transform: scale(1.1);
+            transition: transform 0.1s ease-out;
+            z-index: 0;
+        }
+
+        .hero-backdrop::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, var(--background) 0%, transparent 30%, transparent 70%, var(--background) 100%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 3rem;
+            width: 100%;
+        }
+
+        .hero-eyebrow {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 5.5rem;
+            font-weight: 900;
+            line-height: 1;
+            color: white;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+            max-width: 800px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+            margin-top: 2rem;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--gold);
+            line-height: 1;
+        }
+
+        .hero-stat-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* Navigation des sections */
+        .section-nav {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 3rem 0 4rem;
+            padding: 1rem 0;
+            border-top: 1px solid rgba(230,216,195,0.2);
+            border-bottom: 1px solid rgba(230,216,195,0.2);
+        }
+
+        .section-nav-link {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.2s;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+        }
+
+        .section-nav-link:hover {
+            color: var(--secondary);
+            border-bottom-color: var(--gold);
+        }
+
+        /* Grille éditoriale */
+        .editorial-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .feature-card {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+            background: var(--surface);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .feature-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s;
+        }
+
+        .feature-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .feature-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 3rem 2rem 2rem;
+            background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%);
+            color: white;
+        }
+
+        .feature-tag {
+            display: inline-block;
+            background: var(--gold);
+            color: var(--primary-dark);
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Grille de films (œuvres) */
+        .film-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .film-poster {
+            position: relative;
+            aspect-ratio: 2/3;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+
+        .film-poster:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 30px rgba(0,0,0,0.5);
+        }
+
+        .film-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .film-poster .rating-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: var(--gold);
+            padding: 0.3rem 0.6rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            backdrop-filter: blur(5px);
+        }
+
+        .film-info {
+            margin-top: 0.8rem;
+        }
+
+        .film-title {
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .film-artist {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Timeline verticale */
+        .timeline {
+            margin: 4rem 0;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--gold) 0%, transparent 100%);
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -5px;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--gold);
+            border: 2px solid var(--background);
+        }
+
+        .timeline-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--secondary);
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .timeline-content {
+            flex: 1;
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(230,216,195,0.1);
+        }
+
+        /* Section découverte */
+        .discovery-section {
+            background: linear-gradient(135deg, var(--primary-dark), var(--background));
+            border-radius: 30px;
+            padding: 3rem;
+            margin: 4rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .discovery-section::before {
+            content: '✨';
+            position: absolute;
+            right: -50px;
+            top: -50px;
+            font-size: 300px;
+            opacity: 0.1;
+            transform: rotate(15deg);
+        }
+
+        .masonry-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .masonry-item {
+            border-radius: 12px;
+            overflow: hidden;
+            aspect-ratio: 1/1;
+            background: var(--surface);
+            transition: all 0.3s;
+        }
+
+        .masonry-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 30px rgba(0,0,0,0.3);
+        }
+
+        .masonry-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .masonry-item.large {
+            grid-column: span 2;
+            grid-row: span 2;
+            aspect-ratio: auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .hero-title { font-size: 4rem; }
+            .film-grid { grid-template-columns: repeat(4, 1fr); }
+            .editorial-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: 3rem; }
+            .hero-cinema { height: 70vh; }
+            .film-grid { grid-template-columns: repeat(2, 1fr); }
+            .section-nav { flex-wrap: wrap; }
+            .masonry-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <!-- HERO SECTION CINÉMATIQUE -->
+    <div class="hero-cinema" id="hero">
+        {% if mosaic_artworks and mosaic_artworks|length > 0 %}
+        <div class="hero-backdrop" id="heroBackdrop" 
+             style="background-image: url('{{ mosaic_artworks[0].image_url }}');">
+        </div>
+        {% endif %}
+        
+        <div class="hero-content">
+            <div class="hero-eyebrow">Bluegreencliff présente</div>
+            <h1 class="hero-title">Votre musée<br>idéal</h1>
+            <p class="hero-subtitle">
+                Découvrez, collectionnez et partagez les œuvres qui vous touchent.<br>
+                Rejoignez une communauté de passionnés d'art.
+            </p>
+            
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-number">{{ total_oeuvres }}</div>
+                    <div class="hero-stat-label">Œuvres</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">{{ total_artistes }}</div>
+                    <div class="hero-stat-label">Artistes</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">{{ total_musees }}</div>
+                    <div class="hero-stat-label">Musées</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">{{ total_users }}</div>
+                    <div class="hero-stat-label">Membres</div>
+                </div>
+            </div>
+            
+            {% if not session.user_id %}
+            <div style="margin-top: 3rem; display: flex; gap: 1rem;">
+                <a href="#" class="cta-btn cta-btn-primary" data-bs-toggle="modal" data-bs-target="#registerModal" 
+                   style="background: var(--gold); color: var(--primary-dark); padding: 1rem 2.5rem; border-radius: 40px; font-weight: 700; text-decoration: none;">
+                    Commencer l'expérience
+                </a>
+                <a href="/about" class="cta-btn cta-btn-secondary" 
+                   style="background: transparent; color: white; padding: 1rem 2.5rem; border-radius: 40px; border: 1px solid rgba(255,255,255,0.3); text-decoration: none;">
+                    En savoir plus
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- NAVIGATION RAPIDE -->
+    <div class="container">
+        <div class="section-nav">
+            <a href="#tendances" class="section-nav-link">Tendances</a>
+            <a href="#decouvertes" class="section-nav-link">Découvertes</a>
+            <a href="#communauté" class="section-nav-link">Communauté</a>
+            <a href="#musées" class="section-nav-link">Musées</a>
+            <a href="#éditorial" class="section-nav-link">Éditorial</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- SECTION ÉDITORIALE (À LA UNE) -->
+        <section id="éditorial" style="margin: 4rem 0;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2rem;">
+                <h2 style="font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 800; color: white;">À la une</h2>
+                <a href="/editorial" style="color: var(--gold); text-decoration: none;">Voir tous les articles →</a>
+            </div>
+            
+            <div class="editorial-grid">
+                <div class="feature-card">
+                    {% if top_rated and top_rated|length > 0 %}
+                    <img src="{{ top_rated[0].image_url or 'https://via.placeholder.com/800x450' }}" alt="">
+                    <div class="feature-overlay">
+                        <span class="feature-tag">Chef-d'œuvre</span>
+                        <h3 class="feature-title">{{ top_rated[0].titre }}</h3>
+                        <p style="color: rgba(255,255,255,0.7); margin-bottom: 1rem;">{{ top_rated[0].createur }}</p>
+                        <div style="display: flex; gap: 2rem;">
+                            <span><i class="fas fa-star" style="color: var(--gold);"></i> {{ top_rated[0].avg_rating|default('4.8') }}/5</span>
+                            <span><i class="fas fa-heart" style="color: var(--accent);"></i> {{ top_rated[0].favorites_count|default('234') }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    {% for artwork in top_rated[1:3] %}
+                    <div style="display: flex; gap: 1rem; background: var(--surface); border-radius: 12px; padding: 1rem; border: 1px solid rgba(230,216,195,0.1);">
+                        <div style="width: 80px; height: 80px; border-radius: 8px; overflow: hidden; flex-shrink: 0;">
+                            <img src="{{ artwork.image_url or 'https://via.placeholder.com/80' }}" alt="" style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+                        <div>
+                            <div style="color: var(--gold); font-size: 0.8rem; margin-bottom: 0.3rem;">Œuvre recommandée</div>
+                            <div style="font-weight: 600; color: white;">{{ artwork.titre }}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-light);">{{ artwork.createur }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION TENDANCES (GRILLE DE POSTERS) -->
+        <section id="tendances" style="margin: 6rem 0;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2rem;">
+                <h2 style="font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 800; color: white;">Tendances actuelles</h2>
+                <a href="/" style="color: var(--gold); text-decoration: none;">Explorer tout le catalogue →</a>
+            </div>
+            
+            <div class="film-grid">
+                {% for artwork in popular_favorites[:10] %}
+                <a href="/oeuvre/{{ artwork.id }}" class="film-poster" style="text-decoration: none;">
+                    {% if artwork.image_url %}
+                    <img src="{{ artwork.image_url }}" alt="{{ artwork.titre }}">
+                    {% if artwork.avg_rating %}
+                    <div class="rating-badge">
+                        <i class="fas fa-star"></i> {{ artwork.avg_rating }}
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <div style="width:100%; height:100%; background: linear-gradient(145deg, var(--surface), var(--primary-dark)); display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-image" style="font-size: 2rem; color: var(--text-light);"></i>
+                    </div>
+                    {% endif %}
+                    <div class="film-info">
+                        <div class="film-title">{{ artwork.titre|truncate(30) }}</div>
+                        <div class="film-artist">{{ artwork.createur|truncate(25) }}</div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- SECTION DÉCOUVERTES (MASONRY) -->
+        <section id="decouvertes" class="discovery-section">
+            <h2 style="font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 800; color: white; margin-bottom: 1rem; position: relative; z-index: 2;">
+                Découvertes du moment
+            </h2>
+            <p style="color: var(--text-light); max-width: 600px; margin-bottom: 2rem; position: relative; z-index: 2;">
+                Des œuvres sélectionnées par notre communauté pour leur originalité et leur beauté.
+            </p>
+            
+            <div class="masonry-grid">
+                {% for artwork in mosaic_artworks[:7] %}
+                <a href="/oeuvre/{{ artwork.id }}" class="masonry-item {% if loop.first %}large{% endif %}" style="text-decoration: none;">
+                    {% if artwork.image_url %}
+                    <img src="{{ artwork.image_url }}" alt="{{ artwork.titre }}" style="width:100%; height:100%; object-fit:cover;">
+                    {% else %}
+                    <div style="width:100%; height:100%; background: var(--primary-dark); display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-image" style="font-size: 2rem; color: var(--text-light);"></i>
+                    </div>
+                    {% endif %}
+                </a>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- SECTION COMMUNAUTÉ (TIMELINE) -->
+        <section id="communauté" style="margin: 6rem 0;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 3rem;">
+                <h2 style="font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 800; color: white;">Activité récente</h2>
+                <a href="/community" style="color: var(--gold); text-decoration: none;">Voir toute l'activité →</a>
+            </div>
+            
+            <div class="timeline">
+                {% for review in recent_reviews %}
+                <div class="timeline-item">
+                    <div class="timeline-avatar">
+                        {{ review.username[0]|upper }}
+                    </div>
+                    <div class="timeline-content">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <div>
+                                <strong style="color: white;">{{ review.username }}</strong>
+                                <span style="color: var(--text-light); font-size: 0.8rem; margin-left: 0.5rem;">a noté</span>
+                                <a href="/oeuvre/{{ review.artwork.id }}" style="color: var(--gold); font-weight: 500; text-decoration: none; margin-left: 0.3rem;">
+                                    {{ review.artwork.titre }}
+                                </a>
+                            </div>
+                            <div style="background: rgba(212,175,55,0.1); padding: 0.3rem 1rem; border-radius: 30px; color: var(--gold); font-weight: 600;">
+                                {{ review.note_globale }}/5
+                            </div>
+                        </div>
+                        {% if review.commentaire %}
+                        <p style="color: var(--text-light); font-style: italic; margin: 0.5rem 0; padding-left: 0.5rem; border-left: 2px solid var(--gold);">
+                            "{{ review.commentaire|truncate(120) }}"
+                        </p>
+                        {% endif %}
+                        <div style="font-size: 0.7rem; color: var(--text-light); margin-top: 0.5rem;">
+                            {{ review.created_at }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- SECTION MUSÉES -->
+        <section id="musées" style="margin: 6rem 0;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2rem;">
+                <h2 style="font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 800; color: white;">Musées à explorer</h2>
+                <a href="/museums" style="color: var(--gold); text-decoration: none;">Tous les musées →</a>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;">
+                {% for museum in featured_museums %}
+                <a href="/museum/{{ museum.id }}" style="text-decoration: none; background: var(--surface); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(230,216,195,0.1); transition: all 0.3s;">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">🏛️</div>
+                    <h3 style="color: white; font-size: 1.2rem; margin-bottom: 0.5rem;">{{ museum.nom }}</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem;">{{ museum.ville }}, {{ museum.pays }}</p>
+                    <div style="color: var(--gold); font-size: 0.9rem;">{{ museum.oeuvres_count }} œuvres</div>
+                </a>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- CALL TO ACTION FINAL -->
+        {% if not session.user_id %}
+        <div style="text-align: center; padding: 5rem 0; margin: 4rem 0; border-top: 1px solid rgba(230,216,195,0.1); border-bottom: 1px solid rgba(230,216,195,0.1);">
+            <h2 style="font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 800; color: white; margin-bottom: 1rem;">
+                Prêt à commencer votre collection ?
+            </h2>
+            <p style="color: var(--text-light); font-size: 1.2rem; max-width: 600px; margin: 0 auto 2rem;">
+                Rejoignez une communauté de passionnés et découvrez des milliers d'œuvres.
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="#" class="cta-btn cta-btn-primary" data-bs-toggle="modal" data-bs-target="#registerModal" 
+                   style="background: var(--gold); color: var(--primary-dark); padding: 1rem 3rem; border-radius: 40px; font-weight: 700; text-decoration: none; font-size: 1.1rem;">
+                    Créer un compte gratuit
+                </a>
+                <a href="#" class="cta-btn cta-btn-secondary" data-bs-toggle="modal" data-bs-target="#loginModal"
+                   style="background: transparent; color: white; padding: 1rem 3rem; border-radius: 40px; border: 1px solid rgba(255,255,255,0.3); text-decoration: none; font-size: 1.1rem;">
+                    Se connecter
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% include 'footer.html' %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Effet parallaxe sur le hero
+        document.addEventListener('scroll', function() {
+            const hero = document.getElementById('heroBackdrop');
+            if (hero) {
+                const scrolled = window.pageYOffset;
+                hero.style.transform = `scale(1.1) translateY(${scrolled * 0.1}px)`;
+            }
+        });
+
+        // Smooth scroll pour les ancres
+        document.querySelectorAll('.section-nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

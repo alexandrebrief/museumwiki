@@ -1,0 +1,91 @@
+<footer class="footer">
+    <div class="container">
+        <!-- Structure en 2 colonnes -->
+        <div class="footer-row">
+            <!-- Colonne gauche : vide -->
+            <div class="footer-left"></div>
+            
+            <!-- Colonne centrale : À propos -->
+            <div class="footer-center">
+                <a href="/about">À propos</a>
+            </div>
+            
+            <!-- Colonne droite : Copyright -->
+            <div class="footer-right">
+                <span class="copyright">© {{ current_year }} {{ site_name }}. All rights reserved.</span>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+.footer {
+    background: #2c3e50;
+    color: #e6d8c3;
+    padding: 0.4rem 0;  /* Réduit de 1rem à 0.6rem */
+    margin-top: auto;
+    font-size: 0.75rem;  /* Réduit de 0.8rem à 0.75rem */
+    width: 100%;
+}
+
+.footer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.footer-left, .footer-center, .footer-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.footer-left {
+    justify-content: flex-start;
+}
+
+.footer-center {
+    justify-content: center;
+}
+
+.footer-right {
+    justify-content: flex-end;
+}
+
+.footer a {
+    color: #e6d8c3;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    padding: 0.1rem 0.2rem;  /* Réduit de 0.2rem 0.3rem */
+    font-size: 0.75rem;  /* Ajouté pour cohérence */
+}
+
+.footer a:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+}
+
+.copyright {
+    font-size: 0.65rem;  /* Réduit de 0.7rem à 0.65rem */
+    opacity: 0.8;
+    white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .footer-row {
+        flex-direction: column;
+        gap: 0.3rem;  /* Réduit de 0.5rem à 0.3rem */
+    }
+    
+    .footer-left, .footer-center, .footer-right {
+        justify-content: center;
+        text-align: center;
+    }
+    
+    .footer {
+        padding: 0.4rem 0;  /* Encore plus réduit sur mobile */
+    }
+}
+</style>

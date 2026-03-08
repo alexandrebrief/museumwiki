@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ site_name }} - Votre musée idéal</title>
+    
+    <!-- Fonts premium -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        /* ===== STYLES MIXÉS ===== */
+        :root {
+            --primary: #2c3e50;
+            --primary-dark: #1a2634;
+            --secondary: #e6d8c3;
+            --background: #0f1a24;
+            --surface: #1e2a36;
+            --text: #e6d8c3;
+            --text-light: #b8a99a;
+            --accent: #c44545;
+            --gold: #d4af37;
+            --border: rgba(230,216,195,0.15);
+            --star: #ffc107;
+            --shadow: 0 4px 12px rgba(0,0,0,0.3);
+            --shadow-hover: 0 8px 20px rgba(0,0,0,0.5);
+        }
+
+        body {
+            background-color: var(--background);
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -0.02em;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .container-fluid {
+            width: 100%;
+            padding: 0 2rem;
+        }
+
+        /* Pour que la mosaïque touche les bords */
+        .full-width {
+            width: 100vw;
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+            padding: 0;
+        }
+
+        /* ===== HERO CINÉMATIQUE ===== */
+        .hero-cinema {
+            height: 85vh;
+            min-height: 700px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 3rem;
+            overflow: hidden;
+            border-bottom: 1px solid var(--gold);
+        }
+
+        .hero-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.35) saturate(1.3);
+            transform: scale(1.1);
+            transition: transform 0.1s ease-out;
+            z-index: 0;
+        }
+
+        .hero-backdrop::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, var(--background) 0%, transparent 30%, transparent 70%, var(--background) 100%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 3rem;
+            width: 100%;
+        }
+
+        .hero-eyebrow {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 5.5rem;
+            font-weight: 900;
+            line-height: 1;
+            color: white;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+            max-width: 800px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 3.5rem;
+            margin: 3rem 0;
+        }
+
+        .hero-stat {
+            text-align: left;
+        }
+
+        .hero-stat-number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--gold);
+            line-height: 1;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .hero-stat-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.6);
+            margin-top: 0.3rem;
+        }
+
+        .hero-cta-group {
+            margin-top: 3rem;
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .hero-cta-primary {
+            background: var(--gold);
+            color: var(--primary-dark);
+            padding: 1rem 2.5rem;
+            border-radius: 40px;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+        }
+
+        .hero-cta-primary:hover {
+            background: #e6c200;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(212,175,55,0.3);
+        }
+
+        .hero-cta-secondary {
+            background: transparent;
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 40px;
+            border: 1px solid rgba(255,255,255,0.3);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .hero-cta-secondary:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            transform: translateY(-3px);
+        }
+
+        /* ===== SECTION HEADER ===== */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin: 3rem 2rem 1.5rem;
+            border-bottom: 2px solid rgba(212,175,55,0.3);
+            padding-bottom: 0.8rem;
+        }
+        
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+        
+        .section-link {
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: color 0.2s;
+            font-weight: 500;
+        }
+        
+        .section-link:hover {
+            color: white;
+        }
+        
+        .section-link i {
+            margin-left: 0.3rem;
+            transition: transform 0.2s;
+        }
+        
+        .section-link:hover i {
+            transform: translateX(5px);
+        }
+
+        /* ===== MOSAÏQUE STYLE HOME 2 ===== */
+        .mosaic-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.6rem;
+            margin: 2rem 0;
+            padding: 0 2rem;
+        }
+        
+        .mosaic-item {
+            aspect-ratio: 2/3;
+            position: relative;
+            overflow: hidden;
+            border-radius: 6px;
+            box-shadow: var(--shadow);
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .mosaic-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .mosaic-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: var(--primary-dark);
+            display: block;
+        }
+        
+        .mosaic-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%);
+            padding: 1rem 0.5rem 0.5rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+            color: white;
+            font-size: 0.7rem;
+            pointer-events: none;
+        }
+        
+        .mosaic-item:hover .mosaic-overlay {
+            opacity: 1;
+        }
+
+        /* ===== HORIZONTAL SCROLL ===== */
+        .horizontal-scroll {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding: 0.5rem 2rem 1.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--gold) var(--border);
+        }
+        
+        .horizontal-scroll::-webkit-scrollbar {
+            height: 5px;
+        }
+        
+        .horizontal-scroll::-webkit-scrollbar-track {
+            background: var(--border);
+            border-radius: 10px;
+        }
+        
+        .horizontal-scroll::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 10px;
+        }
+        
+        .scroll-item {
+            flex: 0 0 160px;
+            background: var(--surface);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(212,175,55,0.1);
+            transition: all 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .scroll-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--gold);
+        }
+        
+        .scroll-item img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            background: var(--primary-dark);
+        }
+        
+        .scroll-item-info {
+            padding: 0.6rem;
+        }
+        
+        .scroll-item-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .scroll-item-artist {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 0.1rem;
+        }
+        
+        .rating-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            background: rgba(0,0,0,0.5);
+            padding: 0.15rem 0.4rem;
+            border-radius: 30px;
+            font-size: 0.65rem;
+            color: var(--gold);
+            margin-top: 0.3rem;
+            border: 1px solid rgba(212,175,55,0.3);
+        }
+
+        .favorite-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            font-size: 0.65rem;
+            color: var(--accent);
+            margin-top: 0.2rem;
+        }
+
+        /* ===== CRITIQUES COMPACTES ===== */
+        .reviews-compact {
+            display: grid;
+            gap: 0.8rem;
+            margin: 1.5rem 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+        
+        .review-item {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            border: 1px solid rgba(212,175,55,0.1);
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+        
+        .review-item:hover {
+            border-color: var(--gold);
+            background: rgba(30,42,54,0.8);
+        }
+        
+        .review-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .review-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--gold));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.7rem;
+            flex-shrink: 0;
+        }
+        
+        .review-user {
+            font-weight: 600;
+            color: white;
+            font-size: 0.8rem;
+        }
+        
+        .review-work {
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+        
+        .review-work:hover {
+            text-decoration: underline;
+        }
+        
+        .review-rating {
+            margin-left: auto;
+            color: var(--gold);
+            font-weight: 600;
+            font-size: 0.7rem;
+            background: rgba(212,175,55,0.1);
+            padding: 0.1rem 0.5rem;
+            border-radius: 30px;
+        }
+        
+        .review-comment {
+            color: var(--text-light);
+            font-style: italic;
+            margin: 0.2rem 0 0;
+            padding-left: 0.3rem;
+            border-left: 2px solid var(--gold);
+            font-size: 0.75rem;
+            line-height: 1.3;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        /* ===== MUSÉES COMPACTS ===== */
+        .museums-compact {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.8rem;
+            margin: 1.5rem 2rem;
+        }
+        
+        .museum-item {
+            background: var(--surface);
+            border-radius: 10px;
+            padding: 1rem 0.5rem;
+            border: 1px solid rgba(212,175,55,0.1);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .museum-item:hover {
+            border-color: var(--gold);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .museum-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .museum-name {
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .museum-location {
+            color: var(--text-light);
+            font-size: 0.65rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 0.1rem;
+        }
+        
+        .museum-count {
+            color: var(--gold);
+            font-size: 0.6rem;
+            margin-top: 0.2rem;
+        }
+
+        /* ===== SECTION INSCRIPTION MISE EN AVANT ===== */
+        .signup-feature {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin: 4rem 2rem;
+            background: linear-gradient(135deg, rgba(212,175,55,0.1) 0%, rgba(30,42,54,0.5) 100%);
+            border-radius: 30px;
+            padding: 3rem;
+            border: 1px solid rgba(212,175,55,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .signup-feature::before {
+            content: '✨';
+            position: absolute;
+            right: -20px;
+            top: -20px;
+            font-size: 150px;
+            opacity: 0.1;
+            transform: rotate(15deg);
+        }
+
+        .signup-left {
+            padding-right: 2rem;
+        }
+
+        .signup-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .signup-title span {
+            color: var(--gold);
+            display: block;
+            font-size: 3rem;
+        }
+
+        .signup-benefits {
+            list-style: none;
+            padding: 0;
+            margin: 2rem 0;
+        }
+
+        .signup-benefits li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        .signup-benefits i {
+            color: var(--gold);
+            font-size: 1.2rem;
+            width: 24px;
+        }
+
+        .signup-form {
+            background: rgba(30,42,54,0.8);
+            backdrop-filter: blur(10px);
+            padding: 2.5rem;
+            border-radius: 24px;
+            border: 1px solid rgba(212,175,55,0.3);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(212,175,55,0.2);
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 2px rgba(212,175,55,0.2);
+        }
+
+        .password-requirements {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.8rem;
+            font-size: 0.7rem;
+            color: var(--text-light);
+        }
+
+        .password-requirements span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .signup-btn {
+            width: 100%;
+            background: var(--gold);
+            color: var(--primary-dark);
+            border: none;
+            border-radius: 40px;
+            padding: 1.2rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .signup-btn:hover {
+            background: #e6c200;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(212,175,55,0.3);
+        }
+
+        .signup-login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .signup-login-link a {
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .signup-login-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== CALL TO ACTION ===== */
+        .cta-premium {
+            text-align: center;
+            padding: 4rem 2rem;
+            margin: 4rem 2rem;
+            border-top: 1px solid rgba(212,175,55,0.2);
+            border-bottom: 1px solid rgba(212,175,55,0.2);
+            background: radial-gradient(circle at center, rgba(212,175,55,0.05) 0%, transparent 70%);
+        }
+        
+        .cta-premium h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .cta-premium p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .hero-title { font-size: 4rem; }
+            .mosaic-grid { grid-template-columns: repeat(4, 1fr); }
+            .museums-compact { grid-template-columns: repeat(4, 1fr); }
+            .signup-feature { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 900px) {
+            .hero-title { font-size: 3rem; }
+            .mosaic-grid { grid-template-columns: repeat(3, 1fr); }
+            .museums-compact { grid-template-columns: repeat(3, 1fr); }
+            .hero-stats { flex-wrap: wrap; gap: 2rem; }
+        }
+
+        @media (max-width: 768px) {
+            .hero-cinema { height: 70vh; min-height: 600px; }
+            .hero-title { font-size: 2.5rem; }
+            .hero-cta-group { flex-direction: column; }
+            .museums-compact { grid-template-columns: repeat(2, 1fr); }
+            .reviews-compact { grid-template-columns: 1fr; }
+            .signup-feature { padding: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <!-- HERO CINÉMATIQUE -->
+    <div class="hero-cinema" id="hero">
+        {% if mosaic_artworks and mosaic_artworks|length > 0 %}
+        <div class="hero-backdrop" id="heroBackdrop" 
+             style="background-image: url('{{ mosaic_artworks[0].image_url }}');">
+        </div>
+        {% endif %}
+        
+        <div class="hero-content">
+            <div class="hero-eyebrow">Bluegreencliff présente</div>
+            <h1 class="hero-title">L'art<br>à portée de main</h1>
+            <p class="hero-subtitle">
+                Découvrez, collectionnez et partagez les œuvres qui vous touchent.<br>
+                Rejoignez une communauté de passionnés d'art.
+            </p>
+            
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-number">{{ total_oeuvres }}</div>
+                    <div class="hero-stat-label">Œuvres</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">{{ total_artistes }}</div>
+                    <div class="hero-stat-label">Artistes</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">{{ total_musees }}</div>
+                    <div class="hero-stat-label">Musées</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">{{ total_users }}</div>
+                    <div class="hero-stat-label">Membres</div>
+                </div>
+            </div>
+            
+            {% if not session.user_id %}
+            <div class="hero-cta-group">
+                <a href="#" class="hero-cta-primary" data-bs-toggle="modal" data-bs-target="#registerModal">
+                    <i class="fas fa-pen-fancy"></i> Commencer l'expérience
+                </a>
+                <a href="/about" class="hero-cta-secondary">
+                    <i class="fas fa-info-circle"></i> En savoir plus
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- MOSAÏQUE STYLE HOME 2 - 3 LIGNES D'IMAGES -->
+    <div class="full-width">
+        <div class="section-header" style="margin: 2rem 2rem 1rem;">
+            <h2 class="section-title">Découvrir</h2>
+            <a href="/" class="section-link">Voir tout <i class="fas fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="mosaic-grid">
+            {% set ns = namespace(count=0) %}
+            {% for artwork in mosaic_artworks %}
+                {% if artwork.image_url and artwork.image_url != '' and ns.count < 18 %}
+                <a href="/oeuvre/{{ artwork.id }}" class="mosaic-item">
+                    <img src="{{ artwork.image_url }}" alt="{{ artwork.titre if artwork.titre else 'Sans titre' }}" loading="lazy">
+                    <div class="mosaic-overlay">
+                        <div style="font-weight: 600;">{{ artwork.titre|truncate(30) if artwork.titre else 'Sans titre' }}</div>
+                        <div style="font-size: 0.6rem; opacity: 0.8;">{{ artwork.createur|truncate(20) if artwork.createur else 'Artiste inconnu' }}</div>
+                    </div>
+                </a>
+                {% set ns.count = ns.count + 1 %}
+                {% endif %}
+            {% endfor %}
+            
+            <!-- Si pas assez d'images, on complète avec des placeholders -->
+            {% for i in range(18 - ns.count) %}
+            <a href="/" class="mosaic-item">
+                <div style="width:100%; height:100%; background: linear-gradient(145deg, var(--surface), var(--primary-dark)); display: flex; align-items: center; justify-content: center; color: var(--text-light);">
+                    <i class="fas fa-image" style="font-size: 1.5rem;"></i>
+                </div>
+                <div class="mosaic-overlay">
+                    <div style="font-weight: 600;">À découvrir</div>
+                    <div style="font-size: 0.6rem; opacity: 0.8;">Artiste inconnu</div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+
+<!-- SECTION ŒUVRES LES MIEUX NOTÉES -->
+<div class="section-header">
+    <h2 class="section-title">Mieux notées</h2>
+    <a href="/?sort=rating_desc" class="section-link">Toutes les notes <i class="fas fa-arrow-right"></i></a>
+</div>
+
+<div class="horizontal-scroll">
+    {% if top_rated %}
+        {% for artwork in top_rated %}
+            {% if artwork.image_url and artwork.image_url != '' %}
+            <a href="/oeuvre/{{ artwork.id }}" class="scroll-item">
+                <img src="{{ artwork.image_url }}" alt="{{ artwork.titre if artwork.titre else 'Sans titre' }}" loading="lazy">
+                <div class="scroll-item-info">
+                    <div class="scroll-item-title">{{ artwork.titre|truncate(20) if artwork.titre else 'Sans titre' }}</div>
+                    <div class="scroll-item-artist">{{ artwork.createur|truncate(20) if artwork.createur else 'Artiste inconnu' }}</div>
+                    {% if artwork.avg_rating %}
+                    <div class="rating-badge">
+                        <i class="fas fa-star"></i> {{ artwork.avg_rating|round(1) }}
+                    </div>
+                    {% endif %}
+                </div>
+            </a>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <div style="color: var(--text-light); padding: 2rem; text-align: center; width: 100%;">
+            Aucune œuvre notée pour le moment. Soyez le premier à noter !
+        </div>
+    {% endif %}
+</div>
+
+<!-- SECTION FAVORIS POPULAIRES -->
+<div class="section-header">
+    <h2 class="section-title">Favoris des membres</h2>
+    <a href="/?sort=popular" class="section-link">Plus de favoris <i class="fas fa-arrow-right"></i></a>
+</div>
+
+<div class="horizontal-scroll">
+    {% if popular_favorites %}
+        {% for artwork in popular_favorites %}
+            {% if artwork.image_url and artwork.image_url != '' %}
+            <a href="/oeuvre/{{ artwork.id }}" class="scroll-item">
+                <img src="{{ artwork.image_url }}" alt="{{ artwork.titre if artwork.titre else 'Sans titre' }}" loading="lazy">
+                <div class="scroll-item-info">
+                    <div class="scroll-item-title">{{ artwork.titre|truncate(20) if artwork.titre else 'Sans titre' }}</div>
+                    <div class="scroll-item-artist">{{ artwork.createur|truncate(20) if artwork.createur else 'Artiste inconnu' }}</div>
+                    {% if artwork.favorites_count %}
+                    <div class="favorite-badge">
+                        <i class="fas fa-heart"></i> {{ artwork.favorites_count }}
+                    </div>
+                    {% endif %}
+                </div>
+            </a>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <div style="color: var(--text-light); padding: 2rem; text-align: center; width: 100%;">
+            Aucun favori pour le moment. Soyez le premier à ajouter des œuvres !
+        </div>
+    {% endif %}
+</div>
+
+
+    <!-- SECTION DERNIÈRES CRITIQUES -->
+    <div class="section-header">
+        <h2 class="section-title">Dernières critiques</h2>
+        <a href="/reviews" class="section-link">Toutes <i class="fas fa-arrow-right"></i></a>
+    </div>
+    
+    <div class="reviews-compact">
+        {% if recent_reviews %}
+            {% for review in recent_reviews[:6] %}
+                {% if review and review.username %}
+                <div class="review-item">
+                    <div class="review-header">
+                        <div class="review-avatar">{{ review.username[0]|upper if review.username else '?' }}</div>
+                        <div class="review-user">{{ review.username if review.username else 'Anonyme' }}</div>
+                        {% if review.artwork and review.artwork.id %}
+                        <a href="/oeuvre/{{ review.artwork.id }}" class="review-work">
+                            {{ review.artwork.titre|truncate(15) if review.artwork.titre else 'Œuvre' }}
+                        </a>
+                        {% else %}
+                        <span class="review-work">Œuvre inconnue</span>
+                        {% endif %}
+                        <div class="review-rating">
+                            <i class="fas fa-star" style="font-size:0.6rem;"></i> 
+                            {{ review.note_globale|round(1) if review.note_globale else '?' }}
+                        </div>
+                    </div>
+                    {% if review.commentaire %}
+                    <div class="review-comment">"{{ review.commentaire|truncate(60) }}"</div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <div style="color: var(--text-light); padding: 2rem; text-align: center; grid-column: 1/-1;">
+                Aucune critique pour le moment. Soyez le premier à commenter !
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- SECTION MUSÉES -->
+    <div class="section-header">
+        <h2 class="section-title">Musées à explorer</h2>
+        <a href="/museums" class="section-link">Tous <i class="fas fa-arrow-right"></i></a>
+    </div>
+    
+    <div class="museums-compact">
+        {% if featured_museums %}
+            {% for museum in featured_museums[:12] %}
+            <a href="/museum/{{ museum.id }}" class="museum-item">
+                <div class="museum-icon">🏛️</div>
+                <div class="museum-name">{{ museum.nom|truncate(20) if museum.nom else 'Musée' }}</div>
+                <div class="museum-location">
+                    {% if museum.ville and museum.pays %}
+                        {{ museum.ville|truncate(15) }}, {{ museum.pays|truncate(15) }}
+                    {% elif museum.ville %}
+                        {{ museum.ville|truncate(15) }}
+                    {% elif museum.pays %}
+                        {{ museum.pays|truncate(15) }}
+                    {% else %}
+                        Localisation inconnue
+                    {% endif %}
+                </div>
+                <div class="museum-count">{{ museum.oeuvres_count if museum.oeuvres_count else 0 }} œuvres</div>
+            </a>
+            {% endfor %}
+        {% else %}
+            <div style="color: var(--text-light); padding: 2rem; text-align: center; grid-column: 1/-1;">
+                Aucun musée pour le moment.
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- SECTION INSCRIPTION MISE EN AVANT (pour les non-connectés) -->
+    {% if not session.user_id %}
+    <div class="signup-feature">
+        <div class="signup-left">
+            <div class="signup-title">
+                Rejoignez la<br><span>communauté</span>
+            </div>
+            <p style="color: var(--text-light); font-size: 1.1rem; margin-bottom: 2rem;">
+                Créez votre collection personnelle, notez les œuvres, partagez vos coups de cœur et découvrez des milliers d'œuvres d'art.
+            </p>
+            
+            <ul class="signup-benefits">
+                <li><i class="fas fa-check-circle"></i> Accédez à toutes les œuvres</li>
+                <li><i class="fas fa-star"></i> Notez et critiquez les œuvres</li>
+                <li><i class="fas fa-heart"></i> Créez votre collection de favoris</li>
+                <li><i class="fas fa-users"></i> Échangez avec la communauté</li>
+                <li><i class="fas fa-chart-line"></i> Suivez vos découvertes</li>
+            </ul>
+            
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <div style="text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 800; color: var(--gold);">{{ total_users }}+</div>
+                    <div style="font-size: 0.8rem; color: var(--text-light);">Membres actifs</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 800; color: var(--gold);">{{ total_oeuvres }}+</div>
+                    <div style="font-size: 0.8rem; color: var(--text-light);">Œuvres référencées</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="signup-form">
+            <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem; color: white;">Créer un compte gratuit</h3>
+            
+            <div id="registerMessages" style="margin-bottom: 1rem;"></div>
+            
+            <form id="quickRegisterForm">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
+                <div class="form-group">
+                    <label>Nom d'utilisateur</label>
+                    <input type="text" class="form-control" id="modal-username" name="username" placeholder="ex: mona_lisa" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" class="form-control" id="modal-email" name="email" placeholder="exemple@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Mot de passe</label>
+                    <input type="password" class="form-control" id="modal-password" name="password" placeholder="••••••••" required>
+                    <div class="password-requirements" id="modal-password-requirements">
+                        <span id="modal-req-length"><i class="fas fa-circle" style="font-size: 0.3rem;"></i> 8 caractères</span>
+                        <span id="modal-req-uppercase"><i class="fas fa-circle" style="font-size: 0.3rem;"></i> 1 majuscule</span>
+                        <span id="modal-req-lowercase"><i class="fas fa-circle" style="font-size: 0.3rem;"></i> 1 minuscule</span>
+                        <span id="modal-req-number"><i class="fas fa-circle" style="font-size: 0.3rem;"></i> 1 chiffre</span>
+                    </div>
+                </div>
+                
+                <button type="submit" class="signup-btn" id="modalRegisterBtn">
+                    S'inscrire gratuitement
+                </button>
+                
+                <div class="signup-login-link">
+                    Déjà membre ? <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Se connecter</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- CALL TO ACTION SECONDARY (si déjà connecté) -->
+    {% if session.user_id %}
+    <div class="cta-premium">
+        <h2>Continuez votre exploration</h2>
+        <p>Des milliers d'œuvres vous attendent encore.</p>
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+            <a href="/" class="hero-cta-primary">
+                <i class="fas fa-search"></i> Explorer le catalogue
+            </a>
+            <a href="/favoris" class="hero-cta-secondary">
+                <i class="fas fa-heart"></i> Mes favoris
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    {% include 'footer.html' %}
+
+    <!-- MODALES DE CONNEXION -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+            <div class="modal-content" style="background: var(--surface); border: 1px solid var(--gold);">
+                <div class="modal-header" style="border-bottom: 1px solid var(--gold);">
+                    <h5 class="modal-title" style="color: white;">Connexion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="loginMessages"></div>
+                    
+                    <form id="quickLoginForm">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        
+                        <div class="mb-3">
+                            <input type="email" class="form-control" id="modal-login-email" name="email" 
+                                   placeholder="Email" required style="background: rgba(0,0,0,0.3); border: 1px solid rgba(212,175,55,0.2); color: white;">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <input type="password" class="form-control" id="modal-login-password" name="password" 
+                                   placeholder="Mot de passe" required style="background: rgba(0,0,0,0.3); border: 1px solid rgba(212,175,55,0.2); color: white;">
+                        </div>
+                        
+                        <button type="submit" class="btn" id="modalLoginBtn"
+                                style="background: var(--gold); color: var(--primary-dark); border-radius: 40px; padding: 0.8rem; font-weight: 700; border: none; width: 100%;">
+                            Se connecter
+                        </button>
+                        
+                        <div class="mt-3 text-center">
+                            <p style="color: var(--text-light);">
+                                Pas encore membre ? 
+                                <a href="#" style="color: var(--gold);" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal">
+                                    S'inscrire
+                                </a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE D'INSCRIPTION (pour le lien dans la modale de connexion) -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+            <div class="modal-content" style="background: var(--surface); border: 1px solid var(--gold);">
+                <div class="modal-header" style="border-bottom: 1px solid var(--gold);">
+                    <h5 class="modal-title" style="color: white;">Inscription</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="registerModalMessages"></div>
+                    
+                    <form id="quickRegisterModalForm">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        
+                        <div class="mb-3">
+                            <input type="text" class="form-control" id="modal-reg-username" name="username" 
+                                   placeholder="Nom d'utilisateur" required style="background: rgba(0,0,0,0.3); border: 1px solid rgba(212,175,55,0.2); color: white;">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <input type="email" class="form-control" id="modal-reg-email" name="email" 
+                                   placeholder="Email" required style="background: rgba(0,0,0,0.3); border: 1px solid rgba(212,175,55,0.2); color: white;">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <input type="password" class="form-control" id="modal-reg-password" name="password" 
+                                   placeholder="Mot de passe" required style="background: rgba(0,0,0,0.3); border: 1px solid rgba(212,175,55,0.2); color: white;">
+                        </div>
+                        
+                        <button type="submit" class="btn" id="modalRegisterBtn2"
+                                style="background: var(--gold); color: var(--primary-dark); border-radius: 40px; padding: 0.8rem; font-weight: 700; border: none; width: 100%;">
+                            S'inscrire
+                        </button>
+                        
+                        <div class="mt-3 text-center">
+                            <p style="color: var(--text-light);">
+                                Déjà membre ? 
+                                <a href="#" style="color: var(--gold);" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal">
+                                    Se connecter
+                                </a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Effet parallaxe
+        document.addEventListener('scroll', function() {
+            const hero = document.getElementById('heroBackdrop');
+            if (hero) {
+                const scrolled = window.pageYOffset;
+                hero.style.transform = `scale(1.1) translateY(${scrolled * 0.1}px)`;
+            }
+        });
+
+        // Validation mot de passe
+        function initPasswordValidation() {
+            const pwd = document.getElementById('modal-password');
+            if (pwd) {
+                pwd.addEventListener('input', function(e) {
+                    const p = e.target.value;
+                    const update = (id, cond, txt) => {
+                        const el = document.getElementById(id);
+                        if (cond) {
+                            el.style.color = '#28a745';
+                            el.innerHTML = `<i class="fas fa-check-circle" style="font-size:0.7rem; margin-right:0.3rem;"></i> ${txt}`;
+                        } else {
+                            el.style.color = '#dc3545';
+                            el.innerHTML = `<i class="fas fa-times-circle" style="font-size:0.7rem; margin-right:0.3rem;"></i> ${txt}`;
+                        }
+                    };
+                    update('modal-req-length', p.length >= 8, '8 caractères');
+                    update('modal-req-uppercase', /[A-Z]/.test(p), '1 majuscule');
+                    update('modal-req-lowercase', /[a-z]/.test(p), '1 minuscule');
+                    update('modal-req-number', /[0-9]/.test(p), '1 chiffre');
+                });
+            }
+        }
+
+        // Formulaire d'inscription (section principale)
+        async function handleRegisterSubmit(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('modal-username').value;
+            const email = document.getElementById('modal-email').value;
+            const password = document.getElementById('modal-password').value;
+            const messagesDiv = document.getElementById('registerMessages');
+            const submitBtn = document.getElementById('modalRegisterBtn');
+            
+            // Validation basique
+            if (password.length < 8 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
+                messagesDiv.innerHTML = `
+                    <div class="alert alert-danger" style="background: rgba(220,53,69,0.2); border: 1px solid #dc3545; color: #ff6b6b; padding: 0.8rem; border-radius: 8px; font-size:0.8rem;">
+                        Le mot de passe ne respecte pas les exigences
+                    </div>
+                `;
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inscription...';
+            
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                
+                const response = await fetch('/api/quick-register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({ username, email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    messagesDiv.innerHTML = `
+                        <div class="alert alert-success" style="background: rgba(40,167,69,0.2); border: 1px solid #28a745; color: #5cb85c; padding: 0.8rem; border-radius: 8px;">
+                            ${data.message || 'Inscription réussie !'}
+                        </div>
+                    `;
+                    
+                    setTimeout(() => {
+                        if (data.email) {
+                            window.location.href = `/verify-email-pending?email=${encodeURIComponent(data.email)}`;
+                        }
+                    }, 2000);
+                } else {
+                    messagesDiv.innerHTML = `
+                        <div class="alert alert-danger" style="background: rgba(220,53,69,0.2); border: 1px solid #dc3545; color: #ff6b6b; padding: 0.8rem; border-radius: 8px;">
+                            ${data.error || 'Erreur lors de l\'inscription'}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                messagesDiv.innerHTML = `
+                    <div class="alert alert-danger" style="background: rgba(220,53,69,0.2); border: 1px solid #dc3545; color: #ff6b6b; padding: 0.8rem; border-radius: 8px;">
+                        Erreur de connexion
+                    </div>
+                `;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'S\'inscrire gratuitement';
+            }
+        }
+
+        // Formulaire de connexion
+        async function handleLoginSubmit(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('modal-login-email').value;
+            const password = document.getElementById('modal-login-password').value;
+            const messagesDiv = document.getElementById('loginMessages');
+            const submitBtn = document.getElementById('modalLoginBtn');
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion...';
+            
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                
+                const response = await fetch('/api/quick-login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    messagesDiv.innerHTML = `
+                        <div class="alert alert-success" style="background: rgba(40,167,69,0.2); border: 1px solid #28a745; color: #5cb85c; padding: 0.8rem; border-radius: 8px;">
+                            Connexion réussie ! Redirection...
+                        </div>
+                    `;
+                    
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    messagesDiv.innerHTML = `
+                        <div class="alert alert-danger" style="background: rgba(220,53,69,0.2); border: 1px solid #dc3545; color: #ff6b6b; padding: 0.8rem; border-radius: 8px;">
+                            ${data.error || 'Email ou mot de passe incorrect'}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                messagesDiv.innerHTML = `
+                    <div class="alert alert-danger" style="background: rgba(220,53,69,0.2); border: 1px solid #dc3545; color: #ff6b6b; padding: 0.8rem; border-radius: 8px;">
+                        Erreur de connexion
+                    </div>
+                `;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Se connecter';
+            }
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            initPasswordValidation();
+            
+            document.getElementById('quickRegisterForm')?.addEventListener('submit', handleRegisterSubmit);
+            document.getElementById('quickLoginForm')?.addEventListener('submit', handleLoginSubmit);
+            
+            // Animation au scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.section-header, .mosaic-grid, .horizontal-scroll, .reviews-compact, .museums-compact, .signup-feature').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'all 0.6s ease';
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>

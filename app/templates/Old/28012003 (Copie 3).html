@@ -17,8 +17,8 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background: #1e2b3a;  /* Bleu profond élégant */
-            color: #e6d8c3;
+            background: linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #ffffff;
             line-height: 1.5;
             min-height: 100vh;
             display: flex;
@@ -28,7 +28,7 @@
         h1, h2, h3, h4, h5, h6, .message-text {
             font-family: 'Playfair Display', serif;
             font-weight: 500;
-            color: #e6d8c3;
+            color: #ffffff;
         }
         
         .main-content {
@@ -40,15 +40,15 @@
         }
         
         .message-card {
-            background: rgba(44, 62, 80, 0.6);  /* #2c3e50 semi-transparent */
-            backdrop-filter: blur(8px);
-            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
             padding: 3rem 4rem;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
             text-align: center;
             max-width: 500px;
             width: 100%;
-            border: 1px solid rgba(230, 216, 195, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             animation: fadeIn 1s ease-out;
         }
         
@@ -64,16 +64,22 @@
         }
         
         .heart {
-            font-size: 3rem;
-            color: #e6d8c3;
-            margin: 1rem 0;
-            animation: float 3s infinite ease-in-out;
-            opacity: 0.9;
+            font-size: 4rem;
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite ease-in-out;
+            text-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
         }
         
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1); 
+                text-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+            }
+            50% { 
+                transform: scale(1.1); 
+                text-shadow: 0 0 30px rgba(255, 107, 107, 0.8);
+            }
         }
         
         .message-text {
@@ -81,48 +87,35 @@
             font-weight: 500;
             margin-bottom: 0.5rem;
             line-height: 1.2;
-            color: #e6d8c3;
-            letter-spacing: 1px;
+            color: #ffffff;
         }
         
         .date {
-            font-size: 1rem;
-            color: #e6d8c3;
-            opacity: 0.6;
+            font-size: 1.1rem;
+            color: #ff6b6b;
             font-style: italic;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             letter-spacing: 2px;
         }
         
         .back-link {
             display: inline-block;
-            margin-top: 1.5rem;
-            color: #e6d8c3;
+            margin-top: 1rem;
+            color: #ffffff;
             text-decoration: none;
             font-size: 0.9rem;
             padding: 0.6rem 2rem;
-            border-radius: 30px;
-            border: 1px solid rgba(230, 216, 195, 0.3);
-            transition: all 0.3s ease;
-            background: rgba(230, 216, 195, 0.05);
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.05);
         }
         
         .back-link:hover {
-            background: #e6d8c3;
-            color: #1e2b3a;
-            border-color: #e6d8c3;
+            background: #ff6b6b;
+            color: #ffffff;
+            border-color: #ff6b6b;
             transform: translateY(-2px);
-        }
-        
-        /* Effet de lumière subtil */
-        .message-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(230, 216, 195, 0.3), transparent);
         }
         
         @media (max-width: 768px) {
@@ -133,7 +126,7 @@
                 font-size: 2rem;
             }
             .heart {
-                font-size: 2.5rem;
+                font-size: 3rem;
             }
         }
     </style>
@@ -142,7 +135,7 @@
     {% include 'navbar.html' %}
 
     <div class="main-content">
-        <div class="message-card" style="position: relative;">
+        <div class="message-card">
             <div class="message-text">Pour Kathy</div>
             <div class="heart">❤️</div>
             <div class="date">28.01.2003</div>

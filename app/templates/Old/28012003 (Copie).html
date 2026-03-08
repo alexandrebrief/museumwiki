@@ -17,18 +17,18 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background: #1e2b3a;  /* Bleu profond élégant */
-            color: #e6d8c3;
+            background-color: #f5f0e8;
+            color: #2c3e50;
             line-height: 1.5;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
         
-        h1, h2, h3, h4, h5, h6, .message-text {
+        h1, h2, h3, h4, h5, h6 {
             font-family: 'Playfair Display', serif;
             font-weight: 500;
-            color: #e6d8c3;
+            color: #1e2b3a;
         }
         
         .main-content {
@@ -40,15 +40,14 @@
         }
         
         .message-card {
-            background: rgba(44, 62, 80, 0.6);  /* #2c3e50 semi-transparent */
-            backdrop-filter: blur(8px);
-            border-radius: 20px;
+            background: white;
+            border-radius: 16px;
             padding: 3rem 4rem;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 12px rgba(44,62,80,0.05);
             text-align: center;
             max-width: 500px;
             width: 100%;
-            border: 1px solid rgba(230, 216, 195, 0.15);
+            border: 1px solid #e0d6c8;
             animation: fadeIn 1s ease-out;
         }
         
@@ -64,65 +63,49 @@
         }
         
         .heart {
-            font-size: 3rem;
-            color: #e6d8c3;
-            margin: 1rem 0;
-            animation: float 3s infinite ease-in-out;
-            opacity: 0.9;
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite ease-in-out;
         }
         
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
         
         .message-text {
+            font-family: 'Playfair Display', serif;
             font-size: 2.5rem;
             font-weight: 500;
+            color: #2c3e50;
             margin-bottom: 0.5rem;
             line-height: 1.2;
-            color: #e6d8c3;
-            letter-spacing: 1px;
         }
         
         .date {
             font-size: 1rem;
-            color: #e6d8c3;
-            opacity: 0.6;
+            color: #8e9aab;
             font-style: italic;
             margin-bottom: 1rem;
-            letter-spacing: 2px;
         }
         
         .back-link {
             display: inline-block;
             margin-top: 1.5rem;
-            color: #e6d8c3;
+            color: #5d6d7e;
             text-decoration: none;
             font-size: 0.9rem;
-            padding: 0.6rem 2rem;
+            padding: 0.5rem 1.5rem;
             border-radius: 30px;
-            border: 1px solid rgba(230, 216, 195, 0.3);
-            transition: all 0.3s ease;
-            background: rgba(230, 216, 195, 0.05);
+            border: 1px solid #d4c9b9;
+            transition: all 0.3s;
         }
         
         .back-link:hover {
-            background: #e6d8c3;
-            color: #1e2b3a;
-            border-color: #e6d8c3;
-            transform: translateY(-2px);
-        }
-        
-        /* Effet de lumière subtil */
-        .message-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(230, 216, 195, 0.3), transparent);
+            background: #2c3e50;
+            color: #e6d8c3;
+            border-color: #2c3e50;
         }
         
         @media (max-width: 768px) {
@@ -132,9 +115,6 @@
             .message-text {
                 font-size: 2rem;
             }
-            .heart {
-                font-size: 2.5rem;
-            }
         }
     </style>
 </head>
@@ -142,10 +122,9 @@
     {% include 'navbar.html' %}
 
     <div class="main-content">
-        <div class="message-card" style="position: relative;">
+        <div class="message-card">
             <div class="message-text">Pour Kathy</div>
             <div class="heart">❤️</div>
-            <div class="date">28.01.2003</div>
             <a href="javascript:history.back()" class="back-link">
                 <i class="fas fa-arrow-left me-2"></i>Retour
             </a>

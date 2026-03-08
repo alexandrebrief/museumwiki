@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ site_name }} - Explorer toutes les œuvres</title>
+    
+    <!-- Fonts -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        /* ===== STYLES SPÉCIFIQUES À LA PAGE RESEARCH ===== */
+        :root {
+            --primary: #2c3e50;
+            --primary-dark: #1a2634;
+            --secondary: #e6d8c3;
+            --background: #0f1a24;
+            --surface: #1e2a36;
+            --text: #e6d8c3;
+            --text-light: #b8a99a;
+            --border: rgba(230,216,195,0.15);
+            --gold: #d4af37;
+            --shadow: 0 4px 12px rgba(0,0,0,0.3);
+            --shadow-hover: 0 8px 20px rgba(0,0,0,0.5);
+        }
+
+        body {
+            background-color: var(--background);
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header minimal */
+        .research-header {
+            padding: 2rem 0 1rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .research-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+        }
+
+        .research-subtitle {
+            color: var(--text-light);
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        /* ===== FILTRES AMÉLIORÉS ===== */
+        .filters-section {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .filters-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gold);
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filters-title i {
+            font-size: 0.9rem;
+        }
+
+        /* Recherche artiste améliorée */
+        .artist-search-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .artist-search-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .artist-search-label i {
+            color: var(--gold);
+        }
+
+        .artist-search-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .artist-search-icon {
+            position: absolute;
+            left: 1rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+
+        .artist-search-input {
+            width: 100%;
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 0.8rem 1rem 0.8rem 2.8rem;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .artist-search-input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 2px rgba(212,175,55,0.2);
+        }
+
+        .artist-search-input::placeholder {
+            color: var(--text-light);
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        .artist-search-clear {
+            position: absolute;
+            right: 1rem;
+            background: transparent;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .artist-search-clear:hover {
+            color: white;
+        }
+
+        .artist-search-input:not(:placeholder-shown) + .artist-search-clear {
+            display: block;
+        }
+
+        /* Suggestions artistes améliorées */
+        .artist-suggestions {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--gold);
+            border-radius: 16px;
+            margin-top: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: var(--shadow-hover);
+        }
+
+        .artist-suggestion-item {
+            padding: 0.8rem 1.2rem;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .artist-suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .artist-suggestion-item:hover {
+            background: rgba(212,175,55,0.1);
+            color: white;
+            padding-left: 1.8rem;
+        }
+
+        .artist-suggestion-item i {
+            color: var(--gold);
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .artist-suggestion-highlight {
+            font-weight: 600;
+            color: var(--gold);
+        }
+
+        .artist-suggestion-count {
+            margin-left: auto;
+            font-size: 0.7rem;
+            background: rgba(212,175,55,0.1);
+            padding: 0.2rem 0.6rem;
+            border-radius: 30px;
+            color: var(--text-light);
+        }
+
+        /* Ligne de filtres */
+        .filter-row {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-label {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+            margin-bottom: 0.4rem;
+        }
+
+        /* Boutons de tri rapide */
+        .quick-filters {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .quick-filter-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 0.5rem 1.2rem;
+            color: var(--text);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .quick-filter-btn i {
+            color: var(--gold);
+            font-size: 0.75rem;
+        }
+
+        .quick-filter-btn:hover {
+            border-color: var(--gold);
+            color: white;
+        }
+
+        .quick-filter-btn.active {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: var(--primary-dark);
+        }
+
+        .quick-filter-btn.active i {
+            color: var(--primary-dark);
+        }
+
+        .filter-select {
+            width: 100%;
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 0.6rem 1rem;
+            color: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .filter-select option {
+            background: var(--surface);
+            color: white;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 0.6rem 1.5rem;
+            color: var(--text);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--gold);
+            color: white;
+        }
+
+        .filter-btn.primary {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: var(--primary-dark);
+        }
+
+        .filter-btn.primary:hover {
+            background: #e6c200;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212,175,55,0.3);
+        }
+
+        .filter-btn i {
+            font-size: 0.8rem;
+        }
+
+        /* Tags des filtres actifs */
+        .active-filters {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .filter-tag {
+            background: rgba(212,175,55,0.1);
+            border: 1px solid var(--gold);
+            border-radius: 30px;
+            padding: 0.3rem 1rem;
+            font-size: 0.75rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-tag i {
+            color: var(--gold);
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+
+        .filter-tag i:hover {
+            color: white;
+        }
+
+        /* Compteur d'œuvres */
+        .works-counter {
+            display: inline-block;
+            background: var(--surface);
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .works-counter span {
+            color: var(--gold);
+            font-weight: 600;
+            margin: 0 0.2rem;
+        }
+
+        /* Grille CSS Grid */
+        .works-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin: 0 auto 2rem;
+        }
+
+        .work-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.2s ease;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            aspect-ratio: 2/3;
+        }
+
+        .work-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--gold);
+        }
+
+        .work-image-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .work-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, var(--surface), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            font-size: 2rem;
+        }
+
+        .work-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%);
+            padding: 1.5rem 1rem 1rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+            color: white;
+            pointer-events: none;
+        }
+
+        .work-item:hover .work-overlay {
+            opacity: 1;
+        }
+
+        .work-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.2rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .work-artist {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Loading indicator */
+        .loading-indicator {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            grid-column: span 4;
+        }
+
+        .loading-indicator i {
+            margin-right: 0.5rem;
+            color: var(--gold);
+        }
+
+        /* End message */
+        .end-message {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+            font-style: italic;
+            grid-column: span 4;
+        }
+
+        /* No results */
+        .no-results {
+            text-align: center;
+            padding: 4rem;
+            color: var(--text-light);
+            grid-column: span 4;
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Scroll to top button */
+        .scroll-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--secondary);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 100;
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-top:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* Animation d'entrée */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .work-item {
+            animation: fadeInUp 0.4s ease forwards;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .works-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .loading-indicator, .end-message, .no-results {
+                grid-column: span 3;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .works-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .loading-indicator, .end-message, .no-results {
+                grid-column: span 2;
+            }
+            .research-title {
+                font-size: 2rem;
+            }
+            .filter-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .filter-group {
+                min-width: 100%;
+            }
+            .filter-buttons {
+                justify-content: flex-end;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .works-grid {
+                grid-template-columns: 1fr;
+            }
+            .loading-indicator, .end-message, .no-results {
+                grid-column: span 1;
+            }
+            .scroll-top {
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="container">
+        <!-- Header de la page research -->
+        <div class="research-header">
+            <h1 class="research-title">Explorer toutes les œuvres</h1>
+            <p class="research-subtitle">
+                Parcourez l'intégralité de notre collection • <span id="total-works">{{ total_oeuvres }}</span> œuvres référencées
+            </p>
+        </div>
+
+        <!-- SECTION FILTRES AMÉLIORÉE -->
+        <div class="filters-section">
+            <div class="filters-title">
+                <i class="fas fa-sliders-h"></i> Filtres et recherche
+            </div>
+            
+            <!-- Recherche artiste améliorée -->
+            <div class="artist-search-container">
+                <div class="artist-search-label">
+                    <i class="fas fa-user-astronaut"></i> Rechercher par artiste
+                </div>
+                <div class="artist-search-wrapper">
+                    <i class="fas fa-search artist-search-icon"></i>
+                    <input type="text" 
+                           class="artist-search-input" 
+                           id="artist-input" 
+                           placeholder="Entrez le nom d'un artiste (ex: Monet, Van Gogh...)" 
+                           value="{{ request.args.get('artist', '') }}"
+                           autocomplete="off">
+                    <button class="artist-search-clear" id="clear-artist-input" onclick="clearArtistInput()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="artist-suggestions" id="artist-suggestions"></div>
+                </div>
+            </div>
+            
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label class="filter-label">Trier par</label>
+                    <select class="filter-select" id="sort-select">
+                        <option value="default" {% if request.args.get('sort') == 'default' %}selected{% endif %}>Pertinence</option>
+                        <option value="alpha_asc" {% if request.args.get('sort') == 'alpha_asc' %}selected{% endif %}>A-Z</option>
+                        <option value="alpha_desc" {% if request.args.get('sort') == 'alpha_desc' %}selected{% endif %}>Z-A</option>
+                        <option value="date_desc" {% if request.args.get('sort') == 'date_desc' %}selected{% endif %}>Plus récent</option>
+                        <option value="date_asc" {% if request.args.get('sort') == 'date_asc' %}selected{% endif %}>Plus ancien</option>
+                    </select>
+                </div>
+                
+                <div class="filter-buttons">
+                    <button class="filter-btn" id="clear-filters">
+                        <i class="fas fa-times"></i> Effacer
+                    </button>
+                    <button class="filter-btn primary" id="apply-filters">
+                        <i class="fas fa-search"></i> Appliquer
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Filtres rapides : Top rated et Top favoris -->
+            <div class="quick-filters">
+                <button class="quick-filter-btn" id="filter-top-rated" onclick="setQuickFilter('top_rated')">
+                    <i class="fas fa-star"></i> Mieux notées
+                </button>
+                <button class="quick-filter-btn" id="filter-top-favorites" onclick="setQuickFilter('top_favorites')">
+                    <i class="fas fa-heart"></i> Top favoris
+                </button>
+                <button class="quick-filter-btn" id="filter-most-commented" onclick="setQuickFilter('most_commented')">
+                    <i class="fas fa-comments"></i> Les plus commentées
+                </button>
+            </div>
+            
+            <!-- Tags des filtres actifs -->
+            <div class="active-filters" id="active-filters" style="display: none;">
+                <!-- Rempli dynamiquement -->
+            </div>
+        </div>
+
+        <!-- Compteur dynamique -->
+        <div class="works-counter">
+            <i class="fas fa-eye" style="margin-right: 0.5rem;"></i>
+            Affichage de <span id="displayed-count">{{ works|length }}</span> œuvres
+            <span id="filter-indicator" style="display: none; margin-left: 0.5rem; color: var(--gold);">
+                <i class="fas fa-filter"></i> Filtré
+            </span>
+        </div>
+
+        <!-- Grille pour les œuvres -->
+        <div class="works-grid" id="works-grid">
+            {% for artwork in works %}
+            <a href="/oeuvre/{{ artwork.id }}" class="work-item" data-id="{{ artwork.id }}" style="animation-delay: {{ loop.index0 * 0.03 }}s;">
+                <div class="work-image-container">
+                    {% if artwork.image_url and artwork.image_url != '' %}
+                    <img src="{{ artwork.image_url }}" alt="{{ artwork.titre }}" loading="lazy"
+                         onerror="this.style.display='none'; this.parentElement.querySelector('.image-placeholder').style.display='flex';">
+                    <div class="image-placeholder" style="display:none;">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    {% else %}
+                    <div class="image-placeholder">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="work-overlay">
+                        <div class="work-title">{{ artwork.titre|truncate(40) if artwork.titre else 'Sans titre' }}</div>
+                        <div class="work-artist">{{ artwork.createur|truncate(30) if artwork.createur else 'Artiste inconnu' }}</div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+
+        <!-- Loading indicator -->
+        <div class="loading-indicator" id="loading-indicator" style="display: none;">
+            <i class="fas fa-spinner fa-spin"></i> Chargement des œuvres...
+        </div>
+
+        <!-- End message -->
+        <div class="end-message" id="end-message" style="display: none;">
+            <i class="fas fa-check-circle" style="margin-right: 0.5rem; color: var(--gold);"></i>
+            Vous avez vu toutes les œuvres
+        </div>
+
+        <!-- No results -->
+        <div class="no-results" id="no-results" style="display: none;">
+            <i class="fas fa-search"></i>
+            <h3>Aucune œuvre trouvée</h3>
+            <p>Essayez de modifier vos filtres</p>
+        </div>
+    </div>
+
+    <!-- Scroll to top button -->
+    <div class="scroll-top" id="scroll-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    {% include 'footer.html' %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function() {
+            // ============================================
+            // VARIABLES GLOBALES
+            // ============================================
+            let currentPage = 1;
+            let isLoading = false;
+            let hasMore = true;
+            let scrollTriggered = false;
+            let displayedCount = {{ works|length }};
+            let currentFilters = {
+                artist: '{{ request.args.get("artist", "") }}',
+                sort: '{{ request.args.get("sort", "default") }}',
+                filter: '{{ request.args.get("filter", "") }}' // top_rated, top_favorites, most_commented
+            };
+
+            // Mettre à jour le compteur
+            function updateCounter() {
+                document.getElementById('displayed-count').textContent = displayedCount;
+                
+                const filterIndicator = document.getElementById('filter-indicator');
+                if (currentFilters.artist || currentFilters.filter) {
+                    filterIndicator.style.display = 'inline';
+                } else {
+                    filterIndicator.style.display = 'none';
+                }
+            }
+
+            // Nettoyer l'input artiste
+            window.clearArtistInput = function() {
+                document.getElementById('artist-input').value = '';
+                document.getElementById('artist-suggestions').style.display = 'none';
+                currentFilters.artist = '';
+                updateActiveFilters();
+                resetAndReload();
+            };
+
+            // ============================================
+            // SUGGESTIONS ARTISTES AMÉLIORÉES
+            // ============================================
+            function initArtistSuggestions() {
+                const artistInput = document.getElementById('artist-input');
+                const suggestionsBox = document.getElementById('artist-suggestions');
+                let debounceTimeout;
+
+                artistInput.addEventListener('input', function(e) {
+                    const query = e.target.value;
+                    
+                    clearTimeout(debounceTimeout);
+                    
+                    if (query.length < 2) {
+                        suggestionsBox.style.display = 'none';
+                        return;
+                    }
+
+                    debounceTimeout = setTimeout(() => {
+                        // Simuler une recherche avec surlignage
+                        fetch(`/api/artist-suggestions?q=${encodeURIComponent(query)}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.length > 0) {
+                                    suggestionsBox.innerHTML = data.map(artist => {
+                                        // Surligner le terme recherché
+                                        const regex = new RegExp(`(${query})`, 'gi');
+                                        const highlightedName = artist.nom.replace(regex, '<span class="artist-suggestion-highlight">$1</span>');
+                                        
+                                        return `<div class="artist-suggestion-item" onclick="selectArtist('${artist.nom.replace(/'/g, "\\'")}')">
+                                            <i class="fas fa-user"></i>
+                                            <span>${highlightedName}</span>
+                                            <span class="artist-suggestion-count">${artist.oeuvres_count} œuvre(s)</span>
+                                        </div>`;
+                                    }).join('');
+                                    suggestionsBox.style.display = 'block';
+                                } else {
+                                    suggestionsBox.innerHTML = `<div class="artist-suggestion-item" style="justify-content: center; color: var(--text-light);">
+                                        <i class="fas fa-info-circle"></i> Aucun artiste trouvé
+                                    </div>`;
+                                    suggestionsBox.style.display = 'block';
+                                }
+                            });
+                    }, 300);
+                });
+
+                // Fermer les suggestions en cliquant ailleurs
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('.artist-search-container')) {
+                        suggestionsBox.style.display = 'none';
+                    }
+                });
+            }
+
+            // Sélectionner un artiste depuis les suggestions
+            window.selectArtist = function(artist) {
+                document.getElementById('artist-input').value = artist;
+                document.getElementById('artist-suggestions').style.display = 'none';
+                currentFilters.artist = artist;
+                updateActiveFilters();
+                resetAndReload();
+            };
+
+            // ============================================
+            // FILTRES RAPIDES (TOP RATED, TOP FAVORIS)
+            // ============================================
+            window.setQuickFilter = function(filterType) {
+                // Retirer la classe active de tous les boutons
+                document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Ajouter la classe active au bouton cliqué
+                if (filterType === 'top_rated') {
+                    document.getElementById('filter-top-rated').classList.add('active');
+                    currentFilters.filter = 'top_rated';
+                } else if (filterType === 'top_favorites') {
+                    document.getElementById('filter-top-favorites').classList.add('active');
+                    currentFilters.filter = 'top_favorites';
+                } else if (filterType === 'most_commented') {
+                    document.getElementById('filter-most-commented').classList.add('active');
+                    currentFilters.filter = 'most_commented';
+                }
+                
+                // Réinitialiser le tri par défaut si nécessaire
+                if (filterType === 'top_rated') {
+                    document.getElementById('sort-select').value = 'default';
+                    currentFilters.sort = 'default';
+                }
+                
+                updateActiveFilters();
+                resetAndReload();
+            };
+
+            // ============================================
+            // GESTION DES FILTRES
+            // ============================================
+            function initFilters() {
+                const applyBtn = document.getElementById('apply-filters');
+                const clearBtn = document.getElementById('clear-filters');
+                const artistInput = document.getElementById('artist-input');
+                const sortSelect = document.getElementById('sort-select');
+
+                // Afficher les filtres actifs si nécessaire
+                updateActiveFilters();
+                
+                // Activer le bouton de filtre rapide si présent dans l'URL
+                if (currentFilters.filter === 'top_rated') {
+                    document.getElementById('filter-top-rated').classList.add('active');
+                } else if (currentFilters.filter === 'top_favorites') {
+                    document.getElementById('filter-top-favorites').classList.add('active');
+                } else if (currentFilters.filter === 'most_commented') {
+                    document.getElementById('filter-most-commented').classList.add('active');
+                }
+
+                applyBtn.addEventListener('click', applyFilters);
+                
+                clearBtn.addEventListener('click', function() {
+                    artistInput.value = '';
+                    sortSelect.value = 'default';
+                    currentFilters.artist = '';
+                    currentFilters.sort = 'default';
+                    currentFilters.filter = '';
+                    
+                    // Retirer la classe active des boutons rapides
+                    document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    updateActiveFilters();
+                    resetAndReload();
+                });
+
+                // Appliquer avec Entrée
+                artistInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        applyFilters();
+                    }
+                });
+            }
+
+            function updateActiveFilters() {
+                const container = document.getElementById('active-filters');
+                const artist = document.getElementById('artist-input').value;
+                const sort = document.getElementById('sort-select').value;
+                
+                let filters = [];
+                
+                if (artist) {
+                    filters.push({
+                        type: 'artist',
+                        label: `Artiste: ${artist}`,
+                        value: artist
+                    });
+                }
+                
+                if (currentFilters.filter) {
+                    const filterLabels = {
+                        'top_rated': 'Mieux notées',
+                        'top_favorites': 'Top favoris',
+                        'most_commented': 'Les plus commentées'
+                    };
+                    filters.push({
+                        type: 'filter',
+                        label: filterLabels[currentFilters.filter],
+                        value: currentFilters.filter
+                    });
+                }
+                
+                if (sort && sort !== 'default') {
+                    const sortLabels = {
+                        'alpha_asc': 'A-Z',
+                        'alpha_desc': 'Z-A',
+                        'date_desc': 'Plus récent',
+                        'date_asc': 'Plus ancien'
+                    };
+                    filters.push({
+                        type: 'sort',
+                        label: `Tri: ${sortLabels[sort]}`,
+                        value: sort
+                    });
+                }
+                
+                if (filters.length > 0) {
+                    container.innerHTML = filters.map(f => `
+                        <div class="filter-tag">
+                            ${f.label}
+                            <i class="fas fa-times" onclick="removeFilter('${f.type}')"></i>
+                        </div>
+                    `).join('');
+                    container.style.display = 'flex';
+                } else {
+                    container.style.display = 'none';
+                }
+            }
+
+            window.removeFilter = function(type) {
+                if (type === 'artist') {
+                    document.getElementById('artist-input').value = '';
+                    currentFilters.artist = '';
+                } else if (type === 'sort') {
+                    document.getElementById('sort-select').value = 'default';
+                    currentFilters.sort = 'default';
+                } else if (type === 'filter') {
+                    currentFilters.filter = '';
+                    document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                }
+                updateActiveFilters();
+                resetAndReload();
+            };
+
+            function applyFilters() {
+                const artist = document.getElementById('artist-input').value;
+                const sort = document.getElementById('sort-select').value;
+                
+                currentFilters.artist = artist;
+                currentFilters.sort = sort;
+                
+                updateActiveFilters();
+                resetAndReload();
+            }
+
+            async function resetAndReload() {
+                // Réinitialiser la grille
+                document.getElementById('works-grid').innerHTML = '';
+                displayedCount = 0;
+                currentPage = 1;
+                hasMore = true;
+                updateCounter();
+                
+                // Charger les premières œuvres avec les filtres
+                await loadFilteredWorks();
+            }
+
+            async function loadFilteredWorks() {
+                showLoadingIndicator();
+                
+                try {
+                    const params = new URLSearchParams({
+                        page: currentPage,
+                        limit: 20
+                    });
+                    
+                    if (currentFilters.artist) {
+                        params.append('artist', currentFilters.artist);
+                    }
+                    
+                    if (currentFilters.filter) {
+                        params.append('filter', currentFilters.filter);
+                    }
+                    
+                    if (currentFilters.sort && currentFilters.sort !== 'default') {
+                        params.append('sort', currentFilters.sort);
+                    }
+                    
+                    const response = await fetch(`/api/works?${params.toString()}`);
+                    const data = await response.json();
+                    
+                    if (data.works && data.works.length > 0) {
+                        appendWorks(data.works);
+                        displayedCount = data.works.length;
+                        hasMore = data.has_more;
+                        
+                        // Mettre à jour l'URL sans recharger
+                        const url = new URL(window.location);
+                        if (currentFilters.artist) {
+                            url.searchParams.set('artist', currentFilters.artist);
+                        } else {
+                            url.searchParams.delete('artist');
+                        }
+                        if (currentFilters.filter) {
+                            url.searchParams.set('filter', currentFilters.filter);
+                        } else {
+                            url.searchParams.delete('filter');
+                        }
+                        if (currentFilters.sort && currentFilters.sort !== 'default') {
+                            url.searchParams.set('sort', currentFilters.sort);
+                        } else {
+                            url.searchParams.delete('sort');
+                        }
+                        window.history.pushState({}, '', url);
+                        
+                        document.getElementById('no-results').style.display = 'none';
+                    } else {
+                        document.getElementById('no-results').style.display = 'block';
+                        hasMore = false;
+                    }
+                    
+                    updateCounter();
+                    
+                } catch (error) {
+                    console.error('Erreur:', error);
+                } finally {
+                    hideLoadingIndicator();
+                }
+            }
+
+            // ============================================
+            // SCROLL INFINI (modifié pour tenir compte des filtres)
+            // ============================================
+            function initInfiniteScroll() {
+                if (document.getElementById('scroll-sentinel')) return;
+                
+                const sentinel = document.createElement('div');
+                sentinel.id = 'scroll-sentinel';
+                sentinel.style.height = '10px';
+                sentinel.style.width = '100%';
+                sentinel.style.marginTop = '20px';
+                
+                const grid = document.getElementById('works-grid');
+                if (grid && grid.parentNode) {
+                    grid.parentNode.insertBefore(sentinel, grid.nextSibling);
+                }
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting && hasMore && !isLoading && !scrollTriggered) {
+                            scrollTriggered = true;
+                            loadMoreFilteredWorks();
+                        }
+                    });
+                }, { root: null, rootMargin: '200px', threshold: 0.1 });
+
+                observer.observe(sentinel);
+            }
+
+            async function loadMoreFilteredWorks() {
+                if (isLoading || !hasMore) {
+                    scrollTriggered = false;
+                    return;
+                }
+
+                isLoading = true;
+                const nextPage = currentPage + 1;
+
+                showLoadingIndicator();
+
+                try {
+                    const params = new URLSearchParams({
+                        page: nextPage,
+                        limit: 20
+                    });
+                    
+                    if (currentFilters.artist) {
+                        params.append('artist', currentFilters.artist);
+                    }
+                    
+                    if (currentFilters.filter) {
+                        params.append('filter', currentFilters.filter);
+                    }
+                    
+                    if (currentFilters.sort && currentFilters.sort !== 'default') {
+                        params.append('sort', currentFilters.sort);
+                    }
+                    
+                    const response = await fetch(`/api/works?${params.toString()}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Erreur HTTP: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+
+                    if (!data.works || data.works.length === 0) {
+                        hasMore = false;
+                        hideLoadingIndicator();
+                        showEndMessage();
+                        return;
+                    }
+
+                    appendWorks(data.works);
+                    currentPage = nextPage;
+                    displayedCount += data.works.length;
+                    hasMore = data.has_more;
+                    updateCounter();
+
+                } catch (error) {
+                    console.error('❌ Erreur chargement:', error);
+                } finally {
+                    isLoading = false;
+                    scrollTriggered = false;
+                    hideLoadingIndicator();
+                }
+            }
+
+            // ============================================
+            // FONCTIONS UTILITAIRES
+            // ============================================
+            function appendWorks(works) {
+                const grid = document.getElementById('works-grid');
+                const fragment = document.createDocumentFragment();
+                
+                works.forEach((artwork, index) => {
+                    const item = document.createElement('a');
+                    item.href = `/oeuvre/${artwork.id}`;
+                    item.className = 'work-item';
+                    item.setAttribute('data-id', artwork.id);
+                    item.style.animationDelay = `${index * 0.03}s`;
+
+                    const container = document.createElement('div');
+                    container.className = 'work-image-container';
+
+                    if (artwork.image_url && artwork.image_url !== '') {
+                        const img = document.createElement('img');
+                        img.src = artwork.image_url;
+                        img.alt = artwork.titre || 'Sans titre';
+                        img.loading = 'lazy';
+                        
+                        const placeholder = document.createElement('div');
+                        placeholder.className = 'image-placeholder';
+                        placeholder.style.display = 'none';
+                        placeholder.innerHTML = '<i class="fas fa-image"></i>';
+                        
+                        img.onerror = function() {
+                            this.style.display = 'none';
+                            placeholder.style.display = 'flex';
+                        };
+                        
+                        container.appendChild(img);
+                        container.appendChild(placeholder);
+                    } else {
+                        const placeholder = document.createElement('div');
+                        placeholder.className = 'image-placeholder';
+                        placeholder.innerHTML = '<i class="fas fa-image"></i>';
+                        container.appendChild(placeholder);
+                    }
+
+                    const overlay = document.createElement('div');
+                    overlay.className = 'work-overlay';
+                    overlay.innerHTML = `
+                        <div class="work-title">${artwork.titre ? artwork.titre.substring(0, 40) : 'Sans titre'}</div>
+                        <div class="work-artist">${artwork.createur ? artwork.createur.substring(0, 30) : 'Artiste inconnu'}</div>
+                    `;
+
+                    container.appendChild(overlay);
+                    item.appendChild(container);
+                    fragment.appendChild(item);
+                });
+
+                grid.appendChild(fragment);
+            }
+
+            function showLoadingIndicator() {
+                document.getElementById('loading-indicator').style.display = 'block';
+            }
+
+            function hideLoadingIndicator() {
+                document.getElementById('loading-indicator').style.display = 'none';
+            }
+
+            function showEndMessage() {
+                document.getElementById('end-message').style.display = 'block';
+            }
+
+            // ============================================
+            // SCROLL TO TOP
+            // ============================================
+            function initScrollToTop() {
+                const scrollBtn = document.getElementById('scroll-top');
+                
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 500) {
+                        scrollBtn.classList.add('visible');
+                    } else {
+                        scrollBtn.classList.remove('visible');
+                    }
+                });
+
+                scrollBtn.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+
+            // ============================================
+            // INITIALISATION
+            // ============================================
+            document.addEventListener('DOMContentLoaded', function() {
+                updateCounter();
+                initArtistSuggestions();
+                initFilters();
+                initInfiniteScroll();
+                initScrollToTop();
+
+                // Gérer les erreurs d'images existantes
+                document.querySelectorAll('.work-item img').forEach(img => {
+                    img.addEventListener('error', function() {
+                        this.style.display = 'none';
+                        const placeholder = this.nextElementSibling;
+                        if (placeholder && placeholder.classList.contains('image-placeholder')) {
+                            placeholder.style.display = 'flex';
+                        }
+                    });
+                });
+            });
+        })();
+    </script>
+</body>
+</html>
