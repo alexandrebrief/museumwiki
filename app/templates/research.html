@@ -263,7 +263,7 @@
         }
 
         .dropdown-items {
-            max-height: 150px;
+            max-height: 300px;
             overflow-y: auto;
             margin-bottom: 0.5rem;
             scrollbar-width: thin;
@@ -432,7 +432,6 @@
         /* Mode 6 par ligne : rectangles plus grands */
         .works-grid.grid-6 .work-item {
             aspect-ratio: 2/3;
-            /* Images plus grandes grâce à la taille de la grille */
         }
 
         .work-item:hover {
@@ -656,156 +655,181 @@
 <body>
     {% include 'navbar.html' %}
 
-    <div class="container">
-        <!-- BARRE D'OUTILS avec compteur et filtres -->
-        <div class="toolbar">
-            <div class="works-counter">
-                <i class="fas fa-image"></i>
-                <span id="displayed-count">{{ works|length }}</span> œuvre(s)
-                <span id="filter-indicator" style="display: none; margin-left: 0.5rem;">
-                    <i class="fas fa-filter"></i>
-                </span>
+<div class="container">
+    <!-- BARRE D'OUTILS avec compteur et filtres -->
+    <div class="toolbar">
+        <div class="works-counter">
+            <i class="fas fa-image"></i>
+            <span id="displayed-count">{{ works|length }}</span> œuvre(s)
+            <span id="filter-indicator" style="display: none; margin-left: 0.5rem;">
+                <i class="fas fa-filter"></i>
+            </span>
+        </div>
+
+        <div class="filter-tools">
+            <!-- Filtre Artistes -->
+            <div class="filter-dropdown">
+                <button class="icon-button" onclick="toggleDropdown('artist-dropdown', event)" title="Filtrer par artiste">
+                    <i class="fas fa-user"></i>
+                </button>
+                <div class="dropdown-menu" id="artist-dropdown">
+                    <div class="dropdown-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Rechercher un artiste..." id="artist-search-filter">
+                    </div>
+                    <div class="dropdown-items" id="artist-items">
+                        <div class="dropdown-item">
+                            <label>
+                                <input type="checkbox" value="loading"> Chargement...
+                            </label>
+                        </div>
+                    </div>
+                    <div class="dropdown-actions">
+                        <button onclick="applyArtistFilter()" class="apply-btn">Appliquer</button>
+                    </div>
+                </div>
             </div>
 
-            <div class="filter-tools">
-                <!-- Filtre Artistes (icône) -->
-                <div class="filter-dropdown">
-                    <button class="icon-button" onclick="toggleDropdown('artist-dropdown')" title="Filtrer par artiste">
-                        <i class="fas fa-user"></i>
-                    </button>
-                    <div class="dropdown-menu" id="artist-dropdown">
+            <!-- Filtre Géographie (pays + ville) -->
+            <div class="filter-dropdown">
+                <button class="icon-button" onclick="toggleDropdown('geo-dropdown', event)" title="Filtrer par pays ou ville">
+                    <i class="fas fa-globe"></i>
+                </button>
+                <div class="dropdown-menu" id="geo-dropdown">
+                    <div class="dropdown-section">
+                        <div class="dropdown-subtitle">Pays</div>
                         <div class="dropdown-search">
                             <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Rechercher un artiste..." id="artist-search-filter">
+                            <input type="text" placeholder="Rechercher un pays..." id="country-search-filter">
                         </div>
-                        <div class="dropdown-items" id="artist-items">
-                            <!-- Les options seront chargées dynamiquement -->
+                        <div class="dropdown-items" id="country-items">
+                            <div class="dropdown-item">
+                                <label>
+                                    <input type="radio" name="country" value=""> Tous les pays
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown-section">
+                        <div class="dropdown-subtitle">Villes</div>
+                        <div class="dropdown-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Rechercher une ville..." id="city-search-filter">
+                        </div>
+                        <div class="dropdown-items" id="city-items">
                             <div class="dropdown-item">
                                 <label>
                                     <input type="checkbox" value="loading"> Chargement...
                                 </label>
                             </div>
                         </div>
-                        <div class="dropdown-actions">
-                            <button onclick="applyArtistFilter()" class="apply-btn">Appliquer</button>
-                        </div>
+                    </div>
+                    <div class="dropdown-actions">
+                        <button onclick="applyGeoFilter()" class="apply-btn">Appliquer</button>
                     </div>
                 </div>
-
-                <!-- Filtre Géographie (pays + ville) -->
-                <div class="filter-dropdown">
-                    <button class="icon-button" onclick="toggleDropdown('geo-dropdown')" title="Filtrer par pays ou ville">
-                        <i class="fas fa-globe"></i>
-                    </button>
-                    <div class="dropdown-menu" id="geo-dropdown">
-                        <div class="dropdown-section">
-                            <div class="dropdown-subtitle">Pays</div>
-                            <div class="dropdown-items" id="country-items">
-                                <!-- Options chargées dynamiquement -->
-                                <div class="dropdown-item">
-                                    <label>
-                                        <input type="radio" name="country" value=""> Tous les pays
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="dropdown-section">
-                            <div class="dropdown-subtitle">Villes</div>
-                            <div class="dropdown-search">
-                                <i class="fas fa-search"></i>
-                                <input type="text" placeholder="Rechercher une ville..." id="city-search-filter">
-                            </div>
-                            <div class="dropdown-items" id="city-items">
-                                <!-- Options chargées dynamiquement -->
-                                <div class="dropdown-item">
-                                    <label>
-                                        <input type="checkbox" value="loading"> Chargement...
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="dropdown-actions">
-                            <button onclick="applyGeoFilter()" class="apply-btn">Appliquer</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Trier par (icône) -->
-                <div class="filter-dropdown">
-                    <button class="icon-button" onclick="toggleDropdown('sort-dropdown')" title="Trier">
-                        <i class="fas fa-sort"></i>
-                    </button>
-                    <div class="dropdown-menu" id="sort-dropdown">
-                        <div class="dropdown-items" id="sort-items">
-                            <!-- Options chargées en JS -->
-                        </div>
-                        <div class="dropdown-actions">
-                            <button onclick="applySortFilter()" class="apply-btn">Appliquer</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Vue 4 par ligne (carrés) -->
-                <button class="icon-button view-btn" id="view-4" onclick="setViewMode(4)" title="4 par ligne - carrés">
-                    <i class="fas fa-th-large"></i>
-                </button>
-
-                <!-- Vue 6 par ligne (rectangles plus grands) -->
-                <button class="icon-button view-btn" id="view-6" onclick="setViewMode(6)" title="6 par ligne - rectangles">
-                    <i class="fas fa-th"></i>
-                </button>
             </div>
-        </div>
 
-        <!-- Tags des filtres actifs -->
-        <div class="active-tags" id="active-tags"></div>
-
-        <!-- Grille pour les œuvres -->
-        <div class="works-grid grid-4" id="works-grid">
-            {% for artwork in works %}
-            <a href="/oeuvre/{{ artwork.id }}" class="work-item" data-id="{{ artwork.id }}" style="animation-delay: {{ loop.index0 * 0.03 }}s;">
-                <div class="work-image-container">
-                    {% if artwork.image_url and artwork.image_url != '' %}
-                    <img src="https://images.weserv.nl/?url={{ artwork.image_url|urlencode }}&w=300&h=400&fit=cover&a=attention&output=jpg&q=80&we" 
-                         alt="{{ artwork.titre }}" 
-                         loading="lazy"
-                         onerror="this.style.display='none'; this.parentElement.querySelector('.image-placeholder').style.display='flex';">
-                    <div class="image-placeholder" style="display:none;">
-                        <i class="fas fa-image"></i>
+            <!-- Filtre Musées -->
+            <div class="filter-dropdown">
+                <button class="icon-button" onclick="toggleDropdown('museum-dropdown', event)" title="Filtrer par musée">
+                    <i class="fas fa-landmark"></i>
+                </button>
+                <div class="dropdown-menu" id="museum-dropdown">
+                    <div class="dropdown-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Rechercher un musée..." id="museum-search-filter">
                     </div>
-                    {% else %}
-                    <div class="image-placeholder">
-                        <i class="fas fa-image"></i>
+                    <div class="dropdown-items" id="museum-items">
+                        <div class="dropdown-item">
+                            <label>
+                                <input type="checkbox" value="loading"> Chargement...
+                            </label>
+                        </div>
                     </div>
-                    {% endif %}
-                    
-                    <div class="work-overlay">
-                        <div class="work-title">{{ artwork.titre|truncate(40) if artwork.titre else 'Sans titre' }}</div>
-                        <div class="work-artist">{{ artwork.createur|truncate(30) if artwork.createur else 'Artiste inconnu' }}</div>
+                    <div class="dropdown-actions">
+                        <button onclick="applyMuseumFilter()" class="apply-btn">Appliquer</button>
                     </div>
                 </div>
-            </a>
-            {% endfor %}
-        </div>
+            </div>
 
-        <!-- Loading indicator -->
-        <div class="loading-indicator" id="loading-indicator" style="display: none;">
-            <i class="fas fa-spinner fa-spin"></i> Chargement des œuvres...
-        </div>
+            <!-- Trier par -->
+            <div class="filter-dropdown">
+                <button class="icon-button" onclick="toggleDropdown('sort-dropdown', event)" title="Trier">
+                    <i class="fas fa-sort"></i>
+                </button>
+                <div class="dropdown-menu" id="sort-dropdown">
+                    <div class="dropdown-items" id="sort-items">
+                        <!-- Options chargées en JS -->
+                    </div>
+                    <div class="dropdown-actions">
+                        <button onclick="applySortFilter()" class="apply-btn">Appliquer</button>
+                    </div>
+                </div>
+            </div>
 
-        <!-- End message -->
-        <div class="end-message" id="end-message" style="display: none;">
-            <i class="fas fa-check-circle" style="margin-right: 0.5rem; color: var(--gold);"></i>
-            Vous avez vu toutes les œuvres
-        </div>
+            <!-- Vue 4 par ligne -->
+            <button class="icon-button view-btn" id="view-4" onclick="setViewMode(4)" title="4 par ligne - carrés">
+                <i class="fas fa-th-large"></i>
+            </button>
 
-        <!-- No results -->
-        <div class="no-results" id="no-results" style="display: none;">
-            <i class="fas fa-search"></i>
-            <h3>Aucune œuvre trouvée</h3>
-            <p>Essayez de modifier vos filtres</p>
+            <!-- Vue 6 par ligne -->
+            <button class="icon-button view-btn" id="view-6" onclick="setViewMode(6)" title="6 par ligne - rectangles">
+                <i class="fas fa-th"></i>
+            </button>
         </div>
     </div>
+
+    <!-- Tags des filtres actifs - EN DEHORS de la toolbar -->
+    <div class="active-tags" id="active-tags"></div>
+
+    <!-- Grille pour les œuvres -->
+    <div class="works-grid grid-4" id="works-grid">
+        {% for artwork in works %}
+        <a href="/oeuvre/{{ artwork.id }}" class="work-item" data-id="{{ artwork.id }}" style="animation-delay: {{ loop.index0 * 0.03 }}s;">
+            <div class="work-image-container">
+                {% if artwork.image_url and artwork.image_url != '' %}
+                <img src="https://images.weserv.nl/?url={{ artwork.image_url|urlencode }}&w=400&h=600&fit=cover&a=attention&output=jpg&q=80&we" 
+                     alt="{{ artwork.titre }}" 
+                     loading="lazy"
+                     onerror="this.style.display='none'; this.parentElement.querySelector('.image-placeholder').style.display='flex';">
+                <div class="image-placeholder" style="display:none;">
+                    <i class="fas fa-image"></i>
+                </div>
+                {% else %}
+                <div class="image-placeholder">
+                    <i class="fas fa-image"></i>
+                </div>
+                {% endif %}
+                
+                <div class="work-overlay">
+                    <div class="work-title">{{ artwork.titre|truncate(40) if artwork.titre else 'Sans titre' }}</div>
+                    <div class="work-artist">{{ artwork.createur|truncate(30) if artwork.createur else 'Artiste inconnu' }}</div>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- Loading indicator -->
+    <div class="loading-indicator" id="loading-indicator" style="display: none;">
+        <i class="fas fa-spinner fa-spin"></i> Chargement des œuvres...
+    </div>
+
+    <!-- End message -->
+    <div class="end-message" id="end-message" style="display: none;">
+        <i class="fas fa-check-circle" style="margin-right: 0.5rem; color: var(--gold);"></i>
+        Vous avez vu toutes les œuvres
+    </div>
+
+    <!-- No results -->
+    <div class="no-results" id="no-results" style="display: none;">
+        <i class="fas fa-search"></i>
+        <h3>Aucune œuvre trouvée</h3>
+        <p>Essayez de modifier vos filtres</p>
+    </div>
+</div>
+
 
     <!-- Scroll to top button -->
     <div class="scroll-top" id="scroll-top">
@@ -816,6 +840,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+    
+    
+    
+    
         (function() {
             // ============================================
             // VARIABLES GLOBALES
@@ -825,9 +853,8 @@
             let hasMore = true;
             let scrollTriggered = false;
             let displayedCount = {{ works|length }};
-            let currentView = 4; // 4 ou 6
+            let currentView = 4;
 
-            // Charger la préférence de vue depuis localStorage
             try {
                 const savedView = localStorage.getItem('viewMode');
                 if (savedView && [4, 6].includes(parseInt(savedView))) {
@@ -835,10 +862,8 @@
                 }
             } catch (e) {}
 
-            // Mettre à jour le compteur
             function updateCounter() {
                 document.getElementById('displayed-count').textContent = displayedCount;
-                
                 const filterIndicator = document.getElementById('filter-indicator');
                 const hasActiveFilters = document.querySelectorAll('.filter-tag').length > 0;
                 filterIndicator.style.display = hasActiveFilters ? 'inline' : 'none';
@@ -850,32 +875,29 @@
 
             window.setViewMode = function(mode) {
                 currentView = mode;
-                
-                // Mettre à jour la classe de la grille
                 const grid = document.getElementById('works-grid');
                 grid.classList.remove('grid-4', 'grid-6');
                 grid.classList.add(`grid-${mode}`);
                 
-                // Mettre à jour les boutons actifs
-                document.querySelectorAll('.view-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
+                document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
                 document.getElementById(`view-${mode}`).classList.add('active');
                 
-                // Sauvegarder la préférence
                 try {
                     localStorage.setItem('viewMode', mode);
                 } catch (e) {}
             };
-
-            // Initialiser la vue
             setViewMode(currentView);
 
             // ============================================
             // GESTION DES DROPDOWNS
             // ============================================
 
-            window.toggleDropdown = function(id) {
+            window.toggleDropdown = function(id, event) {
+                if (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                
                 const dropdown = document.getElementById(id);
                 dropdown.classList.toggle('show');
                 
@@ -894,186 +916,309 @@
                 }
             });
 
-// ============================================
-// CHARGEMENT DES OPTIONS DE FILTRES
-// ============================================
+            // ============================================
+            // FONCTION API GÉNÉRIQUE
+            // ============================================
 
-// Fonction générique pour faire des requêtes API avec gestion d'erreur
-async function fetchAPI(url, params = {}) {
-    try {
-        const queryString = new URLSearchParams(params).toString();
-        const fullUrl = queryString ? `${url}?${queryString}` : url;
-        const response = await fetch(fullUrl);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        return await response.json();
-    } catch (error) {
-        console.error(`Erreur API ${url}:`, error);
-        return null;
-    }
-}
-
-// ============================================
-// GESTION DES ARTISTES
-// ============================================
-
-async function loadArtists() {
-    const container = document.getElementById('artist-items');
-    if (!container) return;
-    
-    try {
-        // Récupérer les filtres actuels
-        const urlParams = new URLSearchParams(window.location.search);
-        const params = {
-            artist: urlParams.getAll('artist'),
-            country: urlParams.get('country') || '',
-            city: urlParams.getAll('city')
-        };
-        
-        // Nettoyer les paramètres vides
-        Object.keys(params).forEach(key => {
-            if (Array.isArray(params[key]) && params[key].length === 0) delete params[key];
-            if (!Array.isArray(params[key]) && !params[key]) delete params[key];
-        });
-        
-        const data = await fetchAPI('/api/filter-artists', params);
-        
-        if (!data || data.length === 0) {
-            container.innerHTML = '<div class="dropdown-item">Aucun artiste trouvé</div>';
-            return;
-        }
-        
-        container.innerHTML = data.map(artist => `
-            <div class="dropdown-item">
-                <label>
-                    <input type="checkbox" value="${artist.id}" ${artist.selected ? 'checked' : ''}> 
-                    <span class="name">${artist.name}</span>
-                    <span class="count">${artist.count}</span>
-                </label>
-            </div>
-        `).join('');
-        
-    } catch (error) {
-        console.error('Erreur chargement artistes:', error);
-        container.innerHTML = '<div class="dropdown-item">Erreur de chargement</div>';
-    }
-}
-
-// Recherche dynamique dans les artistes
-function initArtistSearch() {
-    const searchInput = document.getElementById('artist-search-filter');
-    if (!searchInput) return;
-    
-    let searchTimeout;
-    
-    searchInput.addEventListener('input', function(e) {
-        const searchTerm = e.target.value.trim();
-        
-        clearTimeout(searchTimeout);
-        
-        if (searchTerm.length === 0) {
-            loadArtists();
-            return;
-        }
-        
-        if (searchTerm.length < 2) {
-            document.getElementById('artist-items').innerHTML = 
-                '<div class="dropdown-item" style="justify-content: center; color: var(--text-light);">Tapez au moins 2 caractères</div>';
-            return;
-        }
-        
-        searchTimeout = setTimeout(async () => {
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const selectedArtists = urlParams.getAll('artist');
-                
-                const data = await fetchAPI('/api/search-artists', { q: searchTerm });
-                
-                const container = document.getElementById('artist-items');
-                
-                if (!data || data.length === 0) {
-                    container.innerHTML = '<div class="dropdown-item" style="justify-content: center; color: var(--text-light);">Aucun artiste trouvé</div>';
-                    return;
+            async function fetchAPI(url, params = {}) {
+                try {
+                    const queryString = new URLSearchParams(params).toString();
+                    const fullUrl = queryString ? `${url}?${queryString}` : url;
+                    const response = await fetch(fullUrl);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    return await response.json();
+                } catch (error) {
+                    console.error(`Erreur API ${url}:`, error);
+                    return null;
                 }
-                
-                container.innerHTML = data.map(artist => `
-                    <div class="dropdown-item">
-                        <label>
-                            <input type="checkbox" value="${artist.nom}" ${selectedArtists.includes(artist.nom) ? 'checked' : ''}> 
-                            <span class="name">${artist.nom}</span>
-                            <span class="count">${artist.oeuvres_count}</span>
-                        </label>
-                    </div>
-                `).join('');
-                
-            } catch (error) {
-                console.error('Erreur recherche artistes:', error);
-                document.getElementById('artist-items').innerHTML = '<div class="dropdown-item">Erreur de chargement</div>';
             }
-        }, 300);
-    });
-}
+
+            // ============================================
+            // GESTION DES ARTISTES
+            // ============================================
+
+            async function loadArtists() {
+                const container = document.getElementById('artist-items');
+                if (!container) return;
+                
+                try {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const params = {
+                        artist: urlParams.getAll('artist'),
+                        country: urlParams.get('country') || '',
+                        city: urlParams.getAll('city')
+                    };
+                    
+                    Object.keys(params).forEach(key => {
+                        if (Array.isArray(params[key]) && params[key].length === 0) delete params[key];
+                        if (!Array.isArray(params[key]) && !params[key]) delete params[key];
+                    });
+                    
+                    const data = await fetchAPI('/api/filter-artists', params);
+                    
+                    if (!data || data.length === 0) {
+                        container.innerHTML = '<div class="dropdown-item">Aucun artiste trouvé</div>';
+                        return;
+                    }
+                    
+                    container.innerHTML = data.map(artist => `
+                        <div class="dropdown-item">
+                            <label>
+                                <input type="checkbox" value="${artist.id}" ${artist.selected ? 'checked' : ''}> 
+                                <span class="name">${artist.name}</span>
+                                <span class="count">${artist.count}</span>
+                            </label>
+                        </div>
+                    `).join('');
+                    
+                } catch (error) {
+                    console.error('Erreur chargement artistes:', error);
+                    container.innerHTML = '<div class="dropdown-item">Erreur de chargement</div>';
+                }
+            }
+
+            function initArtistSearch() {
+                const searchInput = document.getElementById('artist-search-filter');
+                if (!searchInput) return;
+                
+                let searchTimeout;
+                
+                searchInput.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.trim();
+                    
+                    clearTimeout(searchTimeout);
+                    
+                    if (searchTerm.length === 0) {
+                        loadArtists();
+                        return;
+                    }
+                    
+                    if (searchTerm.length < 2) {
+                        document.getElementById('artist-items').innerHTML = 
+                            '<div class="dropdown-item" style="justify-content: center; color: var(--text-light);">Tapez au moins 2 caractères</div>';
+                        return;
+                    }
+                    
+                    searchTimeout = setTimeout(async () => {
+                        try {
+                            const urlParams = new URLSearchParams(window.location.search);
+                            const selectedArtists = urlParams.getAll('artist');
+                            
+                            const data = await fetchAPI('/api/search-artists', { q: searchTerm });
+                            
+                            const container = document.getElementById('artist-items');
+                            
+                            if (!data || data.length === 0) {
+                                container.innerHTML = '<div class="dropdown-item" style="justify-content: center; color: var(--text-light);">Aucun artiste trouvé</div>';
+                                return;
+                            }
+                            
+                            container.innerHTML = data.map(artist => `
+                                <div class="dropdown-item">
+                                    <label>
+                                        <input type="checkbox" value="${artist.nom}" ${selectedArtists.includes(artist.nom) ? 'checked' : ''}> 
+                                        <span class="name">${artist.nom}</span>
+                                        <span class="count">${artist.oeuvres_count}</span>
+                                    </label>
+                                </div>
+                            `).join('');
+                            
+                        } catch (error) {
+                            console.error('Erreur recherche artistes:', error);
+                            document.getElementById('artist-items').innerHTML = '<div class="dropdown-item">Erreur de chargement</div>';
+                        }
+                    }, 300);
+                });
+            }
+
+            // ============================================
+            // GESTION DES PAYS
+            // ============================================
+
+            async function loadCountries(searchTerm = '') {
+                const container = document.getElementById('country-items');
+                if (!container) return;
+                
+                try {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const params = {
+                        artist: urlParams.getAll('artist'),
+                        city: urlParams.getAll('city')
+                    };
+                    
+                    if (searchTerm && searchTerm.length >= 2) {
+                        params.search = searchTerm;
+                    }
+                    
+                    if (params.artist.length === 0) delete params.artist;
+                    if (params.city.length === 0) delete params.city;
+                    
+                    const data = await fetchAPI('/api/filter-countries', params);
+                    
+                    const selectedCountry = urlParams.get('country') || '';
+                    
+                    let html = '<div class="dropdown-item">' +
+                        '<label>' +
+                            '<input type="radio" name="country" value="" ' + (selectedCountry === '' ? 'checked' : '') + '> ' +
+                            '<span class="name">Tous les pays</span>' +
+                        '</label>' +
+                    '</div>';
+                    
+                    if (data && data.length > 0) {
+                        html += data.map(country => `
+                            <div class="dropdown-item">
+                                <label>
+                                    <input type="radio" name="country" value="${country.id}" ${country.selected ? 'checked' : ''}> 
+                                    <span class="name">${country.name}</span>
+                                    <span class="count">${country.count}</span>
+                                </label>
+                            </div>
+                        `).join('');
+                    } else if (searchTerm && searchTerm.length >= 2) {
+                        html = '<div class="dropdown-item" style="justify-content: center; color: var(--text-light);">Aucun pays trouvé</div>';
+                    }
+                    
+                    container.innerHTML = html;
+                    
+                } catch (error) {
+                    console.error('Erreur chargement pays:', error);
+                    container.innerHTML = '<div class="dropdown-item">Erreur de chargement</div>';
+                }
+            }
+
+            function initCountrySearch() {
+                const searchInput = document.getElementById('country-search-filter');
+                if (!searchInput) return;
+                
+                let searchTimeout;
+                
+                searchInput.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.trim();
+                    
+                    clearTimeout(searchTimeout);
+                    
+                    if (searchTerm.length === 0) {
+                        loadCountries();
+                        return;
+                    }
+                    
+                    if (searchTerm.length < 2) {
+                        const container = document.getElementById('country-items');
+                        container.innerHTML = '<div class="dropdown-item" style="justify-content: center; color: var(--text-light);">Tapez au moins 2 caractères</div>';
+                        return;
+                    }
+                    
+                    searchTimeout = setTimeout(async () => {
+                        try {
+                            const urlParams = new URLSearchParams(window.location.search);
+                            const selectedCountry = urlParams.get('country') || '';
+                            
+                            const response = await fetch(`/api/search-countries?q=${encodeURIComponent(searchTerm)}`);
+                            const countries = await response.json();
+                            
+                            const container = document.getElementById('country-items');
+                            
+                            if (countries.length === 0) {
+                                container.innerHTML = '<div class="dropdown-item" style="justify-content: center; color: var(--text-light);">Aucun pays trouvé</div>';
+                                return;
+                            }
+                            
+                            let html = '<div class="dropdown-item">' +
+                                '<label>' +
+                                    '<input type="radio" name="country" value="" ' + (selectedCountry === '' ? 'checked' : '') + '> ' +
+                                    '<span class="name">Tous les pays</span>' +
+                                '</label>' +
+                            '</div>';
+                            
+                            html += countries.map(country => `
+                                <div class="dropdown-item">
+                                    <label>
+                                        <input type="radio" name="country" value="${country.nom}" ${selectedCountry === country.nom ? 'checked' : ''}> 
+                                        <span class="name">${country.nom}</span>
+                                        <span class="count">${country.oeuvres_count}</span>
+                                    </label>
+                                </div>
+                            `).join('');
+                            
+                            container.innerHTML = html;
+                            
+                        } catch (error) {
+                            console.error('Erreur recherche pays:', error);
+                            document.getElementById('country-items').innerHTML = '<div class="dropdown-item">Erreur de chargement</div>';
+                        }
+                    }, 300);
+                });
+            }
+
+            // ============================================
+            // GESTION DES VILLES
+            // ============================================
+
+            async function loadCities() {
+                const container = document.getElementById('city-items');
+                if (!container) return;
+                
+                try {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const params = {
+                        artist: urlParams.getAll('artist'),
+                        country: urlParams.get('country') || '',
+                        city: urlParams.getAll('city')
+                    };
+                    
+                    if (params.artist.length === 0) delete params.artist;
+                    if (!params.country) delete params.country;
+                    
+                    const data = await fetchAPI('/api/filter-cities', params);
+                    
+                    const selectedCities = urlParams.getAll('city');
+                    
+                    if (!data || data.length === 0) {
+                        container.innerHTML = '<div class="dropdown-item">Aucune ville trouvée</div>';
+                        return;
+                    }
+                    
+                    container.innerHTML = data.map(city => `
+                        <div class="dropdown-item">
+                            <label>
+                                <input type="checkbox" value="${city.id}" ${selectedCities.includes(city.id) ? 'checked' : ''}> 
+                                <span class="name">${city.name}</span>
+                                <span class="count">${city.count}</span>
+                            </label>
+                        </div>
+                    `).join('');
+                    
+                } catch (error) {
+                    console.error('Erreur chargement villes:', error);
+                    container.innerHTML = '<div class="dropdown-item">Erreur de chargement</div>';
+                }
+            }
+
+            function initCitySearch() {
+                const searchInput = document.getElementById('city-search-filter');
+                if (!searchInput) return;
+                
+                searchInput.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.trim().toLowerCase();
+                    const items = document.querySelectorAll('#city-items .dropdown-item');
+                    
+                    items.forEach(item => {
+                        const name = item.querySelector('.name')?.textContent.toLowerCase() || '';
+                        item.style.display = name.includes(searchTerm) || searchTerm === '' ? 'block' : 'none';
+                    });
+                });
+            }
 
 // ============================================
-// GESTION DES PAYS
+// GESTION DES MUSÉES
 // ============================================
-
-async function loadCountries() {
-    const container = document.getElementById('country-items');
-    if (!container) return;
-    
-    try {
-        // Récupérer les filtres actuels
-        const urlParams = new URLSearchParams(window.location.search);
-        const params = {
-            artist: urlParams.getAll('artist'),
-            city: urlParams.getAll('city')
-        };
-        
-        // Nettoyer les paramètres vides
-        if (params.artist.length === 0) delete params.artist;
-        if (params.city.length === 0) delete params.city;
-        
-        const data = await fetchAPI('/api/filter-countries', params);
-        
-        const selectedCountry = urlParams.get('country') || '';
-        
-        let html = '<div class="dropdown-item">' +
-            '<label>' +
-                '<input type="radio" name="country" value="" ' + (selectedCountry === '' ? 'checked' : '') + '> ' +
-                '<span class="name">Tous les pays</span>' +
-            '</label>' +
-        '</div>';
-        
-        if (data && data.length > 0) {
-            html += data.map(country => `
-                <div class="dropdown-item">
-                    <label>
-                        <input type="radio" name="country" value="${country.id}" ${country.selected ? 'checked' : ''}> 
-                        <span class="name">${country.name}</span>
-                        <span class="count">${country.count}</span>
-                    </label>
-                </div>
-            `).join('');
-        }
-        
-        container.innerHTML = html;
-        
-    } catch (error) {
-        console.error('Erreur chargement pays:', error);
-        container.innerHTML = '<div class="dropdown-item">Erreur de chargement</div>';
-    }
-}
-
-// ============================================
-// GESTION DES VILLES
-// ============================================
-
-async function loadCities() {
-    const container = document.getElementById('city-items');
+window.museumNames = {};
+async function loadMuseums() {
+    const container = document.getElementById('museum-items');
     if (!container) return;
     
     try {
@@ -1088,245 +1233,498 @@ async function loadCities() {
         // Nettoyer les paramètres vides
         if (params.artist.length === 0) delete params.artist;
         if (!params.country) delete params.country;
+        if (params.city.length === 0) delete params.city;
         
-        const data = await fetchAPI('/api/filter-cities', params);
+        const data = await fetchAPI('/api/filter-museums', params);
         
-        const selectedCities = urlParams.getAll('city');
+        // Stocker les noms pour les tags
+        if (data && data.length > 0) {
+            window.museumNames = {};
+            data.forEach(museum => {
+                window.museumNames[museum.id] = museum.name;
+            });
+        }
+        const selectedMuseums = urlParams.getAll('museum');
         
         if (!data || data.length === 0) {
-            container.innerHTML = '<div class="dropdown-item">Aucune ville trouvée</div>';
+            container.innerHTML = '<div class="dropdown-item">Aucun musée trouvé</div>';
             return;
         }
         
-        container.innerHTML = data.map(city => `
+        container.innerHTML = data.map(museum => `
             <div class="dropdown-item">
                 <label>
-                    <input type="checkbox" value="${city.id}" ${selectedCities.includes(city.id) ? 'checked' : ''}> 
-                    <span class="name">${city.name}</span>
-                    <span class="count">${city.count}</span>
+                    <input type="checkbox" value="${museum.id}" ${museum.selected ? 'checked' : ''}> 
+                    <span class="name">${museum.name}</span>
+                    <span class="count">${museum.count}</span>
                 </label>
             </div>
         `).join('');
         
     } catch (error) {
-        console.error('Erreur chargement villes:', error);
+        console.error('Erreur chargement musées:', error);
         container.innerHTML = '<div class="dropdown-item">Erreur de chargement</div>';
     }
 }
 
-// Recherche dans les villes (filtrage local)
-function initCitySearch() {
-    const searchInput = document.getElementById('city-search-filter');
+// Recherche dynamique dans les musées
+function initMuseumSearch() {
+    const searchInput = document.getElementById('museum-search-filter');
     if (!searchInput) return;
     
+    let searchTimeout;
+    
     searchInput.addEventListener('input', function(e) {
-        const searchTerm = e.target.value.trim().toLowerCase();
-        const items = document.querySelectorAll('#city-items .dropdown-item');
+        const searchTerm = e.target.value.trim();
         
-        items.forEach(item => {
-            const name = item.querySelector('.name')?.textContent.toLowerCase() || '';
-            item.style.display = name.includes(searchTerm) || searchTerm === '' ? 'block' : 'none';
-        });
+        clearTimeout(searchTimeout);
+        
+        if (searchTerm.length === 0) {
+            loadMuseums();
+            return;
+        }
+        
+        if (searchTerm.length < 2) {
+            const container = document.getElementById('museum-items');
+            container.innerHTML = '<div class="dropdown-item" style="justify-content: center; color: var(--text-light);">Tapez au moins 2 caractères</div>';
+            return;
+        }
+        
+        searchTimeout = setTimeout(async () => {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const selectedMuseums = urlParams.getAll('museum');
+                
+                const response = await fetch(`/api/search-museums?q=${encodeURIComponent(searchTerm)}`);
+                const museums = await response.json();
+                
+                const container = document.getElementById('museum-items');
+                
+                if (museums.length === 0) {
+                    container.innerHTML = '<div class="dropdown-item" style="justify-content: center; color: var(--text-light);">Aucun musée trouvé</div>';
+                    return;
+                }
+                
+                container.innerHTML = museums.map(museum => `
+                    <div class="dropdown-item">
+                        <label>
+                            <input type="checkbox" value="${museum.id}" ${selectedMuseums.includes(museum.id) ? 'checked' : ''}> 
+                            <span class="name">${museum.nom}</span>
+                            <span class="count">${museum.oeuvres_count}</span>
+                        </label>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Erreur recherche musées:', error);
+                document.getElementById('museum-items').innerHTML = '<div class="dropdown-item">Erreur de chargement</div>';
+            }
+        }, 300);
     });
 }
 
-// ============================================
-// GESTION DU TRI
-// ============================================
-
-function loadSortOptions() {
-    const container = document.getElementById('sort-items');
-    if (!container) return;
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    const currentSort = urlParams.get('sort') || 'relevance';
-    
-    const sortOptions = [
-        { value: 'relevance', label: 'Pertinence' },
-        { value: 'date_desc', label: 'Plus récent' },
-        { value: 'date_asc', label: 'Plus ancien' },
-        { value: 'title_asc', label: 'Titre A-Z' },
-        { value: 'artist_asc', label: 'Artiste A-Z' }
-    ];
-    
-    container.innerHTML = sortOptions.map(option => `
-        <div class="dropdown-item">
-            <label>
-                <input type="radio" name="sort" value="${option.value}" ${currentSort === option.value ? 'checked' : ''}> 
-                <span class="name">${option.label}</span>
-            </label>
-        </div>
-    `).join('');
-}
-
-// ============================================
-// APPLICATION DES FILTRES
-// ============================================
-
-window.applyArtistFilter = function() {
-    const selected = Array.from(document.querySelectorAll('#artist-items input:checked'))
+// Appliquer le filtre musée
+window.applyMuseumFilter = function() {
+    const selected = Array.from(document.querySelectorAll('#museum-items input:checked'))
         .map(cb => cb.value);
     
     const params = new URLSearchParams(window.location.search);
     
-    params.delete('artist');
-    selected.forEach(a => params.append('artist', a));
+    params.delete('museum');
+    selected.forEach(m => params.append('museum', m));
     params.set('page', '1');
     
     window.location.href = `/research?${params.toString()}`;
 }
 
-window.applyGeoFilter = function() {
-    const country = document.querySelector('input[name="country"]:checked')?.value || '';
-    const cities = Array.from(document.querySelectorAll('#city-items input:checked'))
-        .map(cb => cb.value);
-    
-    const params = new URLSearchParams(window.location.search);
-    
-    if (country) {
-        params.set('country', country);
-    } else {
-        params.delete('country');
-    }
-    
-    params.delete('city');
-    cities.forEach(c => params.append('city', c));
-    params.set('page', '1');
-    
-    window.location.href = `/research?${params.toString()}`;
-}
+            // ============================================
+            // GESTION DU TRI
+            // ============================================
 
-window.applySortFilter = function() {
-    const sort = document.querySelector('input[name="sort"]:checked')?.value;
-    
-    const params = new URLSearchParams(window.location.search);
-    
-    if (sort && sort !== 'relevance') {
-        params.set('sort', sort);
-    } else {
-        params.delete('sort');
-    }
-    
-    params.set('page', '1');
-    
-    window.location.href = `/research?${params.toString()}`;
-}
+            function loadSortOptions() {
+                const container = document.getElementById('sort-items');
+                if (!container) return;
+                
+                const urlParams = new URLSearchParams(window.location.search);
+                const currentSort = urlParams.get('sort') || 'relevance';
+                
+                const sortOptions = [
+                    { value: 'relevance', label: 'Pertinence' },
+                    { value: 'date_desc', label: 'Plus récent' },
+                    { value: 'date_asc', label: 'Plus ancien' },
+                    { value: 'title_asc', label: 'Titre A-Z' },
+                    { value: 'artist_asc', label: 'Artiste A-Z' }
+                ];
+                
+                container.innerHTML = sortOptions.map(option => `
+                    <div class="dropdown-item">
+                        <label>
+                            <input type="radio" name="sort" value="${option.value}" ${currentSort === option.value ? 'checked' : ''}> 
+                            <span class="name">${option.label}</span>
+                        </label>
+                    </div>
+                `).join('');
+            }
 
-// ============================================
-// TAGS DES FILTRES ACTIFS
-// ============================================
+            // ============================================
+            // APPLICATION DES FILTRES
+            // ============================================
 
-function updateActiveTags() {
-    const container = document.getElementById('active-tags');
-    if (!container) return;
-    
-    const params = new URLSearchParams(window.location.search);
-    const tags = [];
-    
-    // Artistes
-    const artists = params.getAll('artist');
-    artists.forEach(artist => {
+            window.applyArtistFilter = function() {
+                const selected = Array.from(document.querySelectorAll('#artist-items input:checked'))
+                    .map(cb => cb.value);
+                
+                const params = new URLSearchParams(window.location.search);
+                
+                params.delete('artist');
+                selected.forEach(a => params.append('artist', a));
+                params.set('page', '1');
+                
+                window.location.href = `/research?${params.toString()}`;
+            }
+
+            window.applyGeoFilter = function() {
+                const country = document.querySelector('input[name="country"]:checked')?.value || '';
+                const cities = Array.from(document.querySelectorAll('#city-items input:checked'))
+                    .map(cb => cb.value);
+                
+                const params = new URLSearchParams(window.location.search);
+                
+                if (country) {
+                    params.set('country', country);
+                } else {
+                    params.delete('country');
+                }
+                
+                params.delete('city');
+                cities.forEach(c => params.append('city', c));
+                params.set('page', '1');
+                
+                window.location.href = `/research?${params.toString()}`;
+            }
+
+            window.applySortFilter = function() {
+                const sort = document.querySelector('input[name="sort"]:checked')?.value;
+                
+                const params = new URLSearchParams(window.location.search);
+                
+                if (sort && sort !== 'relevance') {
+                    params.set('sort', sort);
+                } else {
+                    params.delete('sort');
+                }
+                
+                params.set('page', '1');
+                
+                window.location.href = `/research?${params.toString()}`;
+            }
+
+            // ============================================
+            // TAGS DES FILTRES ACTIFS
+            // ============================================
+
+            function updateActiveTags() {
+                const container = document.getElementById('active-tags');
+                if (!container) return;
+                
+                const params = new URLSearchParams(window.location.search);
+                const tags = [];
+                
+                const artists = params.getAll('artist');
+                artists.forEach(artist => {
+                    tags.push({
+                        type: 'artist',
+                        label: `${artist}`,
+                        value: artist
+                    });
+                });
+                
+                const country = params.get('country');
+                if (country) {
+                    tags.push({
+                        type: 'country',
+                        label: `${country}`,
+                        value: country
+                    });
+                }
+                
+                const cities = params.getAll('city');
+                cities.forEach(city => {
+                    tags.push({
+                        type: 'city',
+                        label: `${city}`,
+                        value: city
+                    });
+                });
+
+// Dans updateActiveTags(), après les villes
+const museums = params.getAll('museum');
+// Pour chaque musée, il faudrait idéalement avoir le nom
+// Mais comme on a que l'ID, on va devoir le chercher
+// Solution temporaire : utiliser un mapping depuis les données chargées
+if (window.museumNames) {
+    museums.forEach(museumId => {
+        const museumName = window.museumNames[museumId] || museumId;
         tags.push({
-            type: 'artist',
-            label: `${artist}`,
-            value: artist
+            type: 'museum',
+            label: museumName,
+            value: museumId
         });
     });
-    
-    // Pays
-    const country = params.get('country');
-    if (country) {
+} else {
+    // Fallback : afficher l'ID
+    museums.forEach(museumId => {
         tags.push({
-            type: 'country',
-            label: `${country}`,
-            value: country
-        });
-    }
-    
-    // Villes
-    const cities = params.getAll('city');
-    cities.forEach(city => {
-        tags.push({
-            type: 'city',
-            label: `${city}`,
-            value: city
+            type: 'museum',
+            label: museumId,
+            value: museumId
         });
     });
-    
-    // Tri
-    const sort = params.get('sort');
-    if (sort && sort !== 'relevance') {
-        const sortLabels = {
-            'date_desc': 'Plus récent',
-            'date_asc': 'Plus ancien',
-            'title_asc': 'A-Z',
-            'artist_asc': 'Artiste A-Z'
-        };
-        tags.push({
-            type: 'sort',
-            label: sortLabels[sort] || sort,
-            value: sort
-        });
-    }
-    
-    container.innerHTML = tags.length > 0 
-        ? tags.map(tag => `
-            <div class="filter-tag">
-                ${tag.label}
-                <i class="fas fa-times" onclick="removeTag('${tag.type}', '${tag.value}')"></i>
-            </div>
-        `).join('')
-        : '';
-    
-    updateCounter();
 }
 
-window.removeTag = function(type, value) {
-    const params = new URLSearchParams(window.location.search);
+
+                const sort = params.get('sort');
+                if (sort && sort !== 'relevance') {
+                    const sortLabels = {
+                        'date_desc': 'Plus récent',
+                        'date_asc': 'Plus ancien',
+                        'title_asc': 'A-Z',
+                        'artist_asc': 'Artiste A-Z'
+                    };
+                    tags.push({
+                        type: 'sort',
+                        label: sortLabels[sort] || sort,
+                        value: sort
+                    });
+                }
+                
+                container.innerHTML = tags.length > 0 
+                    ? tags.map(tag => `
+                        <div class="filter-tag">
+                            ${tag.label}
+                            <i class="fas fa-times" onclick="removeTag('${tag.type}', '${tag.value}')"></i>
+                        </div>
+                    `).join('')
+                    : '';
+                
+                updateCounter();
+            }
+
+            window.removeTag = function(type, value) {
+                const params = new URLSearchParams(window.location.search);
+                
+                switch(type) {
+                    case 'artist':
+                        const artists = params.getAll('artist').filter(a => a !== value);
+                        params.delete('artist');
+                        artists.forEach(a => params.append('artist', a));
+                        break;
+                    case 'country':
+                        params.delete('country');
+                        break;
+                    case 'city':
+                        const cities = params.getAll('city').filter(c => c !== value);
+                        params.delete('city');
+                        cities.forEach(c => params.append('city', c));
+                        break;
+
+case 'museum':
+    const museums = params.getAll('museum').filter(m => m !== value);
+    params.delete('museum');
+    museums.forEach(m => params.append('museum', m));
+    break;                        
+                        
+                        
+                    case 'sort':
+                        params.delete('sort');
+                        break;
+                }
+                
+                window.location.href = `/research?${params.toString()}`;
+            }
+
+            // ============================================
+            // SCROLL INFINI
+            // ============================================
+
+            function initInfiniteScroll() {
+                if (document.getElementById('scroll-sentinel')) return;
+                
+                const sentinel = document.createElement('div');
+                sentinel.id = 'scroll-sentinel';
+                sentinel.style.height = '10px';
+                sentinel.style.width = '100%';
+                sentinel.style.marginTop = '20px';
+                
+                const grid = document.getElementById('works-grid');
+                if (grid && grid.parentNode) {
+                    grid.parentNode.insertBefore(sentinel, grid.nextSibling);
+                }
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting && hasMore && !isLoading && !scrollTriggered) {
+                            scrollTriggered = true;
+                            loadMoreWorks();
+                        }
+                    });
+                }, { root: null, rootMargin: '200px', threshold: 0.1 });
+
+                observer.observe(sentinel);
+            }
+
+            async function loadMoreWorks() {
+                if (isLoading || !hasMore) {
+                    scrollTriggered = false;
+                    return;
+                }
+
+                isLoading = true;
+                const nextPage = currentPage + 1;
+
+                showLoadingIndicator();
+
+                try {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    urlParams.set('page', nextPage);
+                    urlParams.set('limit', 20);
+                    
+                    const response = await fetch(`/api/works?${urlParams.toString()}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Erreur HTTP: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+
+                    if (!data.works || data.works.length === 0) {
+                        hasMore = false;
+                        hideLoadingIndicator();
+                        showEndMessage();
+                        return;
+                    }
+
+                    appendWorks(data.works);
+                    currentPage = nextPage;
+                    displayedCount += data.works.length;
+                    hasMore = data.has_more;
+                    updateCounter();
+
+                } catch (error) {
+                    console.error('❌ Erreur chargement:', error);
+                } finally {
+                    isLoading = false;
+                    scrollTriggered = false;
+                    hideLoadingIndicator();
+                }
+            }
+
+function appendWorks(works) {
+    const grid = document.getElementById('works-grid');
+    const fragment = document.createDocumentFragment();
     
-    switch(type) {
-        case 'artist':
-            const artists = params.getAll('artist').filter(a => a !== value);
-            params.delete('artist');
-            artists.forEach(a => params.append('artist', a));
-            break;
-        case 'country':
-            params.delete('country');
-            break;
-        case 'city':
-            const cities = params.getAll('city').filter(c => c !== value);
-            params.delete('city');
-            cities.forEach(c => params.append('city', c));
-            break;
-        case 'sort':
-            params.delete('sort');
-            break;
-    }
-    
-    window.location.href = `/research?${params.toString()}`;
+    works.forEach((artwork, index) => {
+        const item = document.createElement('a');
+        item.href = `/oeuvre/${artwork.id}`;
+        item.className = 'work-item';
+        item.setAttribute('data-id', artwork.id);
+        item.style.animationDelay = `${index * 0.03}s`;
+
+        const container = document.createElement('div');
+        container.className = 'work-image-container';
+
+        if (artwork.image_url && artwork.image_url !== '') {
+            const img = document.createElement('img');
+            
+            // Adapter la taille selon le mode de vue
+            const height = currentView === 4 ? 400 : 600;
+            const width = 400;
+            
+            img.src = `https://images.weserv.nl/?url=${encodeURIComponent(artwork.image_url)}&w=${width}&h=${height}&fit=cover&a=attention&output=jpg&q=80&we`;
+            img.alt = artwork.titre || 'Sans titre';
+            img.loading = 'lazy';
+            
+            const placeholder = document.createElement('div');
+            placeholder.className = 'image-placeholder';
+            placeholder.style.display = 'none';
+            placeholder.innerHTML = '<i class="fas fa-image"></i>';
+            
+            img.onerror = function() {
+                this.style.display = 'none';
+                placeholder.style.display = 'flex';
+            };
+            
+            container.appendChild(img);
+            container.appendChild(placeholder);
+        } else {
+            const placeholder = document.createElement('div');
+            placeholder.className = 'image-placeholder';
+            placeholder.innerHTML = '<i class="fas fa-image"></i>';
+            container.appendChild(placeholder);
+        }
+
+        const overlay = document.createElement('div');
+        overlay.className = 'work-overlay';
+        overlay.innerHTML = `
+            <div class="work-title">${artwork.titre ? artwork.titre.substring(0, 40) : 'Sans titre'}</div>
+            <div class="work-artist">${artwork.createur ? artwork.createur.substring(0, 30) : 'Artiste inconnu'}</div>
+        `;
+
+        container.appendChild(overlay);
+        item.appendChild(container);
+        fragment.appendChild(item);
+    });
+
+    grid.appendChild(fragment);
 }
 
+            function showLoadingIndicator() {
+                document.getElementById('loading-indicator').style.display = 'block';
+            }
+
+            function hideLoadingIndicator() {
+                document.getElementById('loading-indicator').style.display = 'none';
+            }
+
+            function showEndMessage() {
+                document.getElementById('end-message').style.display = 'block';
+            }
+
+            function initScrollToTop() {
+                const scrollBtn = document.getElementById('scroll-top');
+                
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 500) {
+                        scrollBtn.classList.add('visible');
+                    } else {
+                        scrollBtn.classList.remove('visible');
+                    }
+                });
+
+                scrollBtn.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
 
             // ============================================
             // INITIALISATION
             // ============================================
             document.addEventListener('DOMContentLoaded', function() {
-                // Charger les options
                 loadSortOptions();
                 loadArtists();
                 loadCountries();
                 loadCities();
+                loadMuseums(); 
                 
-                // Initialiser les tags actifs
+                initArtistSearch();
+                initCountrySearch();
+                initCitySearch();
+                initMuseumSearch();
+                
                 updateActiveTags();
-                
-                // Initialiser le scroll infini
                 initInfiniteScroll();
-                
-                // Initialiser le scroll to top
                 initScrollToTop();
 
-                // Gérer les erreurs d'images
                 document.querySelectorAll('.work-item img').forEach(img => {
                     img.addEventListener('error', function() {
                         this.style.display = 'none';
