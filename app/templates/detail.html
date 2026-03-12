@@ -13,11 +13,11 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* ===== DESIGN MUSEUM - ÉLÉGANCE INSTITUTIONNELLE ===== */
+        /* ===== DESIGN MINIMALISTE - INSPIRÉ GALERIE CONTEMPORAINE ===== */
         * {
             margin: 0;
             padding: 0;
@@ -25,145 +25,82 @@
         }
 
         :root {
-            --bg: #faf9f7;
-            --bg-alt: #f0ede8;
-            --surface: #ffffff;
-            --surface-soft: #f8f6f3;
-            --text: #2c2c2c;
-            --text-soft: #5a5a5a;
-            --text-muted: #8b8b8b;
-            --accent: #9b8b7a;
-            --accent-dark: #7a6b5c;
+            --bg-dark: #0a0a0a;
+            --bg-light: #ffffff;
+            --surface-dark: #141414;
+            --surface-light: #f5f5f5;
+            --text-dark: #ffffff;
+            --text-light: #1a1a1a;
+            --text-muted-dark: #7a7a7a;
+            --text-muted-light: #9a9a9a;
+            --border-dark: #2a2a2a;
+            --border-light: #e0e0e0;
+            --accent: #6c5ce7;
+            --accent-hover: #5a4bcf;
             --gold: #b89b7b;
-            --border: #e0dbd4;
-            --border-light: #ede9e3;
-            --shadow: 0 2px 8px rgba(0,0,0,0.02);
-            --shadow-hover: 0 8px 24px rgba(0,0,0,0.04);
-            --transition: all 0.3s ease;
-            
-            --font-serif: 'Cormorant Garamond', serif;
-            --font-sans: 'Inter', sans-serif;
+            --favorite: #e03131;
+            --shadow: 0 4px 20px rgba(0,0,0,0.02);
+            --shadow-hover: 0 8px 30px rgba(0,0,0,0.04);
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-text: 'Inter', sans-serif;
         }
 
         body {
-            font-family: var(--font-sans);
-            background-color: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
+            background-color: var(--bg-dark);
+            font-family: var(--font-text);
+            color: var(--text-dark);
+            line-height: 1.5;
+            font-weight: 300;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
         }
 
-        /* ===== HEADER MUSÉE ===== */
-        .museum-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border-light);
-            z-index: 100;
-            padding: 0.5rem 2rem;
+        body.theme-light {
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            --surface: var(--surface-light);
+            --surface-hover: #eaeaea;
+            --border-color: var(--border-light);
+            --text-muted: var(--text-muted-light);
         }
 
-        .museum-header-content {
+        body.theme-dark {
+            --surface: var(--surface-dark);
+            --surface-hover: #1f1f1f;
+            --border-color: var(--border-dark);
+            --text-muted: var(--text-muted-dark);
+        }
+
+        .container {
             max-width: 1440px;
             margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .museum-logo {
-            font-family: var(--font-serif);
-            font-size: 1.2rem;
-            font-weight: 500;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--accent-dark);
-        }
-
-        .museum-logo span {
-            color: var(--gold);
-            margin: 0 0.5rem;
-        }
-
-        .museum-nav {
-            display: flex;
-            gap: 2rem;
-        }
-
-        .museum-nav a {
-            color: var(--text-soft);
-            text-decoration: none;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: color 0.2s;
-        }
-
-        .museum-nav a:hover {
-            color: var(--accent-dark);
-        }
-
-        /* ===== LAYOUT PRINCIPAL ===== */
-        .museum-wrapper {
-            max-width: 1440px;
-            margin: 6rem auto 2rem;
             padding: 0 2rem;
         }
 
-        /* ===== CHEMIN DE FER (BREADCRUMB) ===== */
-        .museum-breadcrumb {
-            margin-bottom: 2rem;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            letter-spacing: 1px;
+        /* ===== OFFSET POUR LA NAVBAR FIXE ===== */
+        .main-content {
+            margin-top: 100px;
+            min-height: calc(100vh - 100px);
         }
 
-        .museum-breadcrumb a {
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .museum-breadcrumb a:hover {
-            color: var(--accent);
-        }
-
-        .museum-breadcrumb i {
-            margin: 0 0.5rem;
-            font-size: 0.5rem;
-            color: var(--gold);
-        }
-
-        /* ===== GALERIE PRINCIPALE ===== */
+        /* ===== GALLERY VIEW - SANS CADRE ===== */
         .gallery-view {
             display: grid;
             grid-template-columns: 1.2fr 0.8fr;
-            gap: 3rem;
+            gap: 4rem;
             margin-bottom: 3rem;
-            background: var(--surface);
-            border: 1px solid var(--border-light);
-            box-shadow: var(--shadow);
         }
 
-        /* ===== PANEL IMAGE ===== */
+        /* IMAGE PANEL - OPTIMISÉ CHARGEMENT */
         .image-panel {
-            background: var(--bg-alt);
-            padding: 3rem;
+            background: transparent;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            min-height: 600px;
-        }
-
-        .artwork-frame {
-            position: relative;
-            max-width: 100%;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            min-height: 500px;
             cursor: zoom-in;
+            background: transparent;
         }
 
         .artwork-image {
@@ -173,204 +110,391 @@
             height: auto;
             object-fit: contain;
             display: block;
-            background: var(--surface);
+            background: transparent;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        .image-zoom-hint {
+        .artwork-image.loaded {
+            opacity: 1;
+        }
+
+        .image-loader {
             position: absolute;
-            bottom: -2rem;
-            right: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--accent);
+            font-size: 2rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .zoom-hint {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
             color: var(--text-muted);
             font-size: 0.7rem;
             letter-spacing: 1px;
+            opacity: 0;
+            transition: opacity 0.2s;
         }
 
-        .image-zoom-hint i {
+        .image-panel:hover .zoom-hint {
+            opacity: 1;
+        }
+
+        .zoom-hint i {
             margin-right: 0.3rem;
-            color: var(--gold);
+            color: var(--accent);
         }
 
-        /* ===== PANEL INFORMATIONS ===== */
+        /* INFO PANEL */
         .info-panel {
-            padding: 3rem 3rem 3rem 0;
-        }
-
-        .panel-section {
-            margin-bottom: 2.5rem;
-        }
-
-        .panel-section:last-child {
-            margin-bottom: 0;
-        }
-
-        .panel-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            color: var(--gold);
-            margin-bottom: 0.5rem;
+            padding: 2rem 0;
         }
 
         .artwork-title {
-            font-family: var(--font-serif);
-            font-size: 3rem;
-            font-weight: 500;
-            line-height: 1.1;
+            font-family: var(--font-display);
+            font-size: 3.5rem;
+            font-weight: 600;
+            line-height: 0.9;
             margin-bottom: 1rem;
-            color: var(--text);
-            letter-spacing: -0.02em;
+            letter-spacing: -0.03em;
+            text-transform: uppercase;
         }
 
         .artwork-subtitle {
-            font-size: 1.1rem;
-            color: var(--accent);
-            font-style: italic;
-            margin-bottom: 2rem;
-        }
-
-        .artwork-details {
-            margin-bottom: 2rem;
-        }
-
-        .detail-line {
-            display: flex;
-            padding: 0.4rem 0;
-            border-bottom: 1px dotted var(--border);
-        }
-
-        .detail-label {
-            width: 120px;
+            font-size: 1rem;
             color: var(--text-muted);
-            font-size: 0.85rem;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
         }
 
-        .detail-value {
-            flex: 1;
-            color: var(--text);
-            font-weight: 400;
-        }
-
-        /* ===== ACTIONS ÉLÉGANTES ===== */
-        .museum-actions {
-            display: flex;
-            gap: 1rem;
+        /* MÉTADONNÉES DÉTAILLÉES */
+        .metadata-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
             margin: 2rem 0;
-            flex-wrap: wrap;
+            padding: 2rem 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .museum-btn {
-            padding: 0.8rem 2rem;
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
-
-        .museum-btn:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-            background: var(--bg-alt);
-        }
-
-        .museum-btn i {
-            color: var(--gold);
-        }
-
-        .museum-btn.favorite.active {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        .museum-btn.favorite.active i {
-            color: var(--accent);
-        }
-
-        /* ===== BADGES ===== */
-        .museum-badges {
-            display: flex;
-            gap: 0.5rem;
-            margin: 1.5rem 0;
-        }
-
-        .badge {
-            padding: 0.3rem 1rem;
-            background: var(--bg-alt);
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            font-size: 0.7rem;
-            color: var(--text-soft);
-        }
-
-        /* ===== STATISTIQUES DISCÈTES ===== */
-        .museum-stats {
-            display: flex;
-            gap: 2rem;
-            padding: 1.5rem 0;
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .stat {
+        .metadata-item {
             text-align: left;
         }
 
-        .stat-number {
-            font-family: var(--font-serif);
-            font-size: 1.8rem;
+        .metadata-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+        }
+
+        .metadata-value {
+            font-family: var(--font-display);
+            font-size: 0.9rem;
             font-weight: 400;
-            color: var(--gold);
+        }
+
+        /* COLLECTION INFO */
+        .collection-info {
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .collection-title {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+
+        .collection-detail {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+        }
+
+        .collection-detail i {
+            color: var(--accent);
+            width: 20px;
+            margin-right: 0.5rem;
+        }
+
+        /* ACTIONS */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            margin: 2rem 0;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            padding: 0.8rem;
+            color: currentColor;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .action-btn i {
+            font-size: 0.9rem;
+            color: var(--accent);
+        }
+
+        .action-btn.favorite.active {
+            border-color: var(--favorite);
+            color: var(--favorite);
+        }
+
+        .action-btn.favorite.active i {
+            color: var(--favorite);
+        }
+
+        /* STATS CARDS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--accent);
             line-height: 1;
+            margin-bottom: 0.3rem;
         }
 
         .stat-label {
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             color: var(--text-muted);
         }
 
         .stat-stars {
+            margin-top: 0.3rem;
             color: var(--gold);
-            font-size: 0.9rem;
-            letter-spacing: 2px;
-            margin-top: 0.2rem;
-        }
-
-        /* ===== DISTRIBUTION ÉLÉGANTE ===== */
-        .rating-distribution {
-            margin-top: 1.5rem;
-        }
-
-        .dist-row {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.3rem;
-        }
-
-        .dist-label {
-            min-width: 35px;
-            color: var(--text-muted);
             font-size: 0.8rem;
         }
 
-        .dist-bar-container {
-            flex: 1;
+        /* BADGES */
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .badge {
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            padding: 0.3rem 1rem;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ===== SECTION CONTENT ===== */
+        .content-section {
+            margin: 4rem 0;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        .section-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* ===== SUGGESTIONS SOUS L'IMAGE ===== */
+        .suggestions-section {
+            margin: 2rem 0 4rem;
+        }
+
+        .horizontal-scroll {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding: 0.5rem 0 1.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) var(--border-color);
+        }
+
+        .horizontal-scroll::-webkit-scrollbar {
             height: 2px;
-            background: var(--border);
+        }
+
+        .horizontal-scroll::-webkit-scrollbar-track {
+            background: var(--border-color);
+        }
+
+        .horizontal-scroll::-webkit-scrollbar-thumb {
+            background: var(--accent);
+        }
+
+        .scroll-item {
+            flex: 0 0 200px;
+            text-decoration: none;
+            color: inherit;
+            transition: opacity 0.2s;
+        }
+
+        .scroll-item:hover {
+            opacity: 0.8;
+        }
+
+        .scroll-item img {
+            width: 100%;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+        }
+
+        .scroll-item-info {
+            padding: 0.5rem 0;
+        }
+
+        .scroll-item-title {
+            font-size: 0.8rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .scroll-item-artist {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ===== DESIGN COMMUNAUTÉ - 2 COLONNES ===== */
+        .community-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+        }
+
+        /* GAUCHE - STATISTIQUES */
+        .community-stats {
+            border-right: 1px solid var(--border-color);
+            padding-right: 2rem;
+        }
+
+        .global-rating {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .global-number {
+            font-family: var(--font-display);
+            font-size: 4rem;
+            font-weight: 600;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .global-stars {
+            color: var(--gold);
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+
+        .global-label {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            margin-top: 0.2rem;
+        }
+
+        .distribution {
+            margin: 2rem 0;
+        }
+
+        .dist-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .dist-label {
+            min-width: 30px;
+            color: var(--gold);
+            font-size: 0.8rem;
         }
 
         .dist-bar {
+            flex: 1;
+            height: 4px;
+            background: var(--border-color);
+        }
+
+        .dist-fill {
             height: 100%;
-            background: var(--gold);
+            background: var(--accent);
             width: 0%;
         }
 
@@ -378,153 +502,96 @@
             min-width: 30px;
             color: var(--text-muted);
             font-size: 0.7rem;
+            text-align: right;
         }
 
-        /* ===== SECTION DESCRIPTION ===== */
-        .description-section {
-            margin: 3rem 0;
-            padding: 2rem;
-            background: var(--surface-soft);
-            border: 1px solid var(--border-light);
-            column-count: 2;
-            column-gap: 3rem;
-        }
-
-        .description-section p {
-            color: var(--text-soft);
-            line-height: 1.8;
-            font-size: 0.95rem;
-            margin-bottom: 1rem;
-        }
-
-        /* ===== GRILLE MÉTADONNÉES ===== */
-        .metadata-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 2rem;
-            margin: 3rem 0;
-            padding: 2rem;
-            background: var(--surface);
-            border: 1px solid var(--border-light);
-        }
-
-        .metadata-item {
-            text-align: center;
-        }
-
-        .metadata-value {
-            font-family: var(--font-serif);
-            font-size: 1.2rem;
-            font-weight: 500;
-            color: var(--text);
-        }
-
-        .metadata-label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--text-muted);
-            margin-top: 0.3rem;
-        }
-
-        /* ===== SECTION COMMENTAIRES ===== */
-        .comments-section {
-            margin: 3rem 0;
-        }
-
-        .section-title {
-            font-family: var(--font-serif);
-            font-size: 1.8rem;
-            font-weight: 400;
-            margin-bottom: 2rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid var(--gold);
-            display: inline-block;
-        }
-
-        .comment-card {
-            background: var(--surface);
-            border: 1px solid var(--border-light);
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            transition: var(--transition);
-        }
-
-        .comment-card:hover {
-            border-color: var(--gold);
-        }
-
-        .comment-header {
+        .community-meta {
             display: flex;
-            justify-content: space-between;
+            gap: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .community-meta i {
+            color: var(--accent);
+            margin-right: 0.3rem;
+        }
+
+        /* Votre note */
+        .your-rating {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .your-rating-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
             margin-bottom: 0.5rem;
         }
 
-        .comment-author {
-            font-weight: 600;
-            color: var(--accent);
-        }
-
-        .comment-date {
-            color: var(--text-muted);
-            font-size: 0.8rem;
-        }
-
-        .comment-content {
-            color: var(--text-soft);
-            margin-bottom: 1rem;
-            line-height: 1.7;
-            font-size: 0.9rem;
-        }
-
-        .comment-ratings {
+        .quick-stars {
             display: flex;
-            gap: 1rem;
-            color: var(--text-muted);
-            font-size: 0.75rem;
+            gap: 0.3rem;
+            font-size: 1.5rem;
+            color: var(--border-color);
+            cursor: pointer;
+            margin-bottom: 1rem;
         }
 
-        .comment-ratings i {
+        .quick-stars .star {
+            transition: color 0.2s;
+        }
+
+        .quick-stars .star:hover,
+        .quick-stars .star.selected {
             color: var(--gold);
-            margin-right: 0.2rem;
         }
 
-        /* ===== FORMULAIRE DE COMMENTAIRE ===== */
+        /* DROITE - COMMENTAIRES */
+        .community-comments {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Formulaire commentaire */
         .comment-form {
-            background: var(--surface);
-            border: 1px solid var(--border-light);
-            padding: 2rem;
-            margin: 2rem 0;
+            background: var(--surface-hover);
+            padding: 1.5rem;
         }
 
         .comment-form textarea {
             width: 100%;
-            padding: 1rem;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            color: var(--text);
-            font-family: var(--font-sans);
+            background: transparent;
+            border: none;
+            color: currentColor;
+            font-family: var(--font-text);
             font-size: 0.9rem;
-            resize: vertical;
+            resize: none;
+            margin-bottom: 1rem;
         }
 
         .comment-form textarea:focus {
             outline: none;
-            border-color: var(--gold);
         }
 
-        .comment-form-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 1rem;
+        .comment-form textarea::placeholder {
+            color: var(--text-muted);
+            font-style: italic;
         }
 
         .privacy-options {
             display: flex;
             gap: 1rem;
+            margin-bottom: 1rem;
             color: var(--text-muted);
-            font-size: 0.8rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .privacy-options label {
@@ -534,217 +601,145 @@
             cursor: pointer;
         }
 
+        .privacy-options i {
+            color: var(--accent);
+        }
+
+        .comment-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+
         .btn-submit {
             background: transparent;
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            padding: 0.6rem 2rem;
-            cursor: pointer;
-            transition: var(--transition);
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 0.5rem 1.5rem;
             font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
         .btn-submit:hover {
-            background: var(--gold);
+            background: var(--accent);
             color: white;
         }
 
-        /* ===== VOTRE NOTE ===== */
-        .user-rating-panel {
-            background: var(--surface);
-            border: 1px solid var(--border-light);
-            padding: 2rem;
-            margin: 2rem 0;
-        }
-
-        .user-rating-header {
+        /* Liste des commentaires */
+        .comments-list {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .user-rating-header h3 {
-            font-family: var(--font-serif);
-            font-size: 1.2rem;
-            font-weight: 400;
-        }
-
-        .user-stars {
-            display: flex;
-            gap: 0.3rem;
-            font-size: 1.8rem;
-            color: var(--border);
-            cursor: pointer;
-        }
-
-        .user-stars .star {
-            transition: var(--transition);
-        }
-
-        .user-stars .star:hover,
-        .user-stars .star.selected {
-            color: var(--gold);
-        }
-
-        .sliders-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            margin: 1.5rem 0;
-        }
-
-        .slider-item {
-            text-align: center;
-        }
-
-        .slider-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-            margin-bottom: 0.5rem;
-        }
-
-        .slider {
-            width: 100%;
-            height: 2px;
-            -webkit-appearance: none;
-            background: var(--border);
-            outline: none;
-        }
-
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 14px;
-            height: 14px;
-            background: var(--gold);
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid var(--surface);
-        }
-
-        .slider-value {
-            font-size: 0.8rem;
-            color: var(--gold);
-            margin-top: 0.3rem;
-        }
-
-        /* ===== GRILLE D'ŒUVRES SIMILAIRES ===== */
-        .similar-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 2rem;
-            margin: 2rem 0 4rem;
-        }
-
-        .similar-card {
-            text-decoration: none;
-            color: inherit;
-            transition: var(--transition);
-        }
-
-        .similar-card:hover {
-            transform: translateY(-4px);
-        }
-
-        .similar-image {
-            width: 100%;
-            aspect-ratio: 2/3;
-            background: var(--surface);
-            border: 1px solid var(--border-light);
-            object-fit: cover;
-            margin-bottom: 0.8rem;
-        }
-
-        .similar-info {
-            text-align: center;
-        }
-
-        .similar-title {
-            font-weight: 500;
-            font-size: 0.9rem;
-            color: var(--text);
-        }
-
-        .similar-artist {
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            margin: 0.2rem 0;
-        }
-
-        .similar-rating {
-            color: var(--gold);
-            font-size: 0.7rem;
-        }
-
-        /* ===== LOGIN PROMPT ÉLÉGANT ===== */
-        .login-prompt-museum {
-            background: var(--surface);
-            border: 1px solid var(--border-light);
-            padding: 3rem;
-            text-align: center;
-            margin: 3rem 0;
-        }
-
-        .login-prompt-museum i {
-            font-size: 2.5rem;
-            color: var(--gold);
-            margin-bottom: 1rem;
-        }
-
-        .login-prompt-museum h3 {
-            font-family: var(--font-serif);
-            font-size: 1.5rem;
-            font-weight: 400;
-            margin-bottom: 0.5rem;
-        }
-
-        .login-prompt-museum p {
-            color: var(--text-muted);
-            margin-bottom: 1.5rem;
-        }
-
-        .login-buttons {
-            display: flex;
+            flex-direction: column;
             gap: 1rem;
-            justify-content: center;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
         }
 
-        .btn-login {
-            background: var(--gold);
-            color: white;
-            padding: 0.6rem 2rem;
-            text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 0.7rem;
-            transition: var(--transition);
+        .comments-list::-webkit-scrollbar {
+            width: 2px;
         }
 
-        .btn-login:hover {
+        .comments-list::-webkit-scrollbar-track {
+            background: var(--border-color);
+        }
+
+        .comments-list::-webkit-scrollbar-thumb {
             background: var(--accent);
         }
 
-        .btn-register {
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            padding: 0.6rem 2rem;
-            text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 0.7rem;
-            transition: var(--transition);
+        .comment-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .btn-register:hover {
-            background: var(--gold);
+        .comment-item:last-child {
+            border-bottom: none;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+        }
+
+        .comment-author {
+            font-weight: 500;
+            font-size: 0.8rem;
+            color: var(--accent);
+        }
+
+        .comment-date {
+            color: var(--text-muted);
+            font-size: 0.6rem;
+            text-transform: uppercase;
+        }
+
+        .comment-content {
+            font-size: 0.8rem;
+            color: var(--text);
+            margin-bottom: 0.3rem;
+        }
+
+        .comment-meta {
+            display: flex;
+            gap: 1rem;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+        }
+
+        .comment-meta i {
+            color: var(--gold);
+            margin-right: 0.2rem;
+        }
+
+        /* ===== LOGIN PROMPT MINI ===== */
+        .login-prompt-mini {
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .login-prompt-mini i {
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .login-prompt-mini p {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-size: 0.8rem;
+        }
+
+        .login-prompt-mini-buttons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .login-prompt-mini-buttons a {
+            padding: 0.4rem 1rem;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+
+        .btn-login-mini {
+            background: var(--accent);
             color: white;
         }
 
-        /* ===== MODALE IMAGE ===== */
+        .btn-register-mini {
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+
+        /* ===== MODALE ===== */
         .museum-modal {
             position: fixed;
             top: 0;
@@ -766,7 +761,7 @@
             max-width: 95vw;
             max-height: 95vh;
             object-fit: contain;
-            border: 1px solid var(--gold);
+            background: transparent;
         }
 
         .modal-close {
@@ -785,85 +780,65 @@
         }
 
         /* ===== FOOTER ===== */
-        .museum-footer {
+        .footer {
             margin-top: 4rem;
             padding: 2rem;
-            border-top: 1px solid var(--border);
+            border-top: 1px solid var(--border-color);
             text-align: center;
             color: var(--text-muted);
-            font-size: 0.8rem;
+            font-size: 0.7rem;
         }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 1024px) {
             .gallery-view {
                 grid-template-columns: 1fr;
+                gap: 2rem;
             }
             
-            .info-panel {
-                padding: 2rem;
+            .artwork-title {
+                font-size: 2.5rem;
             }
             
-            .description-section {
-                column-count: 1;
+            .community-panel {
+                grid-template-columns: 1fr;
             }
             
-            .metadata-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .similar-grid {
-                grid-template-columns: repeat(2, 1fr);
+            .community-stats {
+                border-right: none;
+                padding-right: 0;
+                border-bottom: 1px solid var(--border-color);
+                padding-bottom: 2rem;
             }
         }
 
         @media (max-width: 768px) {
-            .museum-header-content {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .global-rating {
                 flex-direction: column;
                 gap: 0.5rem;
             }
             
-            .museum-nav {
-                gap: 1rem;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            
-            .artwork-title {
-                font-size: 2.2rem;
-            }
-            
-            .museum-stats {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            
-            .sliders-grid {
+            .metadata-grid {
                 grid-template-columns: 1fr;
-            }
-            
-            .login-buttons {
-                flex-direction: column;
             }
         }
     </style>
 </head>
-<body>
-    <!-- Header Musée -->
-    <header class="museum-header">
-        <div class="museum-header-content">
-            <div class="museum-logo">
-                {{ site_name }} <span>·</span> COLLECTION
-            </div>
-            <nav class="museum-nav">
-                <a href="/">ACCUEIL</a>
-                <a href="/research">ŒUVRES</a>
-                <a href="/artists">ARTISTES</a>
-                <a href="/expositions">EXPOSITIONS</a>
-                <a href="/about">À PROPOS</a>
-            </nav>
-        </div>
-    </header>
+<body class="theme-dark">
+    <!-- Inclusion de la navbar -->
+    {% include 'navbar.html' %}
 
     <!-- Modale image -->
     <div class="museum-modal" id="imageModal" onclick="closeModal()">
@@ -871,275 +846,268 @@
         <img src="" alt="" class="modal-image" id="modalImage">
     </div>
 
-    <!-- Contenu principal -->
-    <div class="museum-wrapper">
-        <!-- Breadcrumb -->
-        <div class="museum-breadcrumb">
-            <a href="/">ACCUEIL</a>
-            <i class="fas fa-circle"></i>
-            {% if oeuvre.instance_of %}
-            <a href="/?type={{ oeuvre.instance_of|urlencode }}">{{ oeuvre.instance_of|upper }}</a>
-            <i class="fas fa-circle"></i>
-            {% endif %}
-            <span>{{ oeuvre.titre|truncate(50) }}</span>
-        </div>
-
-        <!-- Galerie principale -->
+    <div class="container main-content">
+        <!-- Gallery View - image + infos -->
         <div class="gallery-view">
-            <!-- Panel image -->
-            <div class="image-panel">
-                <div class="artwork-frame" onclick="openImageModal('{{ oeuvre.image_url }}')">
-                    {% if oeuvre.image_url %}
-                    <img src="https://images.weserv.nl/?url={{ oeuvre.image_url|urlencode }}&w=1000&h=1000&fit=contain&output=jpg&q=90" 
-                         alt="{{ oeuvre.titre }}" 
-                         class="artwork-image">
-                    {% else %}
-                    <div style="width:100%; height:400px; display:flex; align-items:center; justify-content:center; background:var(--bg-alt); color:var(--text-muted);">
-                        <i class="fas fa-image fa-3x"></i>
-                    </div>
-                    {% endif %}
-                    <div class="image-zoom-hint">
-                        <i class="fas fa-search-plus"></i> CLIQUER POUR AGRANDIR
-                    </div>
+            <!-- Image Panel - avec loader -->
+            <div class="image-panel" onclick="openImageModal('{{ oeuvre.image_url }}')">
+                {% if oeuvre.image_url %}
+                <div class="image-loader" id="imageLoader">
+                    <i class="fas fa-spinner fa-spin"></i>
                 </div>
+                <img src="https://images.weserv.nl/?url={{ oeuvre.image_url|urlencode }}&w=800&h=800&fit=contain&output=jpg&q=85&we"
+                     alt="{{ oeuvre.titre }}" 
+                     class="artwork-image" 
+                     id="mainImage"
+                     style="background: transparent;"
+                     onload="this.classList.add('loaded'); document.getElementById('imageLoader').style.display='none';">
+                <div class="zoom-hint">
+                    <i class="fas fa-search-plus"></i> ZOOM
+                </div>
+                {% else %}
+                <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:var(--text-muted); background: transparent;">
+                    <i class="fas fa-image fa-3x"></i>
+                </div>
+                {% endif %}
             </div>
 
-            <!-- Panel informations -->
+            <!-- Info Panel -->
             <div class="info-panel">
-                <div class="panel-section">
-                    <div class="panel-label">ŒUVRE</div>
-                    <h1 class="artwork-title">{{ oeuvre.titre or 'Sans titre' }}</h1>
-                    <div class="artwork-subtitle">
-                        {{ oeuvre.createur or 'Artiste inconnu' }}
-                        {% if oeuvre.inception %}
-                        · {{ oeuvre.inception[:4] }}
-                        {% endif %}
-                    </div>
+                <h1 class="artwork-title">{{ oeuvre.titre or 'SANS TITRE' }}</h1>
+                <div class="artwork-subtitle">
+                    {{ oeuvre.createur or 'ARTISTE INCONNU' }}
+                    {% if oeuvre.inception %}
+                    · {{ oeuvre.inception[:4] }}
+                    {% endif %}
                 </div>
 
+                <!-- Métadonnées détaillées -->
+                <div class="metadata-grid">
+                    <!-- Type d'œuvre -->
+                    {% set instance = oeuvre.instance_of_fr if session.language == 'fr' else oeuvre.instance_of_en %}
+                    {% if instance %}
+                    <div class="metadata-item">
+                        <div class="metadata-label">TYPE</div>
+                        <div class="metadata-value">{{ instance }}</div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Genre -->
+                    {% set genre = oeuvre.genre_fr if session.language == 'fr' else oeuvre.genre_en %}
+                    {% if genre %}
+                    <div class="metadata-item">
+                        <div class="metadata-label">GENRE</div>
+                        <div class="metadata-value">{{ genre }}</div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Matériau -->
+                    {% set materiau = oeuvre.made_from_material_fr if session.language == 'fr' else oeuvre.made_from_material_en %}
+                    {% if materiau %}
+                    <div class="metadata-item">
+                        <div class="metadata-label">MATÉRIAU</div>
+                        <div class="metadata-value">{{ materiau }}</div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Mouvement -->
+                    {% set mouvement = oeuvre.movement_fr if session.language == 'fr' else oeuvre.movement_en %}
+                    {% if mouvement %}
+                    <div class="metadata-item">
+                        <div class="metadata-label">MOUVEMENT</div>
+                        <div class="metadata-value">{{ mouvement }}</div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Dimensions -->
+                    {% if oeuvre.height and oeuvre.width %}
+                    <div class="metadata-item">
+                        <div class="metadata-label">DIMENSIONS</div>
+                        <div class="metadata-value">{{ oeuvre.height }} × {{ oeuvre.width }} cm</div>
+                    </div>
+                    {% elif oeuvre.height %}
+                    <div class="metadata-item">
+                        <div class="metadata-label">HAUTEUR</div>
+                        <div class="metadata-value">{{ oeuvre.height }} cm</div>
+                    </div>
+                    {% elif oeuvre.width %}
+                    <div class="metadata-item">
+                        <div class="metadata-label">LARGEUR</div>
+                        <div class="metadata-value">{{ oeuvre.width }} cm</div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Statut copyright -->
+                    {% set copyright = oeuvre.copyright_status_fr if session.language == 'fr' else oeuvre.copyright_status_en %}
+                    {% if copyright %}
+                    <div class="metadata-item">
+                        <div class="metadata-label">COPYRIGHT</div>
+                        <div class="metadata-value">{{ copyright }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Collection Info -->
+                {% set collection_nom = oeuvre.collection_fr if session.language == 'fr' else oeuvre.collection_en %}
+                {% set pays = oeuvre.country_fr if session.language == 'fr' else oeuvre.country_en %}
+                {% set ville = oeuvre.city_fr if session.language == 'fr' else oeuvre.city_en %}
+                
+                {% if collection_nom or pays or ville %}
+                <div class="collection-info">
+                    <div class="collection-title">LIEU DE CONSERVATION</div>
+                    {% if collection_nom %}
+                    <div class="collection-detail"><i class="fas fa-landmark"></i> {{ collection_nom }}</div>
+                    {% endif %}
+                    {% if ville %}
+                    <div class="collection-detail"><i class="fas fa-city"></i> {{ ville }}</div>
+                    {% endif %}
+                    {% if pays %}
+                    <div class="collection-detail"><i class="fas fa-flag"></i> {{ pays }}</div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
                 <!-- Actions -->
-                <div class="museum-actions">
+                <div class="actions-grid">
                     {% if session.user_id %}
-                    <div class="museum-btn favorite" id="favorite-btn" onclick="toggleFavorite()">
+                    <div class="action-btn favorite" id="favorite-btn" onclick="toggleFavorite()">
                         <i class="far fa-heart" id="favorite-icon"></i>
                         <span>FAVORI</span>
                     </div>
                     {% endif %}
                     
-                    <div class="museum-btn" onclick="document.getElementById('comment-form').scrollIntoView({behavior:'smooth'})">
-                        <i class="far fa-comment"></i>
-                        <span>COMMENTER</span>
-                    </div>
-                    
-                    <div class="museum-btn">
+                    <div class="action-btn" onclick="share()">
                         <i class="fas fa-share-alt"></i>
                         <span>PARTAGER</span>
                     </div>
                     
                     {% if oeuvre.url_wikidata %}
-                    <a href="{{ oeuvre.url_wikidata }}" target="_blank" class="museum-btn">
+                    <a href="{{ oeuvre.url_wikidata }}" target="_blank" class="action-btn">
                         <i class="fab fa-wikipedia-w"></i>
                         <span>WIKIDATA</span>
                     </a>
                     {% endif %}
                 </div>
 
-                <!-- Badges -->
-                <div class="museum-badges">
-                    <span class="badge">{{ oeuvre.instance_of or 'Œuvre' }}</span>
-                    {% if oeuvre.materiau %}
-                    <span class="badge">{{ oeuvre.materiau }}</span>
-                    {% endif %}
-                </div>
-
-                <!-- Statistiques -->
-                <div class="museum-stats">
-                    <div class="stat">
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
                         <div class="stat-number">{{ stats.moyenne_globale|round(1) if stats and stats.moyenne_globale else '–' }}</div>
                         <div class="stat-label">MOYENNE</div>
                         <div class="stat-stars" id="avg-stars">☆☆☆☆☆</div>
                     </div>
-                    <div class="stat">
+                    <div class="stat-card">
                         <div class="stat-number">{{ stats.total_notes if stats and stats.total_notes else 0 }}</div>
                         <div class="stat-label">NOTES</div>
                     </div>
-                    <div class="stat">
+                    <div class="stat-card">
                         <div class="stat-number">{{ stats.favorites_count if stats and stats.favorites_count else 0 }}</div>
                         <div class="stat-label">FAVORIS</div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Distribution -->
-                <div class="rating-distribution" id="distribution-container">
-                    <!-- Chargée dynamiquement -->
-                </div>
+        <!-- SUGGESTIONS SOUS L'IMAGE -->
+        <div class="suggestions-section">
+            <div class="section-header">
+                <h2 class="section-title">SUGGESTIONS</h2>
+                <a href="/research" class="section-link">VOIR TOUT →</a>
+            </div>
 
-                <!-- Détails rapides -->
-                <div class="artwork-details">
-                    <div class="detail-line">
-                        <span class="detail-label">Artiste</span>
-                        <span class="detail-value">{{ oeuvre.createur or 'Inconnu' }}</span>
+            <div class="horizontal-scroll" id="similar-works">
+                <!-- Suggestions dynamiques à implémenter -->
+            </div>
+        </div>
+
+        <!-- COMMUNAUTÉ - 2 COLONNES -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2 class="section-title">COMMUNAUTÉ</h2>
+                <span class="section-link" style="opacity:0.5;">{{ stats.total_notes if stats else 0 }} AVIS</span>
+            </div>
+
+            <div class="community-panel">
+                <!-- COLONNE GAUCHE - STATISTIQUES + VOTRE NOTE -->
+                <div class="community-stats">
+                    <div class="global-rating">
+                        <span class="global-number">{{ stats.moyenne_globale|round(1) if stats and stats.moyenne_globale else '–' }}</span>
+                        <div>
+                            <div class="global-stars" id="global-stars">☆☆☆☆☆</div>
+                            <div class="global-label">NOTE GLOBALE</div>
+                        </div>
                     </div>
-                    <div class="detail-line">
-                        <span class="detail-label">Date</span>
-                        <span class="detail-value">{{ oeuvre.inception[:4] if oeuvre.inception else 'Inconnue' }}</span>
+
+                    <div class="distribution" id="distribution-container">
+                        <!-- Distribution chargée dynamiquement -->
                     </div>
-                    <div class="detail-line">
-                        <span class="detail-label">Lieu</span>
-                        <span class="detail-value">{{ oeuvre.lieu or 'Inconnu' }}</span>
+
+                    <div class="community-meta">
+                        <span><i class="far fa-user"></i> {{ stats.total_notes if stats else 0 }} avis</span>
+                        <span><i class="far fa-heart"></i> {{ stats.favorites_count if stats else 0 }} favoris</span>
                     </div>
-                    {% if oeuvre.dimensions %}
-                    <div class="detail-line">
-                        <span class="detail-label">Dimensions</span>
-                        <span class="detail-value">{{ oeuvre.dimensions }}</span>
+
+                    {% if session.user_id %}
+                    <!-- Votre note (dans la colonne stats) -->
+                    <div class="your-rating">
+                        <div class="your-rating-label">VOTRE NOTE</div>
+                        <div class="quick-stars" id="quick-stars">
+                            <span class="star" data-value="5">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="1">★</span>
+                        </div>
+                        <input type="hidden" id="note-globale" value="0">
                     </div>
                     {% endif %}
                 </div>
-            </div>
-        </div>
 
-        <!-- Section description (en colonnes) -->
-        {% if oeuvre.description %}
-        <div class="description-section">
-            <p>{{ oeuvre.description }}</p>
-        </div>
-        {% endif %}
+                <!-- COLONNE DROITE - COMMENTAIRES -->
+                <div class="community-comments">
+                    {% if session.user_id %}
+                    <!-- Formulaire commentaire avec public/privé -->
+                    <div class="comment-form">
+                        <textarea id="commentaire" rows="2" placeholder="Écrire un commentaire..."></textarea>
+                        <div class="privacy-options">
+                            <label>
+                                <input type="radio" name="visibility" value="public" checked> 
+                                <i class="fas fa-globe"></i> PUBLIC
+                            </label>
+                            <label>
+                                <input type="radio" name="visibility" value="private"> 
+                                <i class="fas fa-lock"></i> PRIVÉ
+                            </label>
+                        </div>
+                        <div class="comment-footer">
+                            <button class="btn-submit" onclick="saveComment()">PUBLIER</button>
+                        </div>
+                    </div>
+                    {% endif %}
 
-        <!-- Grille métadonnées -->
-        <div class="metadata-grid">
-            <div class="metadata-item">
-                <div class="metadata-value">{{ oeuvre.createur or '?' }}</div>
-                <div class="metadata-label">ARTISTE</div>
+                    <!-- Liste des commentaires -->
+                    <div class="comments-list" id="comments-container">
+                        <!-- Chargé dynamiquement -->
+                    </div>
+                </div>
             </div>
-            <div class="metadata-item">
-                <div class="metadata-value">{{ oeuvre.inception[:4] if oeuvre.inception else '?' }}</div>
-                <div class="metadata-label">DATE</div>
-            </div>
-            <div class="metadata-item">
-                <div class="metadata-value">{{ oeuvre.lieu or '?' }}</div>
-                <div class="metadata-label">LIEU</div>
-            </div>
-            <div class="metadata-item">
-                <div class="metadata-value">{{ oeuvre.instance_of or '?' }}</div>
-                <div class="metadata-label">TYPE</div>
-            </div>
-        </div>
 
-        {% if session.user_id %}
-        <!-- Votre note -->
-        <div class="user-rating-panel">
-            <div class="user-rating-header">
-                <h3>Votre avis</h3>
-                <div class="user-stars" id="user-stars">
-                    <span class="star" data-value="5">★</span>
-                    <span class="star" data-value="4">★</span>
-                    <span class="star" data-value="3">★</span>
-                    <span class="star" data-value="2">★</span>
-                    <span class="star" data-value="1">★</span>
+            {% if not session.user_id %}
+            <!-- Login prompt minimal -->
+            <div class="login-prompt-mini">
+                <i class="far fa-heart"></i>
+                <p>Connectez-vous pour noter et commenter</p>
+                <div class="login-prompt-mini-buttons">
+                    <a href="/login?next={{ request.path }}" class="btn-login-mini">SE CONNECTER</a>
+                    <a href="/register?next={{ request.path }}" class="btn-register-mini">S'INSCRIRE</a>
                 </div>
             </div>
-            <input type="hidden" id="note-globale" value="0">
-
-            <div class="sliders-grid">
-                <div class="slider-item">
-                    <div class="slider-label">TECHNIQUE</div>
-                    <input type="range" id="note-technique" class="slider" min="0" max="5" step="0.5" value="0">
-                    <div class="slider-value" id="technique-value">0</div>
-                </div>
-                <div class="slider-item">
-                    <div class="slider-label">ORIGINALITÉ</div>
-                    <input type="range" id="note-originalite" class="slider" min="0" max="5" step="0.5" value="0">
-                    <div class="slider-value" id="originalite-value">0</div>
-                </div>
-                <div class="slider-item">
-                    <div class="slider-label">ÉMOTION</div>
-                    <input type="range" id="note-emotion" class="slider" min="0" max="5" step="0.5" value="0">
-                    <div class="slider-value" id="emotion-value">0</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Formulaire commentaire -->
-        <div class="comment-form" id="comment-form">
-            <textarea id="commentaire" rows="4" placeholder="Écrire un commentaire..."></textarea>
-            <div class="comment-form-footer">
-                <div class="privacy-options">
-                    <label>
-                        <input type="radio" name="visibility" value="public" checked> 
-                        <i class="fas fa-globe"></i> PUBLIC
-                    </label>
-                    <label>
-                        <input type="radio" name="visibility" value="private"> 
-                        <i class="fas fa-lock"></i> PRIVÉ
-                    </label>
-                </div>
-                <button class="btn-submit" onclick="saveComment()">PUBLIER</button>
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- Section commentaires -->
-        <div class="comments-section">
-            <h2 class="section-title">Commentaires</h2>
-            <div id="comments-container">
-                <!-- Chargé dynamiquement -->
-            </div>
-        </div>
-
-        {% if not session.user_id %}
-        <!-- Login prompt -->
-        <div class="login-prompt-museum">
-            <i class="far fa-heart"></i>
-            <h3>Participer à la conversation</h3>
-            <p>Les membres de la communauté partagent leurs analyses et ressentis</p>
-            <div class="login-buttons">
-                <a href="/login?next={{ request.path }}" class="btn-login">SE CONNECTER</a>
-                <a href="/register?next={{ request.path }}" class="btn-register">CRÉER UN COMPTE</a>
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- Œuvres similaires -->
-        <h2 class="section-title">Œuvres à découvrir</h2>
-        <div class="similar-grid">
-            <!-- Placeholder - à remplacer par des vraies données -->
-            <a href="#" class="similar-card">
-                <img src="https://via.placeholder.com/200x300" alt="" class="similar-image">
-                <div class="similar-info">
-                    <div class="similar-title">Les Nymphéas</div>
-                    <div class="similar-artist">Claude Monet</div>
-                    <div class="similar-rating">★★★★☆</div>
-                </div>
-            </a>
-            <a href="#" class="similar-card">
-                <img src="https://via.placeholder.com/200x300" alt="" class="similar-image">
-                <div class="similar-info">
-                    <div class="similar-title">Le Déjeuner des canotiers</div>
-                    <div class="similar-artist">Pierre-Auguste Renoir</div>
-                    <div class="similar-rating">★★★★★</div>
-                </div>
-            </a>
-            <a href="#" class="similar-card">
-                <img src="https://via.placeholder.com/200x300" alt="" class="similar-image">
-                <div class="similar-info">
-                    <div class="similar-title">La Nuit étoilée</div>
-                    <div class="similar-artist">Vincent van Gogh</div>
-                    <div class="similar-rating">★★★★★</div>
-                </div>
-            </a>
-            <a href="#" class="similar-card">
-                <img src="https://via.placeholder.com/200x300" alt="" class="similar-image">
-                <div class="similar-info">
-                    <div class="similar-title">L'Origine du monde</div>
-                    <div class="similar-artist">Gustave Courbet</div>
-                    <div class="similar-rating">★★★★☆</div>
-                </div>
-            </a>
+            {% endif %}
         </div>
 
         <!-- Footer -->
-        <footer class="museum-footer">
-            <p>© {{ site_name }} · Collection numérique · Tous droits réservés</p>
+        <footer class="footer">
+            <p>© {{ site_name }} · Collection numérique</p>
         </footer>
     </div>
 
@@ -1147,12 +1115,11 @@
         // ===== VARIABLES =====
         const artworkId = '{{ oeuvre.id or oeuvre.id_q }}';
         let saveTimeout;
-        let stats = {{ stats|tojson|safe if stats else 'null' }};
 
         // ===== MODALE IMAGE =====
         function openImageModal(url) {
             if (!url) return;
-            document.getElementById('modalImage').src = url;
+            document.getElementById('modalImage').src = `https://images.weserv.nl/?url=${encodeURIComponent(url)}&w=1800&h=1800&fit=contain&output=jpg&q=90`;
             document.getElementById('imageModal').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
@@ -1208,9 +1175,9 @@
             } catch (e) { console.error(e); }
         }
 
-        // ===== ÉTOILES =====
-        function initUserStars() {
-            const stars = document.querySelectorAll('#user-stars .star');
+        // ===== NOTATION =====
+        function initQuickStars() {
+            const stars = document.querySelectorAll('#quick-stars .star');
             const hidden = document.getElementById('note-globale');
             if (!stars.length || !hidden) return;
             
@@ -1231,30 +1198,6 @@
             });
         }
 
-        // ===== CURSEURS =====
-        function initSliders() {
-            const sliders = [
-                { id: 'note-technique', display: 'technique-value' },
-                { id: 'note-originalite', display: 'originalite-value' },
-                { id: 'note-emotion', display: 'emotion-value' }
-            ];
-            
-            sliders.forEach(s => {
-                const slider = document.getElementById(s.id);
-                const disp = document.getElementById(s.display);
-                if (!slider || !disp) return;
-                
-                const update = () => {
-                    let val = parseFloat(slider.value);
-                    disp.textContent = val.toFixed(1);
-                };
-                
-                update();
-                slider.addEventListener('input', update);
-                slider.addEventListener('change', autoSaveRating);
-            });
-        }
-
         function autoSaveRating() {
             clearTimeout(saveTimeout);
             saveTimeout = setTimeout(saveRating, 800);
@@ -1272,9 +1215,10 @@
                     body: JSON.stringify({
                         artwork_id: artworkId,
                         note_globale: parseFloat(document.getElementById('note-globale').value),
-                        note_technique: parseFloat(document.getElementById('note-technique').value),
-                        note_originalite: parseFloat(document.getElementById('note-originalite').value),
-                        note_emotion: parseFloat(document.getElementById('note-emotion').value)
+                        note_technique: 0,
+                        note_originalite: 0,
+                        note_emotion: 0,
+                        commentaire: ''
                     })
                 });
                 loadStats();
@@ -1298,9 +1242,9 @@
                     body: JSON.stringify({
                         artwork_id: artworkId,
                         note_globale: parseFloat(document.getElementById('note-globale').value),
-                        note_technique: parseFloat(document.getElementById('note-technique').value),
-                        note_originalite: parseFloat(document.getElementById('note-originalite').value),
-                        note_emotion: parseFloat(document.getElementById('note-emotion').value),
+                        note_technique: 0,
+                        note_originalite: 0,
+                        note_emotion: 0,
                         commentaire: visibility === 'public' ? comment : ''
                     })
                 });
@@ -1321,16 +1265,9 @@
                 const r = data.rating;
                 document.getElementById('note-globale').value = r.note_globale;
                 
-                document.querySelectorAll('#user-stars .star').forEach(s => {
+                document.querySelectorAll('#quick-stars .star').forEach(s => {
                     s.classList.toggle('selected', parseFloat(s.dataset.value) <= r.note_globale);
                 });
-                
-                document.getElementById('note-technique').value = r.note_technique;
-                document.getElementById('technique-value').textContent = r.note_technique.toFixed(1);
-                document.getElementById('note-originalite').value = r.note_originalite;
-                document.getElementById('originalite-value').textContent = r.note_originalite.toFixed(1);
-                document.getElementById('note-emotion').value = r.note_emotion;
-                document.getElementById('emotion-value').textContent = r.note_emotion.toFixed(1);
             } catch (e) { console.error(e); }
             {% endif %}
         }
@@ -1338,25 +1275,28 @@
         async function loadStats() {
             try {
                 const res = await fetch(`/api/artwork/stats/${artworkId}`);
-                const newStats = await res.json();
-                stats = newStats;
+                const stats = await res.json();
                 
-                // Mettre à jour l'affichage
+                // Stats cards
                 document.querySelectorAll('.stat-number')[0].textContent = stats.moyenne_globale ? stats.moyenne_globale.toFixed(1) : '–';
                 document.querySelectorAll('.stat-number')[1].textContent = stats.total_notes || 0;
                 document.querySelectorAll('.stat-number')[2].textContent = stats.favorites_count || 0;
                 
-                const starsElement = document.getElementById('avg-stars');
-                if (starsElement) {
-                    const avg = stats.moyenne_globale || 0;
-                    let html = '';
-                    for (let i = 0; i < 5; i++) {
-                        if (avg >= i + 1) html += '★';
-                        else if (avg >= i + 0.5) html += '½';
-                        else html += '☆';
-                    }
-                    starsElement.textContent = html;
+                // Global stars
+                const globalStars = document.getElementById('global-stars');
+                const avg = stats.moyenne_globale || 0;
+                let starsHtml = '';
+                for (let i = 0; i < 5; i++) {
+                    if (avg >= i + 1) starsHtml += '★';
+                    else if (avg >= i + 0.5) starsHtml += '½';
+                    else starsHtml += '☆';
                 }
+                globalStars.textContent = starsHtml;
+                
+                document.getElementById('avg-stars').textContent = starsHtml;
+                document.querySelector('.global-number').textContent = stats.moyenne_globale ? stats.moyenne_globale.toFixed(1) : '–';
+                document.querySelectorAll('.community-meta span')[0].innerHTML = `<i class="far fa-user"></i> ${stats.total_notes || 0} avis`;
+                document.querySelectorAll('.community-meta span')[1].innerHTML = `<i class="far fa-heart"></i> ${stats.favorites_count || 0} favoris`;
 
                 // Distribution
                 const distContainer = document.getElementById('distribution-container');
@@ -1366,10 +1306,10 @@
                         const count = stats.distribution[i] || 0;
                         const percentage = stats.total_notes > 0 ? (count / stats.total_notes * 100) : 0;
                         distHtml += `
-                            <div class="dist-row">
+                            <div class="dist-item">
                                 <span class="dist-label">${i}★</span>
-                                <div class="dist-bar-container">
-                                    <div class="dist-bar" style="width: ${percentage}%"></div>
+                                <div class="dist-bar">
+                                    <div class="dist-fill" style="width: ${percentage}%"></div>
                                 </div>
                                 <span class="dist-count">${count}</span>
                             </div>
@@ -1387,36 +1327,55 @@
                 const container = document.getElementById('comments-container');
                 
                 if (!comments || comments.length === 0) {
-                    container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 2rem;">Aucun commentaire pour le moment.</div>';
+                    container.innerHTML = '<div style="color: var(--text-muted); font-size:0.8rem; padding:1rem; text-align:center;">Aucun commentaire public pour le moment</div>';
                     return;
                 }
                 
                 container.innerHTML = comments.map(c => `
-                    <div class="comment-card">
+                    <div class="comment-item">
                         <div class="comment-header">
                             <span class="comment-author">${c.username || 'Anonyme'}</span>
                             <span class="comment-date">${c.created_at || ''}</span>
                         </div>
                         <div class="comment-content">${c.commentaire || ''}</div>
-                        <div class="comment-ratings">
+                        <div class="comment-meta">
                             <span><i class="fas fa-star"></i> ${c.note_globale || 0}</span>
-                            <span><i class="fas fa-paint-brush"></i> ${c.notes ? c.notes.technique : 0}</span>
-                            <span><i class="fas fa-lightbulb"></i> ${c.notes ? c.notes.originalite : 0}</span>
-                            <span><i class="fas fa-heart"></i> ${c.notes ? c.notes.emotion : 0}</span>
+                            <span><i class="fas fa-globe"></i> Public</span>
                         </div>
                     </div>
                 `).join('');
             } catch (e) { console.error(e); }
         }
 
+        function share() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '{{ oeuvre.titre }}',
+                    text: '{{ oeuvre.createur }}',
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Lien copié !');
+            }
+        }
+
         // ===== INIT =====
         document.addEventListener('DOMContentLoaded', () => {
-            initUserStars();
-            initSliders();
+            initQuickStars();
             checkFavorite();
             loadUserRating();
             loadStats();
             loadComments();
+            
+            // Préchargement de l'image haute résolution pour la modale
+            {% if oeuvre.image_url %}
+            const highResLink = document.createElement('link');
+            highResLink.rel = 'preload';
+            highResLink.as = 'image';
+            highResLink.href = `https://images.weserv.nl/?url=${encodeURIComponent('{{ oeuvre.image_url }}')}&w=1800&h=1800&fit=contain&output=jpg&q=90`;
+            document.head.appendChild(highResLink);
+            {% endif %}
         });
     </script>
 </body>

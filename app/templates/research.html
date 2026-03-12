@@ -8,59 +8,129 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ site_name }} - Explorer les œuvres</title>
+    <title>{{ site_name }} Explorer la collection</title>
     
     <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <style>
-        /* ===== STYLES SPÉCIFIQUES À LA PAGE RESEARCH ===== */
-        :root {
-            --primary: #2c3e50;
-            --primary-dark: #1a2634;
-            --secondary: #e6d8c3;
-            --background: #0f1a24;
-            --surface: #1e2a36;
-            --text: #e6d8c3;
-            --text-light: #b8a99a;
-            --border: rgba(230,216,195,0.15);
-            --gold: #d4af37;
-            --gold-light: #e6c200;
-            --gold-soft: rgba(212, 175, 55, 0.1);
-            --shadow: 0 4px 12px rgba(0,0,0,0.3);
-            --shadow-hover: 0 8px 20px rgba(0,0,0,0.5);
-        }
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        body.theme-light {
-            --primary: #4a6b8a;
-            --primary-dark: #2c3e50;
-            --secondary: #f5ebe0;
-            --background: #f8f5f0;
-            --surface: #ffffff;
-            --text: #2c3e50;
-            --text-light: #5d6d7e;
-            --border: #e0d6c8;
-            --gold: #b8860b;
-            --gold-light: #9e7109;
-            --gold-soft: rgba(184, 134, 11, 0.1);
-            --shadow: 0 4px 12px rgba(0,0,0,0.05);
-            --shadow-hover: 0 8px 20px rgba(0,0,0,0.1);
+    <style>
+        /* ===== DESIGN CONTEMPORAIN - INSPIRÉ HOME ===== */
+        :root {
+            /* Palette monochrome sophistiquée */
+            --bg-dark: #0a0a0a;
+            --bg-light: #ffffff;
+            --surface-dark: #141414;
+            --surface-light: #f5f5f5;
+            --text-dark: #ffffff;
+            --text-light: #1a1a1a;
+            --text-muted-dark: #7a7a7a;
+            --text-muted-light: #9a9a9a;
+            --border-dark: #2a2a2a;
+            --border-light: #e0e0e0;
+            --accent: #6c5ce7;
+            --accent-hover: #5a4bcf;
+            --gold: #b89b7b;
+            --shadow: 0 4px 20px rgba(0,0,0,0.02);
+            --shadow-hover: 0 8px 30px rgba(0,0,0,0.04);
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-text: 'Inter', sans-serif;
         }
 
         body {
-            background-color: var(--background);
-            font-family: 'Inter', sans-serif;
-            color: var(--text);
-            line-height: 1.6;
+            background-color: var(--bg-dark);
+            font-family: var(--font-text);
+            color: var(--text-dark);
+            line-height: 1.5;
+            font-weight: 300;
             transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+        }
+
+        body.theme-light {
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            --surface: var(--surface-light);
+            --surface-hover: #eaeaea;
+            --border-color: var(--border-light);
+            --text-muted: var(--text-muted-light);
+        }
+
+        body.theme-dark {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            --surface: var(--surface-dark);
+            --surface-hover: #1f1f1f;
+            --border-color: var(--border-dark);
+            --text-muted: #b0b0b0; /* Plus clair pour le thème sombre */
+            --text-filter: #f0f0f0; /* Texte des filtres en blanc cassé */
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-display);
+            font-weight: 500;
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1440px;
             margin: 0 auto;
             padding: 0 2rem;
+        }
+
+        /* ===== OFFSET POUR NAVBAR FIXE ===== */
+        .main-content {
+            margin-top: 100px;
+            min-height: calc(100vh - 100px);
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero-collection {
+            margin: 2rem 0 3rem;
+            position: relative;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 600;
+            line-height: 0.9;
+            margin-bottom: 1rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin-bottom: 2rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+            margin: 2rem 0;
+        }
+
+        .hero-stat {
+            text-align: left;
+        }
+
+        .hero-stat-number {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 500;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 0.3rem;
+        }
+
+        .hero-stat-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
         }
 
         /* ===== BARRE D'OUTILS ===== */
@@ -68,230 +138,175 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 1rem 0 1.5rem;
-            padding: 0.5rem 0;
+            margin: 2rem 0 2rem;
+            padding: 1rem 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .works-counter {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            color: var(--text-light);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .works-counter i {
+            color: var(--accent);
             font-size: 0.9rem;
         }
 
         .works-counter span {
-            color: var(--gold);
-            font-weight: 600;
-            background: var(--gold-soft);
+            color: var(--accent);
+            font-weight: 500;
+            background: var(--surface);
             padding: 0.2rem 0.6rem;
-            border-radius: 30px;
+            font-size: 0.85rem;
         }
 
         .filter-tools {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
             flex-wrap: wrap;
         }
 
         /* ===== BOUTONS ICÔNES ===== */
         .icon-button {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 50%;
-            width: 44px;
-            height: 44px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
-            color: var(--text);
-            font-size: 1.2rem;
-            box-shadow: var(--shadow);
+            color: var(--text-muted);
+            font-size: 1rem;
         }
 
         .icon-button:hover {
-            border-color: var(--gold);
-            color: var(--gold);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
         .icon-button.active {
-            background: var(--gold);
-            color: var(--primary-dark);
-            border-color: var(--gold);
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
         }
 
-        .icon-button i {
-            pointer-events: none;
-        }
-
-        /* ===== FILTRES COMPACTS ===== */
-        .filter-dropdown {
-            position: relative;
-        }
-
-        .filter-button {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            padding: 0.5rem 1.2rem;
-            color: var(--text);
-            font-size: 0.85rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.2s;
-            white-space: nowrap;
-            box-shadow: var(--shadow);
-            max-width: 180px;
-        }
-
-        .filter-button:hover {
-            border-color: var(--gold);
-            color: var(--gold);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        .filter-button i:first-child {
-            color: var(--gold);
-            font-size: 0.8rem;
-            flex-shrink: 0;
-        }
-
-        .filter-button span {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            flex: 1;
-            min-width: 0;
-        }
-
-        .filter-button i:last-child {
-            font-size: 0.6rem;
-            opacity: 0.7;
-            transition: transform 0.2s;
-            flex-shrink: 0;
-        }
-
-        .filter-dropdown:hover .filter-button i:last-child {
-            transform: rotate(180deg);
+        /* ===== DROPDOWNS - VISIBILITÉ AMÉLIORÉE POUR THÈME SOMBRE ===== */
+        .filter-dropdown { 
+            position: relative; 
         }
 
         .dropdown-menu {
             position: absolute;
             top: calc(100% + 5px);
             right: 0;
-            min-width: 300px;
-            max-width: 350px;
+            min-width: 340px;
+            max-width: 380px;
             background: var(--surface);
-            border: 1px solid var(--gold);
-            border-radius: 16px;
-            padding: 1rem;
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
             z-index: 1000;
             display: none;
-            box-shadow: var(--shadow-hover);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
-        .dropdown-menu.show {
-            display: block;
+        body.theme-dark .dropdown-menu {
+            background: #1e1e1e; /* Fond plus foncé mais lisible */
+            color: #f0f0f0; /* Texte clair */
+        }
+
+        .dropdown-menu.show { 
+            display: block; 
             animation: fadeIn 0.2s ease;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
+            from { opacity: 0; transform: translateY(5px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .dropdown-section {
-            margin-bottom: 1rem;
-        }
-
-        .dropdown-section:last-child {
-            margin-bottom: 0;
+        .dropdown-section { 
+            margin-bottom: 1.5rem; 
         }
 
         .dropdown-subtitle {
             font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: var(--gold);
-            opacity: 0.7;
-            margin-bottom: 0.5rem;
-            padding-left: 0.3rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        body.theme-dark .dropdown-subtitle {
+            color: #b0b0b0;
         }
 
         .dropdown-search {
             display: flex;
             align-items: center;
-            background: var(--background);
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            padding: 0.3rem 1rem;
-            margin-bottom: 0.8rem;
+            background: var(--surface-hover);
+            border: 1px solid var(--border-color);
+            padding: 0.3rem 0.8rem;
+            margin-bottom: 1rem;
             width: 100%;
-            box-sizing: border-box;
         }
 
-        .dropdown-search i {
-            color: var(--text-light);
-            font-size: 0.8rem;
-            margin-right: 0.5rem;
-            flex-shrink: 0;
+        body.theme-dark .dropdown-search {
+            background: #2a2a2a;
+            border-color: #3a3a3a;
         }
 
-        .dropdown-search input {
-            background: transparent;
-            border: none;
-            color: var(--text);
-            width: 100%;
-            padding: 0.4rem 0;
+        .dropdown-search i { 
+            color: var(--text-muted); 
+            font-size: 0.8rem; 
+            margin-right: 0.5rem; 
+        }
+
+        body.theme-dark .dropdown-search i {
+            color: #b0b0b0;
+        }
+
+        .dropdown-search input { 
+            background: transparent; 
+            border: none; 
+            width: 100%; 
+            padding: 0.3rem 0; 
             font-size: 0.85rem;
         }
 
-        .dropdown-search input::placeholder {
-            color: var(--text-light);
+        body.theme-dark .dropdown-search input {
+            color: #f0f0f0;
         }
 
-        .dropdown-search input:focus {
-            outline: none;
+        body.theme-dark .dropdown-search input::placeholder {
+            color: #7a7a7a;
+        }
+
+        .dropdown-search input:focus { 
+            outline: none; 
         }
 
         .dropdown-items {
-            max-height: 300px;
+            max-height: 250px;
             overflow-y: auto;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
             scrollbar-width: thin;
-            scrollbar-color: var(--gold) var(--border);
-            width: 100%;
+            scrollbar-color: var(--accent) var(--border-color);
         }
 
-        .dropdown-items:last-child {
-            margin-bottom: 0;
-        }
+        .dropdown-items::-webkit-scrollbar { width: 3px; }
+        .dropdown-items::-webkit-scrollbar-track { background: var(--border-color); }
+        .dropdown-items::-webkit-scrollbar-thumb { background: var(--accent); }
 
-        .dropdown-items::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .dropdown-items::-webkit-scrollbar-track {
-            background: var(--border);
-            border-radius: 4px;
-        }
-
-        .dropdown-items::-webkit-scrollbar-thumb {
-            background: var(--gold);
-            border-radius: 4px;
-        }
-
-        .dropdown-item {
-            padding: 0.2rem 0;
-            width: 100%;
+        .dropdown-item { 
+            padding: 0.2rem 0; 
         }
 
         .dropdown-item label {
@@ -299,174 +314,256 @@
             align-items: center;
             gap: 0.5rem;
             font-size: 0.85rem;
-            color: var(--text);
             cursor: pointer;
             padding: 0.3rem 0.5rem;
-            border-radius: 8px;
-            transition: all 0.2s;
-            width: 100%;
-            box-sizing: border-box;
+            transition: background 0.2s;
         }
 
-        .dropdown-item label:hover {
-            background: var(--gold-soft);
+        body.theme-dark .dropdown-item label {
+            color: #f0f0f0;
         }
 
-        .dropdown-item input[type="checkbox"],
-        .dropdown-item input[type="radio"] {
-            accent-color: var(--gold);
+        .dropdown-item label:hover { 
+            background: var(--surface-hover); 
+        }
+
+        body.theme-dark .dropdown-item label:hover {
+            background: #2a2a2a;
+        }
+
+/* ===== STYLE UNIFORME POUR TOUS LES FILTRES ===== */
+.dropdown-item input[type="checkbox"],
+.dropdown-item input[type="radio"] { 
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--text-muted);
+    border-radius: 3px;  /* Coins légèrement arrondis, comme pays */
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    margin: 0;
+}
+
+.dropdown-item input[type="checkbox"]:checked,
+.dropdown-item input[type="radio"]:checked {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.dropdown-item input[type="checkbox"]:checked::after,
+.dropdown-item input[type="radio"]:checked::after {
+    content: '✓';
+    color: white;
+    font-size: 12px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Style pour le thème sombre */
+body.theme-dark .dropdown-item input[type="checkbox"],
+body.theme-dark .dropdown-item input[type="radio"] {
+    border-color: #b0b0b0;
+}
+
+body.theme-dark .dropdown-item input[type="checkbox"]:checked,
+body.theme-dark .dropdown-item input[type="radio"]:checked {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+        /* Supprimer les ronds pour les pays, mettre des carrés */
+        .dropdown-item input[type="radio"] { 
+            appearance: none;
+            -webkit-appearance: none;
             width: 16px;
             height: 16px;
-            margin: 0;
-            flex-shrink: 0;
+            border: 2px solid var(--text-muted);
+            border-radius: 3px;
+            background: transparent;
+            cursor: pointer;
+            position: relative;
         }
 
-        .dropdown-item .name {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            flex: 1;
-            min-width: 0;
+        .dropdown-item input[type="radio"]:checked {
+            background: var(--accent);
+            border-color: var(--accent);
         }
 
-        .dropdown-item .count {
-            color: var(--text-light);
-            font-size: 0.7rem;
-            background: var(--gold-soft);
-            padding: 0.1rem 0.4rem;
-            border-radius: 30px;
-            flex-shrink: 0;
+        .dropdown-item input[type="radio"]:checked::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
-        .dropdown-actions {
-            display: flex;
-            justify-content: flex-end;
-            padding-top: 0.8rem;
-            margin-top: 0.5rem;
-            border-top: 1px solid var(--border);
+        .dropdown-item .count { 
+            color: var(--text-muted); 
+            font-size: 0.7rem; 
+            margin-left: auto;
+        }
+
+        body.theme-dark .dropdown-item .count {
+            color: #b0b0b0;
+        }
+
+        .dropdown-actions { 
+            display: flex; 
+            justify-content: flex-end; 
+            padding-top: 1rem; 
+            border-top: 1px solid var(--border-color); 
         }
 
         .apply-btn {
-            background: var(--gold);
-            border: none;
-            border-radius: 30px;
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
             padding: 0.4rem 1.5rem;
-            color: var(--primary-dark);
-            font-size: 0.8rem;
-            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             cursor: pointer;
             transition: all 0.2s;
         }
 
-        .apply-btn:hover {
-            background: var(--gold-light);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(212, 175, 55, 0.3);
+        .apply-btn:hover { 
+            background: var(--accent); 
+            color: white; 
         }
 
-        .active-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.3rem;
-            margin-bottom: 1rem;
+        /* ===== TAGS ACTIFS ===== */
+        .active-tags { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 0.5rem; 
+            margin: 0 0 2rem 0; 
         }
 
         .filter-tag {
-            background: var(--gold-soft);
-            border: 1px solid var(--gold);
-            border-radius: 30px;
-            padding: 0.2rem 0.8rem;
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            padding: 0.2rem 1rem 0.2rem 1.2rem;
             font-size: 0.7rem;
-            color: var(--text);
             display: flex;
             align-items: center;
-            gap: 0.3rem;
+            gap: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .filter-tag i {
-            color: var(--gold);
-            cursor: pointer;
-            font-size: 0.6rem;
-            transition: all 0.2s;
+        body.theme-dark .filter-tag {
+            color: #f0f0f0;
+            background: #1e1e1e;
         }
 
-        .filter-tag i:hover {
-            color: var(--accent, #c44545);
-            transform: scale(1.2);
+        .filter-tag i { 
+            color: var(--accent); 
+            cursor: pointer; 
+            font-size: 0.6rem; 
         }
 
-        /* ===== GRILLE DES ŒUVRES ===== */
-        .works-grid {
-            display: grid;
-            gap: 1rem;
-            margin: 0 auto 2rem;
-            transition: all 0.3s ease;
+        .filter-tag i:hover { 
+            color: #c44545; 
         }
 
-        .works-grid.grid-4 {
-            grid-template-columns: repeat(4, 1fr);
+        /* ===== GRILLE DES ŒUVRES - SANS BORDS NOIRS ===== */
+        .works-grid { 
+            display: grid; 
+            gap: 1px; 
+            margin: 0 auto 2rem; 
+            background: transparent;
+            border: none;
         }
 
-        .works-grid.grid-6 {
-            grid-template-columns: repeat(6, 1fr);
+        .works-grid.grid-4 { 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 1px;
+}
+
+        .works-grid.grid-6 { 
+            grid-template-columns: repeat(6, 1fr); 
+            gap: 1px;  /* Espace minimal entre les images */
         }
 
         .work-item {
             position: relative;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-            background: var(--surface);
-            border: 1px solid var(--border);
+            background: transparent;
             text-decoration: none;
             color: inherit;
             display: block;
+            overflow: hidden;
+            border: none;
+            outline: none;
         }
 
-        /* Mode 4 par ligne : carrés */
-        .works-grid.grid-4 .work-item {
-            aspect-ratio: 1/1;
+        /* MODE 4 PAR LIGNE - ŒUVRES ENTIÈRES SANS BORDS NOIRS */
+.works-grid.grid-4 .work-item {
+    aspect-ratio: 1/1;  /* Carré */
+    background: transparent;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+        .works-grid.grid-4 .work-item img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            background: transparent;
+            transition: opacity 0.4s ease;
+            max-height: 600px;
         }
 
-        /* Mode 6 par ligne : rectangles plus grands */
+        /* MODE 6 PAR LIGNE - ŒUVRES QUI COUVRENT TOUT LE CADRE */
+        .works-grid.grid-6 {
+            gap: 0; /* Pas d'espace entre les lignes */
+        }
+
         .works-grid.grid-6 .work-item {
             aspect-ratio: 2/3;
+            background: transparent;
+            overflow: hidden;
         }
 
-        .work-item:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-hover);
-            border-color: var(--gold);
-        }
-
-        .work-image-container {
+        .works-grid.grid-6 .work-item img {
             width: 100%;
             height: 100%;
-            position: relative;
-        }
-
-        .work-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            object-fit: cover; /* Couvre tout le cadre */
             display: block;
-            transition: transform 0.5s ease;
+            background: transparent;
+            transition: opacity 0.4s ease;
         }
 
-        .work-item:hover img {
-            transform: scale(1.05);
+        .work-item:hover img { 
+            opacity: 0.7; 
+        }
+
+        .work-image-container { 
+            width: 100%; 
+            height: 100%; 
+            position: relative; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
         }
 
         .image-placeholder {
             width: 100%;
             height: 100%;
-            background: linear-gradient(145deg, var(--surface), var(--primary-dark));
+            min-height: 300px;
+            background: var(--surface);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--text-light);
-            font-size: 2rem;
+            color: var(--text-muted);
+            font-size: 1.5rem;
         }
 
         .work-overlay {
@@ -474,1268 +571,1059 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%);
-            padding: 1rem 0.8rem 0.8rem;
+            background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 80%);
+            padding: 2rem 1rem 1rem;
             opacity: 0;
             transition: opacity 0.3s ease;
             color: white;
             pointer-events: none;
         }
 
-        .work-item:hover .work-overlay {
-            opacity: 1;
+        .work-item:hover .work-overlay { 
+            opacity: 1; 
         }
 
-        .work-title {
-            font-weight: 600;
-            font-size: 0.8rem;
-            margin-bottom: 0.1rem;
-            white-space: nowrap;
-            overflow: hidden;
+        .work-title { 
+            font-family: var(--font-display);
+            font-weight: 500; 
+            font-size: 0.75rem; 
+            margin-bottom: 0.1rem; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis;
+            text-transform: uppercase;
+        }
+
+        .work-artist { 
+            font-size: 0.65rem; 
+            opacity: 0.7; 
+            white-space: nowrap; 
+            overflow: hidden; 
             text-overflow: ellipsis;
         }
 
-        .work-artist {
-            font-size: 0.7rem;
-            opacity: 0.8;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Loading indicator */
-        .loading-indicator {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-light);
-            font-size: 0.9rem;
-            grid-column: span 6;
-        }
-
-        .loading-indicator i {
-            margin-right: 0.5rem;
-            color: var(--gold);
-        }
-
-        /* End message */
-        .end-message {
-            text-align: center;
-            padding: 3rem;
-            color: var(--text-light);
-            border-top: 1px solid var(--border);
-            margin-top: 2rem;
-            font-style: italic;
-            grid-column: span 6;
-        }
-
-        /* No results */
-        .no-results {
+        /* ===== ÉTATS ===== */
+        .loading-indicator, .end-message, .no-results {
             text-align: center;
             padding: 4rem;
-            color: var(--text-light);
-            grid-column: span 6;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
         }
 
-        .no-results i {
-            font-size: 3rem;
-            color: var(--gold);
-            margin-bottom: 1rem;
-            opacity: 0.5;
+        .loading-indicator i { 
+            color: var(--accent); 
+            margin-right: 0.5rem; 
         }
 
-        /* Scroll to top button */
+        /* ===== SCROLL TO TOP ===== */
         .scroll-top {
             position: fixed;
             bottom: 2rem;
             right: 2rem;
+            width: 44px;
+            height: 44px;
             background: var(--surface);
-            border: 1px solid var(--border);
-            color: var(--text);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s;
             opacity: 0;
             visibility: hidden;
+            transition: all 0.2s;
             z-index: 100;
-            box-shadow: var(--shadow);
         }
 
-        .scroll-top.visible {
-            opacity: 1;
-            visibility: visible;
+        .scroll-top.visible { 
+            opacity: 1; 
+            visibility: visible; 
         }
 
-        .scroll-top:hover {
-            background: var(--gold);
-            color: var(--primary-dark);
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-hover);
+        .scroll-top:hover { 
+            border-color: var(--accent); 
+            color: var(--accent); 
         }
 
-        /* Animation d'entrée */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) { 
+            .works-grid.grid-6 { grid-template-columns: repeat(5, 1fr); } 
+            .hero-title { font-size: 3rem; }
+        }
+        
+        @media (max-width: 992px) { 
+            .works-grid.grid-6 { grid-template-columns: repeat(4, 1fr); } 
+        }
+        
+        @media (max-width: 768px) {
+            .works-grid.grid-4, .works-grid.grid-6 { 
+                grid-template-columns: repeat(3, 1fr); 
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            .toolbar { 
+                flex-direction: column; 
+                align-items: flex-start; 
+                gap: 1rem; 
+            }
+            .filter-tools { 
+                width: 100%; 
+                justify-content: flex-start; 
+            }
+            .hero-stats {
+                flex-wrap: wrap;
+                gap: 1.5rem;
             }
         }
-
-        .work-item {
-            animation: fadeInUp 0.4s ease forwards;
-        }
-
-        /* Responsive */
-        @media (max-width: 1400px) {
-            .works-grid.grid-6 {
-                grid-template-columns: repeat(5, 1fr);
+        
+        @media (max-width: 576px) {
+            .works-grid.grid-4, .works-grid.grid-6 { 
+                grid-template-columns: repeat(2, 1fr); 
             }
-        }
-
-        @media (max-width: 1200px) {
-            .works-grid.grid-6 {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            .loading-indicator, .end-message, .no-results {
-                grid-column: span 4;
-            }
-        }
-
-        @media (max-width: 900px) {
-            .works-grid.grid-4, .works-grid.grid-6 {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .loading-indicator, .end-message, .no-results {
-                grid-column: span 2;
-            }
-            .toolbar {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-            }
-            .filter-tools {
-                width: 100%;
-                justify-content: space-between;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .works-grid.grid-4, .works-grid.grid-6 {
-                grid-template-columns: 1fr;
-            }
-            .filter-tools {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .filter-button {
-                width: 100%;
-                max-width: none;
-            }
-            .dropdown-menu {
-                right: auto;
-                left: 0;
-                width: 100%;
-                max-width: none;
-            }
-            .scroll-top {
-                bottom: 1rem;
-                right: 1rem;
+            .hero-title { font-size: 2.2rem; }
+            .dropdown-menu { 
+                right: auto; 
+                left: 0; 
+                width: 300px; 
             }
         }
     </style>
 </head>
-<body>
+<body class="theme-dark">
+    <!-- Inclusion de la navbar -->
     {% include 'navbar.html' %}
 
-<div class="container">
-    <!-- BARRE D'OUTILS avec compteur et filtres -->
-    <div class="toolbar">
-        <div class="works-counter">
-            <i class="fas fa-image"></i>
-            <span id="displayed-count">{{ works|length }}</span> œuvre(s)
-            <span id="filter-indicator" style="display: none; margin-left: 0.5rem;">
-                <i class="fas fa-filter"></i>
-            </span>
-        </div>
-
-        <div class="filter-tools">
-            <!-- Filtre Artistes -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('artist-dropdown', event)" title="Filtrer par artiste">
-                    <i class="fas fa-user"></i>
-                </button>
-                <div class="dropdown-menu" id="artist-dropdown">
-                    <div class="dropdown-search">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Rechercher un artiste..." id="artist-search-filter">
-                    </div>
-                    <div class="dropdown-items" id="artist-items">
-                        <div class="dropdown-item">
-                            <label>
-                                <input type="checkbox" value="loading"> Chargement...
-                            </label>
-                        </div>
-                    </div>
-                    <div class="dropdown-actions">
-                        <button onclick="applyArtistFilter()" class="apply-btn">Appliquer</button>
-                    </div>
+    <div class="container main-content">
+        <!-- Hero section -->
+        <div class="hero-collection">
+            <h1 class="hero-title">LA COLLECTION</h1>
+            <p class="hero-subtitle">Parcourez les œuvres, filtrez par artiste, lieu ou musée.</p>
+            
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-number">{{ total_oeuvres }}</div>
+                    <div class="hero-stat-label">ŒUVRES</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">{{ stats_artistes if stats_artistes else '—' }}</div>
+                    <div class="hero-stat-label">ARTISTES</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">{{ stats_musees if stats_musees else '—' }}</div>
+                    <div class="hero-stat-label">LIEUX</div>
                 </div>
             </div>
+        </div>
 
-            <!-- Filtre Géographie (pays + ville) -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('geo-dropdown', event)" title="Filtrer par pays ou ville">
-                    <i class="fas fa-globe"></i>
-                </button>
-                <div class="dropdown-menu" id="geo-dropdown">
-                    <div class="dropdown-section">
-                        <div class="dropdown-subtitle">Pays</div>
+        <!-- BARRE D'OUTILS -->
+        <div class="toolbar">
+            <div class="works-counter">
+                <i class="fas fa-image"></i>
+                <span id="displayed-count">{{ works|length }}</span>
+                <span style="color:var(--text-muted);">/</span>
+                <span id="total-count" style="color:var(--text-muted);">{{ total_oeuvres }}</span>
+                <span id="filter-indicator" style="display:none;">
+                    <i class="fas fa-sliders-h"></i>
+                </span>
+            </div>
+
+            <div class="filter-tools">
+                <!-- Artistes -->
+                <div class="filter-dropdown">
+                    <button class="icon-button" onclick="toggleDropdown('artist-dropdown', event)" title="Filtrer par artiste">
+                        <i class="fas fa-user"></i>
+                    </button>
+                    <div class="dropdown-menu" id="artist-dropdown">
                         <div class="dropdown-search">
                             <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Rechercher un pays..." id="country-search-filter">
+                            <input type="text" placeholder="Rechercher un artiste..." id="artist-search-filter">
                         </div>
-                        <div class="dropdown-items" id="country-items">
+                        <div class="dropdown-items" id="artist-items">
+                            <div style="padding:1rem;color:var(--text-muted);text-align:center;">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                        <div class="dropdown-actions">
+                            <button onclick="applyArtistFilter()" class="apply-btn">Appliquer</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Géographie -->
+                <div class="filter-dropdown">
+                    <button class="icon-button" onclick="toggleDropdown('geo-dropdown', event)" title="Filtrer par pays ou ville">
+                        <i class="fas fa-globe"></i>
+                    </button>
+                    <div class="dropdown-menu" id="geo-dropdown">
+                        <div class="dropdown-section">
+                            <div class="dropdown-subtitle">Pays</div>
+                            <div class="dropdown-search">
+                                <i class="fas fa-search"></i>
+                                <input type="text" placeholder="Rechercher un pays..." id="country-search-filter">
+                            </div>
+                            <div class="dropdown-items" id="country-items">
+                                <div style="padding:1rem;color:var(--text-muted);text-align:center;">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dropdown-section">
+                            <div class="dropdown-subtitle">Villes</div>
+                            <div class="dropdown-search">
+                                <i class="fas fa-search"></i>
+                                <input type="text" placeholder="Rechercher une ville..." id="city-search-filter">
+                            </div>
+                            <div class="dropdown-items" id="city-items">
+                                <div style="padding:1rem;color:var(--text-muted);text-align:center;">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dropdown-actions">
+                            <button onclick="applyGeoFilter()" class="apply-btn">Appliquer</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Musées -->
+                <div class="filter-dropdown">
+                    <button class="icon-button" onclick="toggleDropdown('museum-dropdown', event)" title="Filtrer par musée">
+                        <i class="fas fa-landmark"></i>
+                    </button>
+                    <div class="dropdown-menu" id="museum-dropdown">
+                        <div class="dropdown-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Rechercher un musée..." id="museum-search-filter">
+                        </div>
+                        <div class="dropdown-items" id="museum-items">
+                            <div style="padding:1rem;color:var(--text-muted);text-align:center;">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                        <div class="dropdown-actions">
+                            <button onclick="applyMuseumFilter()" class="apply-btn">Appliquer</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Type d'œuvre (NOUVEAU) -->
+                <div class="filter-dropdown">
+                    <button class="icon-button" onclick="toggleDropdown('type-dropdown', event)" title="Filtrer par type d'œuvre">
+                        <i class="fas fa-paint-brush"></i>
+                    </button>
+                    <div class="dropdown-menu" id="type-dropdown">
+                        <div class="dropdown-items" id="type-items">
                             <div class="dropdown-item">
                                 <label>
-                                    <input type="radio" name="country" value=""> Tous les pays
+                                    <input type="checkbox" value="peinture">
+                                    <span class="name">Peinture</span>
+                                </label>
+                            </div>
+                            <div class="dropdown-item">
+                                <label>
+                                    <input type="checkbox" value="sculpture">
+                                    <span class="name">Sculpture</span>
+                                </label>
+                            </div>
+                            <div class="dropdown-item">
+                                <label>
+                                    <input type="checkbox" value="dessin">
+                                    <span class="name">Dessin</span>
+                                </label>
+                            </div>
+                            <div class="dropdown-item">
+                                <label>
+                                    <input type="checkbox" value="photographie">
+                                    <span class="name">Photographie</span>
+                                </label>
+                            </div>
+                            <div class="dropdown-item">
+                                <label>
+                                    <input type="checkbox" value="estampe">
+                                    <span class="name">Estampe</span>
                                 </label>
                             </div>
                         </div>
-                    </div>
-                    <div class="dropdown-section">
-                        <div class="dropdown-subtitle">Villes</div>
-                        <div class="dropdown-search">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Rechercher une ville..." id="city-search-filter">
+                        <div class="dropdown-actions">
+                            <button onclick="applyTypeFilter()" class="apply-btn">Appliquer</button>
                         </div>
-                        <div class="dropdown-items" id="city-items">
-                            <div class="dropdown-item">
-                                <label>
-                                    <input type="checkbox" value="loading"> Chargement...
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dropdown-actions">
-                        <button onclick="applyGeoFilter()" class="apply-btn">Appliquer</button>
                     </div>
                 </div>
-            </div>
 
-            <!-- Filtre Musées -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('museum-dropdown', event)" title="Filtrer par musée">
-                    <i class="fas fa-landmark"></i>
+                <!-- Tri -->
+                <div class="filter-dropdown">
+                    <button class="icon-button" onclick="toggleDropdown('sort-dropdown', event)" title="Trier">
+                        <i class="fas fa-arrow-up-wide-short"></i>
+                    </button>
+                    <div class="dropdown-menu" id="sort-dropdown">
+                        <div class="dropdown-items" id="sort-items"></div>
+                        <div class="dropdown-actions">
+                            <button onclick="applySortFilter()" class="apply-btn">Appliquer</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Effacer filtres -->
+                <button class="icon-button" onclick="clearAllFilters()" title="Effacer tous les filtres">
+                    <i class="fas fa-times"></i>
                 </button>
-                <div class="dropdown-menu" id="museum-dropdown">
-                    <div class="dropdown-search">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Rechercher un musée..." id="museum-search-filter">
-                    </div>
-                    <div class="dropdown-items" id="museum-items">
-                        <div class="dropdown-item">
-                            <label>
-                                <input type="checkbox" value="loading"> Chargement...
-                            </label>
-                        </div>
-                    </div>
-                    <div class="dropdown-actions">
-                        <button onclick="applyMuseumFilter()" class="apply-btn">Appliquer</button>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Trier par -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('sort-dropdown', event)" title="Trier">
-                    <i class="fas fa-sort"></i>
+                <!-- Vue 4 -->
+                <button class="icon-button view-btn" id="view-4" onclick="setViewMode(4)" title="Vue normale">
+                    <i class="fas fa-th-large"></i>
                 </button>
-                <div class="dropdown-menu" id="sort-dropdown">
-                    <div class="dropdown-items" id="sort-items">
-                        <!-- Options chargées en JS -->
-                    </div>
-                    <div class="dropdown-actions">
-                        <button onclick="applySortFilter()" class="apply-btn">Appliquer</button>
+
+                <!-- Vue 6 -->
+                <button class="icon-button view-btn" id="view-6" onclick="setViewMode(6)" title="Vue compacte">
+                    <i class="fas fa-th"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tags actifs -->
+        <div class="active-tags" id="active-tags"></div>
+
+        <!-- Grille des œuvres -->
+        <div class="works-grid grid-4" id="works-grid">
+            {% for artwork in works %}
+            <a href="/oeuvre/{{ artwork.id }}" class="work-item" data-id="{{ artwork.id }}">
+                <div class="work-image-container">
+                    {% if artwork.image_url and artwork.image_url != '' %}
+
+<img src="https://images.weserv.nl/?url={{ artwork.image_url|urlencode }}&w=800&h=800&fit={% if current_view == 4 %}contain{% else %}cover{% endif %}&a=attention&output=jpg&q=85&we"
+     alt="{{ artwork.titre }}"
+     loading="lazy"
+     style="background: transparent;"
+     onerror="this.onerror=null; this.src='https://wsrv.nl/?url={{ artwork.image_url|urlencode }}&w=800&h=800&fit={% if current_view == 4 %}contain{% else %}cover{% endif %}&a=attention&output=jpg&q=85';"
+     onerror="this.onerror=null; this.src='https://images.weserv.nl/?url={{ artwork.image_url|urlencode }}&w=800&h=800&fit={% if current_view == 4 %}contain{% else %}cover{% endif %}&output=jpg';"
+     onerror="this.onerror=null; this.src='{{ artwork.image_url }}';"
+     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+
+                    <div class="image-placeholder" style="display:none;"><i class="fas fa-image"></i></div>
+                    {% else %}
+                    <div class="image-placeholder"><i class="fas fa-image"></i></div>
+                    {% endif %}
+                    <div class="work-overlay">
+                        <div class="work-title">{{ artwork.titre|truncate(40) if artwork.titre else 'SANS TITRE' }}</div>
+                        <div class="work-artist">{{ artwork.createur|truncate(30) if artwork.createur else 'ARTISTE INCONNU' }}</div>
                     </div>
                 </div>
-            </div>
+            </a>
+            {% endfor %}
+        </div>
 
-            <!-- Vue 4 par ligne -->
-            <button class="icon-button view-btn" id="view-4" onclick="setViewMode(4)" title="4 par ligne - carrés">
-                <i class="fas fa-th-large"></i>
-            </button>
-
-            <!-- Vue 6 par ligne -->
-            <button class="icon-button view-btn" id="view-6" onclick="setViewMode(6)" title="6 par ligne - rectangles">
-                <i class="fas fa-th"></i>
-            </button>
+        <!-- États -->
+        <div class="loading-indicator" id="loading-indicator" style="display:none;">
+            <i class="fas fa-spinner fa-spin"></i> Chargement...
+        </div>
+        
+        <div class="end-message" id="end-message" style="display:none;">
+            <i class="fas fa-check"></i> Fin de la collection
+        </div>
+        
+        <div class="no-results" id="no-results" style="display:none;">
+            <i class="fas fa-search"></i>
+            <h4>Aucune œuvre trouvée</h4>
+            <p>Essayez de modifier vos filtres</p>
         </div>
     </div>
 
-    <!-- Tags des filtres actifs - EN DEHORS de la toolbar -->
-    <div class="active-tags" id="active-tags"></div>
-
-    <!-- Grille pour les œuvres -->
-    <div class="works-grid grid-4" id="works-grid">
-        {% for artwork in works %}
-        <a href="/oeuvre/{{ artwork.id }}" class="work-item" data-id="{{ artwork.id }}" style="animation-delay: {{ loop.index0 * 0.03 }}s;">
-            <div class="work-image-container">
-                {% if artwork.image_url and artwork.image_url != '' %}
-                <img src="https://images.weserv.nl/?url={{ artwork.image_url|urlencode }}&w=400&h=600&fit=cover&a=attention&output=jpg&q=80&we" 
-                     alt="{{ artwork.titre }}" 
-                     loading="lazy"
-                     onerror="this.style.display='none'; this.parentElement.querySelector('.image-placeholder').style.display='flex';">
-                <div class="image-placeholder" style="display:none;">
-                    <i class="fas fa-image"></i>
-                </div>
-                {% else %}
-                <div class="image-placeholder">
-                    <i class="fas fa-image"></i>
-                </div>
-                {% endif %}
-                
-                <div class="work-overlay">
-                    <div class="work-title">{{ artwork.titre|truncate(40) if artwork.titre else 'Sans titre' }}</div>
-                    <div class="work-artist">{{ artwork.createur|truncate(30) if artwork.createur else 'Artiste inconnu' }}</div>
-                </div>
-            </div>
-        </a>
-        {% endfor %}
-    </div>
-
-    <!-- Loading indicator -->
-    <div class="loading-indicator" id="loading-indicator" style="display: none;">
-        <i class="fas fa-spinner fa-spin"></i> Chargement des œuvres...
-    </div>
-
-    <!-- End message -->
-    <div class="end-message" id="end-message" style="display: none;">
-        <i class="fas fa-check-circle" style="margin-right: 0.5rem; color: var(--gold);"></i>
-        Vous avez vu toutes les œuvres
-    </div>
-
-    <!-- No results -->
-    <div class="no-results" id="no-results" style="display: none;">
-        <i class="fas fa-search"></i>
-        <h3>Aucune œuvre trouvée</h3>
-        <p>Essayez de modifier vos filtres</p>
-    </div>
-</div>
-
-
-    <!-- Scroll to top button -->
+    <!-- Scroll to top -->
     <div class="scroll-top" id="scroll-top">
         <i class="fas fa-arrow-up"></i>
     </div>
 
+    <!-- Inclusion du footer -->
     {% include 'footer.html' %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    
-    
-    
-    
-        (function() {
-            // ============================================
-            // VARIABLES GLOBALES
-            // ============================================
-            let currentPage = 1;
-            let isLoading = false;
-            let hasMore = true;
-            let scrollTriggered = false;
-            let displayedCount = {{ works|length }};
-            let currentView = 4;
+    (function () {
+        // ================================================
+        // ÉTAT GLOBAL
+        // ================================================
+        let currentPage     = 1;
+        let isLoading       = false;
+        let hasMore         = true;
+        let scrollTriggered = false;
+        let displayedCount  = {{ works|length }};
+        let currentView     = 4;
+        let museumNames     = {};
+        let totalOeuvres = {{ total_oeuvres }};
 
-            try {
-                const savedView = localStorage.getItem('viewMode');
-                if (savedView && [4, 6].includes(parseInt(savedView))) {
-                    currentView = parseInt(savedView);
-                }
-            } catch (e) {}
+        const _loadedDropdowns = new Set();
 
-            function updateCounter() {
-                document.getElementById('displayed-count').textContent = displayedCount;
-                const filterIndicator = document.getElementById('filter-indicator');
-                const hasActiveFilters = document.querySelectorAll('.filter-tag').length > 0;
-                filterIndicator.style.display = hasActiveFilters ? 'inline' : 'none';
-            }
+        try {
+            const saved = localStorage.getItem('viewMode');
+            if (saved && [4, 6].includes(parseInt(saved))) currentView = parseInt(saved);
+        } catch (e) {}
 
-            // ============================================
-            // GESTION DE LA VUE
-            // ============================================
-
-            window.setViewMode = function(mode) {
-                currentView = mode;
-                const grid = document.getElementById('works-grid');
-                grid.classList.remove('grid-4', 'grid-6');
-                grid.classList.add(`grid-${mode}`);
-                
-                document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
-                document.getElementById(`view-${mode}`).classList.add('active');
-                
-                try {
-                    localStorage.setItem('viewMode', mode);
-                } catch (e) {}
+        // ================================================
+        // GESTION DU THEME
+        // ================================================
+        function syncTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.classList.remove('theme-dark', 'theme-light');
+            document.body.classList.add(`theme-${savedTheme}`);
+        }
+        
+        if (typeof window.toggleTheme !== 'function') {
+            window.toggleTheme = function() {
+                const isDark = document.body.classList.contains('theme-dark');
+                document.body.classList.remove('theme-dark', 'theme-light');
+                document.body.classList.add(isDark ? 'theme-light' : 'theme-dark');
+                localStorage.setItem('theme', isDark ? 'light' : 'dark');
             };
-            setViewMode(currentView);
+        }
 
-            // ============================================
-            // GESTION DES DROPDOWNS
-            // ============================================
+        // ================================================
+        // TOGGLE DROPDOWN
+        // ================================================
+        window.toggleDropdown = function (id, event) {
+            if (event) { event.preventDefault(); event.stopPropagation(); }
 
-            window.toggleDropdown = function(id, event) {
-                if (event) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-                
-                const dropdown = document.getElementById(id);
-                dropdown.classList.toggle('show');
-                
-                document.querySelectorAll('.dropdown-menu').forEach(menu => {
-                    if (menu.id !== id) {
-                        menu.classList.remove('show');
-                    }
-                });
+            if (!_loadedDropdowns.has(id)) {
+                _loadedDropdowns.add(id);
+                if (id === 'artist-dropdown')  { loadArtists();  initArtistSearch(); }
+                if (id === 'geo-dropdown')     { loadCountries(); loadCities(); initCountrySearch(); initCitySearch(); }
+                if (id === 'museum-dropdown')  { loadMuseums();  initMuseumSearch(); }
+                if (id === 'sort-dropdown')    { loadSortOptions(); }
+                if (id === 'type-dropdown')    { /* Pas de chargement nécessaire pour le type */ }
             }
 
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('.filter-dropdown')) {
-                    document.querySelectorAll('.dropdown-menu').forEach(menu => {
-                        menu.classList.remove('show');
-                    });
-                }
+            const dropdown = document.getElementById(id);
+            dropdown.classList.toggle('show');
+
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                if (menu.id !== id) menu.classList.remove('show');
             });
+        };
 
-            // ============================================
-            // FONCTION API GÉNÉRIQUE
-            // ============================================
-
-            async function fetchAPI(url, params = {}) {
-                try {
-                    const queryString = new URLSearchParams(params).toString();
-                    const fullUrl = queryString ? `${url}?${queryString}` : url;
-                    const response = await fetch(fullUrl);
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    
-                    return await response.json();
-                } catch (error) {
-                    console.error(`Erreur API ${url}:`, error);
-                    return null;
-                }
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.filter-dropdown')) {
+                document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
             }
+        });
 
-            // ============================================
-            // GESTION DES ARTISTES
-            // ============================================
+        // ================================================
+        // UTILITAIRES
+        // ================================================
+        function updateCounter() {
+            document.getElementById('displayed-count').textContent = displayedCount;
+            document.getElementById('total-count').textContent = totalOeuvres.toLocaleString('fr-FR');
+            const hasFilters = document.querySelectorAll('.filter-tag').length > 0;
+            document.getElementById('filter-indicator').style.display = hasFilters ? 'inline' : 'none';
+        }
 
-            async function loadArtists() {
-                const container = document.getElementById('artist-items');
-                if (!container) return;
-                
-                try {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const params = {
-                        artist: urlParams.getAll('artist'),
-                        country: urlParams.get('country') || '',
-                        city: urlParams.getAll('city')
-                    };
-                    
-                    Object.keys(params).forEach(key => {
-                        if (Array.isArray(params[key]) && params[key].length === 0) delete params[key];
-                        if (!Array.isArray(params[key]) && !params[key]) delete params[key];
-                    });
-                    
-                    const data = await fetchAPI('/api/filter-artists', params);
-                    
-                    if (!data || data.length === 0) {
-                        container.innerHTML = '<div class="dropdown-item">Aucun artiste trouvé</div>';
+        async function fetchAPI(url, params = {}) {
+            try {
+                const qs = new URLSearchParams(params).toString();
+                const res = await fetch(qs ? `${url}?${qs}` : url);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return await res.json();
+            } catch (e) {
+                console.error(`Erreur API ${url}:`, e);
+                return null;
+            }
+        }
+
+window.setViewMode = function (mode) {
+    currentView = mode;
+    const grid = document.getElementById('works-grid');
+    grid.classList.remove('grid-4', 'grid-6');
+    grid.classList.add(`grid-${mode}`);
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`view-${mode}`).classList.add('active');
+    try { localStorage.setItem('viewMode', mode); } catch (e) {}
+    
+    // Mettre à jour les images existantes
+    const images = grid.querySelectorAll('img');
+    images.forEach(img => {
+        if (mode === 6) {
+            img.style.objectFit = 'cover';    // Mode 6 : coupé
+        } else {
+            img.style.objectFit = 'contain';  // Mode 4 : entier
+        }
+    });
+};
+
+        window.clearAllFilters = function () {
+            window.location.href = '/research?page=1';
+        };
+
+        // TYPE D'ŒUVRE (NOUVEAU)
+window.setViewMode = function (mode) {
+    currentView = mode;
+    const grid = document.getElementById('works-grid');
+    grid.classList.remove('grid-4', 'grid-6');
+    grid.classList.add(`grid-${mode}`);
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`view-${mode}`).classList.add('active');
+    
+    // Sauvegarder dans localStorage
+    try { localStorage.setItem('viewMode', mode); } catch (e) {}
+    
+    // Mettre à jour l'URL avec le nouveau mode (sans recharger la page)
+    const url = new URL(window.location);
+    url.searchParams.set('view', mode);
+    window.history.replaceState({}, '', url);
+    
+    // Recharger les images avec le nouveau fit
+    reloadImagesWithFit(mode);
+};
+
+function reloadImagesWithFit(mode) {
+    const images = document.querySelectorAll('#works-grid img');
+    images.forEach(img => {
+        const originalSrc = img.src;
+        const fit = mode === 4 ? 'contain' : 'cover';
+        // Remplacer fit=cover par fit=contain ou vice-versa
+        img.src = originalSrc.replace(/fit=(cover|contain)/, `fit=${fit}`);
+    });
+}
+
+        // ARTISTES
+        async function loadArtists() {
+            const container = document.getElementById('artist-items');
+            if (!container) return;
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const params = {};
+                const artists = urlParams.getAll('artist');
+                const country = urlParams.get('country');
+                const cities  = urlParams.getAll('city');
+                if (artists.length) params.artist = artists;
+                if (country)        params.country = country;
+                if (cities.length)  params.city    = cities;
+
+                const data = await fetchAPI('/api/filter-artists', params);
+
+                if (!data || !data.length) {
+                    container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Aucun artiste trouvé</div>';
+                    return;
+                }
+                container.innerHTML = data.map(a => `
+                    <div class="dropdown-item">
+                        <label>
+                            <input type="checkbox" value="${escHtml(a.id)}" ${a.selected ? 'checked' : ''}>
+                            <span class="name">${escHtml(a.name)}</span>
+                            <span class="count">${a.count}</span>
+                        </label>
+                    </div>`).join('');
+            } catch (e) {
+                container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Erreur de chargement</div>';
+            }
+        }
+
+        function initArtistSearch() {
+            const input = document.getElementById('artist-search-filter');
+            if (!input || input._initialized) return;
+            input._initialized = true;
+            let timer;
+            input.addEventListener('input', function () {
+                clearTimeout(timer);
+                const q = this.value.trim();
+                if (!q) { loadArtists(); return; }
+                if (q.length < 2) {
+                    document.getElementById('artist-items').innerHTML =
+                        '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Tapez au moins 2 caractères</div>';
+                    return;
+                }
+                timer = setTimeout(async () => {
+                    const res = await fetch(`/api/search-suggestions?q=${encodeURIComponent(q)}`);
+                    const data = await res.json();
+                    const selected = new URLSearchParams(window.location.search).getAll('artist');
+                    const container = document.getElementById('artist-items');
+                    if (!data.artistes || !data.artistes.length) {
+                        container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Aucun résultat</div>';
                         return;
                     }
-                    
-                    container.innerHTML = data.map(artist => `
+                    container.innerHTML = data.artistes.map(a => `
                         <div class="dropdown-item">
                             <label>
-                                <input type="checkbox" value="${artist.id}" ${artist.selected ? 'checked' : ''}> 
-                                <span class="name">${artist.name}</span>
-                                <span class="count">${artist.count}</span>
+                                <input type="checkbox" value="${escHtml(a.nom)}" ${selected.includes(a.nom) ? 'checked' : ''}>
+                                <span class="name">${escHtml(a.nom)}</span>
+                                <span class="count">${a.oeuvres_count}</span>
                             </label>
-                        </div>
-                    `).join('');
-                    
-                } catch (error) {
-                    console.error('Erreur chargement artistes:', error);
-                    container.innerHTML = '<div class="dropdown-item">Erreur de chargement</div>';
-                }
-            }
+                        </div>`).join('');
+                }, 300);
+            });
+        }
 
-            function initArtistSearch() {
-                const searchInput = document.getElementById('artist-search-filter');
-                if (!searchInput) return;
-                
-                let searchTimeout;
-                
-                searchInput.addEventListener('input', function(e) {
-                    const searchTerm = e.target.value.trim();
-                    
-                    clearTimeout(searchTimeout);
-                    
-                    if (searchTerm.length === 0) {
-                        loadArtists();
-                        return;
-                    }
-                    
-                    if (searchTerm.length < 2) {
-                        document.getElementById('artist-items').innerHTML = 
-                            '<div class="dropdown-item" style="justify-content: center; color: var(--text-light);">Tapez au moins 2 caractères</div>';
-                        return;
-                    }
-                    
-                    searchTimeout = setTimeout(async () => {
-                        try {
-                            const urlParams = new URLSearchParams(window.location.search);
-                            const selectedArtists = urlParams.getAll('artist');
-                            
-                            const data = await fetchAPI('/api/search-artists', { q: searchTerm });
-                            
-                            const container = document.getElementById('artist-items');
-                            
-                            if (!data || data.length === 0) {
-                                container.innerHTML = '<div class="dropdown-item" style="justify-content: center; color: var(--text-light);">Aucun artiste trouvé</div>';
-                                return;
-                            }
-                            
-                            container.innerHTML = data.map(artist => `
-                                <div class="dropdown-item">
-                                    <label>
-                                        <input type="checkbox" value="${artist.nom}" ${selectedArtists.includes(artist.nom) ? 'checked' : ''}> 
-                                        <span class="name">${artist.nom}</span>
-                                        <span class="count">${artist.oeuvres_count}</span>
-                                    </label>
-                                </div>
-                            `).join('');
-                            
-                        } catch (error) {
-                            console.error('Erreur recherche artistes:', error);
-                            document.getElementById('artist-items').innerHTML = '<div class="dropdown-item">Erreur de chargement</div>';
-                        }
-                    }, 300);
+        window.applyArtistFilter = function () {
+            const selected = Array.from(document.querySelectorAll('#artist-items input:checked')).map(c => c.value);
+            const params = new URLSearchParams(window.location.search);
+            params.delete('artist');
+            selected.forEach(a => params.append('artist', a));
+            params.set('page', '1');
+            window.location.href = `/research?${params}`;
+        };
+
+        // PAYS
+        async function loadCountries() {
+            const container = document.getElementById('country-items');
+            if (!container) return;
+            try {
+                const urlParams  = new URLSearchParams(window.location.search);
+                const selectedCountry = urlParams.get('country') || '';
+                const data = await fetchAPI('/api/filter-countries', {
+                    ...(urlParams.getAll('artist').length ? { artist: urlParams.getAll('artist') } : {}),
+                    ...(urlParams.getAll('city').length   ? { city:   urlParams.getAll('city')   } : {}),
                 });
+
+                // Limiter à 15 pays maximum
+                let html = `<div class="dropdown-item"><label>
+                    <input type="radio" name="country" value="" ${!selectedCountry ? 'checked' : ''}>
+                    <span class="name">Tous les pays</span>
+                </label></div>`;
+
+                if (data && data.length) {
+                    html += data.slice(0, 15).map(c => `
+                        <div class="dropdown-item"><label>
+                            <input type="radio" name="country" value="${escHtml(c.id)}" ${c.selected ? 'checked' : ''}>
+                            <span class="name">${escHtml(c.name)}</span>
+                            <span class="count">${c.count}</span>
+                        </label></div>`).join('');
+                }
+                container.innerHTML = html;
+            } catch (e) {
+                container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Erreur de chargement</div>';
             }
+        }
 
-            // ============================================
-            // GESTION DES PAYS
-            // ============================================
-
-            async function loadCountries(searchTerm = '') {
-                const container = document.getElementById('country-items');
-                if (!container) return;
-                
-                try {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const params = {
-                        artist: urlParams.getAll('artist'),
-                        city: urlParams.getAll('city')
-                    };
-                    
-                    if (searchTerm && searchTerm.length >= 2) {
-                        params.search = searchTerm;
+        function initCountrySearch() {
+            const input = document.getElementById('country-search-filter');
+            if (!input || input._initialized) return;
+            input._initialized = true;
+            let timer;
+            input.addEventListener('input', function () {
+                clearTimeout(timer);
+                const q = this.value.trim();
+                if (!q) { loadCountries(); return; }
+                if (q.length < 2) {
+                    document.getElementById('country-items').innerHTML =
+                        '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Tapez au moins 2 caractères</div>';
+                    return;
+                }
+                timer = setTimeout(async () => {
+                    const res  = await fetch(`/api/search-countries?q=${encodeURIComponent(q)}`);
+                    const data = await res.json();
+                    const selectedCountry = new URLSearchParams(window.location.search).get('country') || '';
+                    const container = document.getElementById('country-items');
+                    let html = `<div class="dropdown-item"><label>
+                        <input type="radio" name="country" value="" ${!selectedCountry ? 'checked' : ''}>
+                        <span class="name">Tous les pays</span>
+                    </label></div>`;
+                    if (data.length) {
+                        html += data.slice(0, 15).map(c => `
+                            <div class="dropdown-item"><label>
+                                <input type="radio" name="country" value="${escHtml(c.nom)}" ${selectedCountry === c.nom ? 'checked' : ''}>
+                                <span class="name">${escHtml(c.nom)}</span>
+                                <span class="count">${c.oeuvres_count}</span>
+                            </label></div>`).join('');
+                    } else {
+                        html = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Aucun pays trouvé</div>';
                     }
-                    
-                    if (params.artist.length === 0) delete params.artist;
-                    if (params.city.length === 0) delete params.city;
-                    
-                    const data = await fetchAPI('/api/filter-countries', params);
-                    
-                    const selectedCountry = urlParams.get('country') || '';
-                    
-                    let html = '<div class="dropdown-item">' +
-                        '<label>' +
-                            '<input type="radio" name="country" value="" ' + (selectedCountry === '' ? 'checked' : '') + '> ' +
-                            '<span class="name">Tous les pays</span>' +
-                        '</label>' +
-                    '</div>';
-                    
-                    if (data && data.length > 0) {
-                        html += data.map(country => `
-                            <div class="dropdown-item">
-                                <label>
-                                    <input type="radio" name="country" value="${country.id}" ${country.selected ? 'checked' : ''}> 
-                                    <span class="name">${country.name}</span>
-                                    <span class="count">${country.count}</span>
-                                </label>
-                            </div>
-                        `).join('');
-                    } else if (searchTerm && searchTerm.length >= 2) {
-                        html = '<div class="dropdown-item" style="justify-content: center; color: var(--text-light);">Aucun pays trouvé</div>';
-                    }
-                    
                     container.innerHTML = html;
-                    
-                } catch (error) {
-                    console.error('Erreur chargement pays:', error);
-                    container.innerHTML = '<div class="dropdown-item">Erreur de chargement</div>';
+                }, 300);
+            });
+        }
+
+        // VILLES
+        async function loadCities() {
+            const container = document.getElementById('city-items');
+            if (!container) return;
+            try {
+                const urlParams     = new URLSearchParams(window.location.search);
+                const selectedCities = urlParams.getAll('city');
+                const params = {};
+                if (urlParams.getAll('artist').length) params.artist  = urlParams.getAll('artist');
+                if (urlParams.get('country'))          params.country = urlParams.get('country');
+                if (selectedCities.length)             params.city    = selectedCities;
+
+                const data = await fetchAPI('/api/filter-cities', params);
+
+                if (!data || !data.length) {
+                    container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Aucune ville trouvée</div>';
+                    return;
                 }
+                container.innerHTML = data.map(c => `
+                    <div class="dropdown-item"><label>
+                        <input type="checkbox" value="${escHtml(c.id)}" ${selectedCities.includes(c.id) ? 'checked' : ''}>
+                        <span class="name">${escHtml(c.name)}</span>
+                        <span class="count">${c.count}</span>
+                    </label></div>`).join('');
+            } catch (e) {
+                container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Erreur de chargement</div>';
             }
+        }
 
-            function initCountrySearch() {
-                const searchInput = document.getElementById('country-search-filter');
-                if (!searchInput) return;
-                
-                let searchTimeout;
-                
-                searchInput.addEventListener('input', function(e) {
-                    const searchTerm = e.target.value.trim();
-                    
-                    clearTimeout(searchTimeout);
-                    
-                    if (searchTerm.length === 0) {
-                        loadCountries();
-                        return;
-                    }
-                    
-                    if (searchTerm.length < 2) {
-                        const container = document.getElementById('country-items');
-                        container.innerHTML = '<div class="dropdown-item" style="justify-content: center; color: var(--text-light);">Tapez au moins 2 caractères</div>';
-                        return;
-                    }
-                    
-                    searchTimeout = setTimeout(async () => {
-                        try {
-                            const urlParams = new URLSearchParams(window.location.search);
-                            const selectedCountry = urlParams.get('country') || '';
-                            
-                            const response = await fetch(`/api/search-countries?q=${encodeURIComponent(searchTerm)}`);
-                            const countries = await response.json();
-                            
-                            const container = document.getElementById('country-items');
-                            
-                            if (countries.length === 0) {
-                                container.innerHTML = '<div class="dropdown-item" style="justify-content: center; color: var(--text-light);">Aucun pays trouvé</div>';
-                                return;
-                            }
-                            
-                            let html = '<div class="dropdown-item">' +
-                                '<label>' +
-                                    '<input type="radio" name="country" value="" ' + (selectedCountry === '' ? 'checked' : '') + '> ' +
-                                    '<span class="name">Tous les pays</span>' +
-                                '</label>' +
-                            '</div>';
-                            
-                            html += countries.map(country => `
-                                <div class="dropdown-item">
-                                    <label>
-                                        <input type="radio" name="country" value="${country.nom}" ${selectedCountry === country.nom ? 'checked' : ''}> 
-                                        <span class="name">${country.nom}</span>
-                                        <span class="count">${country.oeuvres_count}</span>
-                                    </label>
-                                </div>
-                            `).join('');
-                            
-                            container.innerHTML = html;
-                            
-                        } catch (error) {
-                            console.error('Erreur recherche pays:', error);
-                            document.getElementById('country-items').innerHTML = '<div class="dropdown-item">Erreur de chargement</div>';
-                        }
-                    }, 300);
+        function initCitySearch() {
+            const input = document.getElementById('city-search-filter');
+            if (!input || input._initialized) return;
+            input._initialized = true;
+            input.addEventListener('input', function () {
+                const q = this.value.trim().toLowerCase();
+                document.querySelectorAll('#city-items .dropdown-item').forEach(item => {
+                    const name = item.querySelector('.name')?.textContent.toLowerCase() || '';
+                    item.style.display = (!q || name.includes(q)) ? 'block' : 'none';
                 });
-            }
+            });
+        }
 
-            // ============================================
-            // GESTION DES VILLES
-            // ============================================
+        window.applyGeoFilter = function () {
+            const country = document.querySelector('input[name="country"]:checked')?.value || '';
+            const cities  = Array.from(document.querySelectorAll('#city-items input:checked')).map(c => c.value);
+            const params  = new URLSearchParams(window.location.search);
+            if (country) params.set('country', country); else params.delete('country');
+            params.delete('city');
+            cities.forEach(c => params.append('city', c));
+            params.set('page', '1');
+            window.location.href = `/research?${params}`;
+        };
 
-            async function loadCities() {
-                const container = document.getElementById('city-items');
-                if (!container) return;
-                
-                try {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const params = {
-                        artist: urlParams.getAll('artist'),
-                        country: urlParams.get('country') || '',
-                        city: urlParams.getAll('city')
-                    };
-                    
-                    if (params.artist.length === 0) delete params.artist;
-                    if (!params.country) delete params.country;
-                    
-                    const data = await fetchAPI('/api/filter-cities', params);
-                    
-                    const selectedCities = urlParams.getAll('city');
-                    
-                    if (!data || data.length === 0) {
-                        container.innerHTML = '<div class="dropdown-item">Aucune ville trouvée</div>';
-                        return;
-                    }
-                    
-                    container.innerHTML = data.map(city => `
-                        <div class="dropdown-item">
-                            <label>
-                                <input type="checkbox" value="${city.id}" ${selectedCities.includes(city.id) ? 'checked' : ''}> 
-                                <span class="name">${city.name}</span>
-                                <span class="count">${city.count}</span>
-                            </label>
-                        </div>
-                    `).join('');
-                    
-                } catch (error) {
-                    console.error('Erreur chargement villes:', error);
-                    container.innerHTML = '<div class="dropdown-item">Erreur de chargement</div>';
-                }
-            }
-
-            function initCitySearch() {
-                const searchInput = document.getElementById('city-search-filter');
-                if (!searchInput) return;
-                
-                searchInput.addEventListener('input', function(e) {
-                    const searchTerm = e.target.value.trim().toLowerCase();
-                    const items = document.querySelectorAll('#city-items .dropdown-item');
-                    
-                    items.forEach(item => {
-                        const name = item.querySelector('.name')?.textContent.toLowerCase() || '';
-                        item.style.display = name.includes(searchTerm) || searchTerm === '' ? 'block' : 'none';
-                    });
-                });
-            }
-
-// ============================================
-// GESTION DES MUSÉES
-// ============================================
-window.museumNames = {};
+        // MUSÉES
 async function loadMuseums() {
     const container = document.getElementById('museum-items');
     if (!container) return;
-    
     try {
-        // Récupérer les filtres actuels
         const urlParams = new URLSearchParams(window.location.search);
-        const params = {
-            artist: urlParams.getAll('artist'),
-            country: urlParams.get('country') || '',
-            city: urlParams.getAll('city')
-        };
-        
-        // Nettoyer les paramètres vides
-        if (params.artist.length === 0) delete params.artist;
-        if (!params.country) delete params.country;
-        if (params.city.length === 0) delete params.city;
-        
+        const params    = {};
+        if (urlParams.getAll('artist').length) params.artist  = urlParams.getAll('artist');
+        if (urlParams.get('country'))          params.country = urlParams.get('country');
+        if (urlParams.getAll('city').length)   params.city    = urlParams.getAll('city');
+
         const data = await fetchAPI('/api/filter-museums', params);
-        
-        // Stocker les noms pour les tags
-        if (data && data.length > 0) {
-            window.museumNames = {};
-            data.forEach(museum => {
-                window.museumNames[museum.id] = museum.name;
+
+        // Remplir museumNames avec TOUS les musées
+        museumNames = {};
+        if (data && data.length) {
+            data.forEach(m => { 
+                museumNames[m.id] = m.name;  // ← Stocke le nom avec l'ID comme clé
             });
         }
+
         const selectedMuseums = urlParams.getAll('museum');
-        
-        if (!data || data.length === 0) {
-            container.innerHTML = '<div class="dropdown-item">Aucun musée trouvé</div>';
+
+        if (!data || !data.length) {
+            container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Aucun musée trouvé</div>';
             return;
         }
         
-        container.innerHTML = data.map(museum => `
-            <div class="dropdown-item">
-                <label>
-                    <input type="checkbox" value="${museum.id}" ${museum.selected ? 'checked' : ''}> 
-                    <span class="name">${museum.name}</span>
-                    <span class="count">${museum.count}</span>
-                </label>
-            </div>
-        `).join('');
-        
-    } catch (error) {
-        console.error('Erreur chargement musées:', error);
-        container.innerHTML = '<div class="dropdown-item">Erreur de chargement</div>';
+        container.innerHTML = data.map(m => `
+            <div class="dropdown-item"><label>
+                <input type="checkbox" value="${escHtml(m.id)}" ${m.selected ? 'checked' : ''}>
+                <span class="name">${escHtml(m.name)}</span>
+                <span class="count">${m.count}</span>
+            </label></div>`).join('');
+            
+    } catch (e) {
+        console.error('Erreur loadMuseums:', e);
+        container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Erreur de chargement</div>';
     }
 }
 
-// Recherche dynamique dans les musées
-function initMuseumSearch() {
-    const searchInput = document.getElementById('museum-search-filter');
-    if (!searchInput) return;
-    
-    let searchTimeout;
-    
-    searchInput.addEventListener('input', function(e) {
-        const searchTerm = e.target.value.trim();
-        
-        clearTimeout(searchTimeout);
-        
-        if (searchTerm.length === 0) {
-            loadMuseums();
-            return;
-        }
-        
-        if (searchTerm.length < 2) {
-            const container = document.getElementById('museum-items');
-            container.innerHTML = '<div class="dropdown-item" style="justify-content: center; color: var(--text-light);">Tapez au moins 2 caractères</div>';
-            return;
-        }
-        
-        searchTimeout = setTimeout(async () => {
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const selectedMuseums = urlParams.getAll('museum');
-                
-                const response = await fetch(`/api/search-museums?q=${encodeURIComponent(searchTerm)}`);
-                const museums = await response.json();
-                
-                const container = document.getElementById('museum-items');
-                
-                if (museums.length === 0) {
-                    container.innerHTML = '<div class="dropdown-item" style="justify-content: center; color: var(--text-light);">Aucun musée trouvé</div>';
+        function initMuseumSearch() {
+            const input = document.getElementById('museum-search-filter');
+            if (!input || input._initialized) return;
+            input._initialized = true;
+            let timer;
+            input.addEventListener('input', function () {
+                clearTimeout(timer);
+                const q = this.value.trim();
+                if (!q) { loadMuseums(); return; }
+                if (q.length < 2) {
+                    document.getElementById('museum-items').innerHTML =
+                        '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Tapez au moins 2 caractères</div>';
                     return;
                 }
-                
-                container.innerHTML = museums.map(museum => `
-                    <div class="dropdown-item">
-                        <label>
-                            <input type="checkbox" value="${museum.id}" ${selectedMuseums.includes(museum.id) ? 'checked' : ''}> 
-                            <span class="name">${museum.nom}</span>
-                            <span class="count">${museum.oeuvres_count}</span>
-                        </label>
-                    </div>
-                `).join('');
-                
-            } catch (error) {
-                console.error('Erreur recherche musées:', error);
-                document.getElementById('museum-items').innerHTML = '<div class="dropdown-item">Erreur de chargement</div>';
-            }
-        }, 300);
-    });
-}
-
-// Appliquer le filtre musée
-window.applyMuseumFilter = function() {
-    const selected = Array.from(document.querySelectorAll('#museum-items input:checked'))
-        .map(cb => cb.value);
-    
-    const params = new URLSearchParams(window.location.search);
-    
-    params.delete('museum');
-    selected.forEach(m => params.append('museum', m));
-    params.set('page', '1');
-    
-    window.location.href = `/research?${params.toString()}`;
-}
-
-            // ============================================
-            // GESTION DU TRI
-            // ============================================
-
-            function loadSortOptions() {
-                const container = document.getElementById('sort-items');
-                if (!container) return;
-                
-                const urlParams = new URLSearchParams(window.location.search);
-                const currentSort = urlParams.get('sort') || 'relevance';
-                
-                const sortOptions = [
-                    { value: 'relevance', label: 'Pertinence' },
-                    { value: 'date_desc', label: 'Plus récent' },
-                    { value: 'date_asc', label: 'Plus ancien' },
-                    { value: 'title_asc', label: 'Titre A-Z' },
-                    { value: 'artist_asc', label: 'Artiste A-Z' }
-                ];
-                
-                container.innerHTML = sortOptions.map(option => `
-                    <div class="dropdown-item">
-                        <label>
-                            <input type="radio" name="sort" value="${option.value}" ${currentSort === option.value ? 'checked' : ''}> 
-                            <span class="name">${option.label}</span>
-                        </label>
-                    </div>
-                `).join('');
-            }
-
-            // ============================================
-            // APPLICATION DES FILTRES
-            // ============================================
-
-            window.applyArtistFilter = function() {
-                const selected = Array.from(document.querySelectorAll('#artist-items input:checked'))
-                    .map(cb => cb.value);
-                
-                const params = new URLSearchParams(window.location.search);
-                
-                params.delete('artist');
-                selected.forEach(a => params.append('artist', a));
-                params.set('page', '1');
-                
-                window.location.href = `/research?${params.toString()}`;
-            }
-
-            window.applyGeoFilter = function() {
-                const country = document.querySelector('input[name="country"]:checked')?.value || '';
-                const cities = Array.from(document.querySelectorAll('#city-items input:checked'))
-                    .map(cb => cb.value);
-                
-                const params = new URLSearchParams(window.location.search);
-                
-                if (country) {
-                    params.set('country', country);
-                } else {
-                    params.delete('country');
-                }
-                
-                params.delete('city');
-                cities.forEach(c => params.append('city', c));
-                params.set('page', '1');
-                
-                window.location.href = `/research?${params.toString()}`;
-            }
-
-            window.applySortFilter = function() {
-                const sort = document.querySelector('input[name="sort"]:checked')?.value;
-                
-                const params = new URLSearchParams(window.location.search);
-                
-                if (sort && sort !== 'relevance') {
-                    params.set('sort', sort);
-                } else {
-                    params.delete('sort');
-                }
-                
-                params.set('page', '1');
-                
-                window.location.href = `/research?${params.toString()}`;
-            }
-
-            // ============================================
-            // TAGS DES FILTRES ACTIFS
-            // ============================================
-
-            function updateActiveTags() {
-                const container = document.getElementById('active-tags');
-                if (!container) return;
-                
-                const params = new URLSearchParams(window.location.search);
-                const tags = [];
-                
-                const artists = params.getAll('artist');
-                artists.forEach(artist => {
-                    tags.push({
-                        type: 'artist',
-                        label: `${artist}`,
-                        value: artist
-                    });
-                });
-                
-                const country = params.get('country');
-                if (country) {
-                    tags.push({
-                        type: 'country',
-                        label: `${country}`,
-                        value: country
-                    });
-                }
-                
-                const cities = params.getAll('city');
-                cities.forEach(city => {
-                    tags.push({
-                        type: 'city',
-                        label: `${city}`,
-                        value: city
-                    });
-                });
-
-// Dans updateActiveTags(), après les villes
-const museums = params.getAll('museum');
-// Pour chaque musée, il faudrait idéalement avoir le nom
-// Mais comme on a que l'ID, on va devoir le chercher
-// Solution temporaire : utiliser un mapping depuis les données chargées
-if (window.museumNames) {
-    museums.forEach(museumId => {
-        const museumName = window.museumNames[museumId] || museumId;
-        tags.push({
-            type: 'museum',
-            label: museumName,
-            value: museumId
-        });
-    });
-} else {
-    // Fallback : afficher l'ID
-    museums.forEach(museumId => {
-        tags.push({
-            type: 'museum',
-            label: museumId,
-            value: museumId
-        });
-    });
-}
-
-
-                const sort = params.get('sort');
-                if (sort && sort !== 'relevance') {
-                    const sortLabels = {
-                        'date_desc': 'Plus récent',
-                        'date_asc': 'Plus ancien',
-                        'title_asc': 'A-Z',
-                        'artist_asc': 'Artiste A-Z'
-                    };
-                    tags.push({
-                        type: 'sort',
-                        label: sortLabels[sort] || sort,
-                        value: sort
-                    });
-                }
-                
-                container.innerHTML = tags.length > 0 
-                    ? tags.map(tag => `
-                        <div class="filter-tag">
-                            ${tag.label}
-                            <i class="fas fa-times" onclick="removeTag('${tag.type}', '${tag.value}')"></i>
-                        </div>
-                    `).join('')
-                    : '';
-                
-                updateCounter();
-            }
-
-            window.removeTag = function(type, value) {
-                const params = new URLSearchParams(window.location.search);
-                
-                switch(type) {
-                    case 'artist':
-                        const artists = params.getAll('artist').filter(a => a !== value);
-                        params.delete('artist');
-                        artists.forEach(a => params.append('artist', a));
-                        break;
-                    case 'country':
-                        params.delete('country');
-                        break;
-                    case 'city':
-                        const cities = params.getAll('city').filter(c => c !== value);
-                        params.delete('city');
-                        cities.forEach(c => params.append('city', c));
-                        break;
-
-case 'museum':
-    const museums = params.getAll('museum').filter(m => m !== value);
-    params.delete('museum');
-    museums.forEach(m => params.append('museum', m));
-    break;                        
-                        
-                        
-                    case 'sort':
-                        params.delete('sort');
-                        break;
-                }
-                
-                window.location.href = `/research?${params.toString()}`;
-            }
-
-            // ============================================
-            // SCROLL INFINI
-            // ============================================
-
-            function initInfiniteScroll() {
-                if (document.getElementById('scroll-sentinel')) return;
-                
-                const sentinel = document.createElement('div');
-                sentinel.id = 'scroll-sentinel';
-                sentinel.style.height = '10px';
-                sentinel.style.width = '100%';
-                sentinel.style.marginTop = '20px';
-                
-                const grid = document.getElementById('works-grid');
-                if (grid && grid.parentNode) {
-                    grid.parentNode.insertBefore(sentinel, grid.nextSibling);
-                }
-
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting && hasMore && !isLoading && !scrollTriggered) {
-                            scrollTriggered = true;
-                            loadMoreWorks();
-                        }
-                    });
-                }, { root: null, rootMargin: '200px', threshold: 0.1 });
-
-                observer.observe(sentinel);
-            }
-
-            async function loadMoreWorks() {
-                if (isLoading || !hasMore) {
-                    scrollTriggered = false;
-                    return;
-                }
-
-                isLoading = true;
-                const nextPage = currentPage + 1;
-
-                showLoadingIndicator();
-
-                try {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    urlParams.set('page', nextPage);
-                    urlParams.set('limit', 20);
-                    
-                    const response = await fetch(`/api/works?${urlParams.toString()}`);
-                    
-                    if (!response.ok) {
-                        throw new Error(`Erreur HTTP: ${response.status}`);
-                    }
-
-                    const data = await response.json();
-
-                    if (!data.works || data.works.length === 0) {
-                        hasMore = false;
-                        hideLoadingIndicator();
-                        showEndMessage();
+                timer = setTimeout(async () => {
+                    const res  = await fetch(`/api/search-museums?q=${encodeURIComponent(q)}`);
+                    const data = await res.json();
+                    const selectedMuseums = new URLSearchParams(window.location.search).getAll('museum');
+                    const container = document.getElementById('museum-items');
+                    if (!data.length) {
+                        container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Aucun musée trouvé</div>';
                         return;
                     }
+                    container.innerHTML = data.map(m => `
+                        <div class="dropdown-item"><label>
+                            <input type="checkbox" value="${escHtml(m.id)}" ${selectedMuseums.includes(m.id) ? 'checked' : ''}>
+                            <span class="name">${escHtml(m.nom)}</span>
+                            <span class="count">${m.oeuvres_count}</span>
+                        </label></div>`).join('');
+                }, 300);
+            });
+        }
 
-                    appendWorks(data.works);
-                    currentPage = nextPage;
-                    displayedCount += data.works.length;
-                    hasMore = data.has_more;
-                    updateCounter();
+window.applyMuseumFilter = function () {
+    // Récupérer les noms des musées sélectionnés, pas les IDs
+    const selected = Array.from(document.querySelectorAll('#museum-items input:checked')).map(c => {
+        // Chercher le nom dans l'élément parent
+        const label = c.closest('.dropdown-item')?.querySelector('.name')?.textContent;
+        return label || c.value;  // Fallback sur l'ID si le nom n'est pas trouvé
+    });
+    
+    const params = new URLSearchParams(window.location.search);
+    params.delete('museum');
+    selected.forEach(m => params.append('museum', m));  // Maintenant c'est le nom
+    params.set('page', '1');
+    window.location.href = `/research?${params}`;
+};
 
-                } catch (error) {
-                    console.error('❌ Erreur chargement:', error);
-                } finally {
-                    isLoading = false;
-                    scrollTriggered = false;
-                    hideLoadingIndicator();
-                }
+        // TRI
+        function loadSortOptions() {
+            const container = document.getElementById('sort-items');
+            if (!container) return;
+            const current = new URLSearchParams(window.location.search).get('sort') || 'relevance';
+            const options = [
+                { value: 'relevance', label: 'Pertinence' },
+                { value: 'date_desc', label: 'Plus récent' },
+                { value: 'date_asc',  label: 'Plus ancien' },
+                { value: 'title_asc', label: 'Titre A-Z'   },
+                { value: 'artist_asc',label: 'Artiste A-Z' },
+            ];
+            container.innerHTML = options.map(o => `
+                <div class="dropdown-item"><label>
+                    <input type="radio" name="sort" value="${o.value}" ${current === o.value ? 'checked' : ''}>
+                    <span class="name">${o.label}</span>
+                </label></div>`).join('');
+        }
+
+        window.applySortFilter = function () {
+            const sort   = document.querySelector('input[name="sort"]:checked')?.value;
+            const params = new URLSearchParams(window.location.search);
+            if (sort && sort !== 'relevance') params.set('sort', sort); else params.delete('sort');
+            params.set('page', '1');
+            window.location.href = `/research?${params}`;
+        };
+
+        // TAGS ACTIFS
+
+function updateActiveTags() {
+    const container = document.getElementById('active-tags');
+    if (!container) return;
+    const params = new URLSearchParams(window.location.search);
+    const tags   = [];
+
+    params.getAll('artist').forEach(a => tags.push({ type: 'artist',  label: a, value: a }));
+
+    const country = params.get('country');
+    if (country) tags.push({ type: 'country', label: country, value: country });
+
+    params.getAll('city').forEach(c => tags.push({ type: 'city', label: c, value: c }));
+
+    // Pour les musées, utiliser museumNames pour avoir le nom
+    params.getAll('museum').forEach(id => {
+        const label = museumNames[id] || id;  // ← Prend le nom si disponible, sinon l'ID
+        tags.push({ type: 'museum', label: label, value: id });
+    });
+
+    params.getAll('type').forEach(t => tags.push({ type: 'type', label: t, value: t }));
+
+    const sort = params.get('sort');
+    if (sort && sort !== 'relevance') {
+        const labels = { date_desc: 'Plus récent', date_asc: 'Plus ancien', title_asc: 'A-Z', artist_asc: 'Artiste A-Z' };
+        tags.push({ type: 'sort', label: labels[sort] || sort, value: sort });
+    }
+
+    container.innerHTML = tags.map(t => `
+        <div class="filter-tag">
+            ${escHtml(t.label)}
+            <i class="fas fa-times" onclick="removeTag('${t.type}','${escHtml(t.value)}')"></i>
+        </div>`).join('');
+
+    updateCounter();
+}
+
+        window.removeTag = function (type, value) {
+            const params = new URLSearchParams(window.location.search);
+            if (type === 'artist') {
+                const list = params.getAll('artist').filter(a => a !== value);
+                params.delete('artist'); list.forEach(a => params.append('artist', a));
+            } else if (type === 'country') {
+                params.delete('country');
+            } else if (type === 'city') {
+                const list = params.getAll('city').filter(c => c !== value);
+                params.delete('city'); list.forEach(c => params.append('city', c));
+            } else if (type === 'museum') {
+                const list = params.getAll('museum').filter(m => m !== value);
+                params.delete('museum'); list.forEach(m => params.append('museum', m));
+            } else if (type === 'type') {
+                const list = params.getAll('type').filter(t => t !== value);
+                params.delete('type'); list.forEach(t => params.append('type', t));
+            } else if (type === 'sort') {
+                params.delete('sort');
             }
+            window.location.href = `/research?${params}`;
+        };
+
+        // SCROLL INFINI - 24 ŒUVRES PAR PAGE
+        function initInfiniteScroll() {
+            if (document.getElementById('scroll-sentinel')) return;
+            const sentinel = document.createElement('div');
+            sentinel.id = 'scroll-sentinel';
+            sentinel.style.cssText = 'height:10px;width:100%;margin-top:20px;';
+            const grid = document.getElementById('works-grid');
+            if (grid && grid.parentNode) grid.parentNode.insertBefore(sentinel, grid.nextSibling);
+
+            new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && hasMore && !isLoading && !scrollTriggered) {
+                        scrollTriggered = true;
+                        loadMoreWorks();
+                    }
+                });
+            }, { rootMargin: '200px', threshold: 0.1 }).observe(sentinel);
+        }
+
+        async function loadMoreWorks() {
+            if (isLoading || !hasMore) { scrollTriggered = false; return; }
+            isLoading = true;
+            document.getElementById('loading-indicator').style.display = 'block';
+
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                urlParams.set('page',  currentPage + 1);
+                urlParams.set('limit', 24);
+
+                const res  = await fetch(`/api/works?${urlParams}`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+
+                if (!data.works || !data.works.length) {
+                    hasMore = false;
+                    document.getElementById('end-message').style.display = 'block';
+                    return;
+                }
+
+                appendWorks(data.works);
+                currentPage++;
+                displayedCount += data.works.length;
+                hasMore = data.has_more;
+                if (data.total) totalOeuvres = data.total;
+                updateCounter();
+
+            } catch (e) {
+                console.error('Erreur scroll infini:', e);
+            } finally {
+                isLoading       = false;
+                scrollTriggered = false;
+                document.getElementById('loading-indicator').style.display = 'none';
+            }
+        }
 
 function appendWorks(works) {
     const grid = document.getElementById('works-grid');
     const fragment = document.createDocumentFragment();
+    const fit = currentView === 4 ? 'contain' : 'cover';  // ← ICI
+
+    works.forEach((artwork) => {
+        const a = document.createElement('a');
+        a.href = `/oeuvre/${artwork.id}`;
+        a.className = 'work-item';
+
+        const wrap = document.createElement('div');
+        wrap.className = 'work-image-container';
+
+if (artwork.image_url) {
+    const img = document.createElement('img');
+    const encodedUrl = encodeURIComponent(artwork.image_url);
+    const fit = currentView === 4 ? 'contain' : 'cover';
     
-    works.forEach((artwork, index) => {
-        const item = document.createElement('a');
-        item.href = `/oeuvre/${artwork.id}`;
-        item.className = 'work-item';
-        item.setAttribute('data-id', artwork.id);
-        item.style.animationDelay = `${index * 0.03}s`;
-
-        const container = document.createElement('div');
-        container.className = 'work-image-container';
-
-        if (artwork.image_url && artwork.image_url !== '') {
-            const img = document.createElement('img');
-            
-            // Adapter la taille selon le mode de vue
-            const height = currentView === 4 ? 400 : 600;
-            const width = 400;
-            
-            img.src = `https://images.weserv.nl/?url=${encodeURIComponent(artwork.image_url)}&w=${width}&h=${height}&fit=cover&a=attention&output=jpg&q=80&we`;
-            img.alt = artwork.titre || 'Sans titre';
-            img.loading = 'lazy';
-            
-            const placeholder = document.createElement('div');
-            placeholder.className = 'image-placeholder';
-            placeholder.style.display = 'none';
-            placeholder.innerHTML = '<i class="fas fa-image"></i>';
-            
-            img.onerror = function() {
-                this.style.display = 'none';
-                placeholder.style.display = 'flex';
-            };
-            
-            container.appendChild(img);
-            container.appendChild(placeholder);
+    // URL de base
+    const baseUrl = `https://images.weserv.nl/?url=${encodedUrl}&w=800&h=800&fit=${fit}&a=attention&output=jpg&q=85&we`;
+    const fallback1 = `https://wsrv.nl/?url=${encodedUrl}&w=800&h=800&fit=${fit}&a=attention&output=jpg&q=85`;
+    const fallback2 = `https://images.weserv.nl/?url=${encodedUrl}&w=800&h=800&fit=${fit}&output=jpg`;
+    const fallback3 = artwork.image_url;
+    
+    img.src = baseUrl;
+    img.alt = artwork.titre || '';
+    img.loading = 'lazy';
+    img.style.background = 'transparent';
+    
+    // Chaîne de fallbacks
+    let fallbackIndex = 0;
+    const fallbacks = [fallback1, fallback2, fallback3];
+    
+    img.onerror = function() {
+        if (fallbackIndex < fallbacks.length) {
+            this.src = fallbacks[fallbackIndex];
+            fallbackIndex++;
         } else {
-            const placeholder = document.createElement('div');
-            placeholder.className = 'image-placeholder';
-            placeholder.innerHTML = '<i class="fas fa-image"></i>';
-            container.appendChild(placeholder);
+            this.style.display = 'none';
+            this.nextElementSibling.style.display = 'flex';
         }
+    };
 
-        const overlay = document.createElement('div');
-        overlay.className = 'work-overlay';
-        overlay.innerHTML = `
-            <div class="work-title">${artwork.titre ? artwork.titre.substring(0, 40) : 'Sans titre'}</div>
-            <div class="work-artist">${artwork.createur ? artwork.createur.substring(0, 30) : 'Artiste inconnu'}</div>
-        `;
+    const ph = document.createElement('div');
+    ph.className = 'image-placeholder';
+    ph.style.display = 'none';
+    ph.innerHTML = '<i class="fas fa-image"></i>';
 
-        container.appendChild(overlay);
-        item.appendChild(container);
-        fragment.appendChild(item);
+    wrap.appendChild(img);
+    wrap.appendChild(ph);
+}
+
+        const ov = document.createElement('div');
+        ov.className = 'work-overlay';
+        ov.innerHTML = `
+            <div class="work-title">${escHtml((artwork.titre || 'Sans titre').substring(0,40))}</div>
+            <div class="work-artist">${escHtml((artwork.createur || 'Artiste inconnu').substring(0,30))}</div>`;
+
+        wrap.appendChild(ov);
+        a.appendChild(wrap);
+        fragment.appendChild(a);
     });
 
     grid.appendChild(fragment);
 }
 
-            function showLoadingIndicator() {
-                document.getElementById('loading-indicator').style.display = 'block';
-            }
 
-            function hideLoadingIndicator() {
-                document.getElementById('loading-indicator').style.display = 'none';
-            }
-
-            function showEndMessage() {
-                document.getElementById('end-message').style.display = 'block';
-            }
-
-            function initScrollToTop() {
-                const scrollBtn = document.getElementById('scroll-top');
-                
-                window.addEventListener('scroll', () => {
-                    if (window.scrollY > 500) {
-                        scrollBtn.classList.add('visible');
-                    } else {
-                        scrollBtn.classList.remove('visible');
-                    }
-                });
-
-                scrollBtn.addEventListener('click', () => {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                });
-            }
-
-            // ============================================
-            // INITIALISATION
-            // ============================================
-            document.addEventListener('DOMContentLoaded', function() {
-                loadSortOptions();
-                loadArtists();
-                loadCountries();
-                loadCities();
-                loadMuseums(); 
-                
-                initArtistSearch();
-                initCountrySearch();
-                initCitySearch();
-                initMuseumSearch();
-                
-                updateActiveTags();
-                initInfiniteScroll();
-                initScrollToTop();
-
-                document.querySelectorAll('.work-item img').forEach(img => {
-                    img.addEventListener('error', function() {
-                        this.style.display = 'none';
-                        const placeholder = this.nextElementSibling;
-                        if (placeholder && placeholder.classList.contains('image-placeholder')) {
-                            placeholder.style.display = 'flex';
-                        }
-                    });
-                });
+        function initScrollToTop() {
+            const btn = document.getElementById('scroll-top');
+            window.addEventListener('scroll', () => {
+                btn.classList.toggle('visible', window.scrollY > 500);
             });
-        })();
+            btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+        }
+
+        function escHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        // ================================================
+        // INITIALISATION
+        // ================================================
+        document.addEventListener('DOMContentLoaded', function () {
+            syncTheme();
+            setViewMode(currentView);
+            loadSortOptions();
+            updateActiveTags();
+            initInfiniteScroll();
+            initScrollToTop();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.getAll('artist').length > 0) {
+                _loadedDropdowns.add('artist-dropdown');
+                loadArtists(); initArtistSearch();
+            }
+            if (urlParams.get('country') || urlParams.getAll('city').length > 0) {
+                _loadedDropdowns.add('geo-dropdown');
+                loadCountries(); loadCities(); initCountrySearch(); initCitySearch();
+            }
+            if (urlParams.getAll('museum').length > 0) {
+                _loadedDropdowns.add('museum-dropdown');
+                loadMuseums(); initMuseumSearch();
+            }
+        });
+
+    })();
     </script>
 </body>
 </html>

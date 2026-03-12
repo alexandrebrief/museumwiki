@@ -1,956 +1,755 @@
-
-
-<nav class="navbar">
-    <style>
-        /* ===== NAVBAR MINIMALISTE "GALERIE D'ART" ===== */
-        :root {
-            --nav-bg: rgba(10, 18, 26, 0.50); /* Plus transparent */
-            --nav-border: rgba(212, 175, 55, 0.15);
-            --nav-gold: #d4af37;
-            --nav-text: #e6d8c3;
-            --nav-hover: white;
-        }
-
-        .navbar {
-            background: var(--nav-bg) !important;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 0.5rem 0;
-            width: 100%;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid var(--nav-border);
-            font-family: 'Inter', sans-serif;
-        }
-
-        .navbar .container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            max-width: 1400px;
-            padding: 0 2rem;
-        }
-
-        /* Logo */
-        .navbar-brand {
-            font-family: 'Inter', sans-serif;
-            font-size: 1.2rem;
-            font-weight: 300;
-            color: var(--nav-text) !important;
-            text-decoration: none;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            border-right: 1px solid var(--nav-border);
-            padding-right: 1.5rem;
-            margin-right: 1.5rem;
-            transition: color 0.2s;
-        }
-
-        .navbar-brand:hover {
-            color: var(--nav-gold) !important;
-        }
-
-        /* Navigation - un seul bouton Explorer */
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            margin: 0;
-            padding: 0;
-            list-style: none;
-            margin-left: auto;
-            margin-right: 2rem;
-        }
-
-        .nav-link {
-            color: var(--nav-text) !important;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 300;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid transparent;
-            transition: all 0.2s;
-        }
-
-        .nav-link:hover {
-            color: var(--nav-hover) !important;
-            border-bottom-color: var(--nav-gold);
-        }
-
-        .nav-link.active {
-            color: var(--nav-gold) !important;
-            border-bottom-color: var(--nav-gold);
-        }
-
-        /* Barre de recherche élargie */
-        .search-wrapper {
-            position: relative;
-            margin-right: 1.5rem;
-        }
-
-        .search-minimal {
-            display: flex;
-            align-items: center;
-            background: transparent;
-            border: 1px solid var(--nav-border);
-            border-radius: 30px;
-            padding: 0.1rem 0.1rem 0.1rem 1.2rem;
-            width: 400px;
-            transition: all 0.3s;
-            height: 40px;
-        }
-
-        .search-minimal:focus-within {
-            border-color: var(--nav-gold);
-            width: 480px;
-            background: rgba(212, 175, 55, 0.05);
-        }
-
-        .search-minimal input {
-            background: transparent;
-            border: none;
-            color: white;
-            width: 100%;
-            padding: 0.2rem 0;
-            font-size: 0.95rem;
-            font-weight: 300;
-        }
-
-        .search-minimal input::placeholder {
-            color: rgba(230, 216, 195, 0.4);
-            font-style: normal;
-            font-size: 0.9rem;
-        }
-
-        .search-minimal input:focus {
-            outline: none;
-        }
-
-        .search-minimal button {
-            background: transparent;
-            border: none;
-            color: var(--nav-text);
-            padding: 0.2rem 1.5rem;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        .search-minimal button:hover {
-            color: var(--nav-gold);
-            transform: scale(1.1);
-        }
-
-        /* Suggestions */
-        .suggestions-minimal {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: rgba(10, 18, 26, 0.95);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--nav-border);
-            border-radius: 16px;
-            margin-top: 8px;
-            display: none;
-            z-index: 1000;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            max-height: 500px;
-            overflow-y: auto;
-        }
-
-        .suggestions-section {
-            padding: 0.5rem 0;
-        }
-
-        .suggestions-section:not(:last-child) {
-            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-        }
-
-        .suggestions-section-header {
-            padding: 0.5rem 1rem;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--nav-gold);
-            opacity: 0.7;
-            background: rgba(212, 175, 55, 0.05);
-        }
-
-        .suggestion-minimal-item {
-            padding: 0.8rem 1rem;
-            cursor: pointer;
-            font-size: 0.9rem;
-            color: var(--nav-text);
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            transition: all 0.2s;
-        }
-
-        .suggestion-minimal-item:hover {
-            background: rgba(212, 175, 55, 0.1);
-            color: white;
-            padding-left: 1.5rem;
-        }
-
-        .suggestion-icon {
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--nav-gold);
-            font-size: 1rem;
-        }
-
-        .suggestion-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .suggestion-title {
-            font-weight: 400;
-        }
-
-
-.suggestion-subtitle {
-    font-size: 0.7rem;
-    color: rgba(230, 216, 195, 0.65);
-    margin-top: 0.2rem;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-}
-
-        .suggestion-subtitle i {
-            font-size: 0.5rem;
-            color: var(--nav-gold);
-            opacity: 0.5;
-        }
-
-        /* BOUTON THÈME CLAIR/SOMBRE */
-        .theme-switcher {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: 1px solid var(--nav-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--nav-text);
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-right: 0.8rem;
-        }
-
-        .theme-switcher:hover {
-            border-color: var(--nav-gold);
-            color: var(--nav-gold);
-            transform: scale(1.05);
-        }
-
-        /* BOUTON LANGUE */
-        .lang-switcher {
-            display: flex;
-            align-items: center;
-            margin-right: 0.8rem;
-            border: 1px solid var(--nav-border);
-            border-radius: 30px;
-            overflow: hidden;
-            background: rgba(0, 0, 0, 0.2);
-        }
-
-        .lang-btn {
-            padding: 0.3rem 1rem;
-            font-size: 0.8rem;
-            font-weight: 400;
-            text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.2s;
-            color: var(--nav-text);
-            background: transparent;
-            border: none;
-            cursor: pointer;
-        }
-
-        .lang-btn.fr {
-            border-radius: 30px 0 0 30px;
-        }
-
-        .lang-btn.en {
-            border-radius: 0 30px 30px 0;
-            border-left: 1px solid var(--nav-border);
-        }
-
-        .lang-btn.active {
-            background: var(--nav-gold);
-            color: #0f1a24;
-            font-weight: 500;
-        }
-
-        .lang-btn:hover:not(.active) {
-            background: rgba(212, 175, 55, 0.2);
-            color: white;
-        }
-
-        /* Compte utilisateur */
-        .user-minimal {
-            display: flex;
-            align-items: center;
-        }
-
-        .user-avatar-minimal {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: 1px solid var(--nav-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--nav-text);
-            font-size: 0.9rem;
-            font-weight: 400;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-
-        .user-avatar-minimal:hover {
-            border-color: var(--nav-gold);
-            color: var(--nav-gold);
-            transform: scale(1.05);
-        }
-
-        .user-avatar-minimal.has-user {
-            background: rgba(212, 175, 55, 0.1);
-            border-color: var(--nav-gold);
-            color: var(--nav-gold);
-            font-weight: 500;
-        }
-
-        .login-minimal {
-            color: var(--nav-text);
-            text-decoration: none;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 0.4rem 1rem;
-            border: 1px solid transparent;
-            transition: all 0.2s;
-            opacity: 0.8;
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-        }
-
-        .login-minimal:hover {
-            opacity: 1;
-            color: white;
-            border-color: var(--nav-gold);
-        }
-
-        .login-minimal i {
-            font-size: 1rem;
-        }
-
-        /* Dropdown */
-        .dropdown-minimal {
-            position: relative;
-        }
-
-        .dropdown-menu-minimal {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: rgba(10, 18, 26, 0.95);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--nav-border);
-            border-radius: 8px;
-            margin-top: 8px;
-            min-width: 180px;
-            display: none;
-            z-index: 1000;
-            overflow: hidden;
-        }
-
-        .dropdown-menu-minimal.show {
-            display: block;
-        }
-
-        .dropdown-item-minimal {
-            padding: 0.7rem 1rem;
-            color: var(--nav-text);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            font-size: 0.8rem;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.05);
-            transition: all 0.2s;
-        }
-
-        .dropdown-item-minimal:last-child {
-            border-bottom: none;
-        }
-
-        .dropdown-item-minimal i {
-            color: var(--nav-gold);
-            font-size: 0.8rem;
-            width: 18px;
-            opacity: 0.7;
-        }
-
-        .dropdown-item-minimal:hover {
-            background: rgba(212, 175, 55, 0.1);
-            color: white;
-            padding-left: 1.5rem;
-        }
-
-        .dropdown-divider-minimal {
-            height: 1px;
-            background: var(--nav-border);
-            margin: 0.3rem 0;
-        }
-
-        /* Version mobile */
-        @media (max-width: 992px) {
-            .navbar .container {
-                flex-wrap: wrap;
-                padding: 0.5rem 1rem;
-            }
-
-            .mobile-top-minimal {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                width: 100%;
-                margin-bottom: 0.5rem;
-            }
-
-            .mobile-brand-minimal {
-                font-size: 1.1rem;
-                letter-spacing: 3px;
-                color: var(--nav-text);
-                text-decoration: none;
-                text-transform: uppercase;
-            }
-
-            .mobile-actions-minimal {
-                display: flex;
-                align-items: center;
-                gap: 0.8rem;
-            }
-
-            .mobile-search-minimal {
-                flex: 1;
-                min-width: 0;
-                position: relative;
-            }
-
-            .mobile-search-form-minimal {
-                display: flex;
-                align-items: center;
-                border: 1px solid var(--nav-border);
-                border-radius: 30px;
-                padding: 0.1rem 0.1rem 0.1rem 1rem;
-                height: 38px;
-            }
-
-            .mobile-search-input-minimal {
-                background: transparent;
-                border: none;
-                color: white;
-                width: 100%;
-                padding: 0.2rem 0;
-                font-size: 0.9rem;
-                outline: none;
-            }
-
-            .mobile-search-input-minimal::placeholder {
-                color: rgba(230, 216, 195, 0.3);
-                font-style: italic;
-            }
-
-            .mobile-search-btn-minimal {
-                background: transparent;
-                border: none;
-                color: var(--nav-text);
-                padding: 0.2rem 0.8rem;
-                font-size: 0.9rem;
-            }
-
-            .mobile-actions-right {
-                display: flex;
-                gap: 0.5rem;
-                align-items: center;
-            }
-
-            .mobile-suggestions-minimal {
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: rgba(10, 18, 26, 0.95);
-                backdrop-filter: blur(12px);
-                border: 1px solid var(--nav-border);
-                border-radius: 8px;
-                margin-top: 5px;
-                display: none;
-                z-index: 1000;
-                max-height: 400px;
-                overflow-y: auto;
-            }
-        }
-
-
-/* ===== THÈME CLAIR ===== */
-body.light-theme {
-    --nav-bg: rgba(255, 255, 255, 0.75);
-    --nav-border: rgba(0, 0, 0, 0.1);
-    --nav-gold: #c9a959;
-    --nav-text: #333;
-    --nav-hover: #000;
-    --text-light: #666;
-    background: #f8f9fa;
-}
-body.light-theme .navbar {
-    background: var(--nav-bg) !important;
-    border-bottom-color: rgba(0, 0, 0, 0.1);
-}
-body.light-theme .search-minimal input {
-    color: #333;
-}
-body.light-theme .search-minimal input::placeholder {
-    color: rgba(0, 0, 0, 0.3);
-}
-body.light-theme .suggestions-minimal {
-    background: rgba(255, 255, 255, 0.98);
-    border-color: rgba(0, 0, 0, 0.12);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-}
-body.light-theme .suggestions-section-header {
-    color: #1a1a1a;
-    font-weight: 600;
-    opacity: 1;
-    background: rgba(201, 169, 89, 0.08);
-}
-body.light-theme .suggestion-minimal-item {
-    color: #1a1a1a;
-}
-body.light-theme .suggestion-minimal-item:hover {
-    background: rgba(201, 169, 89, 0.1);
-    color: #000;
-}
-body.light-theme .suggestion-title {
-    color: #1a1a1a;
-    font-weight: 500;
-}
-body.light-theme .suggestion-subtitle {
-    color: #555;
-}
-body.light-theme .suggestion-icon {
-    color: var(--nav-gold);
-}
-body.light-theme .suggestions-section:not(:last-child) {
-    border-bottom-color: rgba(0, 0, 0, 0.08);
-}
-body.light-theme .dropdown-menu-minimal {
-    background: rgba(255, 255, 255, 0.95);
-}
-body.light-theme .dropdown-item-minimal {
-    color: #333;
-}
-
-
-
-    </style>
-
-    <div class="container">
-        <!-- VERSION DESKTOP -->
-        <div class="d-none d-lg-flex align-items-center w-100">
-            <!-- Logo Bluegreencliff -->
-            <a class="navbar-brand" href="/">Bluegreencliff</a>
-            
-            <!-- Navigation - juste Explorer -->
-            <ul class="nav-links">
-                <li><a href="/research" class="nav-link {% if request.path == '/research' %}active{% endif %}">{{ _('explore') }}</a></li>
-            </ul>
-            
-            <!-- Recherche avec suggestions -->
-            <div class="search-wrapper">
-                <form action="/" method="get" class="search-minimal" autocomplete="off" id="search-form">
-                    <input type="text" name="q" id="search-input" placeholder="{{ _('search_placeholder') }}" value="{{ query if query else '' }}">
-                    <button type="submit"><i class="fas fa-search"></i></button>
-                </form>
-                <div class="suggestions-minimal" id="suggestions-container"></div>
-            </div>
-            
-            <!-- Actions droite : thème + langue + compte -->
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <!-- BOUTON THÈME -->
-                <div class="theme-switcher" onclick="toggleTheme()">
-                    <i class="fas fa-moon" id="theme-icon"></i>
-                </div>
-                
-                <!-- BOUTON LANGUE -->
-                <div class="lang-switcher">
-                    <a href="/set-language/fr" class="lang-btn fr {% if session.language == 'fr' %}active{% endif %}">FR</a>
-                    <a href="/set-language/en" class="lang-btn en {% if session.language == 'en' %}active{% endif %}">EN</a>
-                </div>
-                
-                <!-- COMPTE -->
-                <div class="user-minimal">
-                    {% if session.username %}
-                    <div class="dropdown-minimal">
-                        <a href="#" onclick="toggleDropdown(event)" class="user-avatar-minimal has-user">
-                            {{ session.username[0]|upper }}
-                        </a>
-                        <div class="dropdown-menu-minimal" id="userDropdown">
-                            <a href="/profile" class="dropdown-item-minimal"><i class="far fa-id-card"></i> {{ _('profile') }}</a>
-                            <a href="/mes-oeuvres" class="dropdown-item-minimal"><i class="far fa-star"></i> {{ _('my_notes') }}</a>
-                            <a href="/favoris" class="dropdown-item-minimal"><i class="far fa-heart"></i> {{ _('favorites') }}</a>
-                            <div class="dropdown-divider-minimal"></div>
-                            <a href="/logout?next={{ request.path }}" class="dropdown-item-minimal"><i class="fas fa-sign-out-alt"></i> {{ _('logout') }}</a>
-                        </div>
-                    </div>
-                    {% else %}
-                    <a href="#" class="login-minimal" onclick="openRegisterModal(); return false;">
-                        <i class="far fa-user-circle"></i> {{ _('account') }}
-                    </a>
-                    {% endif %}
-                </div>
+<!-- navbar.html -->
+<nav class="navbar-contemporary" id="navbar">
+    <div class="navbar-content">
+        <a href="/" class="navbar-logo"><span>/</span>BLUEGREENCLIFF<span>/</span></a>
+        
+        <div class="navbar-links">
+            <a href="/research">EXPLORER</a>
+        </div>
+
+        <!-- Barre de recherche dans la navbar -->
+        <div class="navbar-search-wrapper">
+            <div class="navbar-search">
+                <i class="fas fa-search navbar-search-icon" style="color: var(--accent);"></i>
+                <input type="text" id="navbar-search-input" class="navbar-search-input" 
+                       placeholder="Van Gogh, Louvres, Japon..." autocomplete="off">
+                <button class="navbar-search-btn" onclick="performSearch()">RECHERCHER</button>
+                <div id="navbar-suggestions" class="navbar-suggestions"></div>
             </div>
         </div>
 
-        <!-- VERSION MOBILE -->
-        <div class="d-lg-none w-100">
-            <div class="mobile-top-minimal">
-                <a class="mobile-brand-minimal" href="/">Bluegreencliff</a>
-                <div class="mobile-actions-minimal">
-                    <!-- Actions mobiles : thème + langue + compte -->
-                    <div class="mobile-actions-right">
-                        <!-- Thème mobile -->
-                        <div class="theme-switcher" onclick="toggleTheme()" style="width: 32px; height: 32px;">
-                            <i class="fas fa-moon" id="mobile-theme-icon"></i>
-                        </div>
-                        
-                        <!-- Langue mobile -->
-                        <div class="lang-switcher" style="margin-right: 0;">
-                            <a href="/set-language/fr" class="lang-btn fr {% if session.language == 'fr' %}active{% endif %}" style="padding: 0.2rem 0.6rem; font-size: 0.7rem;">FR</a>
-                            <a href="/set-language/en" class="lang-btn en {% if session.language == 'en' %}active{% endif %}" style="padding: 0.2rem 0.6rem; font-size: 0.7rem;">EN</a>
-                        </div>
-                        
-                        <!-- Compte mobile -->
-                        {% if session.username %}
-                        <a href="/profile" class="user-avatar-minimal has-user" style="width: 32px; height: 32px;">
-                            {{ session.username[0]|upper }}
-                        </a>
-                        {% else %}
-                        <a href="#" onclick="openRegisterModal(); return false;" style="color: var(--nav-text); font-size: 1.2rem;">
-                            <i class="far fa-user-circle"></i>
-                        </a>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
+        <div class="navbar-actions">
+            <button class="navbar-action" onclick="toggleTheme()">
+                <i class="fas fa-adjust" id="theme-icon"></i>
+            </button>
             
-            <div style="display: flex; gap: 0.5rem; align-items: center;">
-                <div class="mobile-search-minimal" style="flex: 1;">
-                    <form action="/" method="get" class="mobile-search-form-minimal" id="mobile-search-form">
-                        <input type="text" name="q" class="mobile-search-input-minimal" id="mobile-search-input"
-                               placeholder="{{ _('search_placeholder') }}" value="{{ query if query else '' }}">
-                        <button type="submit" class="mobile-search-btn-minimal">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </form>
-                    <div class="mobile-suggestions-minimal" id="mobile-suggestions-container"></div>
-                </div>
-                <a href="/research" class="nav-link" style="font-size: 0.8rem; white-space: nowrap; padding: 0.2rem 0.5rem;">{{ _('explore') }}</a>
+            <div class="lang-switcher">
+                <a href="/set-language/fr" class="navbar-action {% if session.language == 'fr' %}active{% endif %}">FR</a>
+                <span style="color: var(--text-muted);">/</span>
+                <a href="/set-language/en" class="navbar-action {% if session.language == 'en' %}active{% endif %}">EN</a>
             </div>
+
+            {% if session.username %}
+            <div class="navbar-user">
+                <a href="/profile" class="user-avatar small">
+                    {{ session.username[0]|upper }}
+                </a>
+                <div class="user-menu" id="user-menu">
+                    <a href="/profile" class="user-menu-item">
+                        <i class="fas fa-user"></i> Mon profil
+                    </a>
+                    <a href="/favoris" class="user-menu-item">
+                        <i class="fas fa-heart"></i> Mes favoris
+                    </a>
+                    <a href="/logout" class="user-menu-item">
+                        <i class="fas fa-sign-out-alt"></i> Déconnexion
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <a href="/register" class="login-link">
+                <i class="far fa-user-circle"></i>
+            </a>
+            {% endif %}
         </div>
     </div>
 </nav>
 
+<style>
+/* ===== STYLES DE LA NAVBAR ===== */
+.navbar-contemporary {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: transparent;
+    z-index: 1000;
+    padding: 1rem 2rem;
+    transition: all 0.3s ease;
+}
 
+/* Navbar avec fond quand on scroll - version par défaut (sombre) */
+.navbar-contemporary.scrolled {
+    background: var(--surface);
+    padding: 0.8rem 2rem;
+    border-bottom: 1px solid var(--border); /* ← --border et non --border-color */
+}
+
+/* ===== MODE CLAIR ===== */
+body.theme-light .navbar-contemporary.scrolled {
+    background: white;
+    border-bottom: 1px solid var(--border);
+}
+
+body.theme-light .navbar-contemporary .navbar-logo,
+body.theme-light .navbar-contemporary .navbar-links a,
+body.theme-light .navbar-contemporary .navbar-action,
+body.theme-light .navbar-contemporary .login-link,
+body.theme-light .navbar-contemporary .navbar-search-input {
+    color: #000000 !important;
+    background: transparent !important;
+}
+
+body.theme-light .navbar-contemporary .navbar-search {
+    border-color: rgba(0,0,0,0.2);
+}
+
+body.theme-light .navbar-contemporary .navbar-search-btn {
+    border-left-color: rgba(0,0,0,0.2);
+}
+
+body.theme-light .navbar-contemporary .navbar-search-input::placeholder {
+    color: rgba(0,0,0,0.5);
+}
+
+body.theme-light .navbar-contemporary .navbar-action:hover {
+    color: var(--accent) !important;
+}
+
+/* Navbar scrollée en mode clair */
+body.theme-dark .navbar-contemporary.scrolled {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+/* ===== MODE SOMBRE ===== */
+body.theme-dark .navbar-contemporary {
+    color: white !important;
+}
+
+body.theme-dark .navbar-contemporary .navbar-logo,
+body.theme-dark .navbar-contemporary .navbar-links a,
+body.theme-dark .navbar-contemporary .navbar-action,
+body.theme-dark .navbar-contemporary .login-link,
+body.theme-dark .navbar-contemporary .navbar-search-input {
+    color: white !important;
+}
+
+body.theme-dark .navbar-contemporary .navbar-search {
+    border-color: rgba(255,255,255,0.3);
+}
+
+body.theme-dark .navbar-contemporary .navbar-search-btn {
+    border-left-color: rgba(255,255,255,0.3);
+}
+
+body.theme-dark .navbar-contemporary .navbar-search-input::placeholder {
+    color: rgba(255,255,255,0.6);
+}
+
+/* Navbar scrollée en mode sombre */
+body.theme-dark .navbar-contemporary.scrolled {
+    background: var(--surface) !important;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* ===== LAYOUT ===== */
+.navbar-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+}
+
+.navbar-logo {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: currentColor;
+    text-decoration: none;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.navbar-logo span {
+    color: var(--accent);  /* var(--accent) est déjà violet (#6c5ce7) */
+    margin: 0 0.2rem;
+}
+
+.navbar-links {
+    display: flex;
+    gap: 2.5rem;
+    margin-right: auto;
+}
+
+.navbar-links a {
+    color: currentColor;
+    text-decoration: none;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 400;
+    transition: color 0.2s;
+    opacity: 0.7;
+    white-space: nowrap;
+}
+
+.navbar-links a:hover {
+    opacity: 1;
+    color: var(--accent);
+}
+
+/* ===== BARRE DE RECHERCHE ===== */
+.navbar-search-wrapper {
+    flex: 0 1 450px;
+    margin-left: auto;
+}
+
+.navbar-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1px solid currentColor;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    padding: 0.2rem 0.2rem 0.2rem 1rem;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.navbar-search:focus-within {
+    border-color: var(--accent);
+}
+
+.navbar-search-icon {
+    color: var(--accent) !important;
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+}
+
+.navbar-search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: currentColor;
+    font-size: 0.85rem;
+    padding: 0.5rem 0;
+    width: 100%;
+    min-width: 150px;
+}
+
+.navbar-search-input:focus {
+    outline: none;
+}
+
+.navbar-search-input::placeholder {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.navbar-search-btn {
+    background: var(--accent);
+    border: none;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 0.6rem 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.navbar-search-btn:hover {
+    background: var(--accent-hover);
+}
+
+/* Suggestions */
+.navbar-suggestions {
+    position: absolute;
+    top: 100%;
+    left: -1px;
+    right: -1px;
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    margin-top: 5px;
+    display: none;
+    z-index: 1000;
+    max-height: 400px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) var(--border-color);
+}
+
+.navbar-suggestions.visible {
+    display: block;
+}
+
+.navbar-suggestions::-webkit-scrollbar {
+    width: 4px;
+}
+
+.navbar-suggestions::-webkit-scrollbar-track {
+    background: var(--border-color);
+}
+
+.navbar-suggestions::-webkit-scrollbar-thumb {
+    background: var(--accent);
+}
+
+.navbar-suggestion-item {
+    padding: 1rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: background 0.2s;
+    color: var(--text);
+    font-size: 0.9rem;
+}
+
+.navbar-suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.navbar-suggestion-item:hover {
+    background: var(--surface-hover);
+}
+
+.navbar-suggestion-item.selected {
+    background: var(--surface-hover);
+    border-left: 3px solid var(--accent);
+}
+
+.navbar-suggestion-item i {
+    color: var(--accent);
+    width: 20px;
+    font-size: 1rem;
+}
+
+.navbar-suggestion-category {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    margin-left: auto;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    background: var(--surface);
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.navbar-suggestion-subtitle {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+}
+
+/* ===== ACTIONS ===== */
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    white-space: nowrap;
+    margin-left: 1rem;
+}
+
+.navbar-action {
+    background: transparent;
+    border: none;
+    color: currentColor;
+    cursor: pointer;
+    font-size: 1rem;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    padding: 0.3rem;
+    text-decoration: none;
+}
+
+.navbar-action:hover {
+    opacity: 1;
+    color: var(--accent);
+}
+
+.lang-switcher {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.lang-switcher a.active {
+    opacity: 1;
+    color: var(--accent);
+}
+
+/* ===== MENU UTILISATEUR ===== */
+.navbar-user {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.user-avatar:hover {
+    opacity: 0.8;
+}
+
+.user-avatar.small {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+}
+
+.user-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    min-width: 180px;
+    display: none;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.navbar-user:hover .user-menu {
+    display: block;
+}
+
+.user-menu-item {
+    padding: 0.8rem 1rem;
+    color: var(--text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 0.85rem;
+    transition: background 0.2s;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.user-menu-item:last-child {
+    border-bottom: none;
+}
+
+.user-menu-item:hover {
+    background: var(--surface-hover);
+    color: var(--accent);
+}
+
+.user-menu-item i {
+    color: var(--accent);
+    width: 16px;
+    font-size: 0.9rem;
+}
+
+.login-link {
+    color: currentColor;
+    text-decoration: none;
+    font-size: 1.2rem;
+    opacity: 0.7;
+    display: flex;
+    align-items: center;
+}
+
+.login-link:hover {
+    opacity: 1;
+    color: var(--accent);
+}
+
+@media (max-width: 1100px) {
+    .navbar-search-wrapper {
+        flex: 0 1 350px;
+    }
+}
+
+@media (max-width: 900px) {
+    .navbar-links {
+        display: none;
+    }
+}
+
+@media (max-width: 700px) {
+    .navbar-search-wrapper {
+        display: none;
+    }
+}
+</style>
 
 <script>
-// ============================================
-// FONCTIONS POUR LES SUGGESTIONS
-// ============================================
-
-function normalizeString(str) {
-    if (!str) return '';
-    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-}
-
-function initSearchSuggestions(inputId, containerId, isMobile = false) {
-    const searchInput = document.getElementById(inputId);
-    const container = document.getElementById(containerId);
+    // ===== VARIABLES POUR LA NAVIGATION AU CLAVIER =====
+    let currentSuggestionIndex = -1;
+    let suggestionsList = [];
     
-    if (!searchInput || !container) return;
+// ===== GESTION DU SCROLL POUR NAVBAR =====
+const navbar = document.getElementById('navbar');
 
-    let debounceTimeout;
-    let lastQuery = '';
+window.addEventListener('scroll', function() {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    
+    // Si on est tout en haut (scroll <= 50px), navbar transparente
+    if (scrollTop <= 50) {
+        navbar.classList.remove('scrolled');
+    } else {
+        // Dès qu'on descend, navbar prend son fond
+        navbar.classList.add('scrolled');
+    }
+});
 
-    searchInput.addEventListener('input', function(e) {
-        const query = e.target.value.trim();
+    // Initialiser le thème
+    (function initTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        const body = document.body;
+        const icon = document.getElementById('theme-icon');
         
-        clearTimeout(debounceTimeout);
+        body.classList.remove('theme-dark', 'theme-light');
+        body.classList.add(`theme-${savedTheme}`);
+        if (icon) icon.className = savedTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+    })();
+
+
+    // ===== GESTION DU THÈME =====
+    function toggleTheme() {
+        const body = document.body;
+        const icon = document.getElementById('theme-icon');
         
-        if (query.length < 2) {
-            container.style.display = 'none';
-            return;
+        if (body.classList.contains('theme-dark')) {
+            body.classList.remove('theme-dark');
+            body.classList.add('theme-light');
+            icon.className = 'fas fa-sun';
+            localStorage.setItem('theme', 'light');
+        } else {
+            body.classList.remove('theme-light');
+            body.classList.add('theme-dark');
+            icon.className = 'fas fa-moon';
+            localStorage.setItem('theme', 'dark');
         }
+        
+        // Mettre à jour la navbar
+        const navbar = document.getElementById('navbar');
+        if (window.scrollY <= 50) {
+            navbar.classList.remove('scrolled');
+        }
+    }
 
-        if (query === lastQuery) return;
-        lastQuery = query;
+    // ===== RECHERCHE DANS LA NAVBAR =====
+    const searchInput = document.getElementById('navbar-search-input');
+    const suggestionsContainer = document.getElementById('navbar-suggestions');
+    let searchTimeout;
 
-        debounceTimeout = setTimeout(() => {
-fetch(`/api/search-suggestions?q=${encodeURIComponent(query)}`)
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Données reçues:', data);
-                    
-                    let html = '';
-                    
-                    // Vérifier s'il y a des résultats
-                    const hasResults = data.artistes?.length > 0 || 
-                                       data.oeuvres?.length > 0 || 
-                                       data.musees?.length > 0 || 
-                                       data.villes?.length > 0 || 
-                                       data.pays?.length > 0;
-                    
-                    if (!hasResults) {
-                        container.innerHTML = `
-                            <div class="suggestions-section">
-                                <div style="padding: 1rem; text-align: center; color: var(--text-light);">
-                                    Aucun résultat pour "${query}"
-                                </div>
-                            </div>
-                        `;
-                        container.style.display = 'block';
-                        return;
-                    }
+    if (searchInput) {
+        window.performSearch = function() {
+            const query = searchInput.value.trim();
+            if (query) {
+                window.location.href = `/research?q=${encodeURIComponent(query)}`;
+            } else {
+                window.location.href = '/research';
+            }
+        };
 
-                    // ARTISTES
-                    if (data.artistes && data.artistes.length > 0) {
-                        html += '<div class="suggestions-section">';
-                        html += '<div class="suggestions-section-header">Artistes</div>';
-                        data.artistes.forEach(artiste => {
-                            html += `
-                                <div class="suggestion-minimal-item" onclick="window.location.href='/?artist=${encodeURIComponent(artiste.nom)}'">
-                                    <div class="suggestion-icon"><i class="fas fa-user"></i></div>
-                                    <div class="suggestion-content">
-                                        <div class="suggestion-title">${artiste.nom}</div>
-                                        <div class="suggestion-subtitle">${artiste.oeuvres_count || 0} œuvre(s)</div>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                        html += '</div>';
-                    }
-                    
-                    // ŒUVRES
-                    if (data.oeuvres && data.oeuvres.length > 0) {
-                        html += '<div class="suggestions-section">';
-                        html += '<div class="suggestions-section-header">Œuvres</div>';
-                        data.oeuvres.forEach(oeuvre => {
-                            html += `
-                                <div class="suggestion-minimal-item" onclick="window.location.href='/oeuvre/${oeuvre.id}'">
-                                    <div class="suggestion-icon"><i class="fas fa-paint-brush"></i></div>
-                                    <div class="suggestion-content">
-                                        <div class="suggestion-title">${oeuvre.titre}</div>
-                                        <div class="suggestion-subtitle">${oeuvre.artiste || ''}</div>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                        html += '</div>';
-                    }
-                    
-                    // MUSÉES (avec nombre d'œuvres)
-                    if (data.musees && data.musees.length > 0) {
-                        html += '<div class="suggestions-section">';
-                        html += '<div class="suggestions-section-header">Musées</div>';
-                        data.musees.forEach(musee => {
-                            const oeuvresCount = musee.oeuvres_count || 0;
-                            const villeInfo = musee.ville ? `${musee.ville} • ` : '';
-                            html += `
-                                <div class="suggestion-minimal-item" onclick="window.location.href='/?museum=${encodeURIComponent(musee.nom)}'">
-                                    <div class="suggestion-icon"><i class="fas fa-landmark"></i></div>
-                                    <div class="suggestion-content">
-                                        <div class="suggestion-title">${musee.nom}</div>
-                                        <div class="suggestion-subtitle">${villeInfo}${oeuvresCount} œuvre(s)</div>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                        html += '</div>';
-                    }
-                    
-                    // VILLES (avec nombre d'œuvres)
-                    if (data.villes && data.villes.length > 0) {
-                        html += '<div class="suggestions-section">';
-                        html += '<div class="suggestions-section-header">Villes</div>';
-                        data.villes.forEach(ville => {
-                            const oeuvresCount = ville.oeuvres_count || 0;
-                            const museesCount = ville.musees_count || 0;
-                            html += `
-                                <div class="suggestion-minimal-item" onclick="window.location.href='/?city=${encodeURIComponent(ville.nom)}'">
-                                    <div class="suggestion-icon"><i class="fas fa-city"></i></div>
-                                    <div class="suggestion-content">
-                                        <div class="suggestion-title">${ville.nom}</div>
-                                        <div class="suggestion-subtitle">${museesCount} musée(s) • ${oeuvresCount} œuvre(s)</div>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                        html += '</div>';
-                    }
-                    
-                    // PAYS (avec nombre d'œuvres)
-                    if (data.pays && data.pays.length > 0) {
-                        html += '<div class="suggestions-section">';
-                        html += '<div class="suggestions-section-header">Pays</div>';
-                        data.pays.forEach(pays => {
-                            const oeuvresCount = pays.oeuvres_count || 0;
-                            const museesCount = pays.musees_count || 0;
-                            html += `
-                                <div class="suggestion-minimal-item" onclick="window.location.href='/?country=${encodeURIComponent(pays.nom)}'">
-                                    <div class="suggestion-icon"><i class="fas fa-flag"></i></div>
-                                    <div class="suggestion-content">
-                                        <div class="suggestion-title">${pays.nom}</div>
-                                        <div class="suggestion-subtitle">${museesCount} musée(s) • ${oeuvresCount} œuvre(s)</div>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                        html += '</div>';
-                    }
+        // Navigation au clavier
+        searchInput.addEventListener('keydown', function(e) {
+            if (!suggestionsContainer.classList.contains('visible')) return;
 
-                    container.innerHTML = html;
-                    container.style.display = 'block';
-                })
-                .catch(error => {
-                    console.error('Erreur suggestions:', error);
-                    container.style.display = 'none';
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                currentSuggestionIndex = Math.min(currentSuggestionIndex + 1, suggestionsList.length - 1);
+                updateSelectedSuggestion();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                currentSuggestionIndex = Math.max(currentSuggestionIndex - 1, -1);
+                updateSelectedSuggestion();
+            } else if (e.key === 'Enter') {
+                if (currentSuggestionIndex >= 0 && suggestionsList[currentSuggestionIndex]) {
+                    e.preventDefault();
+                    suggestionsList[currentSuggestionIndex].click();
+                } else {
+                    performSearch();
+                }
+            } else if (e.key === 'Escape') {
+                suggestionsContainer.classList.remove('visible');
+                currentSuggestionIndex = -1;
+            }
+        });
+
+        function updateSelectedSuggestion() {
+            // Retirer la classe selected de tous
+            document.querySelectorAll('.navbar-suggestion-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Ajouter la classe selected à l'index courant
+            if (currentSuggestionIndex >= 0 && suggestionsList[currentSuggestionIndex]) {
+                suggestionsList[currentSuggestionIndex].classList.add('selected');
+                
+                // Scroll automatique pour voir l'élément sélectionné
+                suggestionsList[currentSuggestionIndex].scrollIntoView({
+                    block: 'nearest',
+                    behavior: 'smooth'
                 });
-        }, 300);
-    });
-
-    document.addEventListener('click', function(e) {
-        const wrapper = isMobile ? 
-            e.target.closest('.mobile-search-minimal') : 
-            e.target.closest('.search-wrapper');
-        
-        if (!wrapper) {
-            container.style.display = 'none';
+            }
         }
-    });
 
-    const form = isMobile ? 
-        document.getElementById('mobile-search-form') : 
-        document.getElementById('search-form');
-    
-    if (form) {
-        form.addEventListener('submit', function() {
-            container.style.display = 'none';
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && currentSuggestionIndex === -1) {
+                e.preventDefault();
+                performSearch();
+            }
+        });
+
+        searchInput.addEventListener('input', function() {
+            const query = this.value.trim();
+            
+            clearTimeout(searchTimeout);
+            currentSuggestionIndex = -1;
+            
+            if (query.length < 2) {
+                suggestionsContainer.classList.remove('visible');
+                return;
+            }
+
+            searchTimeout = setTimeout(() => {
+                fetch(`/api/search-suggestions?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (hasResults(data)) {
+                            displaySuggestions(data);
+                        } else {
+                            suggestionsContainer.classList.remove('visible');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur suggestions:', error);
+                    });
+            }, 300);
+        });
+
+        function hasResults(data) {
+            return (data.artistes && data.artistes.length > 0) || 
+                   (data.oeuvres && data.oeuvres.length > 0) || 
+                   (data.musees && data.musees.length > 0) || 
+                   (data.villes && data.villes.length > 0) || 
+                   (data.pays && data.pays.length > 0);
+        }
+
+        function displaySuggestions(data) {
+            suggestionsContainer.innerHTML = '';
+            suggestionsList = [];
+            currentSuggestionIndex = -1;
+            
+            // Artistes (max 6)
+            if (data.artistes && data.artistes.length > 0) {
+                data.artistes.slice(0, 6).forEach(item => {
+                    addSuggestionItem(item.nom, 'ARTISTE', 'fa-user', `${item.oeuvres_count || 0} œuvre(s)`, null, item.nom);
+                });
+            }
+            
+            // Œuvres (max 6)
+            if (data.oeuvres && data.oeuvres.length > 0) {
+                data.oeuvres.slice(0, 6).forEach(item => {
+                    addSuggestionItem(item.titre, 'ŒUVRE', 'fa-paint-brush', null, item.id, null, item.titre);
+                });
+            }
+            
+            // Musées (max 6)
+            if (data.musees && data.musees.length > 0) {
+                data.musees.slice(0, 6).forEach(item => {
+                    const subtitle = item.ville ? `${item.ville} • ${item.oeuvres_count || 0} œuvre(s)` : `${item.oeuvres_count || 0} œuvre(s)`;
+                    addSuggestionItem(item.nom, 'MUSÉE', 'fa-landmark', subtitle, null, item.id, item.nom);
+                });
+            }
+            
+            // Villes (max 6)
+            if (data.villes && data.villes.length > 0) {
+                data.villes.slice(0, 6).forEach(item => {
+                    const subtitle = `${item.musees_count || 0} musée(s) • ${item.oeuvres_count || 0} œuvre(s)`;
+                    addSuggestionItem(item.nom, 'VILLE', 'fa-city', subtitle, null, null, item.nom);
+                });
+            }
+            
+            // Pays (max 6)
+            if (data.pays && data.pays.length > 0) {
+                data.pays.slice(0, 6).forEach(item => {
+                    const subtitle = `${item.musees_count || 0} musée(s) • ${item.oeuvres_count || 0} œuvre(s)`;
+                    addSuggestionItem(item.nom, 'PAYS', 'fa-flag', subtitle, null, null, item.nom);
+                });
+            }
+            
+            if (suggestionsContainer.children.length > 0) {
+                suggestionsContainer.classList.add('visible');
+                suggestionsList = Array.from(document.querySelectorAll('.navbar-suggestion-item'));
+            } else {
+                suggestionsContainer.classList.remove('visible');
+            }
+        }
+
+        function addSuggestionItem(text, category, icon, subtitle, id, museumId, filterValue) {
+            const div = document.createElement('div');
+            div.className = 'navbar-suggestion-item';
+            
+            let html = `
+                <i class="fas ${icon}"></i>
+                <div style="flex:1">
+                    <div style="font-weight:500;">${text}</div>
+            `;
+            
+            if (subtitle) {
+                html += `<div class="navbar-suggestion-subtitle">${subtitle}</div>`;
+            }
+            
+            html += `</div>
+                <span class="navbar-suggestion-category">${category}</span>
+            `;
+            
+            div.innerHTML = html;
+            
+            // Stocker les données pour la navigation
+            div.dataset.category = category;
+            div.dataset.text = text;
+            if (id) div.dataset.id = id;
+            if (museumId) div.dataset.museumId = museumId;
+            if (filterValue) div.dataset.filterValue = filterValue;
+            
+            div.addEventListener('click', () => {
+                if (category === 'ŒUVRE' && id) {
+                    window.location.href = `/oeuvre/${id}`;
+                } else if (category === 'MUSÉE' && museumId) {
+                    // Rediriger vers research avec filtre musée
+                    window.location.href = `/research?museum=${encodeURIComponent(museumId)}`;
+                } else if (category === 'ARTISTE') {
+                    // Rediriger vers research avec filtre artiste
+                    window.location.href = `/research?artist=${encodeURIComponent(filterValue || text)}`;
+                } else if (category === 'VILLE') {
+                    // Rediriger vers research avec filtre ville
+                    window.location.href = `/research?city=${encodeURIComponent(filterValue || text)}`;
+                } else if (category === 'PAYS') {
+                    // Rediriger vers research avec filtre pays
+                    window.location.href = `/research?country=${encodeURIComponent(filterValue || text)}`;
+                } else {
+                    searchInput.value = text;
+                    suggestionsContainer.classList.remove('visible');
+                    performSearch();
+                }
+            });
+            
+            suggestionsContainer.appendChild(div);
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.navbar-search')) {
+                suggestionsContainer.classList.remove('visible');
+                currentSuggestionIndex = -1;
+            }
         });
     }
-}
-
-
-// ============================================
-// DROPDOWN UTILISATEUR
-// ============================================
-
-function toggleDropdown(event) {
-    event.preventDefault();
-    const dropdown = document.getElementById('userDropdown');
-    dropdown.classList.toggle('show');
-}
-
-document.addEventListener('click', function(event) {
-    const dropdown = document.getElementById('userDropdown');
-    const avatar = document.querySelector('.user-avatar-minimal');
-    
-    if (dropdown && avatar && !avatar.contains(event.target) && !dropdown.contains(event.target)) {
-        dropdown.classList.remove('show');
-    }
-});
-
-// ============================================
-// THÈME CLAIR/SOMBRE
-// ============================================
-
-function toggleTheme() {
-    const body = document.body;
-    const icon = document.getElementById('theme-icon');
-    const mobileIcon = document.getElementById('mobile-theme-icon');
-    
-    if (body.classList.contains('light-theme')) {
-        body.classList.remove('light-theme');
-        if (icon) icon.className = 'fas fa-moon';
-        if (mobileIcon) mobileIcon.className = 'fas fa-moon';
-        localStorage.setItem('theme', 'dark');
-    } else {
-        body.classList.add('light-theme');
-        if (icon) icon.className = 'fas fa-sun';
-        if (mobileIcon) mobileIcon.className = 'fas fa-sun';
-        localStorage.setItem('theme', 'light');
-    }
-}
-
-// ============================================
-// MODALE DE CONNEXION
-// ============================================
-
-function openRegisterModal() {
-    if (typeof bootstrap !== 'undefined') {
-        const modal = document.getElementById('registerModal');
-        if (modal) {
-            const bsModal = new bootstrap.Modal(modal);
-            bsModal.show();
-        } else {
-            window.location.href = '/login';
-        }
-    } else {
-        window.location.href = '/login';
-    }
-}
-
-// ============================================
-// INITIALISATION
-// ============================================
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Suggestions
-    initSearchSuggestions('search-input', 'suggestions-container', false);
-    initSearchSuggestions('mobile-search-input', 'mobile-suggestions-container', true);
-    
-    // Raccourci clavier Ctrl+K
-    document.addEventListener('keydown', function(e) {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-            e.preventDefault();
-            document.getElementById('search-input')?.focus();
-        }
-    });
-    
-    // Charger le thème sauvegardé
-    const savedTheme = localStorage.getItem('theme');
-    const icon = document.getElementById('theme-icon');
-    const mobileIcon = document.getElementById('mobile-theme-icon');
-    
-    if (savedTheme === 'light') {
-        document.body.classList.add('light-theme');
-        if (icon) icon.className = 'fas fa-sun';
-        if (mobileIcon) mobileIcon.className = 'fas fa-sun';
-    }
-});
 </script>
