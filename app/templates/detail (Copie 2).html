@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+{% if session.language == 'en' %}
+<html lang="en">
+{% else %}
+<html lang="fr">
+{% endif %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ oeuvre.titre }} · Collection {{ site_name }}</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ===== DESIGN MINIMALISTE - INSPIRÉ GALERIE CONTEMPORAINE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0a0a0a;
+            --bg-light: #ffffff;
+            --surface-dark: #141414;
+            --surface-light: #f5f5f5;
+            --text-dark: #ffffff;
+            --text-light: #1a1a1a;
+            --text-muted-dark: #7a7a7a;
+            --text-muted-light: #9a9a9a;
+            --border-dark: #2a2a2a;
+            --border-light: #e0e0e0;
+            --accent: #6c5ce7;
+            --accent-hover: #5a4bcf;
+            --gold: #b89b7b;
+            --favorite: #e03131;
+            --shadow: 0 4px 20px rgba(0,0,0,0.02);
+            --shadow-hover: 0 8px 30px rgba(0,0,0,0.04);
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-text: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            font-family: var(--font-text);
+            color: var(--text-dark);
+            line-height: 1.5;
+            font-weight: 300;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+        }
+
+        body.theme-light {
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            --surface: var(--surface-light);
+            --surface-hover: #eaeaea;
+            --border-color: var(--border-light);
+            --text-muted: var(--text-muted-light);
+        }
+
+        body.theme-dark {
+            --surface: var(--surface-dark);
+            --surface-hover: #1f1f1f;
+            --border-color: var(--border-dark);
+            --text-muted: var(--text-muted-dark);
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* ===== OFFSET POUR LA NAVBAR FIXE ===== */
+        .main-content {
+            margin-top: 100px;
+            min-height: calc(100vh - 100px);
+        }
+
+        /* ===== GALLERY VIEW - SANS CADRE ===== */
+        .gallery-view {
+            display: grid;
+            grid-template-columns: 0.8fr 0.8fr;
+            margin-bottom: 3rem;
+        }
+
+        /* IMAGE PANEL - OPTIMISÉ CHARGEMENT */
+        .image-panel {
+            background: transparent;
+            display: flex;
+            align-items: flex-start;  /* ← Changé de 'center' à 'flex-start' */
+            justify-content: center;
+            position: relative;
+            min-height: 600px;
+            cursor: zoom-in;
+            background: transparent;
+        }
+
+        .artwork-image {
+            max-width: 100%;
+            max-height: 85vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            background: transparent;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .artwork-image.loaded {
+            opacity: 1;
+        }
+
+        .image-loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--accent);
+            font-size: 2rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+
+
+        /* INFO PANEL */
+        .info-panel {
+            padding: 2rem 0;
+        }
+
+        .artwork-title {
+            font-family: var(--font-display);
+            font-size: 3.5rem;
+            font-weight: 600;
+            line-height: 0.9;
+            margin-bottom: 1rem;
+            letter-spacing: -0.03em;
+            text-transform: uppercase;
+        }
+
+        .artwork-subtitle {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+        }
+
+        /* MÉTADONNÉES DÉTAILLÉES */
+        .metadata-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+            padding: 2rem 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .metadata-item {
+            text-align: left;
+        }
+
+        .metadata-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+        }
+
+        .metadata-value {
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+
+        /* COLLECTION INFO */
+        .collection-info {
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .collection-title {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+
+        .collection-detail {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+        }
+
+        .collection-detail i {
+            color: var(--accent);
+            width: 20px;
+            margin-right: 0.5rem;
+        }
+
+        /* ACTIONS */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            margin: 2rem 0;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            padding: 0.8rem;
+            color: currentColor;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .action-btn i {
+            font-size: 0.9rem;
+            color: var(--accent);
+        }
+
+        .action-btn.favorite.active {
+            border-color: var(--favorite);
+            color: var(--favorite);
+        }
+
+        .action-btn.favorite.active i {
+            color: var(--favorite);
+        }
+
+        /* STATS CARDS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+
+        .stat-stars {
+            margin-top: 0.3rem;
+            color: var(--gold);
+            font-size: 0.8rem;
+        }
+
+        /* BADGES */
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .badge {
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            padding: 0.3rem 1rem;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ===== SECTION CONTENT ===== */
+        .content-section {
+            margin: 4rem 0;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        .section-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* ===== SUGGESTIONS SOUS L'IMAGE ===== */
+        .suggestions-section {
+            margin: 2rem 0 4rem;
+        }
+
+        .horizontal-scroll {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding: 0.5rem 0 1.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) var(--border-color);
+        }
+
+        .horizontal-scroll::-webkit-scrollbar {
+            height: 2px;
+        }
+
+        .horizontal-scroll::-webkit-scrollbar-track {
+            background: var(--border-color);
+        }
+
+        .horizontal-scroll::-webkit-scrollbar-thumb {
+            background: var(--accent);
+        }
+
+        .scroll-item {
+            flex: 0 0 200px;
+            text-decoration: none;
+            color: inherit;
+            transition: opacity 0.2s;
+        }
+
+        .scroll-item:hover {
+            opacity: 0.8;
+        }
+
+        .scroll-item img {
+            width: 100%;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+        }
+
+        .scroll-item-info {
+            padding: 0.5rem 0;
+        }
+
+        .scroll-item-title {
+            font-size: 0.8rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .scroll-item-artist {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ===== DESIGN COMMUNAUTÉ - 2 COLONNES ===== */
+        .community-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+        }
+
+        /* GAUCHE - STATISTIQUES */
+        .community-stats {
+            border-right: 1px solid var(--border-color);
+            padding-right: 2rem;
+        }
+
+        .global-rating {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .global-number {
+            font-family: var(--font-display);
+            font-size: 4rem;
+            font-weight: 600;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .global-stars {
+            color: var(--gold);
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+
+        .global-label {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            margin-top: 0.2rem;
+        }
+
+        .distribution {
+            margin: 2rem 0;
+        }
+
+        .dist-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .dist-label {
+            min-width: 30px;
+            color: var(--gold);
+            font-size: 0.8rem;
+        }
+
+        .dist-bar {
+            flex: 1;
+            height: 4px;
+            background: var(--border-color);
+        }
+
+        .dist-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+        }
+
+        .dist-count {
+            min-width: 30px;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            text-align: right;
+        }
+
+        .community-meta {
+            display: flex;
+            gap: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .community-meta i {
+            color: var(--accent);
+            margin-right: 0.3rem;
+        }
+
+        /* Votre note */
+        .your-rating {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .your-rating-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .quick-stars {
+            display: flex;
+            gap: 0.3rem;
+            font-size: 1.5rem;
+            color: var(--border-color);
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        .quick-stars .star {
+            transition: color 0.2s;
+        }
+
+        .quick-stars .star:hover,
+        .quick-stars .star.selected {
+            color: var(--gold);
+        }
+
+        /* DROITE - COMMENTAIRES */
+        .community-comments {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Formulaire commentaire */
+        .comment-form {
+            background: var(--surface-hover);
+            padding: 1.5rem;
+        }
+
+        .comment-form textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: currentColor;
+            font-family: var(--font-text);
+            font-size: 0.9rem;
+            resize: none;
+            margin-bottom: 1rem;
+        }
+
+        .comment-form textarea:focus {
+            outline: none;
+        }
+
+        .comment-form textarea::placeholder {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .privacy-options {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .privacy-options label {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            cursor: pointer;
+        }
+
+        .privacy-options i {
+            color: var(--accent);
+        }
+
+        .comment-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-submit {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* Liste des commentaires */
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .comments-list::-webkit-scrollbar {
+            width: 2px;
+        }
+
+        .comments-list::-webkit-scrollbar-track {
+            background: var(--border-color);
+        }
+
+        .comments-list::-webkit-scrollbar-thumb {
+            background: var(--accent);
+        }
+
+        .comment-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comment-item:last-child {
+            border-bottom: none;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+        }
+
+        .comment-author {
+            font-weight: 500;
+            font-size: 0.8rem;
+            color: var(--accent);
+        }
+
+        .comment-date {
+            color: var(--text-muted);
+            font-size: 0.6rem;
+            text-transform: uppercase;
+        }
+
+        .comment-content {
+            font-size: 0.8rem;
+            color: var(--text);
+            margin-bottom: 0.3rem;
+        }
+
+        .comment-meta {
+            display: flex;
+            gap: 1rem;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+        }
+
+        .comment-meta i {
+            color: var(--gold);
+            margin-right: 0.2rem;
+        }
+
+        /* ===== LOGIN PROMPT MINI ===== */
+        .login-prompt-mini {
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .login-prompt-mini i {
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .login-prompt-mini p {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-size: 0.8rem;
+        }
+
+        .login-prompt-mini-buttons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .login-prompt-mini-buttons a {
+            padding: 0.4rem 1rem;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+
+        .btn-login-mini {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-register-mini {
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+
+        /* ===== MODALE ===== */
+        .museum-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.98);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .museum-modal.active {
+            display: flex;
+        }
+
+        .modal-image {
+            max-width: 95vw;
+            max-height: 95vh;
+            object-fit: contain;
+            background: transparent;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+
+        .modal-close:hover {
+            opacity: 1;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            margin-top: 4rem;
+            padding: 2rem;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .gallery-view {
+                grid-template-columns: 1fr;
+            }
+            
+            .artwork-title {
+                font-size: 2.5rem;
+            }
+            
+            .community-panel {
+                grid-template-columns: 1fr;
+            }
+            
+            .community-stats {
+                border-right: none;
+                padding-right: 0;
+                border-bottom: 1px solid var(--border-color);
+                padding-bottom: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .global-rating {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .metadata-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="theme-dark">
+    <!-- Inclusion de la navbar -->
+    {% include 'navbar.html' %}
+
+    <!-- Modale image -->
+    <div class="museum-modal" id="imageModal" onclick="closeModal()">
+        <span class="modal-close">&times;</span>
+        <img src="" alt="" class="modal-image" id="modalImage">
+    </div>
+
+    <div class="container main-content">
+        <!-- Gallery View - image + infos -->
+        <div class="gallery-view">
+            <!-- Image Panel - avec loader -->
+            <div class="image-panel" onclick="openImageModal('{{ oeuvre.image_url }}')">
+                {% if oeuvre.image_url %}
+                <div class="image-loader" id="imageLoader">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+                <img src="https://images.weserv.nl/?url={{ oeuvre.image_url|urlencode }}&w=1000&h=1000&fit=contain&output=jpg&q=85&we"
+                     alt="{{ oeuvre.titre }}" 
+                     class="artwork-image" 
+                     id="mainImage"
+                     style="background: transparent;"
+                     onload="this.classList.add('loaded'); document.getElementById('imageLoader').style.display='none';">
+
+                {% else %}
+                <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:var(--text-muted); background: transparent;">
+                    <i class="fas fa-image fa-3x"></i>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Info Panel -->
+            <div class="info-panel">
+                <h1 class="artwork-title">{{ oeuvre.titre or 'SANS TITRE' }}</h1>
+                <div class="artwork-subtitle">
+                    {{ oeuvre.createur or 'ARTISTE INCONNU' }}
+                    {% if oeuvre.inception %}
+                    · {{ oeuvre.inception[:4] }}
+                    {% endif %}
+                </div>
+
+                <!-- Métadonnées détaillées -->
+                <div class="metadata-grid">
+                    <!-- Type d'œuvre -->
+                    {% set instance = oeuvre.instance_of_fr if session.language == 'fr' else oeuvre.instance_of_en %}
+                    {% if instance %}
+                    <div class="metadata-item">
+                        <div class="metadata-label">TYPE</div>
+                        <div class="metadata-value">{{ instance }}</div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Genre -->
+                    {% set genre = oeuvre.genre_fr if session.language == 'fr' else oeuvre.genre_en %}
+                    {% if genre %}
+                    <div class="metadata-item">
+                        <div class="metadata-label">GENRE</div>
+                        <div class="metadata-value">{{ genre }}</div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Matériau -->
+                    {% set materiau = oeuvre.made_from_material_fr if session.language == 'fr' else oeuvre.made_from_material_en %}
+                    {% if materiau %}
+                    <div class="metadata-item">
+                        <div class="metadata-label">MATÉRIAU</div>
+                        <div class="metadata-value">{{ materiau }}</div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Mouvement -->
+                    {% set mouvement = oeuvre.movement_fr if session.language == 'fr' else oeuvre.movement_en %}
+                    {% if mouvement %}
+                    <div class="metadata-item">
+                        <div class="metadata-label">MOUVEMENT</div>
+                        <div class="metadata-value">{{ mouvement }}</div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Dimensions -->
+                    {% if oeuvre.height and oeuvre.width %}
+                    <div class="metadata-item">
+                        <div class="metadata-label">DIMENSIONS</div>
+                        <div class="metadata-value">{{ oeuvre.height }} × {{ oeuvre.width }} cm</div>
+                    </div>
+                    {% elif oeuvre.height %}
+                    <div class="metadata-item">
+                        <div class="metadata-label">HAUTEUR</div>
+                        <div class="metadata-value">{{ oeuvre.height }} cm</div>
+                    </div>
+                    {% elif oeuvre.width %}
+                    <div class="metadata-item">
+                        <div class="metadata-label">LARGEUR</div>
+                        <div class="metadata-value">{{ oeuvre.width }} cm</div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Statut copyright -->
+                    {% set copyright = oeuvre.copyright_status_fr if session.language == 'fr' else oeuvre.copyright_status_en %}
+                    {% if copyright %}
+                    <div class="metadata-item">
+                        <div class="metadata-label">COPYRIGHT</div>
+                        <div class="metadata-value">{{ copyright }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Collection Info -->
+                {% set collection_nom = oeuvre.collection_fr if session.language == 'fr' else oeuvre.collection_en %}
+                {% set pays = oeuvre.country_fr if session.language == 'fr' else oeuvre.country_en %}
+                {% set ville = oeuvre.city_fr if session.language == 'fr' else oeuvre.city_en %}
+                
+                {% if collection_nom or pays or ville %}
+                <div class="collection-info">
+                    <div class="collection-title">LIEU DE CONSERVATION</div>
+                    {% if collection_nom %}
+                    <div class="collection-detail"><i class="fas fa-landmark"></i> {{ collection_nom }}</div>
+                    {% endif %}
+                    {% if ville %}
+                    <div class="collection-detail"><i class="fas fa-city"></i> {{ ville }}</div>
+                    {% endif %}
+                    {% if pays %}
+                    <div class="collection-detail"><i class="fas fa-flag"></i> {{ pays }}</div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Actions -->
+                <div class="actions-grid">
+                    {% if session.user_id %}
+                    <div class="action-btn favorite" id="favorite-btn" onclick="toggleFavorite()">
+                        <i class="far fa-heart" id="favorite-icon"></i>
+                        <span>FAVORI</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="action-btn" onclick="share()">
+                        <i class="fas fa-share-alt"></i>
+                        <span>PARTAGER</span>
+                    </div>
+                    
+                    {% if oeuvre.url_wikidata %}
+                    <a href="{{ oeuvre.url_wikidata }}" target="_blank" class="action-btn">
+                        <i class="fab fa-wikipedia-w"></i>
+                        <span>WIKIDATA</span>
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">{{ stats.moyenne_globale|round(1) if stats and stats.moyenne_globale else '–' }}</div>
+                        <div class="stat-label">MOYENNE</div>
+                        <div class="stat-stars" id="avg-stars">☆☆☆☆☆</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{{ stats.total_notes if stats and stats.total_notes else 0 }}</div>
+                        <div class="stat-label">NOTES</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{{ stats.favorites_count if stats and stats.favorites_count else 0 }}</div>
+                        <div class="stat-label">FAVORIS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUGGESTIONS SOUS L'IMAGE -->
+        <div class="suggestions-section">
+            <div class="section-header">
+                <h2 class="section-title">SUGGESTIONS</h2>
+                <a href="/research" class="section-link">VOIR TOUT →</a>
+            </div>
+
+            <div class="horizontal-scroll" id="similar-works">
+                <!-- Suggestions dynamiques à implémenter -->
+            </div>
+        </div>
+
+        <!-- COMMUNAUTÉ - 2 COLONNES -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2 class="section-title">COMMUNAUTÉ</h2>
+                <span class="section-link" style="opacity:0.5;">{{ stats.total_notes if stats else 0 }} AVIS</span>
+            </div>
+
+            <div class="community-panel">
+                <!-- COLONNE GAUCHE - STATISTIQUES + VOTRE NOTE -->
+                <div class="community-stats">
+                    <div class="global-rating">
+                        <span class="global-number">{{ stats.moyenne_globale|round(1) if stats and stats.moyenne_globale else '–' }}</span>
+                        <div>
+                            <div class="global-stars" id="global-stars">☆☆☆☆☆</div>
+                            <div class="global-label">NOTE GLOBALE</div>
+                        </div>
+                    </div>
+
+                    <div class="distribution" id="distribution-container">
+                        <!-- Distribution chargée dynamiquement -->
+                    </div>
+
+                    <div class="community-meta">
+                        <span><i class="far fa-user"></i> {{ stats.total_notes if stats else 0 }} avis</span>
+                        <span><i class="far fa-heart"></i> {{ stats.favorites_count if stats else 0 }} favoris</span>
+                    </div>
+
+                    {% if session.user_id %}
+                    <!-- Votre note (dans la colonne stats) -->
+                    <div class="your-rating">
+                        <div class="your-rating-label">VOTRE NOTE</div>
+                        <div class="quick-stars" id="quick-stars">
+                            <span class="star" data-value="5">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="1">★</span>
+                        </div>
+                        <input type="hidden" id="note-globale" value="0">
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- COLONNE DROITE - COMMENTAIRES -->
+                <div class="community-comments">
+                    {% if session.user_id %}
+                    <!-- Formulaire commentaire avec public/privé -->
+                    <div class="comment-form">
+                        <textarea id="commentaire" rows="2" placeholder="Écrire un commentaire..."></textarea>
+                        <div class="privacy-options">
+                            <label>
+                                <input type="radio" name="visibility" value="public" checked> 
+                                <i class="fas fa-globe"></i> PUBLIC
+                            </label>
+                            <label>
+                                <input type="radio" name="visibility" value="private"> 
+                                <i class="fas fa-lock"></i> PRIVÉ
+                            </label>
+                        </div>
+                        <div class="comment-footer">
+                            <button class="btn-submit" onclick="saveComment()">PUBLIER</button>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Liste des commentaires -->
+                    <div class="comments-list" id="comments-container">
+                        <!-- Chargé dynamiquement -->
+                    </div>
+                </div>
+            </div>
+
+            {% if not session.user_id %}
+            <!-- Login prompt minimal -->
+            <div class="login-prompt-mini">
+                <i class="far fa-heart"></i>
+                <p>Connectez-vous pour noter et commenter</p>
+                <div class="login-prompt-mini-buttons">
+                    <a href="/login?next={{ request.path }}" class="btn-login-mini">SE CONNECTER</a>
+                    <a href="/register?next={{ request.path }}" class="btn-register-mini">S'INSCRIRE</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© {{ site_name }} · Collection numérique</p>
+        </footer>
+    </div>
+
+    <script>
+        // ===== VARIABLES =====
+        const artworkId = '{{ oeuvre.id or oeuvre.id_q }}';
+        let saveTimeout;
+
+        // ===== MODALE IMAGE =====
+        function openImageModal(url) {
+            if (!url) return;
+            document.getElementById('modalImage').src = `https://images.weserv.nl/?url=${encodeURIComponent(url)}&w=1800&h=1800&fit=contain&output=jpg&q=90`;
+            document.getElementById('imageModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // ===== FAVORIS =====
+        async function checkFavorite() {
+            {% if session.user_id %}
+            try {
+                const res = await fetch(`/api/favorite/check/${artworkId}`);
+                const data = await res.json();
+                const btn = document.getElementById('favorite-btn');
+                const icon = document.getElementById('favorite-icon');
+                if (data.favorite) {
+                    btn.classList.add('active');
+                    icon.className = 'fas fa-heart';
+                }
+            } catch (e) { console.error(e); }
+            {% endif %}
+        }
+
+        async function toggleFavorite() {
+            {% if not session.user_id %} return; {% endif %}
+            try {
+                const res = await fetch('/api/favorite/toggle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ artwork_id: artworkId })
+                });
+                const data = await res.json();
+                const btn = document.getElementById('favorite-btn');
+                const icon = document.getElementById('favorite-icon');
+                
+                if (data.favorite) {
+                    btn.classList.add('active');
+                    icon.className = 'fas fa-heart';
+                } else {
+                    btn.classList.remove('active');
+                    icon.className = 'far fa-heart';
+                }
+                loadStats();
+            } catch (e) { console.error(e); }
+        }
+
+        // ===== NOTATION =====
+        function initQuickStars() {
+            const stars = document.querySelectorAll('#quick-stars .star');
+            const hidden = document.getElementById('note-globale');
+            if (!stars.length || !hidden) return;
+            
+            stars.forEach(s => {
+                s.addEventListener('click', function() {
+                    const val = parseFloat(this.dataset.value);
+                    if (val === parseFloat(hidden.value)) {
+                        hidden.value = 0;
+                        stars.forEach(ss => ss.classList.remove('selected'));
+                    } else {
+                        hidden.value = val;
+                        stars.forEach(ss => {
+                            ss.classList.toggle('selected', parseFloat(ss.dataset.value) <= val);
+                        });
+                    }
+                    autoSaveRating();
+                });
+            });
+        }
+
+        function autoSaveRating() {
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(saveRating, 800);
+        }
+
+        async function saveRating() {
+            {% if not session.user_id %} return; {% endif %}
+            try {
+                await fetch('/api/rating/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        artwork_id: artworkId,
+                        note_globale: parseFloat(document.getElementById('note-globale').value),
+                        note_technique: 0,
+                        note_originalite: 0,
+                        note_emotion: 0,
+                        commentaire: ''
+                    })
+                });
+                loadStats();
+            } catch (e) { console.error(e); }
+        }
+
+        async function saveComment() {
+            {% if not session.user_id %} return; {% endif %}
+            const comment = document.getElementById('commentaire').value;
+            if (!comment.trim()) return;
+            
+            const visibility = document.querySelector('input[name="visibility"]:checked').value;
+            
+            try {
+                await fetch('/api/rating/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        artwork_id: artworkId,
+                        note_globale: parseFloat(document.getElementById('note-globale').value),
+                        note_technique: 0,
+                        note_originalite: 0,
+                        note_emotion: 0,
+                        commentaire: visibility === 'public' ? comment : ''
+                    })
+                });
+                document.getElementById('commentaire').value = '';
+                loadComments();
+                loadStats();
+            } catch (e) { console.error(e); }
+        }
+
+        // ===== CHARGEMENT =====
+        async function loadUserRating() {
+            {% if session.user_id %}
+            try {
+                const res = await fetch(`/api/rating/get/${artworkId}`);
+                const data = await res.json();
+                if (!data.has_rating) return;
+                
+                const r = data.rating;
+                document.getElementById('note-globale').value = r.note_globale;
+                
+                document.querySelectorAll('#quick-stars .star').forEach(s => {
+                    s.classList.toggle('selected', parseFloat(s.dataset.value) <= r.note_globale);
+                });
+            } catch (e) { console.error(e); }
+            {% endif %}
+        }
+
+        async function loadStats() {
+            try {
+                const res = await fetch(`/api/artwork/stats/${artworkId}`);
+                const stats = await res.json();
+                
+                // Stats cards
+                document.querySelectorAll('.stat-number')[0].textContent = stats.moyenne_globale ? stats.moyenne_globale.toFixed(1) : '–';
+                document.querySelectorAll('.stat-number')[1].textContent = stats.total_notes || 0;
+                document.querySelectorAll('.stat-number')[2].textContent = stats.favorites_count || 0;
+                
+                // Global stars
+                const globalStars = document.getElementById('global-stars');
+                const avg = stats.moyenne_globale || 0;
+                let starsHtml = '';
+                for (let i = 0; i < 5; i++) {
+                    if (avg >= i + 1) starsHtml += '★';
+                    else if (avg >= i + 0.5) starsHtml += '½';
+                    else starsHtml += '☆';
+                }
+                globalStars.textContent = starsHtml;
+                
+                document.getElementById('avg-stars').textContent = starsHtml;
+                document.querySelector('.global-number').textContent = stats.moyenne_globale ? stats.moyenne_globale.toFixed(1) : '–';
+                document.querySelectorAll('.community-meta span')[0].innerHTML = `<i class="far fa-user"></i> ${stats.total_notes || 0} avis`;
+                document.querySelectorAll('.community-meta span')[1].innerHTML = `<i class="far fa-heart"></i> ${stats.favorites_count || 0} favoris`;
+
+                // Distribution
+                const distContainer = document.getElementById('distribution-container');
+                if (distContainer && stats.distribution) {
+                    let distHtml = '';
+                    for (let i = 5; i >= 1; i--) {
+                        const count = stats.distribution[i] || 0;
+                        const percentage = stats.total_notes > 0 ? (count / stats.total_notes * 100) : 0;
+                        distHtml += `
+                            <div class="dist-item">
+                                <span class="dist-label">${i}★</span>
+                                <div class="dist-bar">
+                                    <div class="dist-fill" style="width: ${percentage}%"></div>
+                                </div>
+                                <span class="dist-count">${count}</span>
+                            </div>
+                        `;
+                    }
+                    distContainer.innerHTML = distHtml;
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadComments() {
+            try {
+                const res = await fetch(`/api/comments/${artworkId}`);
+                const comments = await res.json();
+                const container = document.getElementById('comments-container');
+                
+                if (!comments || comments.length === 0) {
+                    container.innerHTML = '<div style="color: var(--text-muted); font-size:0.8rem; padding:1rem; text-align:center;">Aucun commentaire public pour le moment</div>';
+                    return;
+                }
+                
+                container.innerHTML = comments.map(c => `
+                    <div class="comment-item">
+                        <div class="comment-header">
+                            <span class="comment-author">${c.username || 'Anonyme'}</span>
+                            <span class="comment-date">${c.created_at || ''}</span>
+                        </div>
+                        <div class="comment-content">${c.commentaire || ''}</div>
+                        <div class="comment-meta">
+                            <span><i class="fas fa-star"></i> ${c.note_globale || 0}</span>
+                            <span><i class="fas fa-globe"></i> Public</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        function share() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '{{ oeuvre.titre }}',
+                    text: '{{ oeuvre.createur }}',
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Lien copié !');
+            }
+        }
+
+        // ===== INIT =====
+        document.addEventListener('DOMContentLoaded', () => {
+            initQuickStars();
+            checkFavorite();
+            loadUserRating();
+            loadStats();
+            loadComments();
+            
+            // Préchargement de l'image haute résolution pour la modale
+            {% if oeuvre.image_url %}
+            const highResLink = document.createElement('link');
+            highResLink.rel = 'preload';
+            highResLink.as = 'image';
+            highResLink.href = `https://images.weserv.nl/?url=${encodeURIComponent('{{ oeuvre.image_url }}')}&w=1800&h=1800&fit=contain&output=jpg&q=90`;
+            document.head.appendChild(highResLink);
+            {% endif %}
+        });
+    </script>
+</body>
+</html>

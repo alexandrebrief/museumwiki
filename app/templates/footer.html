@@ -1,93 +1,75 @@
-<footer class="footer-minimal">
-    <div class="container">
-        <div class="footer-content">
-            <!-- À propos -->
-            <a href="/about" class="footer-link">À propos</a>
-            
-            <!-- Copyright -->
-            <span class="footer-copyright">© {{ current_year }} {{ site_name }}</span>
-        </div>
+<footer class="footer-contemporary">
+    <div class="footer-content">
+        <!-- Bouton À propos uniquement -->
+        <a href="/about" class="footer-about-btn">À PROPOS</a>
     </div>
 </footer>
 
 <style>
-.footer-minimal {
-    background: rgba(15, 26, 36, 0.95);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-top: 1px solid rgba(212, 175, 55, 0.15);
-    padding: 1rem 0;
-    margin-top: auto;
+/* ===== FOOTER CONTEMPORAIN VIOLET PERMANENT ===== */
+.footer-contemporary {
+    position: relative;
     width: 100%;
+    background: #6c5ce7;  /* Violet permanent */
+    z-index: 100;
+    padding: 0.5rem 1rem;
+    margin-top: auto;
     font-family: 'Inter', sans-serif;
-}
-
-.footer-minimal .container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 2rem;
+    border-top: 1px solid rgba(212, 175, 55, 0.2);  /* Bordure dorée subtile */
 }
 
 .footer-content {
+    max-width: 1400px;
+    margin: 0 auto;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
 }
 
-.footer-link {
-    color: #e6d8c3;
+/* ===== BOUTON À PROPOS ===== */
+.footer-about-btn {
+    background: transparent;
+    border: none;
+    color: white;  /* Texte blanc sur fond violet */
     text-decoration: none;
-    font-size: 0.7rem;
-    font-weight: 300;
-    letter-spacing: 1px;
+    font-size: 0.7rem;  /* Police à 0.7rem */
     text-transform: uppercase;
-    padding: 0.3rem 0;
-    border-bottom: 1px solid transparent;
-    transition: all 0.2s;
-    opacity: 0.7;
-}
-
-.footer-link:hover {
-    color: white;
-    border-bottom-color: #d4af37;
-    opacity: 1;
-}
-
-.footer-copyright {
-    color: #e6d8c3;
-    font-size: 0.6rem;
-    font-weight: 300;
-    letter-spacing: 0.5px;
-    opacity: 0.5;
-    transition: opacity 0.2s;
-}
-
-.footer-copyright:hover {
+    letter-spacing: 2px;
+    font-weight: 400;
+    transition: all 0.3s ease;
     opacity: 0.8;
+    cursor: pointer;
+    padding: 0.8rem 0;
+    border-bottom: 2px solid transparent;
+    display: inline-block;
 }
 
-/* Responsive */
+.footer-about-btn:hover {
+    opacity: 1;
+    color: #d4af37;  /* Doré au survol */
+    border-bottom-color: #d4af37;
+    transform: translateY(-2px);
+}
+
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-    .footer-minimal {
-        padding: 0.8rem 0;
+    .footer-contemporary {
+        padding: 2.5rem 1rem;
+    }
+
+    .footer-about-btn {
+        font-size: 0.65rem;  /* Un peu plus petit sur mobile */
+        padding: 0.6rem 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer-contemporary {
+        padding: 2rem 1rem;
     }
     
-    .footer-minimal .container {
-        padding: 0 1rem;
-    }
-    
-    .footer-content {
-        flex-direction: column;
-        gap: 0.5rem;
-        text-align: center;
-    }
-    
-    .footer-link {
-        font-size: 0.65rem;
-    }
-    
-    .footer-copyright {
-        font-size: 0.55rem;
+    .footer-about-btn {
+        font-size: 0.6rem;
     }
 }
 </style>

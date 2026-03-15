@@ -883,6 +883,14 @@
             {% endfor %}
         </div>
 
+<!-- 👇 AJOUTE LE BOUTON ICI, JUSTE APRÈS LA FERMETURE DE LA GRILLE -->
+<div class="load-more-container" id="load-more-container">
+    <button class="load-more-btn" id="load-more-btn" onclick="loadMoreWorks()">
+        <i class="fas fa-plus-circle"></i> CHARGER PLUS D'ŒUVRES
+    </button>
+</div>
+
+
         <!-- États -->
         <div class="loading-indicator" id="loading-indicator" style="display:none;">
             <i class="fas fa-spinner fa-spin"></i> Chargement...
@@ -934,28 +942,166 @@
         // ================================================
         // GESTIONNAIRE D'IMAGES - VERSION OPTIMISÉE
         // ================================================
-        window.handleImageError = function(img) {
-            const errorCount = parseInt(img.dataset.errorCount || '0');
+// ===== GESTIONNAIRE D'IMAGES ULTRA ROBUSTE =====
+window.handleImageError = function(img) {
+    const errorCount = parseInt(img.dataset.errorCount || '0');
+    const fit = document.getElementById('works-grid').classList.contains('grid-4') ? 'contain' : 'cover';
+    const originalUrl = img.dataset.original;
+    
+    // Fonction pour nettoyer l'URL (remplacer caractères problématiques)
+    function cleanUrl(url) {
+        if (!url) return url;
+        
+        // Décoder d'abord pour travailler sur les vrais caractères
+        try {
+            let decoded = decodeURIComponent(url);
             
-            // Un seul fallback maximum
-            if (errorCount >= 1) {
-                img.style.display = 'none';
-                const placeholder = img.nextElementSibling;
-                if (placeholder) placeholder.style.display = 'flex';
-                return;
-            }
+            // Remplacer les caractères problématiques par des tirets
+            decoded = decoded.replace(/'/g, '-')      // apostrophe
+                             .replace(/"/g, '-')      // guillemet
+                             .replace(/\(/g, '-')     // parenthèse ouvrante
+                             .replace(/\)/g, '-')     // parenthèse fermante
+                             .replace(/\[/g, '-')     // crochet ouvrant
+                             .replace(/\]/g, '-')     // crochet fermant
+                             .replace(/\{/g, '-')     // accolade ouvrante
+                             .replace(/\}/g, '-')     // accolade fermante
+                             .replace(/,/g, '_')      // virgule
+                             .replace(/;/g, '_')      // point-virgule
+                             .replace(/\s+/g, '_');   // espaces
             
-            img.dataset.errorCount = '1';
-            
-            if (img.dataset.currentService === 'weserv' && img.dataset.fallback1) {
-                img.dataset.currentService = 'wsrv';
-                img.src = img.dataset.fallback1;
-            } else {
-                img.style.display = 'none';
-                const placeholder = img.nextElementSibling;
-                if (placeholder) placeholder.style.display = 'flex';
-            }
-        };
+            // Ré-encoder
+            return encodeURIComponent(decoded);
+        } catch (e) {
+            return encodeURIComponent(url);
+        }
+    }
+    
+    // MAX 5 tentatives avant abandon
+    if (errorCount >= 5) {
+        console.log('❌ Abandon après 5 tentatives:', originalUrl);
+        img.style.display = 'none';
+        const placeholder = img.nextElementSibling;
+        if (placeholder) placeholder.style.display = 'flex';
+        return;
+    }
+    
+    // Incrémenter compteur
+    img.dataset.errorCount = (errorCount + 1).toString();
+    console.log(`🔄 Tentative ${errorCount + 1}/5 pour:`, originalUrl);
+    
+    // STRATÉGIE PROGRESSIVE
+    
+    // NIVEAU 1: Weserv standard
+    if (errorCount === 0) {
+        img.src = `https://images.weserv.nl/?url=${encodeURIComponent(originalUrl)}&w=400&h=400&fit=${fit}&output=webp&q=50`;
+        img.dataset.currentService = 'weserv';
+        return;
+    }
+    
+    // NIVEAU 2: Wsrv (alternative)
+    if (errorCount === 1) {
+        img.src = `https://wsrv.nl/?url=${encodeURIComponent(originalUrl)}&w=400&h=400&fit=${fit}&output=webp&q=50`;
+        img.dataset.currentService = 'wsrv';
+        return;
+    }
+    
+    // NIVEAU 3: URL nettoyée + Weserv
+    if (errorCount === 2) {
+        const cleaned = cleanUrl(originalUrl);
+        img.src = `https://images.weserv.nl/?url=${cleaned}&w=400&h=400&fit=${fit}&output=webp&q=50`;
+        img.dataset.currentService = 'weserv-cleaned';
+        return;
+    }
+    
+    // NIVEAU 4: URL nettoyée + Wsrv
+    if (errorCount === 3) {
+        const cleaned = cleanUrl(originalUrl);
+        img.src = `https://wsrv.nl/?url=${cleaned}&w=400&h=400&fit=${fit}&output=webp&q=50`;
+        img.dataset.currentService = 'wsrv-cleaned';
+        return;
+    }
+    
+    // NIVEAU 5: Dernier recours - version ultra compressée
+    if (errorCount === 4) {
+        const cleaned = cleanUrl(originalUrl);
+        img.src = `https://wsrv.nl/?url=${cleaned}&w=300&h=300&fit=${fit}&output=jpg&q=20`;
+        img.dataset.currentService = 'ultra-compressed';
+        return;
+    }
+};
+
+
+// ===== GESTION DU BOUTON CHARGER PLUS =====
+function updateLoadMoreButton() {
+    const btn = document.getElementById('load-more-btn');
+    const container = document.getElementById('load-more-container');
+    
+    if (!btn) return;
+    
+    if (!hasMore) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-check"></i> FIN DE LA COLLECTION';
+    } else if (isLoading) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> CHARGEMENT...';
+    } else {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-plus-circle"></i> CHARGER PLUS D\'ŒUVRES';
+    }
+}
+
+
+async function loadMoreWorks() {
+    if (isLoading || !hasMore) return;
+    
+    isLoading = true;
+    updateLoadMoreButton();
+    document.getElementById('loading-indicator').style.display = 'block';
+
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('page', currentPage + 1);
+        urlParams.set('limit', 12);
+
+        const res = await fetch(`/api/works?${urlParams}`);
+        
+        if (!res.ok) {
+            throw new Error(`Erreur ${res.status}`);
+        }
+        
+        const data = await res.json();
+
+        if (!data.works || data.works.length === 0) {
+            hasMore = false;
+            document.getElementById('end-message').style.display = 'block';
+            updateLoadMoreButton();
+            return;
+        }
+
+        appendWorks(data.works);
+        currentPage++;
+        displayedCount += data.works.length;
+        hasMore = data.has_more ?? false; // Sécurité si data.has_more est undefined
+        if (data.total) totalOeuvres = data.total;
+        
+        updateCounter();
+        updateLoadMoreButton();
+
+    } catch (e) {
+        console.error('Erreur de chargement:', e);
+        
+        // Optionnel : afficher un message d'erreur temporaire
+        const btn = document.getElementById('load-more-btn');
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> RÉESSAYER';
+        }
+    } finally {
+        isLoading = false;
+        document.getElementById('loading-indicator').style.display = 'none';
+    }
+}
+
 
         // ================================================
         // GESTION DU THEME
@@ -1437,73 +1583,12 @@
             window.location.href = `/research?${params}`;
         };
 
-        // ================================================
-        // SCROLL INFINI
-        // ================================================
-        function initInfiniteScroll() {
-            if (document.getElementById('scroll-sentinel')) return;
-            
-            const sentinel = document.createElement('div');
-            sentinel.id = 'scroll-sentinel';
-            sentinel.style.cssText = 'height:10px;width:100%;margin-top:20px;';
-            
-            const grid = document.getElementById('works-grid');
-            if (grid && grid.parentNode) {
-                grid.parentNode.insertBefore(sentinel, grid.nextSibling);
-            }
+ 
 
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting && hasMore && !isLoading && !scrollTriggered) {
-                        scrollTriggered = true;
-                        loadMoreWorks();
-                    }
-                });
-            }, { rootMargin: '200px', threshold: 0.1 });
-            
-            observer.observe(sentinel);
-        }
 
-        async function loadMoreWorks() {
-            if (isLoading || !hasMore) { 
-                scrollTriggered = false; 
-                return; 
-            }
-            
-            isLoading = true;
-            document.getElementById('loading-indicator').style.display = 'block';
 
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                urlParams.set('page', currentPage + 1);
-                urlParams.set('limit', 12);
 
-                const res = await fetch(`/api/works?${urlParams}`);
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                
-                const data = await res.json();
 
-                if (!data.works || !data.works.length) {
-                    hasMore = false;
-                    document.getElementById('end-message').style.display = 'block';
-                    return;
-                }
-
-                appendWorks(data.works);
-                currentPage++;
-                displayedCount += data.works.length;
-                hasMore = data.has_more;
-                if (data.total) totalOeuvres = data.total;
-                updateCounter();
-
-            } catch (e) {
-                console.error('Erreur scroll infini:', e);
-            } finally {
-                isLoading = false;
-                scrollTriggered = false;
-                document.getElementById('loading-indicator').style.display = 'none';
-            }
-        }
 
         function appendWorks(works) {
             const grid = document.getElementById('works-grid');
@@ -1624,7 +1709,8 @@
             initInfiniteScroll();
             initScrollToTop();
             prioritizeImages();
-
+            updateLoadMoreButton(); // ← AJOUTE CETTE LIGNE
+            
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.getAll('artist').length > 0) {
                 _loadedDropdowns.add('artist-dropdown');

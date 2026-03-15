@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ site_name }} - À propos</title>
+    
+    <!-- ===== STYLES EXTERNES ===== -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ===== VARIABLES (COMME LA HOME) ===== */
+        :root {
+            --primary: #2c3e50;
+            --primary-dark: #1a2634;
+            --secondary: #e6d8c3;
+            --background: #0f1a24;
+            --surface: #1e2a36;
+            --text: #e6d8c3;
+            --text-light: #b8a99a;
+            --accent: #c44545;
+            --gold: #d4af37;
+            --border: rgba(230,216,195,0.15);
+            --star: #ffc107;
+            --shadow: 0 4px 12px rgba(0,0,0,0.3);
+            --shadow-hover: 0 8px 20px rgba(0,0,0,0.5);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -0.02em;
+        }
+
+        /* ===== HERO SECTION (COMME LA HOME) ===== */
+        .about-hero {
+            height: 60vh;
+            min-height: 500px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 3rem;
+            overflow: hidden;
+            border-bottom: 1px solid var(--gold);
+        }
+
+        .about-hero-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('https://images.unsplash.com/photo-1544967082-d9d25d867d66?q=80&w=1887');
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.3) saturate(1.3);
+            transform: scale(1.1);
+            z-index: 0;
+        }
+
+        .about-hero-backdrop::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, var(--background) 0%, transparent 30%, transparent 70%, var(--background) 100%);
+        }
+
+        .about-hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 3rem;
+            width: 100%;
+        }
+
+        .about-hero-eyebrow {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .about-hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            font-weight: 900;
+            line-height: 1;
+            color: white;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+            max-width: 800px;
+        }
+
+        .about-hero-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        /* ===== LAYOUT PRINCIPAL ===== */
+        .about-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== SECTIONS STYLE CINÉMA ===== */
+        .about-section {
+            margin-bottom: 5rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: baseline;
+            margin: 3rem 0 2rem;
+            border-bottom: 2px solid rgba(212,175,55,0.3);
+            padding-bottom: 0.8rem;
+        }
+        
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+
+        /* ===== CARTE MISSION ===== */
+        .mission-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 3rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(212,175,55,0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .mission-card:hover {
+            border-color: rgba(212,175,55,0.3);
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-4px);
+        }
+
+        .mission-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--gold), transparent);
+        }
+
+        .mission-card h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+
+        .mission-card p {
+            color: var(--text);
+            line-height: 1.8;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .mission-card .highlight {
+            color: var(--gold);
+            font-weight: 500;
+        }
+
+        /* ===== STATISTIQUES (COMME LA HOME) ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-item {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 2rem 1rem;
+            text-align: center;
+            border: 1px solid rgba(212,175,55,0.1);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-4px);
+            border-color: var(--gold);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stat-icon {
+            font-size: 2.2rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            transition: transform 0.3s;
+        }
+
+        .stat-item:hover .stat-icon {
+            transform: scale(1.1);
+        }
+
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-number .empty {
+            color: var(--text-light);
+            font-family: 'Inter', sans-serif;
+            font-size: 2.2rem;
+            opacity: 0.5;
+        }
+
+        /* ===== GRILLE TECHNOLOGIES ===== */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .tech-item {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 2rem 1rem;
+            text-align: center;
+            border: 1px solid rgba(212,175,55,0.1);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tech-item:hover {
+            transform: translateY(-4px);
+            border-color: var(--gold);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .tech-item::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(212,175,55,0.05);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .tech-item:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .tech-icon {
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+            transition: transform 0.3s;
+        }
+
+        .tech-item:hover .tech-icon {
+            transform: scale(1.1);
+        }
+
+        .tech-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tech-desc {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== TIMELINE / HISTOIRE ===== */
+        .timeline {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(180deg, transparent, var(--gold), transparent);
+        }
+
+        .timeline-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-date {
+            width: 120px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-align: center;
+        }
+
+        .timeline-content {
+            width: calc(50% - 80px);
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            border: 1px solid rgba(212,175,55,0.1);
+            transition: all 0.3s;
+        }
+
+        .timeline-content:hover {
+            border-color: var(--gold);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .timeline-content h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .timeline-content p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .timeline-dot {
+            width: 16px;
+            height: 16px;
+            background: var(--gold);
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 20px var(--gold);
+        }
+
+        /* ===== CALL TO ACTION ===== */
+        .about-cta {
+            text-align: center;
+            padding: 4rem 0;
+            margin: 4rem 0 2rem;
+            border-top: 1px solid rgba(212,175,55,0.2);
+            border-bottom: 1px solid rgba(212,175,55,0.2);
+            background: radial-gradient(circle at center, rgba(212,175,55,0.05) 0%, transparent 70%);
+        }
+
+        .about-cta h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .about-cta p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .cta-button {
+            background: var(--gold);
+            color: var(--primary-dark);
+            padding: 1rem 2.5rem;
+            border-radius: 40px;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+        }
+
+        .cta-button:hover {
+            background: #e6c200;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(212,175,55,0.3);
+        }
+
+        /* ===== METADATA ===== */
+        .about-metadata {
+            text-align: center;
+            margin: 3rem 0 1rem;
+            padding: 1rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(212,175,55,0.1);
+            border-bottom: 1px solid rgba(212,175,55,0.1);
+        }
+
+        .about-metadata i {
+            color: var(--gold);
+            margin-right: 0.5rem;
+            animation: spin 4s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 992px) {
+            .about-hero-title {
+                font-size: 3.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .tech-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .timeline::before {
+                left: 30px;
+            }
+
+            .timeline-item,
+            .timeline-item:nth-child(even) {
+                flex-direction: column;
+                align-items: flex-start;
+                padding-left: 60px;
+            }
+
+            .timeline-date {
+                width: auto;
+                margin-bottom: 0.5rem;
+            }
+
+            .timeline-content {
+                width: 100%;
+            }
+
+            .timeline-dot {
+                left: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .about-hero {
+                height: 50vh;
+                min-height: 400px;
+            }
+
+            .about-hero-title {
+                font-size: 2.5rem;
+            }
+
+            .stats-grid,
+            .tech-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .mission-card {
+                padding: 2rem;
+            }
+
+            .mission-card h2 {
+                font-size: 1.6rem;
+            }
+
+            .mission-card p {
+                font-size: 1rem;
+            }
+
+            .about-cta h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <!-- HERO SECTION (COMME LA HOME) -->
+    <div class="about-hero">
+        <div class="about-hero-backdrop"></div>
+        <div class="about-hero-content">
+            <div class="about-hero-eyebrow">Bluegreencliff présente</div>
+            <h1 class="about-hero-title">Notre<br>histoire</h1>
+            <p class="about-hero-subtitle">
+                L'art à portée de main, la découverte au bout des doigts.<br>
+                Une communauté de passionnés qui grandit chaque jour.
+            </p>
+        </div>
+    </div>
+
+    <div class="about-container">
+        
+        <!-- SECTION MISSION -->
+        <div class="about-section">
+            <div class="section-header">
+                <h2 class="section-title">Notre mission</h2>
+            </div>
+            
+            <div class="mission-card">
+                <h2>L'art pour tous, par tous</h2>
+                <p>
+                    <span class="highlight">Bluegreencliff</span> est né d'une idée simple : 
+                    rendre l'art accessible à tous, transformer chaque œuvre en une découverte personnelle. 
+                    Nous croyons que l'art n'est pas seulement fait pour être observé dans les musées, 
+                    mais pour être collectionné, partagé et intégré dans notre quotidien.
+                </p>
+                <p>
+                    Que vous soyez amateur éclairé ou novice curieux, 
+                    <span class="highlight">Bluegreencliff</span> vous invite à explorer, noter et créer 
+                    votre propre galerie virtuelle. Chaque œuvre raconte une histoire, 
+                    chaque artiste mérite d'être découvert.
+                </p>
+                <p style="color: var(--text-light); font-style: italic;">
+                    "L'art est la plus belle des rencontres entre l'émotion et la raison."
+                </p>
+            </div>
+        </div>
+
+        <!-- SECTION STATISTIQUES -->
+        <div class="about-section">
+            <div class="section-header">
+                <h2 class="section-title">La collection en chiffres</h2>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-paint-brush"></i>
+                    </div>
+                    <div class="stat-number">
+                        {% if total_oeuvres %}
+                            {{ total_oeuvres }}
+                        {% else %}
+                            <span class="empty">—</span>
+                        {% endif %}
+                    </div>
+                    <div class="stat-label">Œuvres référencées</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-astronaut"></i>
+                    </div>
+                    <div class="stat-number">
+                        {% if total_artistes %}
+                            {{ total_artistes }}
+                        {% else %}
+                            <span class="empty">—</span>
+                        {% endif %}
+                    </div>
+                    <div class="stat-label">Artistes</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-landmark"></i>
+                    </div>
+                    <div class="stat-number">
+                        {% if total_musees %}
+                            {{ total_musees }}
+                        {% else %}
+                            <span class="empty">—</span>
+                        {% endif %}
+                    </div>
+                    <div class="stat-label">Musées partenaires</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-number">
+                        {% if total_users %}
+                            {{ total_users }}
+                        {% else %}
+                            <span class="empty">—</span>
+                        {% endif %}
+                    </div>
+                    <div class="stat-label">Membres actifs</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION HISTOIRE / TIMELINE -->
+        <div class="about-section">
+            <div class="section-header">
+                <h2 class="section-title">Notre histoire</h2>
+            </div>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">2023</div>
+                    <div class="timeline-content">
+                        <h3>La naissance d'une idée</h3>
+                        <p>Bluegreencliff est fondé avec une vision : connecter les amateurs d'art du monde entier.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">2024</div>
+                    <div class="timeline-content">
+                        <h3>Premières œuvres</h3>
+                        <p>Intégration des premières collections depuis Wikidata. La base de données grandit.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">2025</div>
+                    <div class="timeline-content">
+                        <h3>Communauté active</h3>
+                        <p>Les premiers membres rejoignent l'aventure. Notes, commentaires, favoris : la communauté s'anime.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">2026</div>
+                    <div class="timeline-content">
+                        <h3>Nouvelle ère</h3>
+                        <p>Refonte complète de l'interface et lancement de nouvelles fonctionnalités.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION TECHNOLOGIES -->
+        <div class="about-section">
+            <div class="section-header">
+                <h2 class="section-title">Technologies</h2>
+            </div>
+            
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fas fa-flask"></i>
+                    </div>
+                    <div class="tech-name">Flask</div>
+                    <div class="tech-desc">Framework Python</div>
+                </div>
+                
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="tech-name">PostgreSQL</div>
+                    <div class="tech-desc">Base de données</div>
+                </div>
+                
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fab fa-bootstrap"></i>
+                    </div>
+                    <div class="tech-name">Bootstrap 5</div>
+                    <div class="tech-desc">Interface responsive</div>
+                </div>
+                
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div class="tech-name">HTML/CSS</div>
+                    <div class="tech-desc">Frontend sur mesure</div>
+                </div>
+                
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <div class="tech-name">Wikidata</div>
+                    <div class="tech-desc">Source des données</div>
+                </div>
+                
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="tech-name">SendGrid</div>
+                    <div class="tech-desc">Notifications email</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CALL TO ACTION -->
+        {% if not session.user_id %}
+        <div class="about-cta">
+            <h2>Rejoignez l'aventure</h2>
+            <p>Créez votre galerie personnelle, partagez vos coups de cœur et découvrez des milliers d'œuvres.</p>
+            <a href="/register" class="cta-button">
+                <i class="fas fa-pen-fancy"></i> Commencer l'expérience
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- METADATA -->
+        <div class="about-metadata">
+            <i class="fas fa-sync-alt"></i>
+            Dernière mise à jour : {{ last_update|default('mars 2026') }}
+        </div>
+        
+    </div>
+
+    {% include 'footer.html' %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Effet parallaxe (comme la home)
+        document.addEventListener('scroll', function() {
+            const hero = document.querySelector('.about-hero-backdrop');
+            if (hero) {
+                const scrolled = window.pageYOffset;
+                hero.style.transform = `scale(1.1) translateY(${scrolled * 0.1}px)`;
+            }
+        });
+
+        // Animation au scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.mission-card, .stat-item, .tech-item, .timeline-item').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'all 0.6s ease';
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
