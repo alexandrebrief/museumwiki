@@ -1,17 +1,27 @@
 <!-- navbar.html - clean, modern, high contrast, no borders -->
 
+<!-- ===== LOGO ===== -->
+<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon-32x32.png') }}">
+<link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon-16x16.png') }}">
+<link rel="apple-touch-icon" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
+<link rel="manifest" href="{{ url_for('static', filename='site.webmanifest') }}">
+
+
+
+
+
 <!-- ===== DESKTOP ===== -->
 <nav class="navbar {% if request.path == '/' or request.path == '/home' %}navbar-home{% else %}navbar-other{% endif %}" id="navbar">
     <div class="navbar-inner">
         <div class="navbar-left">
             <a href="/" class="navbar-logo"><span style="color: var(--accent);">/</span>{{ site_name }}<span style="color: var(--accent);">/</span></a>
             <div class="navbar-links">
-                <a href="/research" class="nav-link">Les Oeuvres</a>
-                <a href="/all-rated" class="nav-link">Le public</a>
-                <a href="/top" class="nav-link">Top</a>                
                 <a href="/discover" class="nav-link">Découvrir</a>
-                <a href="/favoris" class="nav-link">Mes favoris</a>
+                <a href="/all-rated" class="nav-link">Avis du public</a>
+                <a href="/top" class="nav-link">Top</a>   
                 <a href="/rated" class="nav-link">Mes scores</a>
+                <a href="/favoris" class="nav-link">Mes favoris</a>
             </div>
         </div>
         <div class="navbar-right">
@@ -117,12 +127,11 @@
         </div>
 <nav class="mob-drawer-nav">
     <a href="/home" class="mdn-link" onclick="closeMobDrawer()"><span>Accueil</span><i class="fas fa-chevron-right"></i></a>
-    <a href="/research" class="mdn-link" onclick="closeMobDrawer()"><span>Les Oeuvres</span><i class="fas fa-chevron-right"></i></a>
-    <a href="/all-rated" class="mdn-link" onclick="closeMobDrawer()"><span>Le public</span><i class="fas fa-chevron-right"></i></a>
-    <a href="/top" class="mdn-link" onclick="closeMobDrawer()"><span>Top</span><i class="fas fa-chevron-right"></i></a>
     <a href="/discover" class="mdn-link" onclick="closeMobDrawer()"><span>Découvrir</span><i class="fas fa-chevron-right"></i></a>
+    <a href="/all-rated" class="mdn-link" onclick="closeMobDrawer()"><span>Avis du public</span><i class="fas fa-chevron-right"></i></a>
+    <a href="/top" class="mdn-link" onclick="closeMobDrawer()"><span>Top</span><i class="fas fa-chevron-right"></i></a>
+    <a href="/rated" class="mdn-link" onclick="closeMobDrawer()"><span>Mes scores</span><i class="fas fa-chevron-right"></i></a>    
     <a href="/favoris" class="mdn-link" onclick="closeMobDrawer()"><span>Mes favoris</span><i class="fas fa-chevron-right"></i></a>
-    <a href="/rated" class="mdn-link" onclick="closeMobDrawer()"><span>Mes scores</span><i class="fas fa-chevron-right"></i></a>
 </nav>
         </nav>
     </div>
@@ -148,6 +157,8 @@ body.theme-light {
     --nh: rgba(0,0,0,0.04);
 }
 
+
+
 .mob-nav-home {
     background: transparent !important;
     box-shadow: none !important;
@@ -170,42 +181,319 @@ body.theme-light {
 .navbar-inner {
     width: 100%; height: 100%;
     display: flex; align-items: center; justify-content: space-between;
-    padding: 0 3rem 0 0.75rem;
+    padding: 0 1rem 0 0.75rem;
     position: relative;
+    gap: 0.5rem;
 }
 
-.navbar-left  { display: flex; align-items: center; gap: 3.5rem; }
-.navbar-right { display: flex; align-items: center; gap: 2rem; flex: 1; justify-content: flex-end; }
+.navbar-left { 
+    display: flex; 
+    align-items: center; 
+    gap: 1.5rem; 
+    flex-shrink: 0;
+}
+
+.navbar-right { 
+    display: flex; 
+    align-items: center; 
+    gap: 1rem; 
+    flex-shrink: 0;
+}
 
 /* ===== LOGO ===== */
 .navbar-logo {
     font-family: var(--font-display);
-    font-size: 2rem; font-weight: 600; letter-spacing: 3px; text-transform: none;
-    text-decoration: none; color: var(--nt); flex-shrink: 0;
+    font-size: 1.6rem; 
+    font-weight: 600; 
+    letter-spacing: 2px; 
+    text-transform: none;
+    text-decoration: none; 
+    color: var(--nt); 
+    flex-shrink: 0;
     transition: color 0.2s;
 }
 .navbar-home:not(.scrolled) .navbar-logo { color: #fff; }
 .navbar-logo:hover { color: var(--accent); }
 
 /* ===== NAV LINKS ===== */
-.navbar-links { display: flex; gap: 0; }
+.navbar-links { 
+    display: flex; 
+    gap: 0; 
+    flex-shrink: 0;
+}
 .nav-link {
-    position: relative; padding: 0.5rem 0.9rem;
-    font-family: var(--font-display); font-size: 0.88rem; font-weight: 600;
-    letter-spacing: 1.5px; text-transform: uppercase; text-decoration: none;
-    color: var(--nt); transition: color 0.2s;
+    position: relative; 
+    padding: 0.5rem 0.6rem;
+    font-family: var(--font-display); 
+    font-size: 0.9rem; 
+    font-weight: 600;
+    letter-spacing: 1px; 
+    text-transform: uppercase; 
+    text-decoration: none;
+    color: var(--nt); 
+    transition: color 0.2s;
+    white-space: nowrap;
 }
 .navbar-home:not(.scrolled) .search-open { border-color: rgba(255,255,255,0.3); }
 .navbar-other .search-open { border-color: rgba(0,0,0,0.15); }
 .navbar-home:not(.scrolled) .nav-link { color: #fff; }
 .nav-link::after {
-    content: ''; position: absolute; bottom: 2px; left: 0.9rem; right: 0.9rem; height: 2px;
-    background: var(--accent); transform: scaleX(0); transform-origin: left;
+    content: ''; 
+    position: absolute; 
+    bottom: 2px; 
+    left: 0.6rem; 
+    right: 0.6rem; 
+    height: 2px;
+    background: var(--accent); 
+    transform: scaleX(0); 
+    transform-origin: left;
     transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
 }
 .nav-link:hover { color: var(--nt); }
 .navbar-home:not(.scrolled) .nav-link:hover { color: #fff; }
 .nav-link:hover::after { transform: scaleX(1); }
+
+/* Onglet actif souligné */
+.navbar-links .nav-link.active::after {
+    transform: scaleX(1);
+}
+
+/* Pour la home non scrollée, garder la couleur blanche */
+.navbar-home:not(.scrolled) .nav-link.active {
+    color: #fff;
+}
+
+/* ===== ZONE RECHERCHE ===== */
+.navbar-search-zone {
+    flex: 1;
+    max-width: 380px;
+    margin: 0 auto;
+}
+
+.search-open {
+    display: flex !important;
+    position: relative !important;
+    background: transparent;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid var(--nb-line);
+    padding: 0.4rem 0;
+    gap: 0.6rem;
+    align-items: center;
+    box-shadow: none;
+}
+
+.search-open-icon {
+    color: var(--nt);
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+.search-open-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: var(--nt);
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    font-weight: 400;
+    padding: 0;
+}
+.search-open-input:focus { outline: none; }
+.search-open-input::placeholder { color: var(--nt-muted); font-size: 0.9rem; }
+
+/* Sur la home non scrollée */
+.navbar-home:not(.scrolled) .search-open-icon { color: #fff; }
+.navbar-home:not(.scrolled) .search-open-input { color: #fff; }
+.navbar-home:not(.scrolled) .search-open { border-bottom-color: rgba(255,255,255,0.25); }
+.navbar-home:not(.scrolled) .search-open-input::placeholder { color: rgba(255,255,255,0.5); }
+
+/* Bouton Rechercher */
+.search-open button {
+    background: var(--accent); 
+    border: none; 
+    cursor: pointer; 
+    padding: 0 1rem; 
+    height: 34px; 
+    display: flex; 
+    align-items: center; 
+    color: #fff; 
+    font-family: var(--font-display); 
+    font-size: 0.7rem; 
+    font-weight: 700; 
+    letter-spacing: 1px; 
+    text-transform: uppercase; 
+    white-space: nowrap; 
+    flex-shrink: 0; 
+    border-radius: 4px;
+    transition: opacity 0.2s;
+}
+.search-open button:hover { opacity: 0.85; }
+
+/* ===== ACTIONS (icônes) ===== */
+.nav-action {
+    background: none; 
+    border: none; 
+    cursor: pointer;
+    color: var(--nt);
+    font-size: 1rem; 
+    padding: 0.3rem;
+    transition: color 0.2s; 
+    text-decoration: none;
+    display: flex; 
+    align-items: center;
+}
+.navbar-home:not(.scrolled) .nav-action { color: #fff; }
+.nav-action:hover { color: var(--accent); }
+
+.nav-lang-flag {
+    font-size: 1.1rem;
+    padding: 0.2rem;
+}
+
+/* ===== USER MENU ===== */
+.nav-user { position: relative; }
+.nav-user-btn {
+    display: flex; 
+    align-items: center; 
+    gap: 0.4rem;
+    background: none; 
+    border: none; 
+    cursor: pointer; 
+    color: var(--nt);
+    font-family: var(--font-display); 
+    font-size: 0.8rem; 
+    font-weight: 600;
+    letter-spacing: 0.5px; 
+    text-transform: uppercase; 
+    padding: 0.3rem 0;
+    transition: color 0.2s;
+}
+.navbar-home:not(.scrolled) .nav-user-btn { color: #fff; }
+.nav-user-btn:hover { color: var(--accent); }
+.nav-user-caret { font-size: 0.5rem; transition: transform 0.2s; }
+.nav-user:hover .nav-user-caret { transform: rotate(180deg); }
+
+.nav-user-drop {
+    position: absolute; 
+    top: calc(100% + 12px); 
+    right: 0;
+    background: var(--nd); 
+    min-width: 180px;
+    border-top: 2px solid var(--accent);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+    opacity: 0; 
+    visibility: hidden; 
+    transform: translateY(-6px);
+    transition: opacity 0.18s, visibility 0.18s, transform 0.18s; 
+    z-index: 100;
+}
+.nav-user:hover .nav-user-drop { opacity: 1; visibility: visible; transform: none; }
+.nav-drop-item {
+    display: flex; 
+    align-items: center; 
+    gap: 0.8rem; 
+    padding: 0.7rem 1rem;
+    color: var(--nt); 
+    text-decoration: none;
+    font-family: var(--font-display); 
+    font-size: 0.75rem; 
+    font-weight: 600;
+    letter-spacing: 0.5px; 
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--nb-line); 
+    transition: background 0.12s, color 0.12s;
+}
+.nav-drop-item:last-child { border-bottom: none; }
+.nav-drop-item:hover { background: var(--nh); color: var(--accent); }
+.nav-drop-item i { color: var(--accent); width: 14px; font-size: 0.8rem; }
+.nav-drop-sep { height: 1px; background: var(--nb-line); }
+.nav-drop-out i { color: var(--nt); }
+.nav-drop-out:hover { color: #e03131; }
+.nav-drop-out:hover i { color: #e03131; }
+
+/* ===== SUGGESTIONS ===== */
+.navbar-suggestions {
+    position: absolute; 
+    top: calc(100% + 4px); 
+    left: 0; 
+    right: 0;
+    background: var(--nd); 
+    border-top: 2px solid var(--accent);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+    display: none; 
+    z-index: 9999; 
+    max-height: 400px; 
+    overflow-y: auto;
+}
+.navbar-suggestions.visible { display: block; }
+.navbar-suggestion-item {
+    padding: 0.7rem 1rem; 
+    cursor: pointer;
+    border-bottom: 1px solid var(--nb-line);
+    display: flex; 
+    align-items: center; 
+    gap: 0.8rem;
+    transition: background 0.12s; 
+    font-size: 0.85rem; 
+    color: var(--nt);
+}
+.navbar-suggestion-item:last-child { border-bottom: none; }
+.navbar-suggestion-item:hover { background: var(--nh); }
+.navbar-suggestion-item i { color: var(--accent); width: 16px; font-size: 0.8rem; }
+.navbar-suggestion-category {
+    font-family: var(--font-display); 
+    font-size: 0.75rem; 
+    font-weight: 700;
+    color: var(--accent); 
+    letter-spacing: 1px; 
+    text-transform: uppercase;
+    margin-left: auto;
+}
+.navbar-suggestion-subtitle { font-size: 0.65rem; color: var(--nt-muted); margin-top: 0.1rem; }
+
+
+
+
+
+/* ===== RESPONSIVE - BASCULE DIRECTE EN MODE MOBILE ===== */
+@media (max-width: 1600px) {
+    /* Cacher la navbar desktop */
+    .navbar { display: none !important; }
+    
+    /* Afficher la navbar mobile */
+    .mob-nav { display: flex !important; }
+    
+    /* Ajuster le contenu principal */
+    .main-content { margin-top: 58px !important; }
+}
+
+/* Ajustement de la barre de recherche sur desktop (avant bascule) */
+.navbar-search-zone {
+    position: absolute;
+    left: auto;
+    right: 180px;
+    transform: none;
+    width: auto;
+    min-width: 200px;
+    max-width: 320px;
+}
+
+@media (max-width: 1100px) {
+    .navbar-search-zone {
+        right: 160px;
+        max-width: 260px;
+    }
+}
+
+@media (max-width: 950px) {
+    .navbar-search-zone {
+        right: 140px;
+        max-width: 220px;
+    }
+}
+
+
 
 /* ===== SEARCH ===== */
 .navbar-search-zone {
@@ -688,6 +976,58 @@ function clearNavSearch() {
     if (clr) clr.style.display = 'none';
     suggestionsContainer?.classList.remove('visible');
 }
+
+
+// Souligner l'onglet actif dans la navbar desktop
+function setActiveNavLink() {
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('.navbar-links .nav-link');
+    
+    navLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        
+        // Enlever la classe active de tous les liens
+        link.classList.remove('active');
+        
+        // Vérifier si le lien correspond à la page actuelle
+        if (href === currentPath) {
+            link.classList.add('active');
+        }
+        // Cas spécial pour la home (plusieurs chemins possibles)
+        else if ((currentPath === '/' || currentPath === '/home') && href === '/home') {
+            link.classList.add('active');
+        }
+        // Pour /research qui peut avoir des paramètres
+        else if (href === '/research' && currentPath === '/research') {
+            link.classList.add('active');
+        }
+        // Pour /all-rated
+        else if (href === '/all-rated' && currentPath === '/all-rated') {
+            link.classList.add('active');
+        }
+        // Pour /top
+        else if (href === '/top' && currentPath === '/top') {
+            link.classList.add('active');
+        }
+        // Pour /discover
+        else if (href === '/discover' && currentPath === '/discover') {
+            link.classList.add('active');
+        }
+        // Pour /favoris
+        else if (href === '/favoris' && currentPath === '/favoris') {
+            link.classList.add('active');
+        }
+        // Pour /rated
+        else if (href === '/rated' && currentPath === '/rated') {
+            link.classList.add('active');
+        }
+    });
+}
+
+// Appeler au chargement et quand la page change (pour les navigations SPA-like)
+document.addEventListener('DOMContentLoaded', setActiveNavLink);
+window.addEventListener('popstate', setActiveNavLink);
+
 
 
 function mobPerformSearch() {

@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+{% if session.language == 'en' %}
+<html lang="en">
+{% else %}
+<html lang="fr">
+{% endif %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ site_name }} · Explorer</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --accent: #6c5ce7;
+            --accent-hover: #5a4bcf;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-text: 'Inter', sans-serif;
+        }
+
+        body.theme-dark {
+            --bg: #0a0a0a;
+            --surface: #121212;
+            --surface-hover: #1e1e1e;
+            --text: #ffffff;
+            --text-muted: #888888;
+            --border: #2a2a2a;
+            --card-bg: #141414;
+        }
+        body.theme-light {
+            --bg: #f5f5f5;
+            --surface: #ffffff;
+            --surface-hover: #f0f0f0;
+            --text: #1a1a1a;
+            --text-muted: #6a6a6a;
+            --border: #e0e0e0;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-text);
+            min-height: 100vh;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 1rem; }
+        .main-content { margin-top: 80px; padding-bottom: 80px; }
+
+        /* ===== HERO ===== */
+        .hero {
+            text-align: center;
+            padding: 2rem 0 3rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 3rem;
+        }
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+        .hero h1 span { color: var(--accent); }
+        .hero p {
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* ===== RECHERCHE ACTIVE (si q existe) ===== */
+        .active-search {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .active-search-title {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        .active-search-title i { color: var(--accent); margin-right: 0.5rem; }
+
+        /* ===== BLOCS THÉMATIQUES ===== */
+        .thematic-block {
+            margin-bottom: 4rem;
+        }
+        .block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent);
+        }
+        .block-title {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .block-title i { color: var(--accent); font-size: 1.2rem; }
+        .block-link {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .block-link:hover { color: var(--accent); }
+
+        /* GRILLE HORIZONTALE SCROLLABLE */
+        .scrollable-grid {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+            scrollbar-width: thin;
+        }
+        .scrollable-grid::-webkit-scrollbar { height: 3px; }
+        .scrollable-grid::-webkit-scrollbar-track { background: var(--border); }
+        .scrollable-grid::-webkit-scrollbar-thumb { background: var(--accent); }
+
+        /* CARTE GRANDE (pour villes, artistes, musées) */
+        .feature-card {
+            flex: 0 0 280px;
+            text-decoration: none;
+            color: inherit;
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+        .feature-card:hover { transform: translateY(-4px); }
+        .feature-card-image {
+            position: relative;
+            aspect-ratio: 1/1;
+            overflow: hidden;
+        }
+        .feature-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        .feature-card:hover .feature-card-image img { transform: scale(1.05); }
+        .feature-card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        }
+        .feature-card-name {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+        }
+        .feature-card-count {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.7);
+        }
+        .feature-card-info {
+            padding: 0.8rem;
+        }
+        .feature-card-title {
+            font-family: var(--font-display);
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .feature-card-sub {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        /* GRILLE ŒUVRES (résultats) */
+        .works-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .work-card {
+            text-decoration: none;
+            color: inherit;
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+        .work-card:hover { transform: translateY(-3px); }
+        .work-image {
+            position: relative;
+            aspect-ratio: 1/1;
+            overflow: hidden;
+        }
+        .work-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .work-fav {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            width: 30px;
+            height: 30px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .work-fav i { color: white; font-size: 0.7rem; }
+        .work-fav.active i { color: #e03131; }
+        .work-info { padding: 0.6rem; }
+        .work-title {
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .work-artist {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 0.2rem;
+        }
+
+        /* LOAD MORE */
+        .load-more-container { text-align: center; padding: 2rem 0; }
+        .load-more-btn {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 0.7rem 2rem;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+        .end-message, .no-results { text-align: center; padding: 2rem; color: var(--text-muted); }
+
+        /* SCROLL TOP */
+        .scroll-top {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 44px;
+            height: 44px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+        }
+        .scroll-top.visible { opacity: 1; visibility: visible; }
+        .scroll-top:hover { background: var(--accent); color: white; }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .works-grid { grid-template-columns: repeat(3, 1fr); }
+            .feature-card { flex: 0 0 240px; }
+        }
+        @media (max-width: 768px) {
+            .works-grid { grid-template-columns: repeat(2, 1fr); }
+            .feature-card { flex: 0 0 200px; }
+            .hero h1 { font-size: 1.8rem; }
+        }
+        @media (max-width: 480px) {
+            .works-grid { grid-template-columns: repeat(2, 1fr); }
+            .feature-card { flex: 0 0 160px; }
+        }
+    </style>
+</head>
+<body>
+<script>
+    (function() {
+        const t = localStorage.getItem('theme') || 'dark';
+        document.body.classList.remove('theme-dark', 'theme-light');
+        document.body.classList.add('theme-' + t);
+    })();
+</script>
+
+{% include 'navbar.html' %}
+
+<div class="container main-content">
+
+    <!-- HERO -->
+    <div class="hero">
+        <h1>Explorer <span>l'art autrement</span></h1>
+        <p>Par ville, par artiste, par musée — laissez-vous guider</p>
+    </div>
+
+    <!-- SI RECHERCHE ACTIVE -->
+    {% if q %}
+    <div class="active-search">
+        <div class="active-search-title">
+            <i class="fas fa-search"></i> Résultats pour « {{ q }} »
+        </div>
+        {% if search_results and (search_results.artists or search_results.museums or search_results.cities or search_results.countries) %}
+        <div style="display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 1rem;">
+            {% if search_results.artists %}
+            <a href="/research?artist={{ search_results.artists[0].nom|urlencode }}" class="feature-card" style="flex:0 0 auto; width:200px;">
+                <div class="feature-card-image">
+                    <div style="width:100%;height:100%;background:var(--surface-hover);display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-user" style="font-size:2rem;color:var(--accent);"></i>
+                    </div>
+                    <div class="feature-card-overlay">
+                        <div class="feature-card-name">{{ search_results.artists[0].nom }}</div>
+                        <div class="feature-card-count">{{ search_results.artists[0].count }} œuvres</div>
+                    </div>
+                </div>
+            </a>
+            {% endif %}
+            {% if search_results.museums %}
+            <a href="/research?museum={{ search_results.museums[0].id|urlencode }}" class="feature-card" style="flex:0 0 auto; width:200px;">
+                <div class="feature-card-image">
+                    <div style="width:100%;height:100%;background:var(--surface-hover);display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-landmark" style="font-size:2rem;color:var(--accent);"></i>
+                    </div>
+                    <div class="feature-card-overlay">
+                        <div class="feature-card-name">{{ search_results.museums[0].nom }}</div>
+                        <div class="feature-card-count">{{ search_results.museums[0].count }} œuvres</div>
+                    </div>
+                </div>
+            </a>
+            {% endif %}
+            {% if search_results.cities %}
+            <a href="/research?city={{ search_results.cities[0].nom|urlencode }}" class="feature-card" style="flex:0 0 auto; width:200px;">
+                <div class="feature-card-image">
+                    <div style="width:100%;height:100%;background:var(--surface-hover);display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-city" style="font-size:2rem;color:var(--accent);"></i>
+                    </div>
+                    <div class="feature-card-overlay">
+                        <div class="feature-card-name">{{ search_results.cities[0].nom }}</div>
+                        <div class="feature-card-count">{{ search_results.cities[0].oeuvres_count }} œuvres</div>
+                    </div>
+                </div>
+            </a>
+            {% endif %}
+            {% if search_results.countries %}
+            <a href="/research?country={{ search_results.countries[0].nom|urlencode }}" class="feature-card" style="flex:0 0 auto; width:200px;">
+                <div class="feature-card-image">
+                    <div style="width:100%;height:100%;background:var(--surface-hover);display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-globe" style="font-size:2rem;color:var(--accent);"></i>
+                    </div>
+                    <div class="feature-card-overlay">
+                        <div class="feature-card-name">{{ search_results.countries[0].nom }}</div>
+                        <div class="feature-card-count">{{ search_results.countries[0].oeuvres_count }} œuvres</div>
+                    </div>
+                </div>
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- BLOC 1 : VILLES EN EVIDENCE -->
+    <div class="thematic-block">
+        <div class="block-header">
+            <div class="block-title">
+                <i class="fas fa-city"></i> Villes à explorer
+            </div>
+            <a href="/research" class="block-link">VOIR TOUTES →</a>
+        </div>
+        <div class="scrollable-grid">
+            {% for city in top_cities %}
+            <a href="/research?city={{ city.name|urlencode }}" class="feature-card">
+                {% if city.image %}
+                <div class="feature-card-image">
+                    <img src="https://images.weserv.nl/?url={{ city.image|urlencode }}&w=400&h=400&fit=cover&output=webp&q=75" alt="{{ city.name }}" loading="lazy">
+                    <div class="feature-card-overlay">
+                        <div class="feature-card-name">{{ city.name }}</div>
+                        <div class="feature-card-count">{{ city.count }} œuvres</div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="feature-card-image">
+                    <div style="width:100%;height:100%;background:var(--surface-hover);display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-city" style="font-size:2.5rem;color:var(--accent);"></i>
+                    </div>
+                    <div class="feature-card-overlay">
+                        <div class="feature-card-name">{{ city.name }}</div>
+                        <div class="feature-card-count">{{ city.count }} œuvres</div>
+                    </div>
+                </div>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- BLOC 2 : ARTISTES PHARE -->
+    <div class="thematic-block">
+        <div class="block-header">
+            <div class="block-title">
+                <i class="fas fa-user-astronaut"></i> Artistes incontournables
+            </div>
+            <a href="/discover" class="block-link">VOIR TOUS →</a>
+        </div>
+        <div class="scrollable-grid">
+            {% for artist in top_artists %}
+            <a href="/research?artist={{ artist.name|urlencode }}" class="feature-card">
+                {% if artist.image %}
+                <div class="feature-card-image">
+                    <img src="https://images.weserv.nl/?url={{ artist.image|urlencode }}&w=400&h=400&fit=cover&output=webp&q=75" alt="{{ artist.name }}" loading="lazy">
+                    <div class="feature-card-overlay">
+                        <div class="feature-card-name">{{ artist.name }}</div>
+                        <div class="feature-card-count">{{ artist.count }} œuvres</div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="feature-card-image">
+                    <div style="width:100%;height:100%;background:var(--surface-hover);display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-user" style="font-size:2.5rem;color:var(--accent);"></i>
+                    </div>
+                    <div class="feature-card-overlay">
+                        <div class="feature-card-name">{{ artist.name }}</div>
+                        <div class="feature-card-count">{{ artist.count }} œuvres</div>
+                    </div>
+                </div>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- BLOC 3 : MUSÉES -->
+    <div class="thematic-block">
+        <div class="block-header">
+            <div class="block-title">
+                <i class="fas fa-landmark"></i> Musées à visiter
+            </div>
+            <a href="/research" class="block-link">VOIR TOUS →</a>
+        </div>
+        <div class="scrollable-grid">
+            {% for museum in top_museums %}
+            <a href="/research?museum={{ museum.id|urlencode }}" class="feature-card">
+                {% if museum.image %}
+                <div class="feature-card-image">
+                    <img src="https://images.weserv.nl/?url={{ museum.image|urlencode }}&w=400&h=400&fit=cover&output=webp&q=75" alt="{{ museum.name }}" loading="lazy">
+                    <div class="feature-card-overlay">
+                        <div class="feature-card-name">{{ museum.name }}</div>
+                        <div class="feature-card-count">{{ museum.count }} œuvres</div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="feature-card-image">
+                    <div style="width:100%;height:100%;background:var(--surface-hover);display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-landmark" style="font-size:2.5rem;color:var(--accent);"></i>
+                    </div>
+                    <div class="feature-card-overlay">
+                        <div class="feature-card-name">{{ museum.name }}</div>
+                        <div class="feature-card-count">{{ museum.count }} œuvres</div>
+                    </div>
+                </div>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- BLOC 4 : MOUVEMENTS ARTISTIQUES -->
+    <div class="thematic-block">
+        <div class="block-header">
+            <div class="block-title">
+                <i class="fas fa-palette"></i> Mouvements artistiques
+            </div>
+            <a href="/discover" class="block-link">VOIR TOUS →</a>
+        </div>
+        <div class="scrollable-grid">
+            {% for movement in top_movements %}
+            <a href="/research?movement={{ movement.name|urlencode }}" class="feature-card">
+                {% if movement.image %}
+                <div class="feature-card-image">
+                    <img src="https://images.weserv.nl/?url={{ movement.image|urlencode }}&w=400&h=400&fit=cover&output=webp&q=75" alt="{{ movement.name }}" loading="lazy">
+                    <div class="feature-card-overlay">
+                        <div class="feature-card-name">{{ movement.name }}</div>
+                        <div class="feature-card-count">{{ movement.count }} œuvres</div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="feature-card-image">
+                    <div style="width:100%;height:100%;background:var(--surface-hover);display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-palette" style="font-size:2.5rem;color:var(--accent);"></i>
+                    </div>
+                    <div class="feature-card-overlay">
+                        <div class="feature-card-name">{{ movement.name }}</div>
+                        <div class="feature-card-count">{{ movement.count }} œuvres</div>
+                    </div>
+                </div>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- BLOC 5 : DERNIÈRES ŒUVRES -->
+    <div class="thematic-block">
+        <div class="block-header">
+            <div class="block-title">
+                <i class="fas fa-images"></i> Œuvres récentes
+            </div>
+            <a href="/research" class="block-link">VOIR TOUTES →</a>
+        </div>
+        <div class="works-grid" id="works-grid">
+            {% for artwork in works %}
+            <a href="/oeuvre/{{ artwork.id }}" class="work-card">
+                <div class="work-image">
+                    <div class="work-fav" onclick="toggleFav(event, '{{ artwork.id }}', this)">
+                        <i class="far fa-heart"></i>
+                    </div>
+                    {% if artwork.image_url %}
+                    <img src="https://images.weserv.nl/?url={{ artwork.image_url|urlencode }}&w=400&h=400&fit=cover&output=webp&q=75"
+                         alt="{{ artwork.titre }}"
+                         loading="lazy"
+                         onerror="this.src='{{ artwork.image_url }}'">
+                    {% else %}
+                    <div style="width:100%;height:100%;background:var(--surface-hover);display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-image" style="font-size:1.5rem;color:var(--text-muted);"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="work-info">
+                    <div class="work-title">{{ artwork.titre|truncate(35) if artwork.titre else 'SANS TITRE' }}</div>
+                    <div class="work-artist">{{ artwork.createur|truncate(25) if artwork.createur else 'ARTISTE INCONNU' }}</div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+
+        <div class="load-more-container" id="load-more-container" style="display:{% if has_more %}block{% else %}none{% endif %};">
+            <button class="load-more-btn" onclick="loadMore()">Voir plus d'œuvres</button>
+        </div>
+        <div class="end-message" id="end-message" style="display:none;">✨ Fin de la collection ✨</div>
+    </div>
+
+</div>
+
+<div class="scroll-top" id="scroll-top"><i class="fas fa-arrow-up"></i></div>
+{% include 'footer.html' %}
+
+<script>
+    let currentPage = 1;
+    let isLoading = false;
+    let hasMore = {{ 'true' if has_more else 'false' }};
+    const isLoggedIn = {{ 'true' if session.user_id else 'false' }};
+
+    window.toggleFav = async function(e, artworkId, el) {
+        e.preventDefault(); e.stopPropagation();
+        if (!isLoggedIn) { window.location.href = '/login?next=/research'; return; }
+        try {
+            const res = await fetch('/api/favorite/toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content },
+                body: JSON.stringify({ artwork_id: artworkId })
+            });
+            const data = await res.json();
+            el.classList.toggle('active', data.favorite);
+            el.querySelector('i').className = data.favorite ? 'fas fa-heart' : 'far fa-heart';
+        } catch(e) {}
+    };
+
+    window.loadMore = async function() {
+        if (isLoading || !hasMore) return;
+        isLoading = true;
+        const btn = document.getElementById('load-more-btn');
+        if (btn) btn.disabled = true;
+        try {
+            const p = new URLSearchParams(window.location.search);
+            p.set('page', currentPage + 1);
+            const res = await fetch('/api/works?' + p);
+            const data = await res.json();
+            if (data.works?.length) {
+                appendWorks(data.works);
+                currentPage++;
+                hasMore = data.has_more;
+            } else { hasMore = false; }
+            if (!hasMore) {
+                document.getElementById('load-more-container').style.display = 'none';
+                document.getElementById('end-message').style.display = 'block';
+            }
+        } catch(e) { console.error(e); }
+        finally { isLoading = false; if (btn) btn.disabled = false; }
+    };
+
+    function appendWorks(works) {
+        const grid = document.getElementById('works-grid');
+        works.forEach(w => {
+            const card = document.createElement('a');
+            card.href = `/oeuvre/${w.id}`;
+            card.className = 'work-card';
+            card.innerHTML = `
+                <div class="work-image">
+                    <div class="work-fav" onclick="toggleFav(event, '${w.id}', this)">
+                        <i class="far fa-heart"></i>
+                    </div>
+                    <img src="https://images.weserv.nl/?url=${encodeURIComponent(w.image_url)}&w=400&h=400&fit=cover&output=webp&q=75" loading="lazy" onerror="this.src='${w.image_url}'">
+                </div>
+                <div class="work-info">
+                    <div class="work-title">${esc((w.titre||'Sans titre').substring(0,35))}</div>
+                    <div class="work-artist">${esc((w.createur||'Artiste inconnu').substring(0,25))}</div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    const scrollTop = document.getElementById('scroll-top');
+    window.addEventListener('scroll', () => scrollTop.classList.toggle('visible', window.scrollY > 500));
+    scrollTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>

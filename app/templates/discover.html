@@ -14,557 +14,968 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin:0; padding:0; box-sizing:border-box; }
 
-        :root {
-            --font-display: 'Space Grotesk', sans-serif;
-            --font-text: 'Inter', sans-serif;
-            --accent: #6c5ce7;
-        }
+:root {
+    --accent: #6c5ce7;
+    --font: 'Space Grotesk', sans-serif;
+}
 
-        body.theme-dark {
-            --bg: #0a0a0a;
-            --surface: #111111;
-            --surface2: #1a1a1a;
-            --text: #ffffff;
-            --text-muted: #555555;
-            --border: rgba(255,255,255,0.07);
-            --border-strong: rgba(255,255,255,0.13);
-        }
-        body.theme-light {
-            --bg: #f4f4f4;
-            --surface: #ffffff;
-            --surface2: #e8e8e8;
-            --text: #111111;
-            --text-muted: #aaaaaa;
-            --border: rgba(0,0,0,0.07);
-            --border-strong: rgba(0,0,0,0.13);
-        }
+body.theme-dark {
+    --bg: #060606;
+    --text: #f0ece4;
+    --muted: #3a3a3a;
+    --muted2: #222;
+    --border: rgba(255,255,255,0.05);
+}
+body.theme-light {
+    --bg: #f8f6f2;
+    --text: #0a0a0a;
+    --muted: #d0cec8;
+    --muted2: #e8e5df;
+    --border: rgba(0,0,0,0.06);
+}
 
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: var(--font-text);
-            font-weight: 300;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+html { scroll-behavior: smooth; }
 
-        .main-content { margin-top: 80px; }
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
 
-        /* ═══════════════════════════════════
-           HERO
-        ═══════════════════════════════════ */
-        .hero {
-            width: 100%;
-            height: calc(100vh - 80px);
-            min-height: 600px;
-            display: grid;
-            grid-template-columns: 1.7fr 1fr 1fr 1.3fr;
-            grid-template-rows: 1fr 1fr;
-            gap: 4px;
-        }
+.main-content { margin-top: 66px; }
 
-        .h-img {
-            position: relative;
-            overflow: hidden;
-            background: var(--surface);
-        }
-        .h-img img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            filter: brightness(0.55) saturate(0.65);
-            transition: transform 9s ease, filter 0.5s;
-        }
-        .h-img:hover img { transform: scale(1.05); filter: brightness(0.72) saturate(1); }
+/* ══════════════════════════════════
+   HERO
+══════════════════════════════════ */
+.hero-full {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    min-height: 600px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-        /* Grande image gauche */
-        .h-big { grid-column: 1; grid-row: 1 / 3; }
+.hero-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.75);
+    transform: scale(1.08);
+    will-change: transform;
+    animation: heroFloat 12s ease-in-out infinite;
+}
 
-        /* Zone titre — milieu haut */
-        .h-title-zone {
-            grid-column: 2 / 5;
-            grid-row: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 4rem 4.5rem;
-            pointer-events: none;
-            position: relative;
-            z-index: 3;
-        }
+.hero-title-overlay {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+}
 
-        .h-title {
-            font-family: var(--font-display);
-            font-size: clamp(5rem, 10vw, 10.5rem);
-            font-weight: 700;
-            letter-spacing: -0.05em;
-            line-height: 0.88;
-            color: #fff;
-            text-shadow: 0 6px 80px rgba(0,0,0,0.6);
-            animation: rise 1s ease 0.2s both;
-        }
+.hero-title {
+    font-size: clamp(5rem, 15vw, 12rem);
+    font-weight: 700;
+    letter-spacing: -0.06em;
+    line-height: 0.85;
+    color: #fff;
+    text-shadow: 0 0 60px rgba(0,0,0,0.5);
+}
 
-        @keyframes rise {
-            from { opacity: 0; transform: translateY(30px); }
-            to   { opacity: 1; transform: none; }
-        }
+@keyframes heroFloat {
+    0%   { transform: scale(1.08) translateY(0); }
+    50%  { transform: scale(1.08) translateY(-15px); }
+    100% { transform: scale(1.08) translateY(0); }
+}
 
-        /* Bande basse (3 images) */
-        .h-strip {
-            grid-column: 2 / 5;
-            grid-row: 2;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 4px;
-        }
+/* ══════════════════════════════════
+   SÉLECTION DU JOUR
+══════════════════════════════════ */
+.daily-section {
+    padding: 6rem 2rem;
+    border-bottom: 1px solid var(--border);
+}
 
-        .h-strip-cell {
-            position: relative;
-            overflow: hidden;
-            background: var(--surface);
-            text-decoration: none;
-        }
-        .h-strip-cell img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            filter: brightness(0.5) saturate(0.6);
-            transition: transform 8s ease, filter 0.4s;
-        }
-        .h-strip-cell:hover img { transform: scale(1.06); filter: brightness(0.7) saturate(0.95); }
+.daily-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
 
-        .h-strip-label {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            padding: 1.4rem 1.6rem;
-            background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
-        }
-        .h-strip-name {
-            font-family: var(--font-display);
-            font-size: 1rem;
-            font-weight: 600;
-            color: rgba(255,255,255,0.9);
-            display: block;
-        }
-        .h-strip-count {
-            font-family: var(--font-display);
-            font-size: 0.78rem;
-            color: rgba(255,255,255,0.45);
-            margin-top: 0.25rem;
-        }
+.daily-badge {
+    font-size: 1rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+}
 
-        /* ═══════════════════════════════════
-           SECTIONS COMMUNES
-        ═══════════════════════════════════ */
-        .section {
-            border-top: 1px solid var(--border);
-        }
+.daily-title {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
 
-        .sec-head {
-            padding: 3rem 2.5rem 2.5rem;
-            opacity: 0;
-            transform: translateY(14px);
-            transition: opacity 0.55s ease, transform 0.55s ease;
-        }
-        .sec-head.on { opacity: 1; transform: none; }
+.daily-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
 
-        .sec-title {
-            font-family: var(--font-display);
-            font-size: clamp(2rem, 3.5vw, 3.2rem);
-            font-weight: 700;
-            letter-spacing: -0.04em;
-            line-height: 1;
-            border-left: 4px solid var(--accent);
-            padding-left: 1.2rem;
-        }
+.daily-card {
+    position: relative;
+    aspect-ratio: 3/4;
+    overflow: hidden;
+    text-decoration: none;
+    background: var(--muted2);
+}
 
-        /* ═══════════════════════════════════
-           MOUVEMENTS — RAIL
-        ═══════════════════════════════════ */
-        .mov-rail {
-            display: flex;
-            overflow-x: auto;
-            scrollbar-width: none;
-            cursor: grab;
-            padding: 0 2.5rem 2.5rem;
-            gap: 4px;
-        }
-        .mov-rail::-webkit-scrollbar { display: none; }
-        .mov-rail.grabbing { cursor: grabbing; }
+.daily-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.5);
+    transition: transform 0.7s ease, filter 0.4s;
+}
 
-        .mov-card {
-            flex-shrink: 0;
-            width: 280px;
-            padding: 2.2rem 2rem;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            text-decoration: none;
-            color: inherit;
-            position: relative;
-            transition: background 0.25s, border-color 0.25s;
-            opacity: 0;
-            transition: opacity 0.45s ease, background 0.25s, border-color 0.25s;
-        }
-        .mov-card.on { opacity: 1; }
-        .mov-card:hover { background: var(--surface2); border-color: var(--accent); }
+.daily-card:hover img {
+    transform: scale(1.05);
+    filter: brightness(0.75);
+}
 
-        .mov-card::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 3px;
-            background: var(--accent);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.35s;
-        }
-        .mov-card:hover::after { transform: scaleX(1); }
+.daily-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 50%);
+}
 
-        .mov-name {
-            font-family: var(--font-display);
-            font-size: 1.15rem;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            margin-bottom: 0.9rem;
-            line-height: 1.3;
-        }
+.daily-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1.5rem;
+}
 
-        .mov-count {
-            font-family: var(--font-display);
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--accent);
-        }
+.daily-artwork-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.3rem;
+}
 
-        /* ═══════════════════════════════════
-           TYPOLOGIES — BENTO
-        ═══════════════════════════════════ */
-        .bento {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1.5fr;
-            grid-template-rows: 300px 250px 280px;
-            gap: 4px;
-            padding: 0 2.5rem 2.5rem;
-        }
+.daily-accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 0;
+    background: var(--accent);
+    transition: height 0.3s ease;
+}
+.daily-card:hover .daily-accent { height: 3px; }
 
-        .bn:nth-child(1) { grid-column: 1;     grid-row: 1 / 3; }
-        .bn:nth-child(2) { grid-column: 2;     grid-row: 1; }
-        .bn:nth-child(3) { grid-column: 3;     grid-row: 1; }
-        .bn:nth-child(4) { grid-column: 4;     grid-row: 1 / 3; }
-        .bn:nth-child(5) { grid-column: 2 / 4; grid-row: 2; }
-        .bn:nth-child(6) { grid-column: 1 / 3; grid-row: 3; }
-        .bn:nth-child(7) { grid-column: 3;     grid-row: 3; }
-        .bn:nth-child(8) { grid-column: 4;     grid-row: 3; }
+.daily-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--muted2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 3rem;
+}
 
-        .bn {
-            position: relative;
-            overflow: hidden;
-            background: var(--surface);
-            text-decoration: none;
-            opacity: 0;
-            transition: opacity 0.65s ease;
-        }
-        .bn.on { opacity: 1; }
+/* ══════════════════════════════════
+   TYPES
+══════════════════════════════════ */
+.types-section {
+    padding: 6rem 2rem;
+    border-bottom: 1px solid var(--border);
+}
 
-        .bn img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            filter: brightness(0.58) saturate(0.65);
-            transition: transform 0.65s ease, filter 0.4s;
-        }
-        .bn:hover img { transform: scale(1.055); filter: brightness(0.78) saturate(1.05); }
+.types-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
 
-        .bn-shade {
-            position: absolute; inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.1) 55%, transparent 100%);
-        }
+.types-big-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
 
-        .bn-bar {
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 0;
-            background: var(--accent);
-            transition: width 0.35s ease;
-        }
-        .bn:hover .bn-bar { width: 4px; }
+.types-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
 
-        .bn-body {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            padding: 1.4rem 1.5rem;
-        }
+.type-card {
+    position: relative;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    text-decoration: none;
+    background: var(--muted2);
+}
 
-        .bn-name {
-            font-family: var(--font-display);
-            font-size: 1rem;
-            font-weight: 600;
-            color: rgba(255,255,255,0.92);
-            display: block;
-        }
+.type-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.55) saturate(0.6);
+    transition: transform 0.6s ease, filter 0.4s;
+}
+.type-card:hover img {
+    transform: scale(1.06);
+    filter: brightness(0.75) saturate(1.05);
+}
 
-        .bn-count {
-            font-family: var(--font-display);
-            font-size: 0.82rem;
-            color: rgba(255,255,255,0.45);
-            margin-top: 0.3rem;
-        }
+.type-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+}
 
-        /* ═══════════════════════════════════
-           ARTISTES — GRILLE
-        ═══════════════════════════════════ */
-        .art-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 4px;
-            padding: 0 2.5rem 2.5rem;
-        }
+.type-card-body {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem 1.2rem;
+}
 
-        .art-cell {
-            position: relative;
-            aspect-ratio: 3/4;
-            overflow: hidden;
-            background: var(--surface);
-            text-decoration: none;
-            opacity: 0;
-            transition: opacity 0.55s ease;
-        }
-        .art-cell.on { opacity: 1; }
+.type-card-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #fff;
+    display: block;
+}
 
-        .art-cell img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            filter: grayscale(0.3) brightness(0.7);
-            transition: transform 0.6s ease, filter 0.4s;
-        }
-        .art-cell:hover img { transform: scale(1.06); filter: grayscale(0) brightness(0.88); }
+.type-card-count {
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.4);
+    margin-top: 0.2rem;
+}
 
-        .art-label {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            padding: 1.2rem 1rem 0.9rem;
-            background: linear-gradient(to top, rgba(0,0,0,0.78) 0%, transparent 100%);
-        }
+.type-card-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 0;
+    background: var(--accent);
+    transition: height 0.3s ease;
+}
+.type-card:hover .type-card-line { height: 3px; }
 
-        .art-name {
-            font-family: var(--font-display);
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: rgba(255,255,255,0.88);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: block;
-        }
+.type-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--muted2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 2rem;
+}
 
-        .art-count {
-            font-family: var(--font-display);
-            font-size: 0.75rem;
-            color: rgba(255,255,255,0.4);
-            margin-top: 0.2rem;
-            opacity: 0;
-            transform: translateY(4px);
-            transition: opacity 0.3s, transform 0.3s;
-        }
-        .art-cell:hover .art-count { opacity: 1; transform: none; }
+/* ══════════════════════════════════
+   MUSÉES
+══════════════════════════════════ */
+.museums-section {
+    padding: 6rem 2rem;
+    border-bottom: 1px solid var(--border);
+}
 
-        /* ═══════════════════════════════════
-           GÉOGRAPHIES
-        ═══════════════════════════════════ */
-        .geo-wrap {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4px;
-            padding: 0 2.5rem 2.5rem;
-        }
+.museums-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
 
-        .geo-box {
-            border: 1px solid var(--border);
-            background: var(--surface);
-        }
+.museums-big-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
 
-        .geo-box-head {
-            padding: 1.3rem 1.8rem;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 0.9rem;
-        }
+.museums-flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
 
-        .geo-box-icon { color: var(--accent); font-size: 0.9rem; }
+.museum-word {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: clamp(0.9rem, 2vw, 1.4rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    transition: color 0.3s ease, transform 0.3s ease;
+    display: inline-block;
+    padding: 0.3rem 0.6rem;
+}
 
-        .geo-box-title {
-            font-family: var(--font-display);
-            font-size: 0.75rem;
-            font-weight: 600;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: var(--text-muted);
-        }
+.museum-word:hover {
+    color: var(--accent);
+    transform: scale(1.05);
+}
 
-        .geo-list { list-style: none; }
+.museum-sep {
+    color: var(--accent);
+    font-size: 0.9rem;
+    opacity: 0.3;
+}
 
-        .geo-entry {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem 1.8rem;
-            border-bottom: 1px solid var(--border);
-            text-decoration: none;
-            color: inherit;
-            transition: background 0.2s;
-            opacity: 0;
-            transform: translateY(8px);
-            transition: opacity 0.38s ease, transform 0.38s ease, background 0.2s;
-        }
-        .geo-entry.on { opacity: 1; transform: none; }
-        .geo-entry:last-child { border-bottom: none; }
-        .geo-entry:hover { background: rgba(108,92,231,0.06); }
+/* ══════════════════════════════════
+   CRÉATEURS
+══════════════════════════════════ */
+.creators-section {
+    padding: 6rem 2rem;
+    border-bottom: 1px solid var(--border);
+}
 
-        .geo-name {
-            font-family: var(--font-display);
-            font-size: 1rem;
-            font-weight: 500;
-            flex: 1;
-        }
+.creators-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
 
-        .geo-bar-bg {
-            width: 100px;
-            height: 2px;
-            background: var(--border-strong);
-            flex-shrink: 0;
-        }
-        .geo-bar-fill {
-            height: 100%;
-            background: var(--accent);
-            width: 0%;
-            transition: width 1.1s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+.creators-big-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
 
-        .geo-cnt {
-            font-family: var(--font-display);
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--accent);
-            width: 50px;
-            text-align: right;
-            flex-shrink: 0;
-        }
+.creators-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
 
-        /* ═══════════════════════════════════
-           GENRES
-        ═══════════════════════════════════ */
-        .genre-flow {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            padding: 0 2.5rem 2.5rem;
-        }
+.creator-card {
+    background: var(--muted2);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    color: var(--text);
+}
 
-        .genre-chip {
-            text-decoration: none;
-            color: inherit;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 1rem 1.6rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-            transition: background 0.22s, border-color 0.22s;
-            opacity: 0;
-            transition: opacity 0.38s ease, background 0.22s, border-color 0.22s;
-        }
-        .genre-chip.on { opacity: 1; }
-        .genre-chip:hover { background: rgba(108,92,231,0.07); border-color: var(--accent); }
+.creator-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 30px rgba(0,0,0,0.2);
+}
 
-        .genre-chip-name {
-            font-family: var(--font-display);
-            font-size: 1rem;
-            font-weight: 600;
-            letter-spacing: -0.01em;
-        }
+.creator-bubble {
+    text-align: center;
+    padding: 1.5rem 1rem 0.8rem;
+}
 
-        .genre-chip-c {
-            font-family: var(--font-display);
-            font-size: 0.82rem;
-            font-weight: 500;
-            color: var(--accent);
-        }
+.creator-name {
+    display: inline-block;
+    font-size: 1.2rem;
+    font-weight: 700;
+    background: var(--accent);
+    color: #fff;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    letter-spacing: -0.02em;
+    box-shadow: 0 4px 12px rgba(108,92,231,0.3);
+}
 
-        /* ═══════════════════════════════════
-           CTA
-        ═══════════════════════════════════ */
-        .disc-cta {
-            padding: 7rem 2.5rem 6rem;
-            border-top: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2.5rem;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
-        }
-        .disc-cta.on { opacity: 1; transform: none; }
+.creator-main-img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    position: relative;
+    margin-top: 0.8rem;
+}
 
-        .cta-h {
-            font-family: var(--font-display);
-            font-size: clamp(2.5rem, 5vw, 5.5rem);
-            font-weight: 700;
-            letter-spacing: -0.04em;
-            text-align: center;
-            line-height: 1;
-        }
-        .cta-h .a { color: var(--accent); }
+.creator-main-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.75);
+    transition: transform 0.5s ease, filter 0.4s;
+}
+.creator-card:hover .creator-main-img img {
+    transform: scale(1.04);
+    filter: brightness(0.9);
+}
 
-        .cta-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.9rem;
-            font-family: var(--font-display);
-            font-size: 0.78rem;
-            font-weight: 700;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            text-decoration: none;
-            color: #fff;
-            background: var(--accent);
-            padding: 1.1rem 2.8rem;
-            transition: opacity 0.2s;
-        }
-        .cta-link:hover { opacity: 0.85; }
+.creator-main-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted2);
+    font-size: 2.5rem;
+    position: absolute;
+    inset: 0;
+}
 
-        /* ═══════════════════════════════════
-           RESPONSIVE
-        ═══════════════════════════════════ */
-        @media (max-width: 1100px) {
-            .hero { grid-template-columns: 1.5fr 1fr 1fr; }
-            .h-title-zone, .h-strip { grid-column: 2 / 4; }
-            .h-strip { grid-template-columns: 1fr 1fr; }
-            .h-strip-cell:nth-child(3) { display: none; }
-            .bento { grid-template-columns: 1.5fr 1fr 1fr; }
-            .bn:nth-child(4) { display: none; }
-            .bn:nth-child(1) { grid-column:1; grid-row:1/3; }
-            .bn:nth-child(5) { grid-column:2/4; }
-            .bn:nth-child(6) { grid-column:1/3; }
-            .art-grid { grid-template-columns: repeat(4, 1fr); }
-        }
-        @media (max-width: 768px) {
-            .hero { grid-template-columns: 1fr 1fr; height: 85vw; min-height: 380px; }
-            .h-big { grid-column:1; grid-row:1/3; }
-            .h-title-zone { grid-column:2; grid-row:1; padding:1.8rem; }
-            .h-title { font-size: 3rem; }
-            .h-strip { grid-column:2; grid-row:2; grid-template-columns:1fr; }
-            .h-strip-cell:nth-child(n+2) { display:none; }
-            .art-grid { grid-template-columns: repeat(3, 1fr); }
-            .bento { grid-template-columns:1fr 1fr; grid-template-rows:repeat(4, 180px); }
-            .bn:nth-child(n) { grid-column:auto; grid-row:auto; }
-            .geo-wrap { grid-template-columns:1fr; }
-            .mov-card { width: 230px; }
-        }
-        @media (max-width: 480px) {
-            .art-grid { grid-template-columns: repeat(2, 1fr); }
-        }
+.creator-works {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 2px;
+}
+
+.creator-work {
+    aspect-ratio: 1/1;
+    overflow: hidden;
+    background: var(--muted);
+    display: block;
+    text-decoration: none;
+    position: relative;
+}
+
+.creator-work img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease, filter 0.4s ease;
+    filter: brightness(0.8);
+}
+.creator-work:hover img {
+    transform: scale(1.08);
+    filter: brightness(1.05);
+}
+
+.creator-work-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--muted2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 1.5rem;
+    position: absolute;
+    inset: 0;
+}
+
+/* ══════════════════════════════════
+   ARTISTES PHARES
+══════════════════════════════════ */
+.artists-section {
+    padding: 6rem 2rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.artists-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.artists-big-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+
+.artists-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 2px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.artist-card {
+    position: relative;
+    aspect-ratio: 3/4;
+    overflow: hidden;
+    text-decoration: none;
+    background: var(--muted2);
+}
+
+.artist-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(0.4) brightness(0.6);
+    transition: filter 0.5s ease, transform 0.7s ease;
+}
+.artist-card:hover img {
+    filter: grayscale(0) brightness(0.85);
+    transform: scale(1.05);
+}
+
+.artist-card-grad {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 55%);
+}
+
+.artist-card-body {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+}
+
+.artist-card-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.artist-card-count {
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.4);
+    margin-top: 0.2rem;
+}
+
+.artist-accent {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    background: var(--accent);
+    transition: width 0.3s ease;
+}
+.artist-card:hover .artist-accent { width: 3px; }
+
+.artist-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--muted2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 3rem;
+}
+
+/* ══════════════════════════════════
+   GENRES
+══════════════════════════════════ */
+.genres-section {
+    padding: 6rem 2rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.genres-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.genres-big-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+
+.genres-flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.genre-word {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: clamp(0.9rem, 2vw, 1.4rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    transition: color 0.3s ease, transform 0.3s ease;
+    display: inline-block;
+    padding: 0.3rem 0.6rem;
+}
+
+.genre-word:hover {
+    color: var(--accent);
+    transform: scale(1.05);
+}
+
+.genre-sep {
+    color: var(--accent);
+    font-size: 0.9rem;
+    opacity: 0.3;
+}
+
+/* ══════════════════════════════════
+   MOUVEMENTS
+══════════════════════════════════ */
+.movements-section {
+    padding: 6rem 2rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.movements-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.movements-big-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+
+.movements-scroll {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    gap: 2px;
+    cursor: grab;
+    padding-bottom: 0.5rem;
+}
+.movements-scroll::-webkit-scrollbar { height: 4px; }
+.movements-scroll::-webkit-scrollbar-track { background: var(--border); }
+.movements-scroll::-webkit-scrollbar-thumb { background: var(--accent); }
+.movements-scroll.grabbing { cursor: grabbing; }
+
+.movement-card {
+    flex-shrink: 0;
+    width: 280px;
+    height: 380px;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    background: var(--muted2);
+}
+
+.movement-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.45) saturate(0.5);
+    transition: transform 0.7s ease, filter 0.4s;
+}
+.movement-card:hover img {
+    transform: scale(1.06);
+    filter: brightness(0.7) saturate(1.1);
+}
+
+.movement-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%);
+}
+
+.movement-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1.5rem;
+}
+
+.movement-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+.movement-count {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.4);
+}
+
+.movement-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 0;
+    background: var(--accent);
+    transition: height 0.3s ease;
+}
+.movement-card:hover .movement-bar { height: 3px; }
+
+.movement-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--muted2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 2rem;
+}
+
+/* ══════════════════════════════════
+   GÉOGRAPHIES
+══════════════════════════════════ */
+.geo-section {
+    padding: 6rem 2rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.geo-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.geo-big-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+
+.geo-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.geo-col-title {
+    font-size: 1rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 2rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.geo-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.2s;
+}
+.geo-row:hover { color: var(--accent); }
+
+.geo-row-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    flex: 1;
+}
+
+.geo-row-bar {
+    width: 80px;
+    height: 1px;
+    background: var(--muted);
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+}
+.geo-row-bar::after {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 0;
+    background: var(--accent);
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.geo-row-bar.animate::after { width: var(--bar-w, 0%); }
+
+.geo-row-count {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--muted);
+    width: 44px;
+    text-align: right;
+    flex-shrink: 0;
+}
+.geo-row:hover .geo-row-count { color: var(--accent); }
+
+/* ══════════════════════════════════
+   CTA FINAL
+══════════════════════════════════ */
+.final-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6rem 2rem;
+    text-align: center;
+    gap: 2rem;
+}
+
+.final-cta-title {
+    font-size: clamp(2.5rem, 7vw, 6rem);
+    font-weight: 700;
+    letter-spacing: -0.06em;
+    line-height: 0.9;
+}
+
+.final-cta-title .outline {
+    -webkit-text-stroke: 2px var(--accent);
+    color: transparent;
+}
+
+.final-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #fff;
+    background: var(--accent);
+    padding: 1rem 2.5rem;
+    transition: transform 0.25s, box-shadow 0.25s;
+}
+.final-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 60px rgba(108,92,231,0.45);
+}
+
+/* ══════════════════════════════════
+   RESPONSIVE — DESKTOP
+══════════════════════════════════ */
+@media (max-width: 1100px) {
+    .types-grid { grid-template-columns: repeat(3, 1fr); }
+    .artists-grid { grid-template-columns: repeat(3, 1fr); }
+    .daily-grid { grid-template-columns: repeat(2, 1fr); }
+    .daily-card:last-child { display: none; }
+    .creators-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+}
+
+/* ══════════════════════════════════
+   RESPONSIVE — MOBILE
+══════════════════════════════════ */
+@media (max-width: 768px) {
+
+    /* Zéro marge sur tout */
+    .daily-section,
+    .types-section,
+    .museums-section,
+    .creators-section,
+    .artists-section,
+    .genres-section,
+    .movements-section,
+    .geo-section,
+    .final-cta {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    /* Titres de section : garder un padding */
+    .daily-header,
+    .types-header,
+    .museums-header,
+    .creators-header,
+    .artists-header,
+    .genres-header,
+    .movements-header,
+    .geo-header {
+        padding-left: 1.2rem;
+        padding-right: 1.2rem;
+    }
+
+    .final-cta-title { padding: 0 1.2rem; }
+
+    /* ── DAILY : scroll horizontal, image centrale visible, côtés coupés ── */
+    .daily-grid {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 0;
+        scrollbar-width: none;
+        /* Padding pour que la carte centrale soit bien centrée et les côtés débordent */
+        padding-left: 15vw;
+        padding-right: 15vw;
+    }
+    .daily-grid::-webkit-scrollbar { display: none; }
+
+    .daily-card {
+        flex-shrink: 0;
+        width: 70vw;
+        aspect-ratio: 3/4;
+        scroll-snap-align: center;
+    }
+
+    /* Toutes les cartes visibles (pas de display:none) */
+    .daily-card:last-child { display: block; }
+    .daily-card:not(:first-child) { display: block; }
+
+    /* ── TYPES ── */
+    .types-grid { grid-template-columns: repeat(2, 1fr); }
+
+    /* ── MUSÉES : pleine largeur, plus de max-width ── */
+    .museums-flow {
+        max-width: 100%;
+        margin: 0;
+        padding: 0 1rem;
+        justify-content: flex-start;
+    }
+    .museum-word { font-size: 1.15rem; }
+
+    /* ── CRÉATEURS : 1 colonne pleine largeur ── */
+    .creators-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    .creator-card {
+        border-radius: 0;
+    }
+
+    /* ── ARTISTES : nom sans fond violet, juste texte blanc ── */
+    .artists-grid { grid-template-columns: repeat(2, 1fr); }
+
+    .artist-card-name {
+        font-size: 0.9rem;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: unset;
+    }
+
+    /* ── GENRES : pleine largeur ── */
+    .genres-flow {
+        max-width: 100%;
+        margin: 0;
+        padding: 0 1rem;
+        justify-content: flex-start;
+        gap: 0.2rem;
+    }
+    .genre-word { font-size: 1.15rem; }
+
+    /* ── MOUVEMENTS ── */
+    .movement-card { width: 220px; height: 300px; }
+
+    /* ── GÉO ── */
+    .geo-columns {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding: 0 1.2rem;
+    }
+}
+
+@media (max-width: 700px) {
+    .main-content { margin-top: 58px !important; }
+}
     </style>
 </head>
 
@@ -575,14 +986,6 @@
         document.body.classList.remove('theme-dark','theme-light');
         document.body.classList.add('theme-'+t);
         document.body.style.visibility = '';
-        if (typeof window.toggleTheme !== 'function') {
-            window.toggleTheme = function() {
-                const isDark = document.body.classList.contains('theme-dark');
-                document.body.classList.remove('theme-dark','theme-light');
-                document.body.classList.add(isDark ? 'theme-light' : 'theme-dark');
-                localStorage.setItem('theme', isDark ? 'light' : 'dark');
-            };
-        }
     })();
 </script>
 
@@ -590,229 +993,237 @@
 
 <div class="main-content">
 
-    <!-- ─── HERO ─── -->
-    {% set pool = (movements + types + artists)|selectattr('image')|list %}
-
-    <div class="hero">
-        <div class="h-img h-big">
-            {% if pool|length > 0 %}
-            <img src="https://images.weserv.nl/?url={{ pool[0].image|urlencode }}&w=900&h=1200&fit=cover&output=webp&q=85" alt="" loading="eager">
-            {% endif %}
-        </div>
-
-        <div class="h-title-zone">
-            <h1 class="h-title">Découvrir</h1>
-        </div>
-
-        <div class="h-strip">
-            {% for i in range(1, 4) %}{% if pool|length > i %}
-            <a class="h-strip-cell" href="/research?movement={{ pool[i].name|default('')|urlencode }}">
-                <img src="https://images.weserv.nl/?url={{ pool[i].image|urlencode }}&w=600&h=440&fit=cover&output=webp&q=78" alt="" loading="lazy">
-                <div class="h-strip-label">
-                    <span class="h-strip-name">{{ pool[i].name }}</span>
-                    <div class="h-strip-count">{{ pool[i].count }} œuvres</div>
-                </div>
-            </a>
-            {% endif %}{% endfor %}
-        </div>
+<!-- ══════════ HERO ══════════ -->
+<div class="hero-full">
+    {% if hero_image %}
+    <img class="hero-img" src="https://images.weserv.nl/?url={{ hero_image|urlencode }}&w=2000&h=1200&fit=cover&output=webp&q=85"
+         alt="Hero" loading="eager"
+         onerror="this.onerror=null; this.src='{{ hero_image }}';">
+    {% else %}
+    <div style="width:100%;height:100%;background:var(--muted2);display:flex;align-items:center;justify-content:center;">
+        <i class="fas fa-paintbrush" style="font-size:4rem;color:var(--muted);"></i>
     </div>
-
-
-    <!-- ─── MOUVEMENTS ─── -->
-    <section class="section">
-        <div class="sec-head">
-            <h2 class="sec-title">Mouvements</h2>
-        </div>
-        <div class="mov-rail" id="mov-rail">
-            {% for m in movements %}
-            <a class="mov-card" href="/research?movement={{ m.name|urlencode }}" draggable="false">
-                <div class="mov-name">{{ m.name }}</div>
-                <div class="mov-count">{{ m.count }} œuvres</div>
-            </a>
-            {% endfor %}
-        </div>
-    </section>
-
-
-    <!-- ─── TYPOLOGIES ─── -->
-    <section class="section">
-        <div class="sec-head">
-            <h2 class="sec-title">Typologies</h2>
-        </div>
-        <div class="bento">
-            {% for t in types[:8] %}
-            <a class="bn" href="/research?type={{ t.name|urlencode }}">
-                <div class="bn-bar"></div>
-                {% if t.image %}
-                <img src="https://images.weserv.nl/?url={{ t.image|urlencode }}&w=800&h=800&fit=cover&output=webp&q=80" alt="{{ t.name }}" loading="lazy">
-                {% else %}
-                <div style="width:100%;height:100%;background:var(--surface2);"></div>
-                {% endif %}
-                <div class="bn-shade"></div>
-                <div class="bn-body">
-                    <span class="bn-name">{{ t.name }}</span>
-                    <div class="bn-count">{{ t.count }} œuvres</div>
-                </div>
-            </a>
-            {% endfor %}
-        </div>
-    </section>
-
-
-    <!-- ─── ARTISTES ─── -->
-    <section class="section">
-        <div class="sec-head">
-            <h2 class="sec-title">Créateurs</h2>
-        </div>
-        <div class="art-grid">
-            {% for a in artists %}
-            <a class="art-cell" href="/research?artist={{ a.name|urlencode }}">
-                {% if a.image %}
-                <img src="https://images.weserv.nl/?url={{ a.image|urlencode }}&w=400&h=540&fit=cover&output=webp&q=75" alt="{{ a.name }}" loading="lazy">
-                {% else %}
-                <div style="width:100%;height:100%;background:var(--surface2);display:flex;align-items:center;justify-content:center;"><i class="fas fa-user" style="font-size:2rem;color:var(--border-strong);"></i></div>
-                {% endif %}
-                <div class="art-label">
-                    <span class="art-name">{{ a.name }}</span>
-                    <div class="art-count">{{ a.count }} œuvres</div>
-                </div>
-            </a>
-            {% endfor %}
-        </div>
-    </section>
-
-
-    <!-- ─── GÉOGRAPHIES ─── -->
-    <section class="section">
-        <div class="sec-head">
-            <h2 class="sec-title">Géographies</h2>
-        </div>
-        <div class="geo-wrap">
-
-            <div class="geo-box">
-                <div class="geo-box-head">
-                    <i class="fas fa-city geo-box-icon"></i>
-                    <span class="geo-box-title">Villes</span>
-                </div>
-                <ul class="geo-list">
-                    {% set cmax = cities[0].count if cities else 1 %}
-                    {% for c in cities %}
-                    <li>
-                        <a class="geo-entry" href="/research?city={{ c.name|urlencode }}">
-                            <span class="geo-name">{{ c.name }}</span>
-                            <div class="geo-bar-bg">
-                                <div class="geo-bar-fill" data-w="{{ (c.count / cmax * 100)|int }}"></div>
-                            </div>
-                            <span class="geo-cnt">{{ c.count }}</span>
-                        </a>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-            <div class="geo-box">
-                <div class="geo-box-head">
-                    <i class="fas fa-globe geo-box-icon"></i>
-                    <span class="geo-box-title">Pays</span>
-                </div>
-                <ul class="geo-list">
-                    {% set pmax = countries[0].count if countries else 1 %}
-                    {% for c in countries %}
-                    <li>
-                        <a class="geo-entry" href="/research?country={{ c.name|urlencode }}">
-                            <span class="geo-name">{{ c.name }}</span>
-                            <div class="geo-bar-bg">
-                                <div class="geo-bar-fill" data-w="{{ (c.count / pmax * 100)|int }}"></div>
-                            </div>
-                            <span class="geo-cnt">{{ c.count }}</span>
-                        </a>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-        </div>
-    </section>
-
-
-    <!-- ─── GENRES ─── -->
-    <section class="section">
-        <div class="sec-head">
-            <h2 class="sec-title">Genres</h2>
-        </div>
-        <div class="genre-flow">
-            {% for g in genres %}
-            <a class="genre-chip"
-               href="/research?genre={{ g.name|urlencode }}"
-               style="flex: {{ [1,2,1,1,2,1,3,1,2,1][loop.index0 % 10] }};">
-                <span class="genre-chip-name">{{ g.name }}</span>
-                <span class="genre-chip-c">{{ g.count }} œuvres</span>
-            </a>
-            {% endfor %}
-        </div>
-    </section>
-
-
-    <!-- ─── CTA ─── -->
-    <div class="disc-cta">
-        <p class="cta-h">Toute la collection<span class="a">.</span></p>
-        <a class="cta-link" href="/research">Explorer <i class="fas fa-arrow-right"></i></a>
+    {% endif %}
+    <div class="hero-title-overlay">
+        <h1 class="hero-title">Découvrir</h1>
     </div>
-
 </div>
+
+<!-- ══════════ SÉLECTION DU JOUR ══════════ -->
+<div class="daily-section">
+    <div class="daily-header">
+        <div class="daily-badge">Le regard du jour par</div>
+        <h2 class="daily-title">{{ daily_artist|default('un artiste') }}</h2>
+    </div>
+    <div class="daily-grid">
+        {% for artwork in daily_selection %}
+        <a class="daily-card" href="/oeuvre/{{ artwork.id }}">
+            <div class="daily-accent"></div>
+            <img src="https://images.weserv.nl/?url={{ artwork.image_url|urlencode }}&w=600&h=800&fit=cover&output=webp&q=80"
+                 alt="{{ artwork.title }}" loading="lazy"
+                 onerror="this.onerror=null; this.src='{{ artwork.image_url }}'; this.onerror=function(){this.parentElement.querySelector('.daily-placeholder').style.display='flex'; this.style.display='none';}">
+            <div class="daily-placeholder" style="display:none; position:absolute; inset:0; background:var(--muted2); align-items:center; justify-content:center;">
+                <i class="fas fa-image" style="font-size:3rem;color:var(--muted);"></i>
+            </div>
+            <div class="daily-overlay"></div>
+            <div class="daily-content">
+                <div class="daily-artwork-title">{{ artwork.title[:50] }}</div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- ══════════ TYPES ══════════ -->
+<div class="types-section">
+    <div class="types-header">
+        <h2 class="types-big-title">Les arts</h2>
+    </div>
+    <div class="types-grid">
+        {% for t in types %}
+        <a class="type-card" href="/research?type={{ t.name|urlencode }}">
+            <div class="type-card-line"></div>
+            {% if t.image %}
+            <img src="https://images.weserv.nl/?url={{ t.image|urlencode }}&w=500&h=400&fit=cover&output=webp&q=75"
+                 alt="{{ t.name }}" loading="lazy"
+                 onerror="this.onerror=null; this.src='{{ t.image }}'; this.onerror=function(){this.parentElement.querySelector('.type-placeholder').style.display='flex'; this.style.display='none';}">
+            {% endif %}
+            <div class="type-placeholder" style="{% if t.image %}display:none;{% endif %}width:100%;height:100%;background:var(--muted2);display:flex;align-items:center;justify-content:center;">
+                <i class="fas fa-paintbrush" style="font-size:2rem;color:var(--muted);"></i>
+            </div>
+            <div class="type-card-overlay"></div>
+            <div class="type-card-body">
+                <span class="type-card-name">{{ t.name }}</span>
+                <div class="type-card-count">{{ t.count }} œuvres</div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- ══════════ MUSÉES ══════════ -->
+<div class="museums-section">
+    <div class="museums-header">
+        <h2 class="museums-big-title">Musées</h2>
+    </div>
+    <div class="museums-flow">
+        {% for museum in museums %}
+        <a class="museum-word" href="/research?museum={{ museum.name|urlencode }}">{{ museum.name }}</a>
+        {% if not loop.last %}<span class="museum-sep">·</span>{% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+
+<!-- ══════════ ARTISTES PHARES ══════════ -->
+<div class="artists-section">
+    <div class="artists-header">
+        <h2 class="artists-big-title">Artistes phares</h2>
+    </div>
+    <div class="artists-grid">
+        {% for a in artists %}
+        <a class="artist-card" href="/research?artist={{ a.name|urlencode }}">
+            <div class="artist-accent"></div>
+            {% if a.image %}
+            <img src="https://images.weserv.nl/?url={{ a.image|urlencode }}&w=350&h=470&fit=cover&output=webp&q=75"
+                 alt="{{ a.name }}" loading="lazy"
+                 onerror="this.onerror=null; this.src='{{ a.image }}'; this.onerror=function(){this.parentElement.querySelector('.artist-placeholder').style.display='flex'; this.style.display='none';}">
+            {% endif %}
+            <div class="artist-placeholder" style="{% if a.image %}display:none;{% endif %}width:100%;height:100%;background:var(--muted2);display:flex;align-items:center;justify-content:center;">
+                <i class="fas fa-user" style="font-size:3rem;color:var(--muted);"></i>
+            </div>
+            <div class="artist-card-grad"></div>
+            <div class="artist-card-body">
+                <span class="artist-card-name">{{ a.name }}</span>
+                <div class="artist-card-count">{{ a.count }} œuvres</div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- ══════════ GENRES ══════════ -->
+<div class="genres-section">
+    <div class="genres-header">
+        <h2 class="genres-big-title">Genres</h2>
+    </div>
+    <div class="genres-flow">
+        {% for g in genres %}
+        <a class="genre-word" href="/research?genre={{ g.name|urlencode }}">{{ g.name }}</a>
+        {% if not loop.last %}<span class="genre-sep">·</span>{% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<!-- ══════════ MOUVEMENTS ══════════ -->
+<div class="movements-section">
+    <div class="movements-header">
+        <h2 class="movements-big-title">Mouvements artistiques</h2>
+    </div>
+    <div class="movements-scroll" id="movements-scroll">
+        {% for m in movements %}
+        <a class="movement-card" href="/research?movement={{ m.name|urlencode }}">
+            {% if m.image %}
+            <img src="https://images.weserv.nl/?url={{ m.image|urlencode }}&w=400&h=550&fit=cover&output=webp&q=75"
+                 alt="{{ m.name }}" loading="lazy"
+                 onerror="this.onerror=null; this.src='{{ m.image }}'; this.onerror=function(){this.parentElement.querySelector('.movement-placeholder').style.display='flex'; this.style.display='none';}">
+            {% endif %}
+            <div class="movement-placeholder" style="{% if m.image %}display:none;{% endif %}width:100%;height:100%;background:var(--muted2);display:flex;align-items:center;justify-content:center;">
+                <i class="fas fa-palette" style="font-size:2rem;color:var(--muted);"></i>
+            </div>
+            <div class="movement-overlay"></div>
+            <div class="movement-content">
+                <span class="movement-name">{{ m.name }}</span>
+                <div class="movement-count">{{ m.count }} œuvres</div>
+            </div>
+            <div class="movement-bar"></div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- ══════════ GÉOGRAPHIES ══════════ -->
+<div class="geo-section">
+    <div class="geo-header">
+        <h2 class="geo-big-title">Géographies</h2>
+    </div>
+    <div class="geo-columns">
+        <div>
+            <div class="geo-col-title">Pays</div>
+            {% set pmax = countries[0].count if countries else 1 %}
+            {% for c in countries %}
+            <a class="geo-row" href="/research?country={{ c.name|urlencode }}" style="--bar-w: {{ (c.count / pmax * 100)|int }}%;">
+                <span class="geo-row-name">{{ c.name }}</span>
+                <div class="geo-row-bar"></div>
+                <span class="geo-row-count">{{ c.count }}</span>
+            </a>
+            {% endfor %}
+        </div>
+        <div>
+            <div class="geo-col-title">Villes</div>
+            {% set cmax = cities[0].count if cities else 1 %}
+            {% for c in cities %}
+            <a class="geo-row" href="/research?city={{ c.name|urlencode }}" style="--bar-w: {{ (c.count / cmax * 100)|int }}%;">
+                <span class="geo-row-name">{{ c.name }}</span>
+                <div class="geo-row-bar"></div>
+                <span class="geo-row-count">{{ c.count }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- ══════════ CTA FINAL ══════════ -->
+<div class="final-cta">
+    <h2 class="final-cta-title">
+        Toute<br>
+        la <span class="outline">collection.</span>
+    </h2>
+    <a class="final-btn" href="/research">Rechercher</a>
+</div>
+
+</div><!-- /main-content -->
 
 {% include 'footer.html' %}
 
 <script>
-// INTERSECTION OBSERVER
-const io = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-        if (!e.isIntersecting) return;
-        e.target.classList.add('on');
-        if (e.target.classList.contains('geo-entry')) {
-            const bar = e.target.querySelector('.geo-bar-fill');
-            if (bar) setTimeout(() => bar.style.width = bar.dataset.w + '%', 100);
-        }
-        io.unobserve(e.target);
-    });
-}, { threshold: 0.06, rootMargin: '0px 0px -20px 0px' });
+// ── PARALLAXE HERO ──
+(function() {
+    const heroImg = document.querySelector('.hero-img');
+    if (!heroImg) return;
+    window.addEventListener('scroll', function() {
+        const p = Math.min(1, window.scrollY / (document.body.scrollHeight - window.innerHeight));
+        heroImg.style.transform = `scale(${1.08 + p * 0.42}) translateX(${p * 400}px)`;
+    }, { passive: true });
+})();
 
-function watch(sel, step) {
-    document.querySelectorAll(sel).forEach((el, i) => {
-        el.style.transitionDelay = (i * step) + 'ms';
-        io.observe(el);
-    });
+// ── DRAG SCROLL MOUVEMENTS ──
+const scr = document.getElementById('movements-scroll');
+if (scr) {
+    let drag = false, ox = 0, sl = 0;
+    scr.addEventListener('mousedown', e => { drag = true; ox = e.pageX; sl = scr.scrollLeft; scr.classList.add('grabbing'); });
+    ['mouseup', 'mouseleave'].forEach(ev => scr.addEventListener(ev, () => { drag = false; scr.classList.remove('grabbing'); }));
+    scr.addEventListener('mousemove', e => { if (!drag) return; e.preventDefault(); scr.scrollLeft = sl - (e.pageX - ox) * 1.5; });
 }
 
-watch('.sec-head',    0);
-watch('.mov-card',   45);
-watch('.bn',         55);
-watch('.art-cell',   48);
-watch('.geo-entry',  50);
-watch('.genre-chip', 28);
-watch('.disc-cta',    0);
+// ── ANIMATION BARRES GÉO ──
+const geoObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            const bar = e.target.querySelector('.geo-row-bar');
+            if (bar) bar.classList.add('animate');
+            geoObserver.unobserve(e.target);
+        }
+    });
+}, { threshold: 0.3 });
+document.querySelectorAll('.geo-row').forEach(row => geoObserver.observe(row));
 
-// DRAG-TO-SCROLL
-const rail = document.getElementById('mov-rail');
-let drag = false, ox = 0, sl = 0;
-rail?.addEventListener('mousedown', e => {
-    drag = true; ox = e.pageX - rail.offsetLeft; sl = rail.scrollLeft;
-    rail.classList.add('grabbing');
+// ── FADE IN IMAGES ──
+document.querySelectorAll('img').forEach(img => {
+    img.style.opacity = '0';
+    img.onload = function() { this.style.opacity = '1'; this.style.transition = 'opacity 0.4s'; };
+    if (img.complete && img.naturalWidth) img.style.opacity = '1';
 });
-['mouseup','mouseleave'].forEach(ev => rail?.addEventListener(ev, () => {
-    drag = false; rail.classList.remove('grabbing');
-}));
-rail?.addEventListener('mousemove', e => {
-    if (!drag) return;
-    e.preventDefault();
-    rail.scrollLeft = sl - (e.pageX - rail.offsetLeft - ox) * 1.5;
-});
-
-// PARALLAXE HERO
-const bigImg = document.querySelector('.h-big img');
-window.addEventListener('scroll', () => {
-    if (bigImg) bigImg.style.transform = `translateY(${window.scrollY * 0.1}px)`;
-}, { passive: true });
 </script>
 
 </body>

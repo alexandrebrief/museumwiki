@@ -6,7 +6,7 @@
 {% endif %}
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ site_name }}</title>
 
@@ -17,241 +17,308 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --bg-dark: #0a0a0a;
-            --bg-light: #ffffff;
-            --surface-dark: #141414;
-            --surface-light: #f5f5f5;
-            --text-dark: #ffffff;
-            --text-light: #1a1a1a;
-            --text-muted-dark: #7a7a7a;
-            --text-muted-light: #9a9a9a;
-            --border-dark: #2a2a2a;
-            --border-light: #e0e0e0;
             --accent: #6c5ce7;
+            --accent-hover: #5a4bcf;
             --gold: #c9a96e;
             --font-display: 'Space Grotesk', sans-serif;
             --font-text: 'Inter', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            font-family: var(--font-text);
-            color: var(--text-dark);
-            line-height: 1.5;
-            font-weight: 300;
-            min-height: 100vh;
-        }
-
-        body.theme-light {
-            background-color: var(--bg-light);
-            color: var(--text-light);
-            --surface: var(--surface-light);
-            --surface-hover: #eaeaea;
-            --border-color: var(--border-light);
-            --text-muted: var(--text-muted-light);
+            --tech: #4a9eff;
+            --crea: #ffb347;
+            --emo: #ff6b9d;
         }
 
         body.theme-dark {
-            --surface: var(--surface-dark);
-            --surface-hover: #1f1f1f;
-            --border-color: var(--border-dark);
-            --text-muted: var(--text-muted-dark);
+            --bg: #0a0a0a; --surface: #141414; --surface2: #1a1a1a;
+            --surface3: #222222; --text: #ffffff; --text-muted: #a0a0a0;
+            --border: #2a2a2a; --card-bg: #121212;
+        }
+        body.theme-light {
+            --bg: #f8f8f8; --surface: #ffffff; --surface2: #f0f0f0;
+            --surface3: #e8e8e8; --text: #1a1a1a; --text-muted: #6a6a6a;
+            --border: #e0e0e0; --card-bg: #ffffff;
         }
 
-        .container { max-width: 1440px; margin: 0 auto; padding: 0 0.75rem; }
-        .main-content { margin-top: 100px; min-height: calc(100vh - 100px); padding-top: 0.5cm; }
+        body {
+            background: var(--bg); color: var(--text);
+            font-family: var(--font-text); font-weight: 400;
+            min-height: 100vh; display: flex; flex-direction: column;
+        }
 
-        .filter-tools { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; flex: 1; margin-top: 1rem; }
+        .container { max-width: 1600px; margin: 0 auto; padding: 0 0.75rem; flex: 1; }
+        .main-content { margin-top: 80px; padding-top: 1rem; padding-bottom: 80px; }
 
-        .icon-button {
-            background: transparent; border: 1px solid var(--border-color);
-            width: 40px; height: 40px;
+        .page-header {
+            display: flex; align-items: baseline; gap: 0.8rem;
+            padding-bottom: 1rem; border-bottom: 1px solid var(--border);
+        }
+        .page-count { font-family: var(--font-display); font-size: 2.5rem; font-weight: 700; color: var(--gold); line-height: 1; }
+        .page-label { font-family: var(--font-display); font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
+
+        .toolbar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1rem 0; gap: 0.8rem; flex-wrap: wrap;
+        }
+        .toolbar-left { display: flex; gap: 0.8rem; }
+        .toolbar-right { display: flex; gap: 0.4rem; }
+
+        .btn-filter, .btn-sort {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.6rem 1.2rem; background: var(--surface);
+            border: 1px solid var(--border); border-radius: 40px;
+            font-family: var(--font-display); font-size: 0.85rem; font-weight: 600;
+            color: var(--text); cursor: pointer; transition: all 0.2s;
+        }
+        .btn-filter i, .btn-sort i { color: var(--accent); }
+        .btn-filter:hover, .btn-sort:hover { border-color: var(--accent); background: rgba(108,92,231,0.05); }
+
+        .filter-badge {
+            background: var(--accent); color: white; border-radius: 20px;
+            padding: 0 6px; font-size: 0.7rem; margin-left: 4px;
+        }
+
+        .view-btn {
+            width: 38px; height: 38px; background: var(--surface);
+            border: 1px solid var(--border); border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.2s;
-            color: var(--text-muted); font-size: 1rem;
+            cursor: pointer; color: var(--text-muted); transition: all 0.2s;
         }
-        .icon-button:hover { border-color: var(--accent); color: var(--accent); }
-        .icon-button.active { background: var(--accent); border-color: var(--accent); color: white; }
+        .view-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
 
-        #load-more-btn {
-            background: transparent; border: 1px solid var(--gold);
-            color: var(--gold); padding: 0.9rem 3.5rem;
-            font-family: var(--font-display); font-size: 0.75rem;
-            text-transform: uppercase; letter-spacing: 2px;
-            cursor: pointer; transition: all 0.3s ease;
-            display: inline-flex; align-items: center; gap: 0.8rem;
+        .active-tags-row {
+            display: flex; flex-wrap: wrap; align-items: center;
+            gap: 0.5rem; padding: 0; margin-bottom: 1rem;
         }
-        #load-more-btn:hover { background: var(--gold); color: white; }
-        #load-more-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-        .filter-dropdown { position: relative; }
-        .dropdown-menu {
-            position: absolute; top: calc(100% + 5px);
-            min-width: 300px; max-width: 360px;
-            background: var(--surface); border: 1px solid var(--border-color);
-            padding: 1.2rem; z-index: 1000; display: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        body.theme-dark .dropdown-menu { background: #1e1e1e; border-color: #3a3a3a; }
-        .dropdown-menu.show { display: block; animation: fadeIn 0.2s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        .dropdown-search {
-            display: flex; align-items: center;
-            background: var(--surface-hover);
-            border: 1px solid var(--border-color);
-            padding: 0.3rem 0.8rem; margin-bottom: 1rem; width: 100%;
-        }
-        body.theme-dark .dropdown-search { background: #2a2a2a; border-color: #3a3a3a; }
-        .dropdown-search i { color: var(--text-muted); font-size: 0.8rem; margin-right: 0.5rem; }
-        .dropdown-search input { background: transparent; border: none; width: 100%; padding: 0.3rem 0; font-size: 0.85rem; color: inherit; }
-        .dropdown-search input:focus { outline: none; }
-        .dropdown-search input::placeholder { color: var(--text-muted); opacity: 0.7; }
-
-        .dropdown-items { max-height: 250px; overflow-y: auto; margin-bottom: 1rem; scrollbar-width: thin; scrollbar-color: var(--accent) var(--border-color); }
-        .dropdown-items::-webkit-scrollbar { width: 3px; }
-        .dropdown-items::-webkit-scrollbar-track { background: var(--border-color); }
-        .dropdown-items::-webkit-scrollbar-thumb { background: var(--accent); }
-
-        .dropdown-item { padding: 0.1rem 0; }
-        .dropdown-item label {
-            display: flex; align-items: center; gap: 0.5rem;
-            font-size: 0.85rem; cursor: pointer;
-            padding: 0.3rem 0.5rem; transition: background 0.2s;
-        }
-        .dropdown-item label:hover { background: var(--surface-hover); }
-        .dropdown-item input[type="checkbox"], .dropdown-item input[type="radio"] {
-            appearance: none; -webkit-appearance: none;
-            width: 16px; height: 16px; flex-shrink: 0;
-            border: 2px solid var(--text-muted);
-            border-radius: 3px; background: transparent;
-            cursor: pointer; position: relative; margin: 0;
-        }
-        .dropdown-item input[type="radio"] { border-radius: 50%; }
-        .dropdown-item input:checked { background: var(--accent); border-color: var(--accent); }
-        .dropdown-item input:checked::after {
-            content: '✓'; color: white; font-size: 11px;
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        .dropdown-item input[type="radio"]:checked::after {
-            content: ''; width: 6px; height: 6px;
-            background: white; border-radius: 50%;
-        }
-        .dropdown-item .count { color: var(--text-muted); font-size: 0.7rem; margin-left: auto; }
-
-        .dropdown-section-header {
-            font-family: var(--font-display);
-            font-size: 0.7rem; font-weight: 600;
-            text-transform: uppercase; letter-spacing: 2px;
-            color: var(--accent);
-            padding: 0.5rem 0 0.3rem;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 0.8rem;
-        }
-
-        .dropdown-actions { display: flex; justify-content: flex-end; padding-top: 0.8rem; border-top: 1px solid var(--border-color); }
-        .apply-btn {
-            background: transparent; border: 1px solid var(--accent); color: var(--accent);
-            padding: 0.4rem 1.5rem; font-size: 0.7rem;
-            text-transform: uppercase; letter-spacing: 1px;
-            cursor: pointer; transition: all 0.2s;
-        }
-        .apply-btn:hover { background: var(--accent); color: white; }
-
-        .active-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0; }
         .filter-tag {
-            background: var(--surface); border: 1px solid var(--border-color);
-            padding: 0.2rem 1rem 0.2rem 1.2rem;
-            font-size: 0.7rem; display: flex; align-items: center; gap: 0.5rem;
-            text-transform: uppercase; letter-spacing: 0.5px;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.4rem 1rem 0.4rem 1.2rem;
+            background: rgba(108,92,231,0.15); border: 1px solid rgba(108,92,231,0.4);
+            border-radius: 30px; font-family: var(--font-display);
+            font-size: 0.8rem; font-weight: 600; color: var(--accent);
         }
-        body.theme-dark .filter-tag { background: #1e1e1e; }
-        .filter-tag i { color: var(--accent); cursor: pointer; font-size: 0.6rem; }
+        .filter-tag button { background: none; border: none; cursor: pointer; color: var(--accent); font-size: 0.8rem; padding: 0; opacity: 0.7; }
+        .filter-tag button:hover { opacity: 1; }
+        .tags-clear-all {
+            background: none; border: none; cursor: pointer;
+            font-family: var(--font-display); font-size: 0.75rem; font-weight: 600;
+            color: #888; padding: 0.4rem 1rem; border-radius: 30px; transition: all 0.2s;
+        }
+        .tags-clear-all:hover { color: #e03131; background: rgba(224,49,49,0.1); }
 
-        .srp-results-line { margin: 1.5rem 0 0.5rem; }
-        .srp-results-line-top { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 0.4rem; flex-wrap: wrap; }
-        .srp-header-num { font-family: var(--font-display); font-size: 2.2rem; font-weight: 700; color: var(--gold); line-height: 1; }
-        .srp-header-label { font-family: var(--font-display); font-size: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; }
 
-        /* Notes sur les images */
+
+
+.works-grid {
+    display: grid;
+    gap: 0;
+    margin-top: 1rem;
+}
+.works-grid.grid-6 { grid-template-columns: repeat(6, 1fr); }
+.works-grid.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+.work-item {
+    text-decoration: none; color: inherit; display: block;
+    background: var(--card-bg);
+    border: none;  /* ← PLUS DE BORDURE */
+    overflow: hidden;
+    transition: transform 0.2s;
+    margin: 0;  /* ← PLUS DE MARGIN */
+    position: relative;
+}
+.work-item:hover {
+    transform: translateY(-2px);
+    z-index: 2;
+    /* PAS DE BORDURE VIOLET */
+}
+
+.work-image-container {
+    position: relative; width: 100%; background: var(--surface2);
+    display: flex; align-items: center; justify-content: center;
+}
+.works-grid.grid-6 .work-image-container { aspect-ratio: 2/3; }
+.works-grid.grid-4 .work-image-container { aspect-ratio: 1/1; }
+.work-image-container img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+
+
+
+        .image-placeholder {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--surface2); color: var(--text-muted); font-size: 2rem;
+        }
+
         .rating-stack {
-            position: absolute; top: 0.5rem; left: 0.5rem; z-index: 20;
-            display: flex; flex-direction: column; gap: 0.2rem;
-            background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
-            padding: 0.3rem 0.5rem; border-radius: 6px;
+            position: absolute; top: 6px; left: 6px; z-index: 10;
+            background: rgba(0,0,0,0.65); backdrop-filter: blur(4px);
+            padding: 5px 8px; border-radius: 6px;
             font-family: var(--font-display); pointer-events: none;
-            font-size: 0.65rem; line-height: 1.2;
         }
-        .rating-main { display: flex; align-items: center; gap: 0.3rem; font-weight: 500; color: var(--gold); padding-bottom: 0.15rem; border-bottom: 1px solid rgba(255,255,255,0.15); }
-        .rating-main i { font-size: 0.55rem; }
-        .rating-value { font-size: 0.7rem; font-weight: 600; }
-        .rating-sub { display: flex; flex-direction: column; gap: 0.15rem; }
-        .sub-item { display: flex; align-items: center; gap: 0.3rem; font-size: 0.55rem; color: rgba(255,255,255,0.7); }
-        .sub-item i { width: 12px; font-size: 0.5rem; }
-        .sub-item.technique i { color: #4a9eff; }
-        .sub-item.originalite i { color: #ffb347; }
-        .sub-item.emotion i { color: #ff6b9d; }
-        .sub-item span { font-weight: 500; font-size: 0.6rem; }
-        body.theme-light .rating-stack { background: rgba(255,255,255,0.85); }
-        body.theme-light .rating-main { border-bottom-color: rgba(0,0,0,0.1); }
-        body.theme-light .sub-item { color: #555; }
-
-        .works-grid { display: grid; gap: 0.5rem; margin: 0.5rem 0 0; padding: 0.5rem 0; }
-        .works-grid.grid-4 { grid-template-columns: repeat(4, 1fr); }
-        .works-grid.grid-6 { grid-template-columns: repeat(6, 1fr); }
-
-        .work-item { position: relative; text-decoration: none; color: inherit; display: block; overflow: hidden; }
-        .works-grid.grid-4 .work-item { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; }
-        .works-grid.grid-4 .work-item img { width: 100%; height: 100%; object-fit: contain; }
-        .works-grid.grid-6 .work-item { aspect-ratio: 2/3; }
-        .works-grid.grid-6 .work-item img { width: 100%; height: 100%; object-fit: cover; }
-        .work-item:hover img { opacity: 0.7; }
-
-        .work-image-container { width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; }
-        .image-placeholder { width: 100%; height: 100%; min-height: 200px; background: var(--surface); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 1.5rem; }
+        .rating-main { display: flex; align-items: center; gap: 4px; color: var(--gold); font-size: 0.7rem; font-weight: 600; padding-bottom: 3px; border-bottom: 1px solid rgba(255,255,255,0.15); }
+        .rating-main i { font-size: 0.6rem; }
+        .rating-sub { display: flex; flex-direction: column; gap: 2px; margin-top: 3px; }
+        .sub-item { display: flex; align-items: center; gap: 4px; font-size: 0.6rem; color: rgba(255,255,255,0.7); }
+        .sub-item i { width: 12px; font-size: 0.55rem; }
+        .sub-item.technique i { color: var(--tech); }
+        .sub-item.originalite i { color: var(--crea); }
+        .sub-item.emotion i { color: var(--emo); }
 
         .work-overlay {
             position: absolute; bottom: 0; left: 0; right: 0;
-            background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 80%);
-            padding: 2rem 1rem 1rem; opacity: 0; transition: opacity 0.3s ease;
-            color: white; pointer-events: none;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 70%);
+            padding: 2rem 0.8rem 0.8rem; opacity: 0; transition: opacity 0.25s;
+            color: #fff; pointer-events: none;
         }
         .work-item:hover .work-overlay { opacity: 1; }
-        .work-title { font-family: var(--font-display); font-weight: 500; font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: uppercase; }
+        .work-title { font-family: var(--font-display); font-size: 0.75rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: uppercase; }
         .work-artist { font-size: 0.65rem; opacity: 0.7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .end-message { text-align: center; padding: 4rem; color: var(--text-muted); font-size: 0.9rem; }
-        .empty-state { text-align: center; padding: 6rem 2rem; color: var(--text-muted); }
-        .empty-state i { font-size: 3rem; color: var(--gold); opacity: 0.3; margin-bottom: 1.5rem; display: block; }
-        .empty-state h3 { font-family: var(--font-display); font-size: 1.2rem; font-weight: 500; margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 2px; }
-        .btn-explore { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 0.8rem 2rem; font-family: var(--font-display); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; text-decoration: none; display: inline-block; transition: all 0.2s; margin-top: 1rem; }
-        .btn-explore:hover { background: var(--accent); color: white; }
+        /* ===== PANELS ===== */
+        .filter-panel {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: var(--surface2); border-top: 2px solid var(--accent);
+            transform: translateY(100%); transition: transform 0.3s ease-out;
+            z-index: 1000; max-height: 80vh; overflow-y: auto;
+            border-radius: 20px 20px 0 0;
+            touch-action: pan-y;
+        }
+        .filter-panel.open { transform: translateY(0); }
 
-        .scroll-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--surface); border: 1px solid var(--border-color); color: var(--text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; visibility: hidden; transition: all 0.2s; z-index: 100; }
+        /* Drag handle */
+        .drag-handle {
+            display: flex; justify-content: center; padding: 10px 0 4px;
+            cursor: grab; touch-action: none;
+        }
+        .drag-handle-bar {
+            width: 40px; height: 4px;
+            background: var(--border); border-radius: 2px;
+        }
+
+        .filter-panel-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.5rem 1.2rem 1rem; border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; background: var(--surface2); z-index: 10;
+        }
+        .filter-panel-header h3 { font-family: var(--font-display); font-size: 1rem; font-weight: 600; text-transform: uppercase; }
+        .close-panel { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted); padding: 0.5rem; }
+
+        .filter-section { padding: 1rem 1.2rem; border-bottom: 1px solid var(--border); }
+        .filter-section-title { font-family: var(--font-display); font-size: 0.85rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 0.8rem; }
+
+        /* Chips row — wraps naturally, "Voir plus" chip intégré dans le flow */
+        .chips-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            align-items: center;
+        }
+
+        .filter-chip {
+            padding: 0.5rem 1rem; background: var(--surface);
+            border: 1px solid var(--border); border-radius: 30px;
+            font-size: 0.85rem; cursor: pointer; transition: all 0.2s;
+        }
+        .filter-chip.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+        /* Le bouton "Voir plus / Voir moins" a le même style qu'un chip mais couleur accent */
+        .show-more-chip {
+            padding: 0.5rem 1rem; background: transparent;
+            border: 1px dashed var(--accent); border-radius: 30px;
+            font-size: 0.8rem; cursor: pointer; color: var(--accent);
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .show-more-chip:hover { background: rgba(108,92,231,0.1); }
+
+        .sort-options { display: flex; flex-direction: column; gap: 0.6rem; }
+        .sort-option {
+            display: flex; align-items: center; gap: 0.8rem;
+            padding: 0.7rem 1rem; background: var(--surface);
+            border: 1px solid var(--border); border-radius: 12px; cursor: pointer;
+        }
+        .sort-option.active { border-color: var(--accent); background: rgba(108,92,231,0.08); }
+        .sort-option i { width: 28px; color: var(--accent); font-size: 1rem; }
+        .sort-option span { font-size: 0.85rem; }
+
+        .rating-sections { display: flex; flex-direction: column; gap: 1.2rem; }
+        .rating-group { border-bottom: 1px solid var(--border); padding-bottom: 0.8rem; }
+        .rating-group:last-child { border-bottom: none; padding-bottom: 0; }
+        .rating-group-title { font-family: var(--font-display); font-size: 0.7rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 0.6rem; }
+        .rating-options { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .rating-chip {
+            padding: 0.4rem 0.9rem; background: var(--surface);
+            border: 1px solid var(--border); border-radius: 30px;
+            font-size: 0.75rem; cursor: pointer; transition: all 0.2s;
+        }
+        .rating-chip.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+        .filter-actions {
+            display: flex; gap: 1rem; padding: 1rem 1.2rem;
+            border-top: 1px solid var(--border);
+            position: sticky; bottom: 0; background: var(--surface2);
+        }
+        .btn-clear {
+            flex: 1; padding: 0.8rem; background: transparent;
+            border: 1px solid var(--border); border-radius: 40px;
+            font-family: var(--font-display); font-size: 0.8rem; font-weight: 600;
+            cursor: pointer; color: #888;
+        }
+        .btn-apply {
+            flex: 2; padding: 0.8rem; background: var(--accent); border: none;
+            border-radius: 40px; font-family: var(--font-display);
+            font-size: 0.8rem; font-weight: 700; color: white; cursor: pointer;
+        }
+
+        .overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6); z-index: 999;
+            opacity: 0; visibility: hidden; transition: opacity 0.3s;
+        }
+        .overlay.visible { opacity: 1; visibility: visible; }
+
+        #load-more-container { text-align: center; padding: 2rem 0; }
+        #load-more-btn {
+            background: transparent; border: 1px solid var(--gold); color: var(--gold);
+            padding: 0.8rem 2.5rem; font-family: var(--font-display);
+            font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 2px; cursor: pointer; border-radius: 0;
+        }
+        .end-message { text-align: center; padding: 2rem; color: var(--text-muted); }
+        .empty-state { text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
+        .empty-state i { font-size: 3rem; color: var(--gold); opacity: 0.3; margin-bottom: 1rem; display: block; }
+        .btn-explore { display: inline-block; margin-top: 1rem; padding: 0.8rem 2rem; border: 1px solid var(--accent); color: var(--accent); border-radius: 40px; text-decoration: none; }
+
+        .scroll-top {
+            position: fixed; bottom: 1rem; right: 1rem;
+            width: 44px; height: 44px; background: var(--surface);
+            border: 1px solid var(--border); border-radius: 50%;
+            color: var(--text-muted); display: flex; align-items: center; justify-content: center;
+            cursor: pointer; opacity: 0; visibility: hidden; transition: all 0.2s; z-index: 100;
+        }
         .scroll-top.visible { opacity: 1; visibility: visible; }
-        .scroll-top:hover { border-color: var(--accent); color: var(--accent); }
 
-        @media (max-width: 1200px) { .works-grid.grid-6 { grid-template-columns: repeat(5, 1fr); } }
-        @media (max-width: 992px) { .works-grid.grid-6 { grid-template-columns: repeat(4, 1fr); } }
+        @media (min-width: 769px) { .works-grid { gap: 0.5rem; } }
         @media (max-width: 768px) {
-            .works-grid.grid-4 { grid-template-columns: repeat(3, 1fr); }
-            .works-grid.grid-6 { grid-template-columns: repeat(3, 1fr); }
-            .filter-tools { width: 100%; }
-            .dropdown-menu { min-width: 280px; }
+            .works-grid { gap: 2px; }
+            .works-grid.grid-6, .works-grid.grid-4 { grid-template-columns: repeat(3, 1fr); }
+            .rating-stack { padding: 3px 5px; }
+            .rating-main { font-size: 0.6rem; }
+            .rating-sub { gap: 1px; }
+            .sub-item { font-size: 0.5rem; }
+            .work-overlay { display: none; }
+            .main-content { margin-top: 58px !important; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .toolbar-left, .toolbar-right { justify-content: center; }
         }
-        @media (max-width: 576px) {
-            .works-grid.grid-4, .works-grid.grid-6 { grid-template-columns: repeat(2, 1fr); }
+        @media (max-width: 480px) {
+            .works-grid.grid-6, .works-grid.grid-4 { grid-template-columns: repeat(2, 1fr); }
         }
-        @media (max-width: 700px) { .main-content { margin-top: 58px !important; } }
     </style>
 </head>
 <body style="visibility:hidden">
 <script>
     (function() {
         const t = localStorage.getItem('theme') || 'dark';
-        document.body.classList.remove('theme-dark', 'theme-light');
-        document.body.classList.add('theme-' + t);
+        document.body.classList.remove('theme-dark','theme-light');
+        document.body.classList.add('theme-'+t);
         document.body.style.visibility = '';
     })();
 </script>
@@ -259,230 +326,55 @@
 {% include 'navbar.html' %}
 
 <div class="container main-content">
-    <div class="srp-results-line">
-        <div class="srp-results-line-top">
-            <span class="srp-header-num" id="displayed-count">{{ total_ratings }}</span>
-            <span class="srp-header-label">évaluation{{ 's' if total_ratings > 1 else '' }}</span>
-            <i class="fas fa-star" style="color:var(--gold); font-size:0.9rem;"></i>
-        </div>
 
-        <div class="filter-tools">
-            <!-- ARTISTE -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('artist-dropdown', event)" title="Artiste"><i class="fas fa-user"></i></button>
-                <div class="dropdown-menu" id="artist-dropdown">
-                    <div class="dropdown-search"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher un artiste..." id="artist-search-filter"></div>
-                    <div class="dropdown-items" id="artist-items"><div style="padding:1rem;text-align:center;"><i class="fas fa-spinner fa-spin"></i></div></div>
-                    <div class="dropdown-actions"><button onclick="applyArtistFilter()" class="apply-btn">Appliquer</button></div>
-                </div>
-            </div>
-
-            <!-- MUSÉE -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('museum-dropdown', event)" title="Musée"><i class="fas fa-landmark"></i></button>
-                <div class="dropdown-menu" id="museum-dropdown">
-                    <div class="dropdown-search"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher un musée..." id="museum-search-filter"></div>
-                    <div class="dropdown-items" id="museum-items"><div style="padding:1rem;text-align:center;"><i class="fas fa-spinner fa-spin"></i></div></div>
-                    <div class="dropdown-actions"><button onclick="applyMuseumFilter()" class="apply-btn">Appliquer</button></div>
-                </div>
-            </div>
-
-            <!-- GÉO -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('geo-dropdown', event)" title="Pays / Ville"><i class="fas fa-globe"></i></button>
-                <div class="dropdown-menu" id="geo-dropdown">
-                    <div class="dropdown-section-header">Pays</div>
-                    <div class="dropdown-search"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher un pays..." id="country-search-filter"></div>
-                    <div class="dropdown-items" id="country-items"><div style="padding:1rem;text-align:center;"><i class="fas fa-spinner fa-spin"></i></div></div>
-                    <div class="dropdown-section-header" style="margin-top:0.8rem;">Villes</div>
-                    <div class="dropdown-search"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher une ville..." id="city-search-filter"></div>
-                    <div class="dropdown-items" id="city-items"><div style="padding:1rem;text-align:center;"><i class="fas fa-spinner fa-spin"></i></div></div>
-                    <div class="dropdown-actions"><button onclick="applyGeoFilter()" class="apply-btn">Appliquer</button></div>
-                </div>
-            </div>
-
-            <!-- TYPE -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('type-dropdown', event)" title="Type"><i class="fas fa-object-group"></i></button>
-                <div class="dropdown-menu" id="type-dropdown">
-                    <div class="dropdown-search"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher un type..." id="type-search-filter"></div>
-                    <div class="dropdown-items" id="type-items"><div style="padding:1rem;text-align:center;"><i class="fas fa-spinner fa-spin"></i></div></div>
-                    <div class="dropdown-actions"><button onclick="applyTypeFilter()" class="apply-btn">Appliquer</button></div>
-                </div>
-            </div>
-
-            <!-- MOUVEMENT -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('movement-dropdown', event)" title="Mouvement"><i class="fas fa-palette"></i></button>
-                <div class="dropdown-menu" id="movement-dropdown">
-                    <div class="dropdown-search"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher un mouvement..." id="movement-search-filter"></div>
-                    <div class="dropdown-items" id="movement-items"><div style="padding:1rem;text-align:center;"><i class="fas fa-spinner fa-spin"></i></div></div>
-                    <div class="dropdown-actions"><button onclick="applyMovementFilter()" class="apply-btn">Appliquer</button></div>
-                </div>
-            </div>
-
-            <!-- GENRE -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('genre-dropdown', event)" title="Genre"><i class="fas fa-masks-theater"></i></button>
-                <div class="dropdown-menu" id="genre-dropdown">
-                    <div class="dropdown-search"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher un genre..." id="genre-search-filter"></div>
-                    <div class="dropdown-items" id="genre-items"><div style="padding:1rem;text-align:center;"><i class="fas fa-spinner fa-spin"></i></div></div>
-                    <div class="dropdown-actions"><button onclick="applyGenreFilter()" class="apply-btn">Appliquer</button></div>
-                </div>
-            </div>
-
-            <!-- MATÉRIAU -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('material-dropdown', event)" title="Matériau"><i class="fas fa-cube"></i></button>
-                <div class="dropdown-menu" id="material-dropdown">
-                    <div class="dropdown-search"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher un matériau..." id="material-search-filter"></div>
-                    <div class="dropdown-items" id="material-items"><div style="padding:1rem;text-align:center;"><i class="fas fa-spinner fa-spin"></i></div></div>
-                    <div class="dropdown-actions"><button onclick="applyMaterialFilter()" class="apply-btn">Appliquer</button></div>
-                </div>
-            </div>
-
-            <!-- NOTE GLOBALE -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('rating-global-dropdown', event)" title="Note globale"><i class="fas fa-star"></i></button>
-                <div class="dropdown-menu" id="rating-global-dropdown">
-                    <div class="dropdown-section-header">⭐ Note globale</div>
-                    <div class="dropdown-items">
-                        <div class="dropdown-item"><label><input type="checkbox" value="5" class="rating-global-cb"><span>5 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="4.5" class="rating-global-cb"><span>4.5 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="4" class="rating-global-cb"><span>4 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="3.5" class="rating-global-cb"><span>3.5 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="3" class="rating-global-cb"><span>3 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="2.5" class="rating-global-cb"><span>2.5 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="2" class="rating-global-cb"><span>2 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="1.5" class="rating-global-cb"><span>1.5 étoile</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="1" class="rating-global-cb"><span>1 étoile</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="0.5" class="rating-global-cb"><span>0.5 étoile</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="0" class="rating-global-cb"><span>0 étoile</span></label></div>
-                    </div>
-                    <div class="dropdown-actions"><button onclick="applyRatingFilter('rating_global', 'rating-global-cb')" class="apply-btn">Appliquer</button></div>
-                </div>
-            </div>
-
-            <!-- NOTE TECHNIQUE -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('rating-technique-dropdown', event)" title="Technique"><i class="fas fa-paintbrush"></i></button>
-                <div class="dropdown-menu" id="rating-technique-dropdown">
-                    <div class="dropdown-section-header">🎨 Technique</div>
-                    <div class="dropdown-items">
-                        <div class="dropdown-item"><label><input type="checkbox" value="5" class="rating-technique-cb"><span>5 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="4.5" class="rating-technique-cb"><span>4.5 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="4" class="rating-technique-cb"><span>4 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="3.5" class="rating-technique-cb"><span>3.5 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="3" class="rating-technique-cb"><span>3 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="2.5" class="rating-technique-cb"><span>2.5 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="2" class="rating-technique-cb"><span>2 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="1.5" class="rating-technique-cb"><span>1.5 étoile</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="1" class="rating-technique-cb"><span>1 étoile</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="0.5" class="rating-technique-cb"><span>0.5 étoile</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="0" class="rating-technique-cb"><span>0 étoile</span></label></div>
-                    </div>
-                    <div class="dropdown-actions"><button onclick="applyRatingFilter('rating_technique', 'rating-technique-cb')" class="apply-btn">Appliquer</button></div>
-                </div>
-            </div>
-
-            <!-- NOTE CRÉATIVITÉ -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('rating-originalite-dropdown', event)" title="Créativité"><i class="fas fa-lightbulb"></i></button>
-                <div class="dropdown-menu" id="rating-originalite-dropdown">
-                    <div class="dropdown-section-header">💡 Créativité</div>
-                    <div class="dropdown-items">
-                        <div class="dropdown-item"><label><input type="checkbox" value="5" class="rating-originalite-cb"><span>5 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="4.5" class="rating-originalite-cb"><span>4.5 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="4" class="rating-originalite-cb"><span>4 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="3.5" class="rating-originalite-cb"><span>3.5 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="3" class="rating-originalite-cb"><span>3 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="2.5" class="rating-originalite-cb"><span>2.5 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="2" class="rating-originalite-cb"><span>2 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="1.5" class="rating-originalite-cb"><span>1.5 étoile</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="1" class="rating-originalite-cb"><span>1 étoile</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="0.5" class="rating-originalite-cb"><span>0.5 étoile</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="0" class="rating-originalite-cb"><span>0 étoile</span></label></div>
-                    </div>
-                    <div class="dropdown-actions"><button onclick="applyRatingFilter('rating_originalite', 'rating-originalite-cb')" class="apply-btn">Appliquer</button></div>
-                </div>
-            </div>
-
-            <!-- NOTE ÉMOTION -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('rating-emotion-dropdown', event)" title="Émotion"><i class="fas fa-heart"></i></button>
-                <div class="dropdown-menu" id="rating-emotion-dropdown">
-                    <div class="dropdown-section-header">❤️ Émotion</div>
-                    <div class="dropdown-items">
-                        <div class="dropdown-item"><label><input type="checkbox" value="5" class="rating-emotion-cb"><span>5 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="4.5" class="rating-emotion-cb"><span>4.5 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="4" class="rating-emotion-cb"><span>4 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="3.5" class="rating-emotion-cb"><span>3.5 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="3" class="rating-emotion-cb"><span>3 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="2.5" class="rating-emotion-cb"><span>2.5 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="2" class="rating-emotion-cb"><span>2 étoiles</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="1.5" class="rating-emotion-cb"><span>1.5 étoile</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="1" class="rating-emotion-cb"><span>1 étoile</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="0.5" class="rating-emotion-cb"><span>0.5 étoile</span></label></div>
-                        <div class="dropdown-item"><label><input type="checkbox" value="0" class="rating-emotion-cb"><span>0 étoile</span></label></div>
-                    </div>
-                    <div class="dropdown-actions"><button onclick="applyRatingFilter('rating_emotion', 'rating-emotion-cb')" class="apply-btn">Appliquer</button></div>
-                </div>
-            </div>
-
-            <!-- TRI -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('sort-dropdown', event)" title="Trier"><i class="fas fa-arrow-up-wide-short"></i></button>
-                <div class="dropdown-menu" id="sort-dropdown">
-                    <div class="dropdown-items" id="sort-items"></div>
-                    <div class="dropdown-actions"><button onclick="applySortFilter()" class="apply-btn">Appliquer</button></div>
-                </div>
-            </div>
-
-            <!-- RESET + VUE -->
-            <button class="icon-button" onclick="clearAllFilters()" title="Effacer les filtres"><i class="fas fa-times"></i></button>
-            <button class="icon-button view-btn" id="view-4" onclick="setViewMode(4)" title="Vue 4 colonnes"><i class="fas fa-th-large"></i></button>
-            <button class="icon-button view-btn" id="view-6" onclick="setViewMode(6)" title="Vue 6 colonnes"><i class="fas fa-th"></i></button>
-        </div>
-
-        <div class="active-tags" id="active-tags"></div>
+    <div class="page-header">
+        <span class="page-count" id="displayed-count">{{ total_ratings }}</span>
+        <span class="page-label">Oeuvre{{ 's' if total_ratings > 1 else '' }} notée{{ 's' if total_ratings > 1 else '' }}</span>
     </div>
 
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <button class="btn-filter" onclick="openFilterPanel()">
+                <i class="fas fa-sliders-h"></i> Filtrer
+                <span id="filter-count-badge" class="filter-badge"></span>
+            </button>
+            <button class="btn-sort" onclick="openSortPanel()">
+                <i class="fas fa-arrow-up-wide-short"></i> Trier
+            </button>
+        </div>
+        <div class="toolbar-right">
+            <button class="view-btn" id="view-4" onclick="setViewMode(4)" title="4 colonnes"><i class="fas fa-th-large"></i></button>
+            <button class="view-btn" id="view-6" onclick="setViewMode(6)" title="6 colonnes"><i class="fas fa-th"></i></button>
+        </div>
+    </div>
+
+    <div class="active-tags-row" id="active-tags"></div>
+
     {% if artworks %}
-    <div class="works-grid grid-4" id="works-grid">
+    <div class="works-grid grid-6" id="works-grid">
         {% for artwork in artworks %}
-        <a href="/oeuvre/{{ artwork.id }}" class="work-item" data-id="{{ artwork.id }}">
+        <a href="/oeuvre/{{ artwork.id }}" class="work-item">
             <div class="work-image-container">
                 <div class="rating-stack">
                     <div class="rating-main">
                         <i class="fas fa-star"></i>
-                        <span class="rating-value">{{ "%.1f"|format(artwork.user_rating_global) if artwork.user_rating_global else '—' }}</span>
+                        <span>{{ "%.1f"|format(artwork.user_rating_global) if artwork.user_rating_global else '—' }}</span>
                     </div>
                     <div class="rating-sub">
-                        <div class="sub-item technique">
-                            <i class="fas fa-paintbrush"></i>
-                            <span>{{ "%.1f"|format(artwork.user_rating_technique) if artwork.user_rating_technique else '—' }}</span>
-                        </div>
-                        <div class="sub-item originalite">
-                            <i class="fas fa-lightbulb"></i>
-                            <span>{{ "%.1f"|format(artwork.user_rating_originalite) if artwork.user_rating_originalite else '—' }}</span>
-                        </div>
-                        <div class="sub-item emotion">
-                            <i class="fas fa-heart"></i>
-                            <span>{{ "%.1f"|format(artwork.user_rating_emotion) if artwork.user_rating_emotion else '—' }}</span>
-                        </div>
+                        <div class="sub-item technique"><i class="fas fa-paintbrush"></i><span>{{ "%.1f"|format(artwork.user_rating_technique) if artwork.user_rating_technique else '—' }}</span></div>
+                        <div class="sub-item originalite"><i class="fas fa-lightbulb"></i><span>{{ "%.1f"|format(artwork.user_rating_originalite) if artwork.user_rating_originalite else '—' }}</span></div>
+                        <div class="sub-item emotion"><i class="fas fa-heart"></i><span>{{ "%.1f"|format(artwork.user_rating_emotion) if artwork.user_rating_emotion else '—' }}</span></div>
                     </div>
                 </div>
-                {% if artwork.image_url and artwork.image_url != '' %}
+                {% if artwork.image_url %}
                 <img src="https://images.weserv.nl/?url={{ artwork.image_url|urlencode }}&w=400&h=400&fit=cover&output=webp&q=75"
                      alt="{{ artwork.titre }}"
-                     data-fallback1="https://wsrv.nl/?url={{ artwork.image_url|urlencode }}&w=400&h=400&fit=cover&output=webp&q=75"
-                     data-fallback3="{{ artwork.image_url }}"
-                     data-error-count="0"
-                     loading="lazy"
-                     style="opacity:0; transition: opacity 0.3s;"
+                     data-f1="https://wsrv.nl/?url={{ artwork.image_url|urlencode }}&w=400&h=400&fit=cover&output=webp&q=75"
+                     data-f2="{{ artwork.image_url }}"
+                     data-err="0" loading="lazy"
+                     style="opacity:0;transition:opacity 0.3s;"
                      onload="this.style.opacity='1'"
-                     onerror="handleImageError(this)">
-                <div class="image-placeholder" style="display:none;"><i class="fas fa-image"></i></div>
+                     onerror="imgErr(this)">
                 {% else %}
                 <div class="image-placeholder"><i class="fas fa-image"></i></div>
                 {% endif %}
@@ -495,26 +387,115 @@
         {% endfor %}
     </div>
 
-    <div id="load-more-container" style="text-align:center; padding: 3rem 0 4rem; {% if not has_more %}display:none;{% endif %}">
-        <button id="load-more-btn" onclick="loadMore()"><span class="btn-text">Voir plus</span></button>
+    <div id="load-more-container" style="display:{% if has_more %}block{% else %}none{% endif %};">
+        <button id="load-more-btn" onclick="loadMore()">Voir plus</button>
     </div>
-    <div class="end-message" id="end-message" style="display:none;"><i class="fas fa-check"></i> Fin de vos évaluations</div>
+    <div class="end-message" id="end-message" style="display:none;">Fin de votre collection</div>
 
     {% else %}
     <div class="empty-state">
         <i class="fas fa-star"></i>
-        {% set has_filters = request.args.getlist('artist') or request.args.get('country') or request.args.getlist('city') or request.args.getlist('museum') or request.args.getlist('type') or request.args.getlist('movement') or request.args.getlist('genre') or request.args.getlist('material') or request.args.getlist('rating_global') or request.args.getlist('rating_technique') or request.args.getlist('rating_originalite') or request.args.getlist('rating_emotion') %}
-        {% if has_filters %}
+        {% if request.args.getlist('artist') or request.args.get('country') or request.args.getlist('city') or request.args.getlist('museum') %}
             <h3>Aucun résultat pour ces filtres</h3>
-            <p>Essayez de modifier ou supprimer vos filtres.</p>
             <a href="/rated" class="btn-explore">Effacer les filtres</a>
         {% else %}
             <h3>Aucune évaluation pour le moment</h3>
-            <p>Explorez la collection et notez vos œuvres préférées.</p>
             <a href="/research" class="btn-explore">Explorer la collection</a>
         {% endif %}
     </div>
     {% endif %}
+
+</div>
+
+<div class="overlay" id="overlay" onclick="closeAllPanels()"></div>
+
+<!-- PANEL FILTRES -->
+<div class="filter-panel" id="filter-panel">
+    <div class="drag-handle" id="filter-drag-handle">
+        <div class="drag-handle-bar"></div>
+    </div>
+    <div class="filter-panel-header">
+        <h3>Filtrer</h3>
+        <button class="close-panel" onclick="closeFilterPanel()"><i class="fas fa-times"></i></button>
+    </div>
+
+    <div class="filter-section">
+        <div class="filter-section-title">Artiste</div>
+        <div class="chips-row" id="artist-chips-row"></div>
+    </div>
+    <div class="filter-section">
+        <div class="filter-section-title">Musée</div>
+        <div class="chips-row" id="museum-chips-row"></div>
+    </div>
+    <div class="filter-section">
+        <div class="filter-section-title">Pays</div>
+        <div class="chips-row" id="country-chips-row"></div>
+    </div>
+    <div class="filter-section">
+        <div class="filter-section-title">Ville</div>
+        <div class="chips-row" id="city-chips-row"></div>
+    </div>
+    <div class="filter-section">
+        <div class="filter-section-title">Type d'œuvre</div>
+        <div class="chips-row" id="type-chips-row"></div>
+    </div>
+    <div class="filter-section">
+        <div class="filter-section-title">Mouvement</div>
+        <div class="chips-row" id="movement-chips-row"></div>
+    </div>
+    <div class="filter-section">
+        <div class="filter-section-title">Genre</div>
+        <div class="chips-row" id="genre-chips-row"></div>
+    </div>
+    <div class="filter-section">
+        <div class="filter-section-title">Matériau</div>
+        <div class="chips-row" id="material-chips-row"></div>
+    </div>
+
+    <div class="filter-section">
+        <div class="filter-section-title">Notes</div>
+        <div class="rating-sections">
+            <div class="rating-group">
+                <div class="rating-group-title"><i class="fas fa-star"></i> Note globale</div>
+                <div class="rating-options" id="rating-global-options"></div>
+            </div>
+            <div class="rating-group">
+                <div class="rating-group-title"><i class="fas fa-paintbrush"></i> Technique</div>
+                <div class="rating-options" id="rating-technique-options"></div>
+            </div>
+            <div class="rating-group">
+                <div class="rating-group-title"><i class="fas fa-lightbulb"></i> Créativité</div>
+                <div class="rating-options" id="rating-originalite-options"></div>
+            </div>
+            <div class="rating-group">
+                <div class="rating-group-title"><i class="fas fa-heart"></i> Émotion</div>
+                <div class="rating-options" id="rating-emotion-options"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="filter-actions">
+        <button class="btn-clear" onclick="clearAllFilters()">Tout effacer</button>
+        <button class="btn-apply" onclick="applyFilters()">Appliquer</button>
+    </div>
+</div>
+
+<!-- PANEL TRI -->
+<div class="filter-panel" id="sort-panel">
+    <div class="drag-handle" id="sort-drag-handle">
+        <div class="drag-handle-bar"></div>
+    </div>
+    <div class="filter-panel-header">
+        <h3>Trier par</h3>
+        <button class="close-panel" onclick="closeSortPanel()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="filter-section">
+        <div class="sort-options" id="sort-options"></div>
+    </div>
+    <div class="filter-actions">
+        <button class="btn-clear" onclick="resetSort()">Réinitialiser</button>
+        <button class="btn-apply" onclick="applySort()">Appliquer</button>
+    </div>
 </div>
 
 <div class="scroll-top" id="scroll-top"><i class="fas fa-arrow-up"></i></div>
@@ -522,495 +503,433 @@
 
 <script>
 (function() {
-    // ================================================
-    // ÉTAT GLOBAL
-    // ================================================
     let currentPage = 1;
     let isLoading = false;
     let hasMore = {{ 'true' if has_more else 'false' }};
-    let displayedCount = {{ artworks|length }};
-    let currentView = 4;
-    let allFilterOptions = null;
+    let currentView = 6;
+    // showMore states: true = expanded
+    let showMoreStates = {};
 
-    try {
-        const saved = localStorage.getItem('viewMode');
-        if (saved && [4, 6].includes(parseInt(saved))) currentView = parseInt(saved);
-    } catch(e) {}
+    try { const s = localStorage.getItem('viewMode'); if (s && [4,6].includes(+s)) currentView = +s; } catch(e) {}
 
-    // ================================================
-    // UTILITAIRES
-    // ================================================
-    function escHtml(str) {
-        if (!str) return '';
-        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function params() { return new URLSearchParams(window.location.search); }
+    function navigate(url) { window.location.href = url; }
+
+    // ── Collect active filters from current URL for pre-populating API call ──
+    function currentFilterParams() {
+        const p = params();
+        // Remove sort & page — only keep filter params
+        const fp = new URLSearchParams();
+        ['artist','museum','city','type','movement','genre','material'].forEach(k => {
+            p.getAll(k).forEach(v => fp.append(k, v));
+        });
+        const country = p.get('country');
+        if (country) fp.set('country', country);
+        ['rating_global','rating_technique','rating_originalite','rating_emotion'].forEach(k => {
+            p.getAll(k).forEach(v => fp.append(k, v));
+        });
+        return fp;
     }
 
-    function buildParams() {
-        return new URLSearchParams(window.location.search);
-    }
-
-    // ================================================
-    // IMAGES
-    // ================================================
-    window.handleImageError = function(img) {
-        const n = parseInt(img.dataset.errorCount || '0');
-        if (n === 0) { img.dataset.errorCount = '1'; img.src = img.dataset.fallback1; }
-        else if (n === 1) { img.dataset.errorCount = '2'; img.src = img.dataset.fallback3; }
-        else { img.style.display = 'none'; const ph = img.nextElementSibling; if (ph) ph.style.display = 'flex'; }
+    window.imgErr = function(img) {
+        let n = parseInt(img.dataset.err || '0');
+        if (n === 0) { img.dataset.err = '1'; img.src = img.dataset.f1; }
+        else if (n === 1) { img.dataset.err = '2'; img.src = img.dataset.f2; }
+        else {
+            img.style.display = 'none';
+            const ph = img.parentElement?.querySelector('.image-placeholder');
+            if (ph) ph.style.display = 'flex';
+        }
     };
 
-    // ================================================
-    // VUE
-    // ================================================
     window.setViewMode = function(mode) {
         currentView = mode;
-        const grid = document.getElementById('works-grid');
-        if (!grid) return;
-        grid.classList.remove('grid-4', 'grid-6');
-        grid.classList.add('grid-' + mode);
+        const g = document.getElementById('works-grid');
+        if (g) { g.classList.remove('grid-4','grid-6'); g.classList.add('grid-'+mode); }
         document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('view-' + mode)?.classList.add('active');
+        document.getElementById('view-'+mode)?.classList.add('active');
         try { localStorage.setItem('viewMode', mode); } catch(e) {}
     };
 
-    // ================================================
-    // LOAD MORE
-    // ================================================
     window.loadMore = async function() {
         if (isLoading || !hasMore) return;
         isLoading = true;
         const btn = document.getElementById('load-more-btn');
-        const btnText = document.querySelector('.btn-text');
         if (btn) btn.disabled = true;
-        if (btnText) btnText.textContent = 'Chargement...';
-
         try {
-            const urlParams = new URLSearchParams(window.location.search);
-            urlParams.set('page', currentPage + 1);
-            const res = await fetch('/api/rated/works?' + urlParams.toString());
+            const p = params(); p.set('page', currentPage + 1);
+            const res = await fetch('/api/rated/works?' + p);
             const data = await res.json();
-
-            if (data.works && data.works.length) {
+            if (data.works?.length) {
                 appendWorks(data.works);
                 currentPage++;
-                displayedCount += data.works.length;
                 hasMore = data.has_more;
-                document.getElementById('displayed-count').textContent = displayedCount;
-            } else {
-                hasMore = false;
-            }
-
+            } else { hasMore = false; }
             if (!hasMore) {
                 document.getElementById('load-more-container').style.display = 'none';
                 document.getElementById('end-message').style.display = 'block';
             }
         } catch(e) { console.error(e); }
-        finally {
-            isLoading = false;
-            if (btn) btn.disabled = false;
-            if (btnText) btnText.textContent = 'Voir plus';
-        }
+        finally { isLoading = false; if (btn) btn.disabled = false; }
     };
 
     function appendWorks(works) {
         const grid = document.getElementById('works-grid');
-        const fit = currentView === 4 ? 'contain' : 'cover';
-        const frag = document.createDocumentFragment();
-
-        works.forEach(artwork => {
+        works.forEach(w => {
             const a = document.createElement('a');
-            a.href = `/oeuvre/${artwork.id}`;
+            a.href = '/oeuvre/' + w.id;
             a.className = 'work-item';
-
-            const wrap = document.createElement('div');
-            wrap.className = 'work-image-container';
-
-            const g = artwork.user_rating_global;
-            const t = artwork.user_rating_technique;
-            const o = artwork.user_rating_originalite;
-            const em = artwork.user_rating_emotion;
-
-            const stack = document.createElement('div');
-            stack.className = 'rating-stack';
-            stack.innerHTML = `
-                <div class="rating-main"><i class="fas fa-star"></i><span class="rating-value">${g ? g.toFixed(1) : '—'}</span></div>
-                <div class="rating-sub">
-                    <div class="sub-item technique"><i class="fas fa-paintbrush"></i><span>${t ? t.toFixed(1) : '—'}</span></div>
-                    <div class="sub-item originalite"><i class="fas fa-lightbulb"></i><span>${o ? o.toFixed(1) : '—'}</span></div>
-                    <div class="sub-item emotion"><i class="fas fa-heart"></i><span>${em ? em.toFixed(1) : '—'}</span></div>
-                </div>`;
-            wrap.appendChild(stack);
-
-            if (artwork.image_url) {
-                const enc = encodeURIComponent(artwork.image_url);
-                const img = document.createElement('img');
-                img.src = `https://images.weserv.nl/?url=${enc}&w=400&h=400&fit=${fit}&output=webp&q=75`;
-                img.alt = artwork.titre || '';
-                img.loading = 'lazy';
-                img.style.cssText = 'opacity:0;transition:opacity 0.3s;';
-                img.dataset.fallback1 = `https://wsrv.nl/?url=${enc}&w=400&h=400&fit=${fit}&output=webp&q=75`;
-                img.dataset.fallback3 = artwork.image_url;
-                img.dataset.errorCount = '0';
-                img.onload = function() { this.style.opacity = '1'; };
-                img.onerror = function() { handleImageError(this); };
-                const ph = document.createElement('div');
-                ph.className = 'image-placeholder';
-                ph.style.display = 'none';
-                ph.innerHTML = '<i class="fas fa-image"></i>';
-                wrap.appendChild(img);
-                wrap.appendChild(ph);
-            } else {
-                wrap.innerHTML += '<div class="image-placeholder"><i class="fas fa-image"></i></div>';
-            }
-
-            const ov = document.createElement('div');
-            ov.className = 'work-overlay';
-            ov.innerHTML = `<div class="work-title">${escHtml((artwork.titre||'Sans titre').substring(0,40))}</div>
-                            <div class="work-artist">${escHtml((artwork.createur||'Artiste inconnu').substring(0,30))}</div>`;
-            wrap.appendChild(ov);
-            a.appendChild(wrap);
-            frag.appendChild(a);
+            const enc = w.image_url ? encodeURIComponent(w.image_url) : '';
+            a.innerHTML = `
+                <div class="work-image-container">
+                    <div class="rating-stack">
+                        <div class="rating-main"><i class="fas fa-star"></i><span>${w.user_rating_global ? w.user_rating_global.toFixed(1) : '—'}</span></div>
+                        <div class="rating-sub">
+                            <div class="sub-item technique"><i class="fas fa-paintbrush"></i><span>${w.user_rating_technique ? w.user_rating_technique.toFixed(1) : '—'}</span></div>
+                            <div class="sub-item originalite"><i class="fas fa-lightbulb"></i><span>${w.user_rating_originalite ? w.user_rating_originalite.toFixed(1) : '—'}</span></div>
+                            <div class="sub-item emotion"><i class="fas fa-heart"></i><span>${w.user_rating_emotion ? w.user_rating_emotion.toFixed(1) : '—'}</span></div>
+                        </div>
+                    </div>
+                    ${enc ? `<img src="https://images.weserv.nl/?url=${enc}&w=400&h=400&fit=cover&output=webp&q=75"
+                        data-f1="https://wsrv.nl/?url=${enc}&w=400&h=400&fit=cover&output=webp&q=75"
+                        data-f2="${esc(w.image_url)}" data-err="0" loading="lazy"
+                        style="opacity:0;transition:opacity 0.3s;"
+                        onload="this.style.opacity='1'" onerror="imgErr(this)">`
+                    : '<div class="image-placeholder" style="display:flex;"><i class="fas fa-image"></i></div>'}
+                    <div class="work-overlay">
+                        <div class="work-title">${esc((w.titre||'Sans titre').substring(0,40))}</div>
+                        <div class="work-artist">${esc((w.createur||'Artiste inconnu').substring(0,30))}</div>
+                    </div>
+                </div>
+            `;
+            grid.appendChild(a);
         });
-        grid.appendChild(frag);
     }
 
-    // ================================================
-    // FILTER OPTIONS (UN SEUL APPEL API)
-    // ================================================
-    async function loadAllFilterOptions() {
-        if (allFilterOptions) return allFilterOptions;
-        try {
-            const res = await fetch('/api/rated/filter-options');
-            allFilterOptions = await res.json();
-            return allFilterOptions;
-        } catch(e) {
-            return { artists: [], museums: [], countries: [], cities: [], types: [], movements: [], genres: [], materials: [] };
+    // ══════════════════════════════════════════
+    //  PANEL OPEN / CLOSE + SWIPE DOWN TO CLOSE
+    // ══════════════════════════════════════════
+
+    function setupSwipeClose(panelId, closeFn) {
+        const panel = document.getElementById(panelId);
+        const handle = panel.querySelector('.drag-handle');
+        let startY = 0, startTime = 0, dragging = false;
+
+        function onStart(e) {
+            startY = e.touches ? e.touches[0].clientY : e.clientY;
+            startTime = Date.now();
+            dragging = true;
+            panel.style.transition = 'none';
         }
-    }
-
-    // ================================================
-    // DROPDOWNS
-    // ================================================
-    window.toggleDropdown = function(id, event) {
-        if (event) { event.preventDefault(); event.stopPropagation(); }
-
-        document.querySelectorAll('.dropdown-menu').forEach(menu => {
-            if (menu.id !== id) menu.classList.remove('show');
-        });
-
-        const dropdown = document.getElementById(id);
-        if (!dropdown) return;
-        dropdown.classList.toggle('show');
-
-        if (dropdown.classList.contains('show')) {
-            if (id === 'artist-dropdown') loadArtists();
-            else if (id === 'museum-dropdown') loadMuseums();
-            else if (id === 'geo-dropdown') { loadCountries(); loadCities(); }
-            else if (id === 'type-dropdown') loadTypes();
-            else if (id === 'movement-dropdown') loadMovements();
-            else if (id === 'genre-dropdown') loadGenres();
-            else if (id === 'material-dropdown') loadMaterials();
-            else if (id === 'sort-dropdown') loadSortOptions();
-            else if (id.startsWith('rating-')) restoreRatingCheckboxes(id);
-        }
-
-        // Positionnement
-        const btn = event?.target?.closest('.filter-dropdown');
-        if (btn) {
-            const rect = btn.getBoundingClientRect();
-            const dropdownWidth = 300;
-            if (rect.left + dropdownWidth > window.innerWidth) {
-                dropdown.style.left = 'auto';
-                dropdown.style.right = '0';
-            } else {
-                dropdown.style.left = '0';
-                dropdown.style.right = 'auto';
+        function onMove(e) {
+            if (!dragging) return;
+            const y = e.touches ? e.touches[0].clientY : e.clientY;
+            const delta = y - startY;
+            if (delta > 0) {
+                panel.style.transform = `translateY(${delta}px)`;
             }
         }
+        function onEnd(e) {
+            if (!dragging) return;
+            dragging = false;
+            panel.style.transition = '';
+            const y = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+            const delta = y - startY;
+            const elapsed = Date.now() - startTime;
+            const velocity = delta / elapsed; // px/ms
+            if (delta > 80 || velocity > 0.5) {
+                panel.style.transform = '';
+                closeFn();
+            } else {
+                panel.style.transform = '';
+            }
+        }
+
+        // Touch
+        handle.addEventListener('touchstart', onStart, { passive: true });
+        panel.addEventListener('touchmove', onMove, { passive: true });
+        panel.addEventListener('touchend', onEnd);
+        // Mouse (desktop)
+        handle.addEventListener('mousedown', onStart);
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onEnd);
+    }
+
+    window.openFilterPanel = async function() {
+        document.getElementById('filter-panel').classList.add('open');
+        document.getElementById('overlay').classList.add('visible');
+        document.body.style.overflow = 'hidden';
+        await loadFilterOptions();
     };
+    window.closeFilterPanel = function() {
+        document.getElementById('filter-panel').classList.remove('open');
+        document.getElementById('overlay').classList.remove('visible');
+        document.body.style.overflow = '';
+    };
+    window.openSortPanel = function() {
+        loadSortOptions();
+        document.getElementById('sort-panel').classList.add('open');
+        document.getElementById('overlay').classList.add('visible');
+        document.body.style.overflow = 'hidden';
+    };
+    window.closeSortPanel = function() {
+        document.getElementById('sort-panel').classList.remove('open');
+        document.getElementById('overlay').classList.remove('visible');
+        document.body.style.overflow = '';
+    };
+    window.closeAllPanels = function() { closeFilterPanel(); closeSortPanel(); };
 
-    // Restaure les cases cochées d'après l'URL
-    function restoreRatingCheckboxes(dropdownId) {
-        const map = {
-            'rating-global-dropdown':      { param: 'rating_global',      cls: 'rating-global-cb' },
-            'rating-technique-dropdown':   { param: 'rating_technique',    cls: 'rating-technique-cb' },
-            'rating-originalite-dropdown': { param: 'rating_originalite',  cls: 'rating-originalite-cb' },
-            'rating-emotion-dropdown':     { param: 'rating_emotion',      cls: 'rating-emotion-cb' },
-        };
-        const cfg = map[dropdownId];
-        if (!cfg) return;
-        const selected = new URLSearchParams(window.location.search).getAll(cfg.param);
-        document.querySelectorAll('.' + cfg.cls).forEach(cb => {
-            cb.checked = selected.includes(cb.value);
-        });
+    // ══════════════════════════════════════════
+    //  FILTER OPTIONS — always fetched with current active filters
+    //  so chips reflect what's available after filtering
+    // ══════════════════════════════════════════
+
+    async function loadFilterOptions() {
+        const fp = currentFilterParams();
+        try {
+            const res = await fetch('/api/rated/filter-options?' + fp);
+            const opts = await res.json();
+            renderFilterChips(opts);
+            renderRatingOptions();
+        } catch(e) { console.error(e); }
     }
 
-    // ================================================
-    // LOADERS
-    // ================================================
-    function makeSearchFilter(inputId, itemSelector) {
-        const input = document.getElementById(inputId);
-        if (!input || input._init) return;
-        input._init = true;
-        input.addEventListener('input', function() {
-            const term = this.value.trim().toLowerCase();
-            document.querySelectorAll(itemSelector).forEach(item => {
-                const name = item.dataset.name || '';
-                item.style.display = (!term || name.includes(term)) ? '' : 'none';
+    // ── RENDER CHIPS with single "Voir plus / Voir moins" at end ──
+    function renderChipsRow(containerId, items, type, valueKey, nameKey) {
+        const row = document.getElementById(containerId + '-chips-row');
+        if (!row) return;
+
+        if (!items?.length) {
+            row.innerHTML = '<span style="color:var(--text-muted);font-size:0.8rem;">Aucun</span>';
+            return;
+        }
+
+        const selected = params().getAll(type);
+        const INIT_SHOW = 8;
+        const expanded = !!showMoreStates[containerId];
+        const visible = expanded ? items : items.slice(0, INIT_SHOW);
+        const hasHidden = items.length > INIT_SHOW;
+
+        row.innerHTML = '';
+
+        visible.forEach(item => {
+            const chip = document.createElement('div');
+            chip.className = 'filter-chip' + (selected.includes(String(item[valueKey])) ? ' active' : '');
+            chip.dataset.value = item[valueKey];
+            chip.dataset.type = type;
+            chip.textContent = item[nameKey];
+            chip.addEventListener('click', () => chip.classList.toggle('active'));
+            row.appendChild(chip);
+        });
+
+        if (hasHidden) {
+            const btn = document.createElement('button');
+            btn.className = 'show-more-chip';
+            btn.textContent = expanded ? 'Voir moins' : `Voir plus (${items.length - INIT_SHOW})`;
+            btn.addEventListener('click', () => {
+                showMoreStates[containerId] = !showMoreStates[containerId];
+                renderChipsRow(containerId, items, type, valueKey, nameKey);
+            });
+            row.appendChild(btn);
+        }
+    }
+
+    function renderFilterChips(opts) {
+        renderChipsRow('artist',   opts.artists   || [], 'artist',   'id',   'name');
+        renderChipsRow('museum',   opts.museums   || [], 'museum',   'id',   'name');
+        renderChipsRow('country',  opts.countries || [], 'country',  'id',   'name');
+        renderChipsRow('city',     opts.cities    || [], 'city',     'id',   'name');
+        renderChipsRow('type',     opts.types     || [], 'type',     'name', 'name');
+        renderChipsRow('movement', opts.movements || [], 'movement', 'name', 'name');
+        renderChipsRow('genre',    opts.genres    || [], 'genre',    'name', 'name');
+        renderChipsRow('material', opts.materials || [], 'material', 'name', 'name');
+    }
+
+    function renderRatingOptions() {
+        const p = params();
+        const groups = [
+            { label: '5 étoiles',  values: [5] },
+            { label: '4 étoiles',  values: [4.5, 4] },
+            { label: '3 étoiles',  values: [3.5, 3] },
+            { label: '2 étoiles',  values: [2.5, 2] },
+            { label: '1 étoile',   values: [1.5, 1] },
+            { label: '0 étoile',   values: [0.5, 0] }
+        ];
+
+        function isActive(paramName, groupValues) {
+            const sel = p.getAll(paramName).map(v => parseFloat(v));
+            return groupValues.some(v => sel.includes(v));
+        }
+        function renderGroup(containerId, paramName) {
+            const c = document.getElementById(containerId);
+            if (!c) return;
+            c.innerHTML = groups.map(g => `
+                <div class="rating-chip ${isActive(paramName, g.values) ? 'active' : ''}"
+                     data-values='${JSON.stringify(g.values)}' data-param="${paramName}">
+                    ${g.label}
+                </div>
+            `).join('');
+            c.querySelectorAll('.rating-chip').forEach(chip =>
+                chip.addEventListener('click', () => chip.classList.toggle('active'))
+            );
+        }
+        renderGroup('rating-global-options',     'rating_global');
+        renderGroup('rating-technique-options',  'rating_technique');
+        renderGroup('rating-originalite-options','rating_originalite');
+        renderGroup('rating-emotion-options',    'rating_emotion');
+    }
+
+    function loadSortOptions() {
+        const current = params().get('sort') || 'rating_desc';
+        const sorts = [
+            { value: 'rating_desc',      icon: 'fa-star',       label: 'Mieux notées' },
+            { value: 'rating_asc',       icon: 'fa-star',       label: 'Moins bien notées' },
+            { value: 'technique_desc',   icon: 'fa-paintbrush', label: 'Technique (mieux notées)' },
+            { value: 'technique_asc',    icon: 'fa-paintbrush', label: 'Technique (moins bien notées)' },
+            { value: 'originalite_desc', icon: 'fa-lightbulb',  label: 'Créativité (mieux notées)' },
+            { value: 'originalite_asc',  icon: 'fa-lightbulb',  label: 'Créativité (moins bien notées)' },
+            { value: 'emotion_desc',     icon: 'fa-heart',      label: 'Émotion (mieux notées)' },
+            { value: 'emotion_asc',      icon: 'fa-heart',      label: 'Émotion (moins bien notées)' },
+            { value: 'date_desc',        icon: 'fa-calendar',   label: 'Date de notation (récente)' },
+            { value: 'date_asc',         icon: 'fa-calendar',   label: 'Date de notation (ancienne)' },
+            { value: 'title_asc',        icon: 'fa-font',       label: 'Titre A-Z' },
+            { value: 'artist_asc',       icon: 'fa-user',       label: 'Artiste A-Z' }
+        ];
+        const container = document.getElementById('sort-options');
+        container.innerHTML = sorts.map(s => `
+            <div class="sort-option ${current === s.value ? 'active' : ''}" data-sort="${s.value}">
+                <i class="fas ${s.icon}"></i><span>${s.label}</span>
+            </div>
+        `).join('');
+        container.querySelectorAll('.sort-option').forEach(opt => {
+            opt.addEventListener('click', () => {
+                container.querySelectorAll('.sort-option').forEach(o => o.classList.remove('active'));
+                opt.classList.add('active');
             });
         });
     }
 
-    async function loadArtists() {
-        const opts = await loadAllFilterOptions();
-        const container = document.getElementById('artist-items');
-        const selected = new URLSearchParams(window.location.search).getAll('artist');
-        if (!opts.artists?.length) { container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Aucun artiste</div>'; return; }
-        container.innerHTML = opts.artists.map(a => `<div class="dropdown-item" data-name="${escHtml(a.name).toLowerCase()}"><label>
-            <input type="checkbox" value="${escHtml(a.id)}" ${selected.includes(a.id) ? 'checked' : ''}>
-            <span>${escHtml(a.name)}</span><span class="count">${a.count}</span></label></div>`).join('');
-        makeSearchFilter('artist-search-filter', '#artist-items .dropdown-item');
-    }
+    // ══════════════════════════════════════════
+    //  APPLY / CLEAR
+    // ══════════════════════════════════════════
 
-    async function loadMuseums() {
-        const opts = await loadAllFilterOptions();
-        const container = document.getElementById('museum-items');
-        const selected = new URLSearchParams(window.location.search).getAll('museum');
-        if (!opts.museums?.length) { container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Aucun musée</div>'; return; }
-        container.innerHTML = opts.museums.map(m => `<div class="dropdown-item" data-name="${escHtml(m.name).toLowerCase()}"><label>
-            <input type="checkbox" value="${escHtml(m.id)}" ${selected.includes(m.id) ? 'checked' : ''}>
-            <span>${escHtml(m.name)}</span><span class="count">${m.count}</span></label></div>`).join('');
-        makeSearchFilter('museum-search-filter', '#museum-items .dropdown-item');
-    }
+    window.applyFilters = function() {
+        const p = new URLSearchParams();
 
-    async function loadCountries() {
-        const opts = await loadAllFilterOptions();
-        const container = document.getElementById('country-items');
-        const selected = new URLSearchParams(window.location.search).get('country') || '';
-        let html = `<div class="dropdown-item"><label><input type="radio" name="country" value="" ${!selected ? 'checked' : ''}><span>Tous les pays</span></label></div>`;
-        if (opts.countries?.length) {
-            html += opts.countries.map(c => `<div class="dropdown-item" data-name="${escHtml(c.name).toLowerCase()}"><label>
-                <input type="radio" name="country" value="${escHtml(c.id)}" ${selected === c.id ? 'checked' : ''}>
-                <span>${escHtml(c.name)}</span><span class="count">${c.count}</span></label></div>`).join('');
-        }
-        container.innerHTML = html;
-        makeSearchFilter('country-search-filter', '#country-items .dropdown-item');
-    }
+        // Multi-select filters
+        document.querySelectorAll('#artist-chips-row   .filter-chip.active').forEach(c => p.append('artist',   c.dataset.value));
+        document.querySelectorAll('#museum-chips-row   .filter-chip.active').forEach(c => p.append('museum',   c.dataset.value));
+        document.querySelectorAll('#city-chips-row     .filter-chip.active').forEach(c => p.append('city',     c.dataset.value));
+        document.querySelectorAll('#type-chips-row     .filter-chip.active').forEach(c => p.append('type',     c.dataset.value));
+        document.querySelectorAll('#movement-chips-row .filter-chip.active').forEach(c => p.append('movement', c.dataset.value));
+        document.querySelectorAll('#genre-chips-row    .filter-chip.active').forEach(c => p.append('genre',    c.dataset.value));
+        document.querySelectorAll('#material-chips-row .filter-chip.active').forEach(c => p.append('material', c.dataset.value));
+        // Country = single
+        const country = document.querySelector('#country-chips-row .filter-chip.active');
+        if (country) p.set('country', country.dataset.value);
 
-    async function loadCities() {
-        const opts = await loadAllFilterOptions();
-        const container = document.getElementById('city-items');
-        const selected = new URLSearchParams(window.location.search).getAll('city');
-        if (!opts.cities?.length) { container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Aucune ville</div>'; return; }
-        container.innerHTML = opts.cities.map(c => `<div class="dropdown-item" data-name="${escHtml(c.name).toLowerCase()}"><label>
-            <input type="checkbox" value="${escHtml(c.id)}" ${selected.includes(c.id) ? 'checked' : ''}>
-            <span>${escHtml(c.name)}</span><span class="count">${c.count}</span></label></div>`).join('');
-        makeSearchFilter('city-search-filter', '#city-items .dropdown-item');
-    }
+        // Ratings
+        ['rating-global-options/rating_global', 'rating-technique-options/rating_technique',
+         'rating-originalite-options/rating_originalite', 'rating-emotion-options/rating_emotion'].forEach(pair => {
+            const [elemId, paramName] = pair.split('/');
+            document.querySelectorAll(`#${elemId} .rating-chip.active`).forEach(chip => {
+                JSON.parse(chip.dataset.values).forEach(v => p.append(paramName, v.toString()));
+            });
+        });
 
-    async function loadTypes() {
-        const opts = await loadAllFilterOptions();
-        const container = document.getElementById('type-items');
-        const selected = new URLSearchParams(window.location.search).getAll('type');
-        if (!opts.types?.length) { container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Aucun type</div>'; return; }
-        container.innerHTML = opts.types.map(t => `<div class="dropdown-item" data-name="${escHtml(t.name).toLowerCase()}"><label>
-            <input type="checkbox" value="${escHtml(t.name)}" ${selected.includes(t.name) ? 'checked' : ''}>
-            <span>${escHtml(t.name)}</span><span class="count">${t.count}</span></label></div>`).join('');
-        makeSearchFilter('type-search-filter', '#type-items .dropdown-item');
-    }
+        // Keep sort
+        const sort = params().get('sort');
+        if (sort && sort !== 'rating_desc') p.set('sort', sort);
 
-    async function loadMovements() {
-        const opts = await loadAllFilterOptions();
-        const container = document.getElementById('movement-items');
-        const selected = new URLSearchParams(window.location.search).getAll('movement');
-        if (!opts.movements?.length) { container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Aucun mouvement</div>'; return; }
-        container.innerHTML = opts.movements.map(m => `<div class="dropdown-item" data-name="${escHtml(m.name).toLowerCase()}"><label>
-            <input type="checkbox" value="${escHtml(m.name)}" ${selected.includes(m.name) ? 'checked' : ''}>
-            <span>${escHtml(m.name)}</span><span class="count">${m.count}</span></label></div>`).join('');
-        makeSearchFilter('movement-search-filter', '#movement-items .dropdown-item');
-    }
-
-    async function loadGenres() {
-        const opts = await loadAllFilterOptions();
-        const container = document.getElementById('genre-items');
-        const selected = new URLSearchParams(window.location.search).getAll('genre');
-        if (!opts.genres?.length) { container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Aucun genre</div>'; return; }
-        container.innerHTML = opts.genres.map(g => `<div class="dropdown-item" data-name="${escHtml(g.name).toLowerCase()}"><label>
-            <input type="checkbox" value="${escHtml(g.name)}" ${selected.includes(g.name) ? 'checked' : ''}>
-            <span>${escHtml(g.name)}</span><span class="count">${g.count}</span></label></div>`).join('');
-        makeSearchFilter('genre-search-filter', '#genre-items .dropdown-item');
-    }
-
-    async function loadMaterials() {
-        const opts = await loadAllFilterOptions();
-        const container = document.getElementById('material-items');
-        const selected = new URLSearchParams(window.location.search).getAll('material');
-        if (!opts.materials?.length) { container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Aucun matériau</div>'; return; }
-        container.innerHTML = opts.materials.map(m => `<div class="dropdown-item" data-name="${escHtml(m.name).toLowerCase()}"><label>
-            <input type="checkbox" value="${escHtml(m.name)}" ${selected.includes(m.name) ? 'checked' : ''}>
-            <span>${escHtml(m.name)}</span><span class="count">${m.count}</span></label></div>`).join('');
-        makeSearchFilter('material-search-filter', '#material-items .dropdown-item');
-    }
-
-    function loadSortOptions() {
-        const container = document.getElementById('sort-items');
-        if (!container) return;
-        const cur = new URLSearchParams(window.location.search).get('sort') || 'rating_desc';
-        const opts = [
-            { value: 'rating_desc',      label: 'Note globale ↓' },
-            { value: 'rating_asc',       label: 'Note globale ↑' },
-            { value: 'technique_desc',   label: 'Technique ↓' },
-            { value: 'originalite_desc', label: 'Créativité ↓' },
-            { value: 'emotion_desc',     label: 'Émotion ↓' },
-            { value: 'date_desc',        label: 'Date de notation (récente)' },
-            { value: 'date_asc',         label: 'Date de notation (ancienne)' },
-            { value: 'title_asc',        label: 'Titre A–Z' },
-            { value: 'artist_asc',       label: 'Artiste A–Z' },
-        ];
-        container.innerHTML = opts.map(o => `<div class="dropdown-item"><label>
-            <input type="radio" name="sort" value="${o.value}" ${cur === o.value ? 'checked' : ''}>
-            <span>${o.label}</span></label></div>`).join('');
-    }
-
-    // ================================================
-    // APPLY FILTERS
-    // ================================================
-
-    // Filtre notes — UNE SEULE FONCTION générique
-    window.applyRatingFilter = function(paramName, className) {
-        const values = Array.from(document.querySelectorAll('.' + className + ':checked')).map(cb => cb.value);
-        const p = buildParams();
-        p.delete(paramName);
-        values.forEach(v => p.append(paramName, v));
-        window.location.href = '/rated?' + p;
+        navigate('/rated?' + p);
     };
 
-    window.applyArtistFilter = function() {
-        const sel = Array.from(document.querySelectorAll('#artist-items input:checked')).map(c => c.value);
-        const p = buildParams(); p.delete('artist'); sel.forEach(a => p.append('artist', a));
-        window.location.href = '/rated?' + p;
+    window.applySort = function() {
+        const active = document.querySelector('#sort-options .sort-option.active');
+        const p = params();
+        if (active && active.dataset.sort !== 'rating_desc') p.set('sort', active.dataset.sort);
+        else p.delete('sort');
+        navigate('/rated?' + p);
     };
-    window.applyMuseumFilter = function() {
-        const sel = Array.from(document.querySelectorAll('#museum-items input:checked')).map(c => c.value);
-        const p = buildParams(); p.delete('museum'); sel.forEach(m => p.append('museum', m));
-        window.location.href = '/rated?' + p;
-    };
-    window.applyGeoFilter = function() {
-        const country = document.querySelector('input[name="country"]:checked')?.value || '';
-        const cities = Array.from(document.querySelectorAll('#city-items input:checked')).map(c => c.value);
-        const p = buildParams();
-        if (country) p.set('country', country); else p.delete('country');
-        p.delete('city'); cities.forEach(c => p.append('city', c));
-        window.location.href = '/rated?' + p;
-    };
-    window.applyTypeFilter = function() {
-        const sel = Array.from(document.querySelectorAll('#type-items input:checked')).map(c => c.value);
-        const p = buildParams(); p.delete('type'); sel.forEach(t => p.append('type', t));
-        window.location.href = '/rated?' + p;
-    };
-    window.applyMovementFilter = function() {
-        const sel = Array.from(document.querySelectorAll('#movement-items input:checked')).map(c => c.value);
-        const p = buildParams(); p.delete('movement'); sel.forEach(m => p.append('movement', m));
-        window.location.href = '/rated?' + p;
-    };
-    window.applyGenreFilter = function() {
-        const sel = Array.from(document.querySelectorAll('#genre-items input:checked')).map(c => c.value);
-        const p = buildParams(); p.delete('genre'); sel.forEach(g => p.append('genre', g));
-        window.location.href = '/rated?' + p;
-    };
-    window.applyMaterialFilter = function() {
-        const sel = Array.from(document.querySelectorAll('#material-items input:checked')).map(c => c.value);
-        const p = buildParams(); p.delete('material'); sel.forEach(m => p.append('material', m));
-        window.location.href = '/rated?' + p;
-    };
-    window.applySortFilter = function() {
-        const sort = document.querySelector('input[name="sort"]:checked')?.value;
-        const p = buildParams();
-        if (sort && sort !== 'rating_desc') p.set('sort', sort); else p.delete('sort');
-        window.location.href = '/rated?' + p;
-    };
-    window.clearAllFilters = function() { window.location.href = '/rated'; };
+    window.resetSort  = function() { const p = params(); p.delete('sort'); navigate('/rated?' + p); };
+    window.clearAllFilters = function() { navigate('/rated'); };
 
-    // ================================================
-    // ACTIVE TAGS
-    // ================================================
+    // ══════════════════════════════════════════
+    //  ACTIVE TAGS ROW
+    // ══════════════════════════════════════════
+
     function updateActiveTags() {
         const container = document.getElementById('active-tags');
         if (!container) return;
-        const params = new URLSearchParams(window.location.search);
+        const p = params();
         const tags = [];
 
-        params.getAll('artist').forEach(a => tags.push({ type: 'artist', label: a, value: a }));
-        const country = params.get('country');
-        if (country) tags.push({ type: 'country', label: country, value: country });
-        params.getAll('city').forEach(c => tags.push({ type: 'city', label: c, value: c }));
-        params.getAll('museum').forEach(m => tags.push({ type: 'museum', label: m, value: m }));
-        params.getAll('type').forEach(t => tags.push({ type: 'type', label: t, value: t }));
-        params.getAll('movement').forEach(m => tags.push({ type: 'movement', label: m, value: m }));
-        params.getAll('genre').forEach(g => tags.push({ type: 'genre', label: g, value: g }));
-        params.getAll('material').forEach(m => tags.push({ type: 'material', label: m, value: m }));
+        p.getAll('artist').forEach(a   => tags.push({ type:'artist',   label: a }));
+        p.getAll('museum').forEach(m   => tags.push({ type:'museum',   label: m }));
+        const country = p.get('country');
+        if (country) tags.push({ type:'country', label: country });
+        p.getAll('city').forEach(c     => tags.push({ type:'city',     label: c }));
+        p.getAll('type').forEach(t     => tags.push({ type:'type',     label: t }));
+        p.getAll('movement').forEach(m => tags.push({ type:'movement', label: m }));
+        p.getAll('genre').forEach(g    => tags.push({ type:'genre',    label: g }));
+        p.getAll('material').forEach(m => tags.push({ type:'material', label: m }));
 
-        const rg = params.getAll('rating_global');
-        if (rg.length) tags.push({ type: 'rating_global', label: '⭐ Globale: ' + rg.join(', '), value: '' });
-        const rt = params.getAll('rating_technique');
-        if (rt.length) tags.push({ type: 'rating_technique', label: '🎨 Technique: ' + rt.join(', '), value: '' });
-        const ro = params.getAll('rating_originalite');
-        if (ro.length) tags.push({ type: 'rating_originalite', label: '💡 Créativité: ' + ro.join(', '), value: '' });
-        const rem = params.getAll('rating_emotion');
-        if (rem.length) tags.push({ type: 'rating_emotion', label: '❤️ Émotion: ' + rem.join(', '), value: '' });
+        const rg = p.getAll('rating_global');    if (rg.length) tags.push({ type:'rating_global',     label:'⭐ ' + rg.join(', ') });
+        const rt = p.getAll('rating_technique'); if (rt.length) tags.push({ type:'rating_technique',  label:'🎨 ' + rt.join(', ') });
+        const ro = p.getAll('rating_originalite');if (ro.length) tags.push({ type:'rating_originalite',label:'💡 ' + ro.join(', ') });
+        const re = p.getAll('rating_emotion');   if (re.length) tags.push({ type:'rating_emotion',    label:'❤️ ' + re.join(', ') });
 
-        const sort = params.get('sort');
-        if (sort && sort !== 'rating_desc') {
-            const lbl = { rating_asc: 'Note ↑', technique_desc: 'Technique ↓', originalite_desc: 'Créativité ↓', emotion_desc: 'Émotion ↓', date_desc: 'Date récente', date_asc: 'Date ancienne', title_asc: 'A–Z', artist_asc: 'Artiste A–Z' };
-            tags.push({ type: 'sort', label: lbl[sort] || sort, value: sort });
+        const sort = p.get('sort');
+        const sortLabels = {
+            rating_asc:'Note ↑', technique_desc:'Technique ↓', technique_asc:'Technique ↑',
+            originalite_desc:'Créativité ↓', originalite_asc:'Créativité ↑',
+            emotion_desc:'Émotion ↓', emotion_asc:'Émotion ↑',
+            date_desc:'Date récente', date_asc:'Date ancienne', title_asc:'Titre A-Z', artist_asc:'Artiste A-Z'
+        };
+        if (sort && sort !== 'rating_desc') tags.push({ type:'sort', label: sortLabels[sort] || sort });
+
+        if (!tags.length) {
+            container.innerHTML = '';
+            document.getElementById('filter-count-badge').textContent = '';
+            return;
         }
-
         container.innerHTML = tags.map(t =>
-            `<div class="filter-tag">${escHtml(t.label)}<i class="fas fa-times" onclick="removeTag('${t.type}','${escHtml(t.value)}')"></i></div>`
-        ).join('');
+            `<div class="filter-tag">${esc(t.label)}<button onclick="removeTag('${t.type}','${esc(t.label)}')"><i class="fas fa-times"></i></button></div>`
+        ).join('') + `<button class="tags-clear-all" onclick="clearAllFilters()">Tout effacer</button>`;
+        document.getElementById('filter-count-badge').textContent = tags.length;
     }
 
     window.removeTag = function(type, value) {
-        const p = buildParams();
-        const multiParams = ['artist', 'city', 'museum', 'type', 'movement', 'genre', 'material'];
-        const ratingParams = ['rating_global', 'rating_technique', 'rating_originalite', 'rating_emotion'];
-        if (multiParams.includes(type)) {
+        const p = params();
+        const multi = ['artist','city','museum','type','movement','genre','material'];
+        const ratings = ['rating_global','rating_technique','rating_originalite','rating_emotion'];
+        if (multi.includes(type)) {
             const list = p.getAll(type).filter(v => v !== value);
             p.delete(type); list.forEach(v => p.append(type, v));
-        } else if (ratingParams.includes(type)) {
+        } else if (ratings.includes(type)) {
             p.delete(type);
+        } else if (type === 'sort') {
+            p.delete('sort');
         } else {
             p.delete(type);
         }
-        window.location.href = '/rated?' + p;
+        navigate('/rated?' + p);
     };
 
-    // ================================================
-    // FERMER EN CLIQUANT DEHORS
-    // ================================================
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.filter-dropdown')) {
-            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
-        }
-    });
-
-    // ================================================
-    // SCROLL TO TOP
-    // ================================================
+    // ── Scroll top ──
     const scrollBtn = document.getElementById('scroll-top');
     window.addEventListener('scroll', () => scrollBtn?.classList.toggle('visible', window.scrollY > 500));
     scrollBtn?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-    // ================================================
-    // INIT
-    // ================================================
+    // ── Init ──
     document.addEventListener('DOMContentLoaded', () => {
         setViewMode(currentView);
         updateActiveTags();
         loadSortOptions();
-        loadAllFilterOptions(); // préchargement silencieux
+        setupSwipeClose('filter-panel', closeFilterPanel);
+        setupSwipeClose('sort-panel',   closeSortPanel);
     });
-
 })();
 </script>
 </body>

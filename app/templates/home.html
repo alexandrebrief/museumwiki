@@ -10,104 +10,137 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ site_name }}</title>
     
-    <!-- Fonts minimalistes -->
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-        /* ===== DESIGN CONTEMPORAIN - GALERIE MINIMALISTE ===== */
         :root {
-            /* Palette monochrome sophistiquée */
-            --bg-dark: #0a0a0a;
-            --bg-light: #ffffff;
-            --surface-dark: #141414;
-            --surface-light: #f5f5f5;
-            --text-dark: #ffffff;
-            --text-light: #1a1a1a;
-            --text-muted-dark: #7a7a7a;
-            --text-muted-light: #9a9a9a;
-            --border-dark: #2a2a2a;
-            --border-light: #e0e0e0;
             --accent: #6c5ce7;
+            --accent-light: #8b7cf0;
             --accent-hover: #5a4bcf;
-            --favorite: #e03131;  /* Rouge pour les favoris */
-            --favorite-hover: #c92a2a;
-            --shadow: 0 4px 20px rgba(0,0,0,0.02);
-            --shadow-hover: 0 8px 30px rgba(0,0,0,0.04);
-            --radius: 0px;
+            --gold: #c9a96e;
+            --favorite: #e03131;
             --font-display: 'Space Grotesk', sans-serif;
             --font-text: 'Inter', sans-serif;
         }
 
-        body {
-            background-color: var(--bg-dark);
-            font-family: var(--font-text);
-            color: var(--text-dark);
-            line-height: 1.5;
-            font-weight: 300;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            min-height: 100vh;
-
+        body.theme-dark {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --surface2: #1a1a1a;
+            --text: #ffffff;
+            --text-muted: #7a7a7a;
+            --border: #2a2a2a;
+            --card: #0d0d0d;
         }
 
         body.theme-light {
-            background-color: var(--bg-light);
-            color: var(--text-light);
-            --surface: var(--surface-light);
-            --surface-hover: #eaeaea;
-            --border-color: var(--border-light);
-            --text-muted: var(--text-muted-light);
+            --bg: #ffffff;
+            --surface: #f5f5f5;
+            --surface2: #f0f0f0;
+            --text: #111111;
+            --text-muted: #666666;
+            --border: #e0e0e0;
+            --card: #fafafa;
         }
 
-        body.theme-dark {
-            --surface: var(--surface-dark);
-            --surface-hover: #1f1f1f;
-            --border-color: var(--border-dark);
-            --text-muted: var(--text-muted-dark);
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-text);
+            line-height: 1.5;
+            min-height: 100vh;
         }
+/* ===== NAVBAR TRANSPARENTE ===== */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: transparent !important;
+    padding: 1rem 2rem;
+    transition: background 0.3s ease;
+}
 
-        h1, h2, h3, h4, h5, h6 {
-            font-family: var(--font-display);
-            font-weight: 500;
-            letter-spacing: -0.02em;
-            text-transform: uppercase;
-        }
+.navbar.scrolled {
+    background: var(--surface) !important;
+    backdrop-filter: blur(10px);
+}
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
+/* Par défaut (sans scroll) : TOUJOURS blanc pour être visible sur l'image hero */
+.navbar-brand, 
+.navbar-nav .nav-link,
+.navbar .nav-link,
+.navbar .fa-moon, 
+.navbar .fa-sun,
+.navbar .fa-user,
+.navbar .fa-search,
+.navbar .fa-heart,
+.navbar .fa-sign-in-alt,
+.navbar .fa-user-plus {
+    color: white !important;
+}
 
-        .container-fluid {
-            width: 100%;
-            padding: 0 0.75rem;
-        }
+.navbar-toggler {
+    border-color: rgba(255,255,255,0.5) !important;
+}
 
-        /* ===== Ajustement pour navbar fixe ===== */
-        main {
-            flex: 0 0 auto;
-        }
+/* Après scroll en mode clair : tout devient NOIR */
+body.theme-light .navbar.scrolled .navbar-brand,
+body.theme-light .navbar.scrolled .navbar-nav .nav-link,
+body.theme-light .navbar.scrolled .nav-link,
+body.theme-light .navbar.scrolled .fa-moon, 
+body.theme-light .navbar.scrolled .fa-sun,
+body.theme-light .navbar.scrolled .fa-user,
+body.theme-light .navbar.scrolled .fa-search,
+body.theme-light .navbar.scrolled .fa-heart,
+body.theme-light .navbar.scrolled .fa-sign-in-alt,
+body.theme-light .navbar.scrolled .fa-user-plus {
+    color: #111111 !important;
+}
 
-        /* ===== HERO GALERIE ===== */
-        .hero-gallery {
-            height: 100vh;
+/* Après scroll en mode sombre : reste BLANC */
+body.theme-dark .navbar.scrolled .navbar-brand,
+body.theme-dark .navbar.scrolled .navbar-nav .nav-link,
+body.theme-dark .navbar.scrolled .nav-link,
+body.theme-dark .navbar.scrolled .fa-moon, 
+body.theme-dark .navbar.scrolled .fa-sun,
+body.theme-dark .navbar.scrolled .fa-user,
+body.theme-dark .navbar.scrolled .fa-search,
+body.theme-dark .navbar.scrolled .fa-heart,
+body.theme-dark .navbar.scrolled .fa-sign-in-alt,
+body.theme-dark .navbar.scrolled .fa-user-plus {
+    color: white !important;
+}
+
+/* Bordure du toggler en mode clair après scroll */
+body.theme-light .navbar.scrolled .navbar-toggler {
+    border-color: rgba(0,0,0,0.2) !important;
+}
+
+/* Version hero : au tout début (sans scroll) on veut du blanc sur l'image */
+/* Mais on laisse var(--text) gérer le reste */
+
+
+
+        /* ===== HERO ===== */
+        .hero {
             position: relative;
+            height: 100vh;
+            min-height: 600px;
             display: flex;
             align-items: center;
-            margin-bottom: 0rem;
             overflow: hidden;
         }
 
-        .hero-backdrop {
+        .hero-bg {
             position: absolute;
             top: 0;
             left: 0;
@@ -115,1038 +148,543 @@
             bottom: 0;
             background-size: cover;
             background-position: center;
-            filter: brightness(0.5);
+            background-repeat: no-repeat;
+            filter: brightness(0.85);
             transform: scale(1.02);
             transition: transform 0.2s ease-out;
             z-index: 0;
         }
 
-        .theme-light .hero-backdrop {
-            filter: brightness(0.8);
+        /* Animation subtile de l'image comme dans les musées */
+        .hero-bg.animate {
+            animation: subtleZoom 20s ease-in-out infinite alternate;
         }
 
-        .hero-backdrop::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, transparent 70%);
+        @keyframes subtleZoom {
+            0% {
+                transform: scale(1.02);
+            }
+            100% {
+                transform: scale(1.08);
+            }
         }
 
         .hero-content {
             position: relative;
             z-index: 2;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 3rem;
-            width: 100%;
-        }
-
-        .hero-eyebrow {
-            font-family: var(--font-display);
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            color: var(--accent);
-            margin-bottom: 1rem;
-        }
-
-@media (max-width: 700px) {
-    .hero-content {
-        padding: 0 1rem;
-    }
-}
-
-        .hero-title {
-            font-family: var(--font-display);
-            font-size: 7rem;
-            font-weight: 600;
-            line-height: 0.9;
-            color: white;
-            margin-bottom: 1.5rem;
+            text-align: left;
             max-width: 800px;
-            text-transform: uppercase;
+            margin: 0;
+            padding-left: 10%;
+            padding-right: 2rem;
         }
 
-        .hero-subtitle {
-            font-size: 1.2rem;
-            color: rgba(255,255,255,0.8);
-            margin-bottom: 3rem;
-            max-width: 600px;
-            line-height: 1.6;
+        .hero-logo {
+            font-family: var(--font-display);
+            font-size: 5rem;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .hero-tagline {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 2rem;
             font-weight: 300;
+            text-shadow: 0 1px 5px rgba(0,0,0,0.2);
         }
 
         .hero-stats {
             display: flex;
-            gap: 4rem;
-            margin: 3rem 0;
-            color: white;
+            justify-content: flex-start;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
         }
 
         .hero-stat {
             text-align: left;
         }
 
-
-
         .hero-stat-number {
             font-family: var(--font-display);
-            font-size: 2.5rem;
-            font-weight: 500;
-            color: white;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--accent-light);
             line-height: 1;
-            margin-bottom: 0.3rem;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
 
         .hero-stat-label {
-            font-size: 0.7rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: rgba(255,255,255,0.6);
+    color: rgba(255,255,255,0.7);
+            margin-top: 0.3rem;
         }
 
-        /* ===== RECHERCHE GALERIE ===== */
-        .hero-search-wrapper {
-            margin-top: 3rem;
-            max-width: 500px;
-            position: relative;
-        }
-
-        .hero-search-card {
-            display: flex;
-            align-items: center;
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 0.3rem 0.3rem 0.3rem 1.5rem;
-            width: 100%;
-            transition: all 0.3s ease;
-            height: 56px;
-        }
-
-        .theme-light .hero-search-card {
-            background: rgba(0,0,0,0.02);
-            border-color: rgba(0,0,0,0.1);
-        }
-
-        .hero-search-card:focus-within {
-            border-color: var(--accent);
-        }
-
-        .hero-search-icon {
-            color: var(--accent);
-            font-size: 1rem;
-            margin-right: 0.8rem;
-        }
-
-        .hero-search-input {
-            flex: 1;
-            border: none;
-            padding: 0.5rem 0;
-            background: transparent;
-            color: white;
-            font-size: 0.95rem;
-            font-weight: 300;
-        }
-
-        .theme-light .hero-search-input {
-            color: var(--text-light);
-        }
-
-        .hero-search-input::placeholder {
-            color: rgba(255,255,255,0.4);
-            font-size: 0.95rem;
-            font-weight: 300;
-        }
-
-        .theme-light .hero-search-input::placeholder {
-            color: rgba(0,0,0,0.3);
-        }
-
-        .hero-search-input:focus {
-            outline: none;
-        }
-
-        .hero-search-btn {
+        .hero-cta {
+            display: inline-block;
             background: var(--accent);
-            border: none;
             color: white;
             padding: 0.8rem 2rem;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 400;
-            transition: all 0.3s;
-            height: 44px;
-            white-space: nowrap;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .hero-search-btn:hover {
-            background: var(--accent-hover);
-        }
-
-        /* Suggestions */
-        .hero-suggestions {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: var(--surface);
-            border: 1px solid var(--border-color);
-            margin-top: 8px;
-            display: none;
-            z-index: 1000;
-            overflow: hidden;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .hero-suggestions.visible {
-            display: block;
-        }
-
-        .hero-suggestion-item {
-            padding: 1rem 1.5rem;
-            cursor: pointer;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            transition: background 0.2s;
-            color: var(--text);
-        }
-
-        .hero-suggestion-item:last-child {
-            border-bottom: none;
-        }
-
-        .hero-suggestion-item:hover {
-            background: var(--surface-hover);
-        }
-
-        .hero-suggestion-item i {
-            color: var(--accent);
-            width: 20px;
-            font-size: 1rem;
-        }
-
-        .hero-suggestion-category {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-left: auto;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* ===== SECTION GALERIE ===== */
-        .section-gallery {
-            margin: 4rem 0;
-        }
-
-        .section-header-gallery {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 0.25rem;
-        }
-        
-        .section-title-gallery {
             font-family: var(--font-display);
-            font-size: 2.5rem;
-            font-weight: 600;
-            color: var(--text);
-            margin: 0;
-            letter-spacing: -0.02em;
-            text-transform: uppercase;
-        }
-        
-        .section-link-gallery {
-            color: var(--accent);
-            text-decoration: none;
             font-size: 0.8rem;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 2px;
-            transition: color 0.2s;
-            font-weight: 400;
-        }
-        
-        .section-link-gallery:hover {
-            color: var(--accent-hover);
-        }
-
-        /* ===== GRILLE MOSAÏQUE ===== */
-        .mosaic-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 0.5rem;
-            margin: 0.5rem 0;
-        }
-        
-        .mosaic-item {
-            aspect-ratio: 2/3;
-            position: relative;
-            overflow: hidden;
-            background: var(--surface);
             text-decoration: none;
-            color: inherit;
-            display: block;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(108,92,231,0.3);
         }
-        
-        .mosaic-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            transition: transform 0.6s ease;
-        }
-        
-        .mosaic-item:hover img {
-            transform: scale(1.05);
-        }
-        
-        .mosaic-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0,0,0,0.9);
-            padding: 1.5rem 1rem;
+
+        .hero-cta:hover {
+            background: var(--accent-hover);
             color: white;
-            transform: translateY(100%);
-            transition: transform 0.4s ease;
-        }
-        
-        .mosaic-item:hover .mosaic-overlay {
-            transform: translateY(0);
-        }
-        
-        .mosaic-overlay-title {
-            font-family: var(--font-display);
-            font-size: 0.9rem;
-            font-weight: 500;
-            margin-bottom: 0.2rem;
-            text-transform: uppercase;
-        }
-        
-        .mosaic-overlay-artist {
-            font-size: 0.8rem;
-            opacity: 0.7;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108,92,231,0.4);
         }
 
-        .mosaic-placeholder {
-            width: 100%;
-            height: 100%;
-            background: var(--surface);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
+        /* ===== FEATURES ===== */
+        .features {
+            padding: 5rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+            background: var(--bg);
         }
 
-
-.mosaic-fav {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 10;
-    opacity: 1;
-    transition: opacity 0.2s;
-}
-
-.mosaic-fav.active { opacity: 1; }
-.mosaic-fav i { color: white; font-size: 1rem; text-shadow: 0 1px 4px rgba(0,0,0,0.6); }
-.mosaic-fav.active i { color: var(--favorite, #e03131); }
-
-        /* ===== SCROLL HORIZONTAL ===== */
-        .horizontal-scroll {
-            display: flex;
-            gap: 0.5rem;
-            overflow-x: auto;
-            padding: 0.5rem 0 2rem;
-            scrollbar-width: thin;
-            scrollbar-color: var(--accent) var(--border-color);
-        }
-        
-        .horizontal-scroll::-webkit-scrollbar {
-            height: 2px;
-        }
-        
-        .horizontal-scroll::-webkit-scrollbar-track {
-            background: var(--border-color);
-        }
-        
-        .horizontal-scroll::-webkit-scrollbar-thumb {
-            background: var(--accent);
-        }
-        
-        .scroll-item {
-            flex: 0 0 200px;
-            background: var(--surface);
-            overflow: hidden;
-            text-decoration: none;
-            color: inherit;
-            position: relative;
-        }
-        
-        .scroll-item img {
-            width: 100%;
-            aspect-ratio: 1/1;
-            object-fit: cover;
-            display: block;
-            transition: opacity 0.3s;
-        }
-        
-        .scroll-item:hover img {
-            opacity: 0.8;
-        }
-        
-        .scroll-item-info {
-            padding: 1rem 0.5rem 0.5rem;
-        }
-        
-        .scroll-item-title {
-            font-family: var(--font-display);
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            text-transform: uppercase;
-        }
-        
-        .scroll-item-artist {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-top: 0.2rem;
-        }
-
-        /* ===== CARTES MIEUX NOTÉES ===== */
-        .top-rated-item {
-            flex: 0 0 200px;
-            background: var(--surface);
-            overflow: hidden;
-            text-decoration: none;
-            color: inherit;
-            position: relative;
-        }
-
-        .top-rated-image {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1/1;
-            overflow: hidden;
-        }
-
-        .top-rated-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: opacity 0.4s;
-        }
-
-        .top-rated-item:hover .top-rated-image img {
-            opacity: 0.7;
-        }
-
-        .top-rated-badge {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: var(--accent);
-            color: white;
-            padding: 0.4rem 0.8rem;
-            font-size: 0.7rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            z-index: 2;
-            letter-spacing: 1px;
-        }
-
-        .top-rated-rank {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
-            color: white;
+        .section-title {
             font-family: var(--font-display);
             font-size: 2rem;
             font-weight: 600;
-            line-height: 1;
-            z-index: 2;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            text-align: center;
+            margin-bottom: 3rem;
+            letter-spacing: -0.02em;
         }
 
-        .top-rated-info {
-            padding: 1rem 0.5rem 0.5rem;
+        .features-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            max-width: 700px;
+            margin: 0 auto;
         }
 
-        .top-rated-title {
-            font-family: var(--font-display);
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            text-transform: uppercase;
-        }
-
-        .top-rated-artist {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin: 0.3rem 0;
-        }
-
-        .top-rated-rating {
+        .feature-item {
             display: flex;
             align-items: center;
-            gap: 0.3rem;
-            color: var(--accent);
-            font-size: 0.75rem;
+            gap: 1.5rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
         }
 
-        .top-rated-favorites {
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            color: var(--favorite);
-            font-size: 0.7rem;
+        .feature-item:last-child {
+            border-bottom: none;
         }
 
-        /* ===== CRITIQUES COMPACTES - PLUS PETITES ===== */
-        .reviews-grid {
-            display: grid;
-            gap: 0.5rem;
-            margin: 2rem 0 4rem;
-            grid-template-columns: repeat(4, 1fr);
-        }
-        
-        .review-card {
-            background: var(--surface);
-            border: 1px solid var(--border-color);
-            padding: 0.75rem;
-            transition: all 0.2s ease;
-        }
-        
-        .review-card:hover {
-            border-color: var(--accent);
-            transform: translateY(-2px);
-        }
-        
-        .review-header {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            margin-bottom: 0.4rem;
-        }
-        
-        .review-avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: var(--accent);
+        .feature-icon {
+            width: 50px;
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-family: var(--font-display);
-            font-size: 0.8rem;
-            font-weight: 500;
+            font-size: 1.5rem;
+            color: var(--accent);
             flex-shrink: 0;
         }
-        
-        .review-meta {
-            flex: 1;
-            min-width: 0;
-        }
-        
-        .review-user {
-            font-weight: 500;
-            color: var(--accent);
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .review-work {
-            font-size: 0.7rem;
-            font-weight: 500;
-            color: var(--text);
-            text-decoration: none;
-            display: block;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-family: var(--font-display);
-        }
-        
-        .review-work:hover {
-            color: var(--accent);
-        }
-        
-        .review-rating {
-            display: flex;
-            align-items: center;
-            gap: 0.2rem;
-            color: var(--accent);
-            font-size: 0.6rem;
-        }
-        
-        .review-comment {
-            font-size: 0.7rem;
-            line-height: 1.3;
-            color: var(--text);
-            margin-top: 0.4rem;
-            padding-top: 0.4rem;
-            border-top: 1px solid var(--border-color);
-            font-style: italic;
-            max-height: 3.9rem;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-        }
-        
-        .review-comment::before {
-            content: '"';
-            font-size: 0.8rem;
-            color: var(--accent);
-            opacity: 0.5;
-            margin-right: 0.1rem;
-        }
-        
-        .review-comment::after {
-            content: '"';
-            font-size: 0.8rem;
-            color: var(--accent);
-            opacity: 0.5;
-            margin-left: 0.1rem;
+
+        .feature-content {
+            text-align: left;
         }
 
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 1200px) {
-            .hero-title { font-size: 5rem; }
-            .mosaic-grid { grid-template-columns: repeat(4, 1fr); }
-            .reviews-grid { grid-template-columns: repeat(3, 1fr); }
+        .feature-title {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .feature-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* ===== SPOTLIGHT OEUVRE ===== */
+        .spotlight {
+            padding: 5rem 2rem;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        .spotlight-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .spotlight-text h2 {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .spotlight-text h2 a {
+            color: var(--text);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .spotlight-text h2 a:hover {
+            color: var(--accent);
+        }
+
+        .spotlight-artist {
+            font-size: 0.8rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .spotlight-artist:hover {
+            text-decoration: underline;
+        }
+
+        .spotlight-text p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .spotlight-demo-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .demo-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .demo-stat i.fa-star { color: var(--gold); }
+        .demo-stat i.fa-heart { color: var(--favorite); }
+        .demo-stat i.fa-comment { color: var(--accent); }
+
+        .spotlight-image {
+            cursor: pointer;
+            transition: transform 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spotlight-image:hover {
+            transform: translateY(-3px);
+        }
+
+        .spotlight-image img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            border-radius: 8px;
+        }
+
+        /* ===== QUOTE ===== */
+        .quote {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--bg);
+        }
+
+        .quote-text {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 500;
+            letter-spacing: -0.02em;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.3;
+        }
+
+        .quote-author {
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        /* ===== CTA FINAL ===== */
+        .cta-final {
+            text-align: center;
+            padding: 5rem 2rem;
+            background: var(--surface);
+        }
+
+        .cta-final h2 {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .cta-final p {
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            padding: 0.8rem 2rem;
+            text-decoration: none;
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 0.8rem 2rem;
+            text-decoration: none;
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
         @media (max-width: 900px) {
-            .hero-title { font-size: 4rem; }
-            .mosaic-grid { grid-template-columns: repeat(3, 1fr); }
-            .hero-stats { flex-wrap: wrap; gap: 2rem; }
-            .reviews-grid { grid-template-columns: repeat(2, 1fr); }
+            .spotlight-inner { grid-template-columns: 1fr; gap: 2rem; }
+            .hero-logo { font-size: 3.5rem; }
+            .hero-stats { gap: 1.5rem; }
+            .hero-stat-number { font-size: 1.4rem; }
+            .quote-text { font-size: 1.2rem; }
+            .hero-content { padding-left: 5%; }
         }
 
-        @media (max-width: 768px) {
-            .hero-title { font-size: 3rem; }
-            .hero-subtitle { font-size: 1rem; }
-            .hero-search-wrapper { max-width: 100%; }
-            .reviews-grid { grid-template-columns: 1fr; }
-            .mosaic-grid { grid-template-columns: repeat(2, 1fr); }
-            .section-header-gallery { flex-direction: column; gap: 0.5rem; }
-            .hero-stat-number { font-size: 2rem; }
-            .hero-stats { gap: 1.5rem; }
-
-
-
+        @media (max-width: 600px) {
+            .hero-logo { font-size: 2.5rem; }
+            .hero-tagline { font-size: 0.9rem; }
+            .cta-final h2 { font-size: 1.5rem; }
+            .spotlight-text h2 { font-size: 1.5rem; }
+            .section-title { font-size: 1.5rem; }
+            .spotlight-image img { max-height: 300px; }
+            .feature-item {
+                flex-direction: row;
+                text-align: left;
+                gap: 1rem;
+            }
+            .feature-icon {
+                width: 40px;
+                font-size: 1.2rem;
+            }
+            .feature-content {
+                text-align: left;
+            }
+            .hero-content { padding-left: 1.5rem; padding-right: 1.5rem; }
+            .hero-stats { gap: 1rem; }
         }
     </style>
 </head>
+
 <body class="theme-dark">
     {% include 'navbar.html' %}
-    
-    <main>
-        <!-- ===== HERO GALERIE ===== -->
-        <div class="hero-gallery" id="hero">
-            {% if mosaic_artworks and mosaic_artworks|length > 0 %}
-<div class="hero-backdrop" id="heroBackdrop" 
-     style="background-image: url('{{ mosaic_artworks[0].image_url }}');">
-</div>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-bg animate" id="heroBg" style="background-image: url('{{ hero_image }}');"></div>
+        <div class="hero-content">
+            <h1 class="hero-logo">POLOUM</h1>
+            <p class="hero-tagline">
+                La plateforme où l'art rencontre la communauté.<br>
+                Notez, critiquez, partagez.
+            </p>
+            
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-number">2M</div>
+                    <div class="hero-stat-label">ŒUVRES</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">80K</div>
+                    <div class="hero-stat-label">ARTISTES</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">12K</div>
+                    <div class="hero-stat-label">MUSÉES</div>
+                </div>
+            </div>
+
+            <a href="/discover" class="hero-cta">Découvrir</a>
+        </div>
+    </section>
+
+    <!-- CITATION -->
+    <div class="quote">
+        <div class="quote-text">
+            "Je voulais un Letterboxd gratuit pour les oeuvres d'art, je l'ai fait"
+        </div>
+        <div class="quote-author">Alexandre, le créateur</div>
+    </div>
+
+    <!-- SPOTLIGHT OEUVRE (JOCONDE) -->
+    <div class="spotlight">
+        <div class="spotlight-inner">
+            <div class="spotlight-text">
+                <h2><a href="/details.html">La Joconde</a></h2>
+                <a href="/oeuvre/Q12418" class="spotlight-artist">Léonard de Vinci · 1503-1519</a>
+                <p>Chef-d'œuvre emblématique de la Renaissance italienne, ce portrait de Lisa Gherardini est mondialement célèbre pour son mystérieux sourire et la technique innovante du sfumato.</p>
+                <div class="spotlight-demo-stats">
+                    <div class="demo-stat"><i class="fas fa-star"></i> <span>4.9/5</span></div>
+                    <div class="demo-stat"><i class="fas fa-heart"></i> <span>1 421 favoris</span></div>
+                    <div class="demo-stat"><i class="fas fa-comment"></i> <span>342 commentaires</span></div>
+                </div>
+            </div>
+            <a href="/details.html" class="spotlight-image">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/800px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg" 
+                     alt="La Joconde"
+                     style="object-fit: contain;"
+                     onerror="this.src='https://images.weserv.nl/?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2Fe%2Fec%2FMona_Lisa%252C_by_Leonardo_da_Vinci%252C_from_C2RMF_retouched.jpg%2F800px-Mona_Lisa%252C_by_Leonardo_da_Vinci%252C_from_C2RMF_retouched.jpg&w=600&h=600&fit=contain'">
+            </a>
+        </div>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="features">
+        <h2 class="section-title">Pourquoi vous allez adorer</h2>
+        <div class="features-list">
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-star"></i></div>
+                <div class="feature-content">
+                    <div class="feature-title">Notez les œuvres</div>
+                    <div class="feature-desc">De 1 à 5 étoiles, affinez avec technique, créativité et émotion.</div>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-comments"></i></div>
+                <div class="feature-content">
+                    <div class="feature-title">Partagez votre avis</div>
+                    <div class="feature-desc">Commentez, débattez, inspirez les autres membres.</div>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-search"></i></div>
+                <div class="feature-content">
+                    <div class="feature-title">Explorez sans limites</div>
+                    <div class="feature-desc">Recherchez par artiste, musée, mouvement ou période.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA FINAL -->
+    <div class="cta-final">
+        <h2>Une communauté passionnée</h2>
+        <p>Rejoignez des milliers d'amateurs d'art qui partagent leurs découvertes, échangent leurs points de vue et construisent ensemble une référence culturelle unique.</p>
+        <div class="cta-buttons">
+            <a href="/login" class="btn-primary">Se connecter</a>
+            {% if session.user_id %}
+            <a href="/research" class="btn-secondary">Explorer</a>
+            {% else %}
+            <a href="/register" class="btn-secondary">Créer un compte</a>
             {% endif %}
-            
-            <div class="hero-content">
-                <h1 class="hero-title">{{ site_name }}</h1>
-                <p class="hero-subtitle">
-                    Explorez les pays, gardez vos coups de cœur,<br>
-                    donnez votre critique, et c'est gratuit !
-                </p>
-                
-<div class="hero-stats">
-    <div class="hero-stat">
-        <div class="hero-stat-number">{{ total_oeuvres }}</div>
-        <div class="hero-stat-label">ŒUVRES</div>
-    </div>
-    <div class="hero-stat">
-        <div class="hero-stat-number">{{ total_artistes }}</div>
-        <div class="hero-stat-label">ARTISTES</div>
-    </div>
-    <div class="hero-stat">
-        <div class="hero-stat-number">{{ total_musees }}</div>
-        <div class="hero-stat-label">MUSÉES</div>
-    </div>
-<div class="hero-stat">
-    <div class="hero-stat-number">{{ total_visits }}</div>
-    <div class="hero-stat-label">VISITEURS</div>
-</div>
-<div class="hero-stat">
-    <div class="hero-stat-number">{{ total_users }}</div>
-    <div class="hero-stat-label">MEMBRES</div>
-</div>
-</div>
-                
-
-<div style="margin-top: 3rem;">
-    {% if session.user_id %}
-    <a href="/research" style="background: var(--accent); color: white; padding: 1rem 2.5rem; font-family: var(--font-display); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; text-decoration: none; transition: background 0.2s;">
-        EXPLORER
-    </a>
-    {% else %}
-    <a href="/register" style="background: var(--accent); color: white; padding: 1rem 2.5rem; font-family: var(--font-display); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; text-decoration: none; transition: background 0.2s;">
-        COMMENCER
-    </a>
-    {% endif %}
-</div>
-</div>
-            </div>
-        </div>
-
-
-
-<!-- ===== CONTENU PRINCIPAL ===== -->
-<div class="container-fluid">
-    <!-- MOSAÏQUE -->
-    <div class="section-gallery">
-        <div class="section-header-gallery">
-            <h2 class="section-title-gallery">EXPLORER</h2>
-            <a href="/research" class="section-link-gallery">VOIR TOUT →</a>
-        </div>
-        
-        <div class="mosaic-grid">
-            {% set count = namespace(value=0) %}
-            {% for artwork in mosaic_artworks %}
-                {% if count.value < 6 %}
-                    {% if artwork.image_url and artwork.image_url != '' %}
-                    <a href="/oeuvre/{{ artwork.id }}" class="mosaic-item">
-                        <div class="mosaic-fav" onclick="toggleMosaicFav(event, '{{ artwork.id }}', this)">
-                            <i class="far fa-heart"></i>
-                        </div>
-                        <img src="https://images.weserv.nl/?url={{ artwork.image_url|urlencode }}&w=600&h=900&fit=cover&a=attention&output=jpg&q=80"
-                             alt="{{ artwork.titre if artwork.titre else 'Sans titre' }}"
-                             loading="lazy"
-                             data-fallback1="https://wsrv.nl/?url={{ artwork.image_url|urlencode }}&w=600&h=900&fit=cover&a=attention&output=jpg&q=80"
-                             data-fallback3="{{ artwork.image_url }}"
-                             data-error-count="0"
-                             style="opacity:0; transition: opacity 0.3s;"
-                             onload="this.style.opacity='1'"
-                             onerror="handleImageError(this)">
-                        <div class="mosaic-overlay">
-                            <div class="mosaic-overlay-title">{{ artwork.titre|truncate(30) if artwork.titre else 'SANS TITRE' }}</div>
-                            <div class="mosaic-overlay-artist">{{ artwork.createur|truncate(25) if artwork.createur else 'ARTISTE INCONNU' }}</div>
-                        </div>
-                    </a>
-                    {% set count.value = count.value + 1 %}
-                    {% endif %}
-                {% endif %}
-            {% endfor %}
-            
-            <!-- Placeholders -->
-            {% for i in range(6 - count.value) %}
-            <div class="mosaic-item">
-                <div class="mosaic-placeholder">
-                    <i class="fas fa-image fa-2x"></i>
-                </div>
-            </div>
-            {% endfor %}
         </div>
     </div>
-
-{#
-            <!-- MIEUX NOTÉES -->
-            <div class="section-gallery">
-                <div class="section-header-gallery">
-                    <h2 class="section-title-gallery">MIEUX NOTÉES</h2>
-                    <a href="/research?sort=rating_desc" class="section-link-gallery">TOUTES LES NOTES →</a>
-                </div>
-
-                <div class="horizontal-scroll">
-                    {% set displayed = 0 %}
-                    {% for artwork in top_rated %}
-                        {% if artwork.image_url and artwork.image_url != '' and displayed < 10 %}
-                            {% set displayed = displayed + 1 %}
-                            <a href="/oeuvre/{{ artwork.id }}" class="top-rated-item">
-<div class="top-rated-image">
-    <div class="mosaic-fav" onclick="toggleMosaicFav(event, '{{ artwork.id }}', this)">
-        <i class="far fa-heart"></i>
-    </div>
-<img src="https://images.weserv.nl/?url={{ artwork.image_url|urlencode }}&w=400&h=400&fit=cover&a=attention&output=jpg&q=80" 
-     alt="{{ artwork.titre if artwork.titre else 'Sans titre' }}" 
-     loading="lazy"
-     data-fallback1="https://wsrv.nl/?url={{ artwork.image_url|urlencode }}&w=400&h=400&fit=cover&a=attention&output=jpg&q=80"
-     data-fallback3="{{ artwork.image_url }}"
-     data-error-count="0"
-     style="opacity:0; transition: opacity 0.3s;"
-     onload="this.style.opacity='1'"
-     onerror="handleImageError(this)">
-
-                                    
-                                    <div class="top-rated-rank">{{ loop.index }}</div>
-                                </div>
-                                
-                                <div class="top-rated-info">
-                                    <div class="top-rated-title">{{ artwork.titre|truncate(25) if artwork.titre else 'SANS TITRE' }}</div>
-                                    <div class="top-rated-artist">{{ artwork.createur|truncate(25) if artwork.createur else 'ARTISTE INCONNU' }}</div>
-                                    <div class="top-rated-rating">
-                                        <i class="fas fa-star"></i> {{ artwork.avg_rating|round(1) if artwork.avg_rating else '?' }}/5
-                                    </div>
-                                </div>
-                            </a>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-
-            <!-- FAVORIS DES MEMBRES (sans le rectangle rouge) -->
-            <div class="section-gallery">
-                <div class="section-header-gallery">
-                    <h2 class="section-title-gallery">FAVORIS DES MEMBRES</h2>
-                    <a href="/research?sort=popular" class="section-link-gallery">PLUS DE FAVORIS →</a>
-                </div>
-                
-                <div class="horizontal-scroll">
-                    {% set displayed = 0 %}
-                    {% for artwork in popular_favorites %}
-                        {% if artwork.image_url and artwork.image_url != '' and displayed < 10 %}
-                            {% set displayed = displayed + 1 %}
-                            <a href="/oeuvre/{{ artwork.id }}" class="top-rated-item">
-                                <div class="top-rated-image">
-    <div class="mosaic-fav" onclick="toggleMosaicFav(event, '{{ artwork.id }}', this)">
-        <i class="far fa-heart"></i>
-    </div>
-<img src="https://images.weserv.nl/?url={{ artwork.image_url|urlencode }}&w=400&h=400&fit=cover&a=attention&output=jpg&q=80" 
-     alt="{{ artwork.titre if artwork.titre else 'Sans titre' }}" 
-     loading="lazy"
-     data-fallback1="https://wsrv.nl/?url={{ artwork.image_url|urlencode }}&w=400&h=400&fit=cover&a=attention&output=jpg&q=80"
-     data-fallback3="{{ artwork.image_url }}"
-     data-error-count="0"
-     style="opacity:0; transition: opacity 0.3s;"
-     onload="this.style.opacity='1'"
-     onerror="handleImageError(this)">
-                                    
-                                    <div class="top-rated-rank">{{ loop.index }}</div>
-                                </div>
-                                
-                                <div class="top-rated-info">
-                                    <div class="top-rated-title">{{ artwork.titre|truncate(25) if artwork.titre else 'SANS TITRE' }}</div>
-                                    <div class="top-rated-artist">{{ artwork.createur|truncate(25) if artwork.createur else 'ARTISTE INCONNU' }}</div>
-                                    <div class="top-rated-favorites">
-                                        <i class="fas fa-heart"></i> {{ artwork.favorites_count if artwork.favorites_count else '0' }} FAVORIS
-                                    </div>
-                                    {% if artwork.avg_rating %}
-                                    <div class="top-rated-rating">
-                                        <i class="fas fa-star"></i> {{ artwork.avg_rating|round(1) }}/5
-                                    </div>
-                                    {% endif %}
-                                </div>
-                            </a>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-
-#}
-
-<!-- CRITIQUES COMPACTES -->
-<div class="section-gallery">
-    <div class="section-header-gallery">
-        <h2 class="section-title-gallery">DERNIÈRES CRITIQUES</h2>
-        <a href="/research" class="section-link-gallery">TOUTES LES CRITIQUES →</a>
-    </div>
-    
-    <div class="horizontal-scroll">
-        {% if recent_reviews %}
-            {% for review in recent_reviews[:10] %}
-                {% if review and review.username and review.artwork and review.artwork.image_url %}
-<a href="/oeuvre/{{ review.artwork.id }}" class="top-rated-item" style="text-decoration:none;">
-    <div class="top-rated-image">
-        <div class="mosaic-fav" onclick="toggleMosaicFav(event, '{{ review.artwork.id }}', this)">
-            <i class="far fa-heart"></i>
-        </div>
-                        <img src="https://images.weserv.nl/?url={{ review.artwork.image_url|urlencode }}&w=400&h=400&fit=cover&a=attention&output=jpg&q=80"
-                             alt="{{ review.artwork.titre if review.artwork.titre else 'Sans titre' }}"
-                             loading="lazy"S
-                             data-fallback1="https://wsrv.nl/?url={{ review.artwork.image_url|urlencode }}&w=400&h=400&fit=cover&output=jpg&q=80"
-                             data-fallback3="{{ review.artwork.image_url }}"
-                             data-error-count="0"
-                             style="opacity:0; transition: opacity 0.3s;"
-                             onload="this.style.opacity='1'"
-                             onerror="handleImageError(this)">
-                    </div>
-
-
-<div class="top-rated-info">
-    {% if review.commentaire %}
-    <div style="font-size:1rem; color:currentColor; margin-bottom:0.6rem; font-style:italic; overflow:hidden; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; line-height:1.5;">
-        "{{ review.commentaire|truncate(80) }}"
-    </div>
-    {% endif %}
-    <div style="font-size:0.75rem; color:var(--text-muted);">par <span style="color:var(--accent);">{{ review.username }}</span></div>
-</div>
-
-                {% endif %}
-            {% endfor %}
-        {% else %}
-            <div style="color:var(--text-muted); padding:2rem;">Aucune critique pour le moment.</div>
-        {% endif %}
-    </div>
-</div>
-
-
-        </div>
-    </main>
 
     {% include 'footer.html' %}
 
-
     <script>
-window.handleImageError = function(img) {
-    const errorCount = parseInt(img.dataset.errorCount || '0');
-    if (errorCount === 0) {
-        img.dataset.errorCount = '1';
-        img.src = img.dataset.fallback1;
-    } else if (errorCount === 1) {
-        img.dataset.errorCount = '2';
-        img.src = img.dataset.fallback3;
-    } else {
-        img.style.display = 'none';
-        const placeholder = document.createElement('div');
-        placeholder.className = 'mosaic-placeholder';
-        placeholder.innerHTML = '<i class="fas fa-image fa-2x"></i>';
-        img.parentNode.appendChild(placeholder);
-    }
-};    
-    
-        // ===== THÈME =====
-        function toggleTheme() {
-            const body = document.body;
-            const icon = document.getElementById('theme-icon');
-            
-            if (body.classList.contains('theme-dark')) {
-                body.classList.remove('theme-dark');
-                body.classList.add('theme-light');
-                if (icon) icon.className = 'fas fa-sun';
-                localStorage.setItem('theme', 'light');
-            } else {
-                body.classList.remove('theme-light');
-                body.classList.add('theme-dark');
-                if (icon) icon.className = 'fas fa-moon';
-                localStorage.setItem('theme', 'dark');
-            }
+        // Parallaxe
+        const heroBg = document.getElementById('heroBg');
+        if (heroBg) {
+            window.addEventListener('scroll', () => {
+                const scrolled = window.scrollY;
+                heroBg.style.transform = `translateY(${scrolled * 0.1}px)`;
+            });
         }
 
-(function() {
-    const backdrop = document.getElementById('heroBackdrop');
-    if (!backdrop) return;
-    const original = {{ mosaic_artworks[0].image_url|tojson }};
-    const weserv = 'https://images.weserv.nl/?url=' + encodeURIComponent(original) + '&w=1800&h=1200&output=jpg&q=90';
-    const wsrv = 'https://wsrv.nl/?url=' + encodeURIComponent(original) + '&w=1800&h=1200&output=jpg&q=90';
+        // Fallback
+        if (heroBg && (!heroBg.style.backgroundImage || heroBg.style.backgroundImage === 'url()')) {
+            heroBg.style.background = '#1a1a2e';
+        }
 
-    function tryLoad(url, fallbackFn) {
-        const img = new Image();
-        img.onload = () => backdrop.style.backgroundImage = `url('${url}')`;
-        img.onerror = fallbackFn;
-        img.src = url;
-    }
-
-    tryLoad(weserv, () =>
-        tryLoad(wsrv, () =>
-            backdrop.style.backgroundImage = `url('${original}')`
-        )
-    );
-})();
-
-
-        // Charger le thème sauvegardé
-        (function initTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            const body = document.body;
-            const icon = document.getElementById('theme-icon');
-            
-            body.classList.remove('theme-dark', 'theme-light');
-            body.classList.add(`theme-${savedTheme}`);
-            if (icon) icon.className = savedTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
-        })();
-
-
-
-        // Effet parallaxe
-        document.addEventListener('scroll', function() {
-            const hero = document.getElementById('heroBackdrop');
-            if (hero) {
-                const scrolled = window.pageYOffset;
-                hero.style.transform = `scale(1.02) translateY(${scrolled * 0.1}px)`;
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (navbar) {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
             }
         });
 
-        // Animation au scroll
-        document.addEventListener('DOMContentLoaded', function() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }
-                });
-            }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-
-            document.querySelectorAll('.section-gallery, .mosaic-grid, .horizontal-scroll, .reviews-grid').forEach(el => {
-                el.style.opacity = '0';
-                el.style.transform = 'translateY(30px)';
-                el.style.transition = 'all 0.8s ease';
-                observer.observe(el);
+        // Animations scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
             });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.feature-item, .spotlight, .quote, .cta-final').forEach((el, i) => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = `all 0.5s ease ${i * 0.1}s`;
+            observer.observe(el);
         });
-        
-async function toggleMosaicFav(e, artworkId, el) {
-    e.preventDefault();
-    e.stopPropagation();
-    {% if not session.user_id %}
-    window.location.href = '/login?next=/home';
-    return;
-    {% endif %}
-    try {
-        const res = await fetch('/api/favorite/toggle', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content },
-            body: JSON.stringify({ artwork_id: artworkId })
-        });
-        const data = await res.json();
-        el.classList.toggle('active', data.favorite);
-        el.querySelector('i').className = data.favorite ? 'fas fa-heart' : 'far fa-heart';
-    } catch(e) {}
-}        
-        
-        
     </script>
 </body>
 </html>

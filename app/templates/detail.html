@@ -78,7 +78,6 @@
             min-height: calc(100vh - 100px);
         }
 
-        /* GALLERY VIEW */
         .gallery-view {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -106,7 +105,6 @@
             cursor: zoom-in;
         }
 
-        /* INFO PANEL */
         .info-panel {
             padding: 2rem 0 0;
         }
@@ -139,7 +137,6 @@
             color: var(--accent);
         }
 
-        /* ACTIONS */
         .actions-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -185,7 +182,6 @@
             color: var(--favorite);
         }
 
-        /* ZONE NOTE GLOBALE + SOUS-NOTES - DISPOSITION DEUX COLONNES */
         .rating-area {
             display: flex;
             gap: 2rem;
@@ -234,107 +230,59 @@
             text-align: right;
         }
 
-
-/* CURSEURS AVEC REMPLISSAGE VIOLET */
-input[type="range"] {
-    flex: 1;
-    -webkit-appearance: none;
-    background: var(--border-color);
-    border-radius: 4px;
-    height: 6px;
-}
-
-/* Chrome/Safari/Edge - remplissage progressif */
-input[type="range"] {
-    background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--fill-percent, 0%), var(--border-color) var(--fill-percent, 0%), var(--border-color) 100%);
-}
-
-input[type="range"]:focus {
-    outline: none;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--accent);
-    cursor: pointer;
-    transition: all 0.1s;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-}
-
-input[type="range"]::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
-}
-
-/* Firefox - remplissage natif */
-input[type="range"]::-moz-range-track {
-    width: 100%;
-    height: 6px;
-    background: var(--border-color);
-    border-radius: 4px;
-}
-
-input[type="range"]::-moz-range-progress {
-    height: 6px;
-    background: var(--accent);
-    border-radius: 4px;
-}
-
-input[type="range"]::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--accent);
-    cursor: pointer;
-    border: none;
-}
-
-input[type="range"]::-moz-range-thumb:hover {
-    transform: scale(1.2);
-}
-
-
-        /* MOYENNES PUBLIQUES */
-        .public-averages {
-            background: var(--surface);
-            border: 1px solid var(--border-color);
-            padding: 1rem;
-            margin-top: 1rem;
-            display: flex;
-            justify-content: space-around;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .public-avg-item {
-            text-align: center;
+        input[type="range"] {
             flex: 1;
+            -webkit-appearance: none;
+            background: var(--border-color);
+            border-radius: 4px;
+            height: 6px;
         }
 
-        .public-avg-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            margin-bottom: 0.3rem;
+        input[type="range"] {
+            background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--fill-percent, 0%), var(--border-color) var(--fill-percent, 0%), var(--border-color) 100%);
         }
 
-        .public-avg-value {
-            font-family: var(--font-display);
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--gold);
+        input[type="range"]:focus {
+            outline: none;
         }
 
-        .public-avg-stars {
-            font-size: 0.7rem;
-            color: var(--gold);
-            margin-top: 0.2rem;
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            transition: all 0.1s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
-        /* MÉTADONNÉES */
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        input[type="range"]::-moz-range-track {
+            width: 100%;
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        input[type="range"]::-moz-range-progress {
+            height: 6px;
+            background: var(--accent);
+            border-radius: 4px;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            border: none;
+        }
+
         .metadata-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -360,13 +308,24 @@ input[type="range"]::-moz-range-thumb:hover {
             font-weight: 400;
         }
 
-        /* COLLECTION INFO */
         .collection-info {
             background: var(--surface);
             border: 1px solid var(--border-color);
             padding: 1.5rem;
             margin: 0 0 1rem;
         }
+
+
+.museum-link, .city-link, .country-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--accent);
+    transition: color 0.2s;
+}
+
+.museum-link:hover, .city-link:hover, .country-link:hover {
+    color: var(--accent);
+}
 
         .collection-title {
             font-family: var(--font-display);
@@ -393,18 +352,6 @@ input[type="range"]::-moz-range-thumb:hover {
             font-size: 0.85rem;
         }
 
-        .museum-link, .city-link, .country-link {
-            color: inherit;
-            text-decoration: none;
-            border-bottom: 1px dotted var(--accent);
-            transition: color 0.2s;
-        }
-
-        .museum-link:hover, .city-link:hover, .country-link:hover {
-            color: var(--accent);
-        }
-
-        /* MODALE IMAGE */
         .museum-modal {
             position: fixed;
             top: 0;
@@ -448,7 +395,6 @@ input[type="range"]::-moz-range-thumb:hover {
             opacity: 1;
         }
 
-        /* SECTION COMMUNAUTÉ */
         .community-section {
             margin: 1.5rem 0 5rem;
         }
@@ -460,7 +406,6 @@ input[type="range"]::-moz-range-thumb:hover {
             align-items: start;
         }
 
-        /* PANEL NOTES (GAUCHE) */
         .panel-notes {
             background: var(--surface);
             border: 1px solid var(--border-color);
@@ -508,7 +453,6 @@ input[type="range"]::-moz-range-thumb:hover {
             color: var(--text-muted);
         }
 
-        /* DISTRIBUTION */
         .dist-row {
             display: flex;
             align-items: center;
@@ -548,13 +492,6 @@ input[type="range"]::-moz-range-thumb:hover {
             text-align: right;
         }
 
-        .panel-divider {
-            height: 1px;
-            background: var(--border-color);
-            margin: 1.5rem 0;
-        }
-
-        /* ÉTOILES */
         .stars-row {
             display: flex;
             gap: 0.3rem;
@@ -610,7 +547,6 @@ input[type="range"]::-moz-range-thumb:hover {
             opacity: 0.6;
         }
 
-        /* PANEL COMMENTAIRES (DROITE) */
         .panel-comments {
             display: flex;
             flex-direction: column;
@@ -714,7 +650,116 @@ input[type="range"]::-moz-range-thumb:hover {
             cursor: not-allowed;
         }
 
-        /* COMMENTAIRE PRIVÉ */
+        .login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-modal.active {
+            display: flex;
+        }
+
+        .login-modal-content {
+            background: var(--surface);
+            border-radius: 0px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            border: 1px solid var(--border-color);
+        }
+
+        .login-modal-content i {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .login-modal-content h3 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: currentColor;
+        }
+
+        .login-modal-content p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .login-modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .login-modal-btn {
+            padding: 0.7rem 1.5rem;
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .login-modal-btn.primary {
+            background: var(--accent);
+            color: white;
+            border: none;
+        }
+
+        .login-modal-btn.primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .login-modal-btn.secondary {
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            background: transparent;
+        }
+
+        .login-modal-btn.secondary:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+            z-index: 1;
+        }
+
+        .modal-close-btn:hover {
+            color: var(--accent);
+        }
+
         .private-comment-box {
             background: var(--surface);
             border: 1px solid var(--border-color);
@@ -748,56 +793,6 @@ input[type="range"]::-moz-range-thumb:hover {
             opacity: 0.8;
         }
 
-        /* LOGIN PROMPT */
-        .login-prompt-box {
-            background: var(--surface);
-            border: 1px solid var(--border-color);
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .login-prompt-box p {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            margin-bottom: 1.2rem;
-        }
-
-        .login-prompt-btns {
-            display: flex;
-            gap: 0.5rem;
-            justify-content: center;
-        }
-
-        .login-prompt-btns a {
-            padding: 0.5rem 1.2rem;
-            font-family: var(--font-display);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-
-        .btn-lp-primary {
-            background: var(--accent);
-            color: white;
-        }
-
-        .btn-lp-primary:hover {
-            background: var(--accent-hover);
-        }
-
-        .btn-lp-secondary {
-            border: 1px solid var(--accent);
-            color: var(--accent);
-        }
-
-        .btn-lp-secondary:hover {
-            background: var(--accent);
-            color: white;
-        }
-
-        /* COMMENTAIRES PUBLICS */
         .comments-list {
             border: 1px solid var(--border-color);
         }
@@ -887,25 +882,20 @@ input[type="range"]::-moz-range-thumb:hover {
             border: 1px solid var(--border-color);
         }
 
-        /* RESPONSIVE */
         @media (max-width: 1024px) {
             .gallery-view {
                 grid-template-columns: 1fr;
                 gap: 2rem;
             }
-            
             .artwork-title {
                 font-size: 2.5rem;
             }
-            
             .community-layout {
                 grid-template-columns: 1fr;
             }
-            
             .panel-notes {
                 position: static;
             }
-
             .rating-area {
                 flex-direction: column;
                 gap: 1rem;
@@ -916,12 +906,10 @@ input[type="range"]::-moz-range-thumb:hover {
             .container {
                 padding: 0 1rem;
             }
-            
             .metadata-grid {
                 padding: 1rem 0;
                 grid-template-columns: 1fr;
             }
-            
             .write-footer {
                 flex-wrap: wrap;
                 gap: 0.6rem;
@@ -938,715 +926,747 @@ input[type="range"]::-moz-range-thumb:hover {
     })();
 </script>
 
-    {% include 'navbar.html' %}
+{% include 'navbar.html' %}
 
-    <!-- MODALE IMAGE -->
-    <div class="museum-modal" id="imageModal" onclick="closeModal()">
-        <span class="modal-close">&times;</span>
-        <img src="" alt="" class="modal-image" id="modalImage">
-    </div>
+<div class="museum-modal" id="imageModal" onclick="closeModal()">
+    <span class="modal-close">&times;</span>
+    <img src="" alt="" class="modal-image" id="modalImage">
+</div>
 
-    <div class="container main-content">
-        <div class="gallery-view">
-            <!-- PANEL IMAGE -->
-            <div class="image-panel">
-                {% if oeuvre.image_url %}
-                <img src="https://images.weserv.nl/?url={{ oeuvre.image_url|urlencode }}&w=800&h=800&fit=contain&output=jpg&q=85"
-                     alt="{{ oeuvre.titre }}"
-                     class="artwork-image"
-                     id="mainImage"
-                     onclick="openImageModal('{{ oeuvre.image_url }}')"
-                     onerror="this.onerror=null; this.src='{{ oeuvre.image_url }}';">
-                {% else %}
-                <div style="width:100%; height:400px; display:flex; align-items:center; justify-content:center; color:var(--text-muted);">
-                    <i class="fas fa-image fa-3x"></i>
-                </div>
-                {% endif %}
-            </div>
-
-            <!-- PANEL INFOS -->
-            <div class="info-panel">
-                <h1 class="artwork-title">{{ oeuvre.titre or 'SANS TITRE' }}</h1>
-
-                <div class="artwork-subtitle">
-                    <a href="/research?artist={{ oeuvre.createur|urlencode }}" class="artist-link">
-                        {{ oeuvre.createur or 'ARTISTE INCONNU' }}
-                    </a>
-                    {% if oeuvre.inception %} · {{ oeuvre.inception[:4] }}{% endif %}
-                </div>
-
-                <!-- ACTIONS -->
-                <div class="actions-grid">
-                    <div class="action-btn favorite" id="favorite-btn" onclick="toggleFavorite()">
-                        <i class="far fa-heart" id="favorite-icon"></i>
-                        <span>Favori</span>
-                    </div>
-                    {% if oeuvre.url_wikidata %}
-                    <a href="{{ oeuvre.url_wikidata }}" target="_blank" class="action-btn">
-                        <i class="fab fa-wikipedia-w"></i>
-                        <span>Wikidata</span>
-                    </a>
-                    {% endif %}
-                </div>
-
-                <!-- ZONE NOTE GLOBALE + SOUS-NOTES (DEUX COLONNES) -->
-                {% if session.user_id %}
-                <div class="rating-area">
-                    <!-- Colonne gauche : Note globale (étoiles) -->
-                    <div class="global-rating-col">
-                        <div class="rating-label">Votre note globale</div>
-                        <div class="stars-row" id="stars-input">
-                            <span class="star" data-value="1">★</span>
-                            <span class="star" data-value="2">★</span>
-                            <span class="star" data-value="3">★</span>
-                            <span class="star" data-value="4">★</span>
-                            <span class="star" data-value="5">★</span>
-                        </div>
-                        <input type="hidden" id="note-globale" value="0">
-                    </div>
-
-                    <!-- Colonne droite : 3 sous-notes avec curseurs (sans label "Affiner votre avis") -->
-                    <div class="sub-ratings-col">
-                        <div class="sub-rating-item">
-                            <span class="sub-rating-label">Technique</span>
-                            <input type="range" id="note-technique" min="0" max="5" step="0.5" value="0">
-                            <span class="sub-rating-value" id="technique-value">0</span>
-                        </div>
-                        
-                        <div class="sub-rating-item">
-                            <span class="sub-rating-label">Originalité</span>
-                            <input type="range" id="note-originalite" min="0" max="5" step="0.5" value="0">
-                            <span class="sub-rating-value" id="originalite-value">0</span>
-                        </div>
-                        
-                        <div class="sub-rating-item">
-                            <span class="sub-rating-label">Émotion</span>
-                            <input type="range" id="note-emotion" min="0" max="5" step="0.5" value="0">
-                            <span class="sub-rating-value" id="emotion-value">0</span>
-                        </div>
-                    </div>
-                </div>
-
-
-                {% endif %}
-
-                <!-- MÉTADONNÉES -->
-                <div class="metadata-grid">
-                    {% set instance = oeuvre.instance_of_fr if session.language == 'fr' else oeuvre.instance_of_en %}
-                    {% if instance %}
-                    <div class="metadata-item">
-                        <div class="metadata-label">Type</div>
-                        <div class="metadata-value">
-                            <a href="/research?type={{ instance|urlencode }}" class="artist-link">{{ instance }}</a>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    {% set genre = oeuvre.genre_fr if session.language == 'fr' else oeuvre.genre_en %}
-                    {% if genre %}
-                    <div class="metadata-item">
-                        <div class="metadata-label">Genre</div>
-                        <div class="metadata-value">
-                            <a href="/research?genre={{ genre|urlencode }}" class="artist-link">{{ genre }}</a>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    {% set mouvement = oeuvre.movement_fr if session.language == 'fr' else oeuvre.movement_en %}
-                    {% if mouvement %}
-                    <div class="metadata-item">
-                        <div class="metadata-label">Mouvement</div>
-                        <div class="metadata-value">
-                            <a href="/research?movement={{ mouvement|urlencode }}" class="artist-link">{{ mouvement }}</a>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    {% set materiau = oeuvre.made_from_material_fr if session.language == 'fr' else oeuvre.made_from_material_en %}
-                    {% if materiau %}
-                    <div class="metadata-item">
-                        <div class="metadata-label">Matériau</div>
-                        <div class="metadata-value">
-                            <a href="/research?material={{ materiau|urlencode }}" class="artist-link">{{ materiau }}</a>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    <!-- DIMENSIONS -->
-                    {% if oeuvre.height and oeuvre.width %}
-                    <div class="metadata-item">
-                        <div class="metadata-label">Dimensions</div>
-                        <div class="metadata-value">{{ oeuvre.height }} × {{ oeuvre.width }} cm</div>
-                    </div>
-                    {% endif %}
-
-                    {% set copyright = oeuvre.copyright_status_fr if session.language == 'fr' else oeuvre.copyright_status_en %}
-                    {% if copyright %}
-                    <div class="metadata-item">
-                        <div class="metadata-label">Copyright</div>
-                        <div class="metadata-value">{{ copyright }}</div>
-                    </div>
-                    {% endif %}
-                </div>
-
-                <!-- LIEU DE CONSERVATION -->
-                {% set nom = oeuvre.collection_fr if session.language == 'fr' else oeuvre.collection_en %}
-                {% set ville = oeuvre.city_fr if session.language == 'fr' else oeuvre.city_en %}
-                {% set pays = oeuvre.country_fr if session.language == 'fr' else oeuvre.country_en %}
-
-                {% if nom or ville or pays %}
-                <div class="collection-info">
-                    <div class="collection-title">Lieu de conservation</div>
-                    {% if nom %}
-                    <div class="collection-detail">
-                        <i class="fas fa-landmark"></i>
-                        <a href="/research?museum={{ nom|urlencode }}" class="museum-link">{{ nom }}</a>
-                    </div>
-                    {% endif %}
-                    {% if ville %}
-                    <div class="collection-detail">
-                        <i class="fas fa-city"></i>
-                        <a href="/research?city={{ ville|urlencode }}" class="city-link">{{ ville }}</a>
-                    </div>
-                    {% endif %}
-                    {% if pays %}
-                    <div class="collection-detail">
-                        <i class="fas fa-flag"></i>
-                        <a href="/research?country={{ pays|urlencode }}" class="country-link">{{ pays }}</a>
-                    </div>
-                    {% endif %}
-                </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- SECTION COMMUNAUTÉ -->
-        <div class="community-section">
-            <div class="community-layout">
-                <!-- COLONNE GAUCHE - STATISTIQUES -->
-                <div class="panel-notes">
-                    <div class="panel-label">Note globale</div>
-
-                    <div class="score-block">
-                        <div class="score-number" id="global-number">
-                            {{ stats.moyenne_globale|round(1) if stats and stats.moyenne_globale else '–' }}
-                        </div>
-                        <div class="score-right">
-                            <div class="score-stars" id="global-stars">☆☆☆☆☆</div>
-                            <div class="score-meta">
-                                <span id="count-notes">{{ stats.total_notes if stats else 0 }}</span> avis ·
-                                <span id="count-favs">{{ stats.favorites_count if stats else 0 }}</span> favoris
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="distribution-container"></div>
-                </div>
-
-                <!-- COLONNE DROITE - COMMENTAIRES -->
-                <div class="panel-comments">
-                    {% if session.user_id %}
-                    <div class="write-zone">
-                        <div class="panel-label" style="margin-bottom:0.5rem;">Votre commentaire</div>
-                        <textarea id="commentaire" placeholder="Partagez votre avis..."></textarea>
-                        <div class="write-footer">
-                            <div class="vis-toggle">
-                                <input type="radio" name="visibility" id="vis-public" value="public" checked>
-                                <label for="vis-public"><i class="fas fa-globe"></i> Public</label>
-                                <input type="radio" name="visibility" id="vis-private" value="private">
-                                <label for="vis-private"><i class="fas fa-lock"></i> Privé</label>
-                            </div>
-                            <button class="btn-publish" id="btn-publish" onclick="saveComment()">Publier</button>
-                        </div>
-                    </div>
-
-                    <div class="private-comment-box" id="private-comment-box">
-                        <div class="private-comment-header">
-                            <div class="private-badge">
-                                <i class="fas fa-lock"></i> Mon commentaire privé
-                            </div>
-                        </div>
-                        <div class="private-comment-text" id="private-comment-text"></div>
-                    </div>
-                    {% else %}
-                    <div class="login-prompt-box">
-                        <p>Connectez-vous pour noter et commenter cette œuvre</p>
-                        <div class="login-prompt-btns">
-                            <a href="/login?next={{ request.path }}" class="btn-lp-primary">Se connecter</a>
-                            <a href="/register?next={{ request.path }}" class="btn-lp-secondary">S'inscrire</a>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    <div id="comments-container">
-                        <div class="no-comments">Aucun commentaire public pour le moment</div>
-                    </div>
-                </div>
-            </div>
+<div class="login-modal" id="loginModal">
+    <button class="modal-close-btn" onclick="closeLoginModal()">&times;</button>
+    <div class="login-modal-content">
+        <i class="fas fa-user-circle"></i>
+        <h3>Connexion requise</h3>
+        <p>Vous devez être connecté afin d'utiliser cette fonctionnalité</p>
+        <div class="login-modal-buttons">
+            <a href="/login?next={{ request.path }}" class="login-modal-btn primary">Se connecter</a>
+            <a href="/register?next={{ request.path }}" class="login-modal-btn secondary">S'inscrire</a>
         </div>
     </div>
+</div>
 
-    {% include 'footer.html' %}
-
-    <script>
-        const artworkId = '{{ oeuvre.id }}';
-        let saveTimeout;
-        let currentNote = 0;
-
-// Fonction pour mettre à jour le remplissage du curseur (Chrome/Safari/Edge)
-function updateSliderFill(slider) {
-    const value = parseFloat(slider.value);
-    const max = parseFloat(slider.max);
-    const percent = (value / max) * 100;
-    slider.style.setProperty('--fill-percent', percent + '%');
-}
-
-// Dans DOMContentLoaded, remplacez la gestion des curseurs par :
-const techniqueSlider = document.getElementById('note-technique');
-const originaliteSlider = document.getElementById('note-originalite');
-const emotionSlider = document.getElementById('note-emotion');
-const techniqueVal = document.getElementById('technique-value');
-const originaliteVal = document.getElementById('originalite-value');
-const emotionVal = document.getElementById('emotion-value');
-
-function setupSlider(slider, display) {
-    if (!slider) return;
-    updateSliderFill(slider);
-    slider.addEventListener('input', function() {
-        display.textContent = this.value;
-        updateSliderFill(this);
-        autoSave();
-    });
-}
-
-setupSlider(techniqueSlider, techniqueVal);
-setupSlider(originaliteSlider, originaliteVal);
-setupSlider(emotionSlider, emotionVal);
-
-
-        // THÈME
-        (function initTheme() {
-            const t = localStorage.getItem('theme') || 'dark';
-            document.body.classList.add('theme-' + t);
-        })();
-
-        // MODALE IMAGE AVEC ZOOM
-        const modal = document.getElementById('imageModal');
-        const modalImage = document.getElementById('modalImage');
-        let scale = 1, translateX = 0, translateY = 0;
-        let isDragging = false, startX, startY;
-
-        function applyTransform() {
-            modalImage.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
-        }
-
-function openImageModal(url) {
-    if (!url) return;
-    modalImage.src = url;
-    scale = 1; translateX = 0; translateY = 0;
-    applyTransform();
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-}
-
-        function closeModal() {
-            modal.classList.remove('active');
-            document.body.style.overflow = '';
-            isDragging = false;
-        }
-
-        modalImage.addEventListener('wheel', function(e) {
-            e.preventDefault();
-            const delta = e.deltaY * -0.003;
-            const newScale = Math.min(Math.max(scale + delta, 1), 20);
-            const rect = modalImage.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left - rect.width / 2;
-            const mouseY = e.clientY - rect.top - rect.height / 2;
-            translateX -= mouseX * (newScale - scale) / scale;
-            translateY -= mouseY * (newScale - scale) / scale;
-            scale = newScale;
-            if (scale <= 1) { translateX = 0; translateY = 0; }
-            modalImage.style.cursor = scale > 1 ? 'grab' : 'zoom-in';
-            applyTransform();
-        }, { passive: false });
-
-        modalImage.addEventListener('mousedown', function(e) {
-            if (scale <= 1) return;
-            isDragging = true;
-            startX = e.clientX - translateX;
-            startY = e.clientY - translateY;
-            modalImage.style.cursor = 'grabbing';
-            e.preventDefault();
-        });
-
-        document.addEventListener('mousemove', function(e) {
-            if (!isDragging) return;
-            translateX = e.clientX - startX;
-            translateY = e.clientY - startY;
-            applyTransform();
-        });
-
-        document.addEventListener('mouseup', function() {
-            if (!isDragging) return;
-            isDragging = false;
-            modalImage.style.cursor = scale > 1 ? 'grab' : 'zoom-in';
-        });
-
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) closeModal();
-        });
-
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') closeModal();
-        });
-
-        // ÉTOILES
-        function initStars() {
-            document.querySelectorAll('.stars-row').forEach(container => {
-                const stars = container.querySelectorAll('.star');
-                if (!stars.length) return;
-
-                container.addEventListener('mousemove', function(e) {
-                    const target = e.target.closest('.star');
-                    if (!target) return;
-                    const idx = parseInt(target.dataset.value);
-                    const rect = target.getBoundingClientRect();
-                    const isHalf = (e.clientX - rect.left) < rect.width / 2;
-                    const hoverVal = isHalf ? idx - 0.5 : idx;
-
-                    stars.forEach(s => {
-                        const v = parseInt(s.dataset.value);
-                        s.classList.remove('full', 'half', 'preview-full', 'preview-half');
-                        if (v < idx) {
-                            s.classList.add('preview-full');
-                        } else if (v === idx) {
-                            s.classList.add(isHalf ? 'preview-half' : 'preview-full');
-                        }
-                    });
-                });
-
-                container.addEventListener('mouseleave', function() {
-                    renderStars(stars, currentNote);
-                });
-
-                container.addEventListener('click', function(e) {
-                    const target = e.target.closest('.star');
-                    if (!target) return;
-                    const idx = parseInt(target.dataset.value);
-                    const rect = target.getBoundingClientRect();
-                    const isHalf = (e.clientX - rect.left) < rect.width / 2;
-                    const clickedVal = isHalf ? idx - 0.5 : idx;
-
-                    if (clickedVal === currentNote) {
-                        currentNote = 0;
-                    } else {
-                        currentNote = clickedVal;
-                    }
-
-                    document.querySelectorAll('#note-globale').forEach(el => el.value = currentNote);
-                    document.querySelectorAll('.stars-row').forEach(c => {
-                        renderStars(c.querySelectorAll('.star'), currentNote);
-                    });
-
-                    autoSave();
-                });
-            });
-        }
-
-        function renderStars(stars, value) {
-            stars.forEach(s => {
-                const v = parseInt(s.dataset.value);
-                s.classList.remove('full', 'half', 'preview-full', 'preview-half');
-                if (value >= v) {
-                    s.classList.add('full');
-                } else if (value >= v - 0.5) {
-                    s.classList.add('half');
-                }
-            });
-        }
-
-        function autoSave() {
-            clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(saveRating, 1000);
-        }
-
-        async function saveRating() {
-            {% if not session.user_id %} return; {% endif %}
-            const note = parseFloat(document.getElementById('note-globale').value) || 0;
-            const technique = parseFloat(document.getElementById('note-technique').value) || 0;
-            const originalite = parseFloat(document.getElementById('note-originalite').value) || 0;
-            const emotion = parseFloat(document.getElementById('note-emotion').value) || 0;
-            
-            if (note === 0 && technique === 0 && originalite === 0 && emotion === 0) return;
-            
-            try {
-                await fetch('/api/rating/save', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content },
-                    body: JSON.stringify({ 
-                        artwork_id: artworkId, 
-                        note_globale: note, 
-                        note_technique: technique, 
-                        note_originalite: originalite, 
-                        note_emotion: emotion, 
-                        commentaire: document.getElementById('commentaire').value.trim() 
-                    })
-                });
-                loadStats();
-                loadPublicAverages(); // Recharger les moyennes publiques
-            } catch(e) {}
-        }
-
-        async function saveComment() {
-            {% if not session.user_id %} return; {% endif %}
-            const comment = document.getElementById('commentaire').value.trim();
-            const note = parseFloat(document.getElementById('note-globale').value) || 0;
-            const btn = document.getElementById('btn-publish');
-
-            if (!comment) {
-                if (!confirm('Supprimer votre avis ?')) return;
-                await fetch('/api/rating/delete', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content },
-                    body: JSON.stringify({ artwork_id: artworkId })
-                });
-                hidePrivateComment();
-                loadComments();
-                loadStats();
-                loadPublicAverages();
-                btn.textContent = 'Publier';
-                return;
-            }
-
-            btn.disabled = true;
-            btn.textContent = '...';
-            try {
-                const visibility = document.querySelector('input[name="visibility"]:checked')?.value || 'public';
-                const isPublic = visibility === 'public';
-                await fetch('/api/rating/save', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content },
-                    body: JSON.stringify({ 
-                        artwork_id: artworkId, 
-                        note_globale: note, 
-                        note_technique: parseFloat(document.getElementById('note-technique').value) || 0,
-                        note_originalite: parseFloat(document.getElementById('note-originalite').value) || 0,
-                        note_emotion: parseFloat(document.getElementById('note-emotion').value) || 0,
-                        commentaire: comment, 
-                        is_public: isPublic 
-                    })
-                });
-                if (!isPublic && comment) {
-                    showPrivateComment(comment);
-                } else {
-                    hidePrivateComment();
-                }
-                loadComments();
-                loadStats();
-                loadPublicAverages();
-            } catch(e) {}
-            finally {
-                btn.disabled = false;
-                btn.textContent = 'Modifier';
-            }
-        }
-
-        function showPrivateComment(text) {
-            const box = document.getElementById('private-comment-box');
-            const textEl = document.getElementById('private-comment-text');
-            if (box && textEl) { textEl.textContent = text; box.style.display = 'block'; }
-        }
-
-        function hidePrivateComment() {
-            const box = document.getElementById('private-comment-box');
-            if (box) box.style.display = 'none';
-        }
-
-        // FAVORIS
-        async function toggleFavorite() {
-            {% if not session.user_id %}
-                window.location.href = '/login?next={{ request.path|urlencode }}';
-                return;
+<div class="container main-content">
+    <div class="gallery-view">
+        <div class="image-panel">
+            {% if oeuvre.image_url %}
+            <img src="https://images.weserv.nl/?url={{ oeuvre.image_url|urlencode }}&w=800&h=800&fit=contain&output=jpg&q=85"
+                 alt="{{ oeuvre.titre }}"
+                 class="artwork-image"
+                 id="mainImage"
+                 onclick="openImageModal('{{ oeuvre.image_url }}')"
+                 onerror="this.onerror=null; this.src='{{ oeuvre.image_url }}';">
+            {% else %}
+            <div style="width:100%; height:400px; display:flex; align-items:center; justify-content:center; color:var(--text-muted);">
+                <i class="fas fa-image fa-3x"></i>
+            </div>
             {% endif %}
-            
+        </div>
+
+        <div class="info-panel">
+            <h1 class="artwork-title">{{ oeuvre.titre or 'SANS TITRE' }}</h1>
+            <div class="artwork-subtitle">
+                <a href="/research?artist={{ oeuvre.createur|urlencode }}" class="artist-link">
+                    {{ oeuvre.createur or 'ARTISTE INCONNU' }}
+                </a>
+                {% if oeuvre.inception %} · {{ oeuvre.inception[:4] }}{% endif %}
+            </div>
+
+            <div class="actions-grid">
+                <div class="action-btn favorite" id="favorite-btn" onclick="toggleFavorite()">
+                    <i class="far fa-heart" id="favorite-icon"></i>
+                    <span>Favori</span>
+                </div>
+                {% if oeuvre.url_wikidata %}
+                <a href="{{ oeuvre.url_wikidata }}" target="_blank" class="action-btn">
+                    <i class="fab fa-wikipedia-w"></i>
+                    <span>Wikidata</span>
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="rating-area">
+                <div class="global-rating-col">
+                    <div class="rating-label">Votre note globale</div>
+                    <div class="stars-row" id="stars-input">
+                        <span class="star" data-value="1">★</span>
+                        <span class="star" data-value="2">★</span>
+                        <span class="star" data-value="3">★</span>
+                        <span class="star" data-value="4">★</span>
+                        <span class="star" data-value="5">★</span>
+                    </div>
+                    <input type="hidden" id="note-globale" value="0">
+                </div>
+
+                <div class="sub-ratings-col">
+                    <div class="sub-rating-item">
+                        <span class="sub-rating-label">Technique</span>
+                        <input type="range" id="note-technique" min="0" max="5" step="0.5" value="0">
+                        <span class="sub-rating-value" id="technique-value">0</span>
+                    </div>
+                    <div class="sub-rating-item">
+                        <span class="sub-rating-label">Originalité</span>
+                        <input type="range" id="note-originalite" min="0" max="5" step="0.5" value="0">
+                        <span class="sub-rating-value" id="originalite-value">0</span>
+                    </div>
+                    <div class="sub-rating-item">
+                        <span class="sub-rating-label">Émotion</span>
+                        <input type="range" id="note-emotion" min="0" max="5" step="0.5" value="0">
+                        <span class="sub-rating-value" id="emotion-value">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metadata-grid">
+                {% set instance = oeuvre.instance_of_fr if session.language == 'fr' else oeuvre.instance_of_en %}
+                {% if instance %}
+                <div class="metadata-item">
+                    <div class="metadata-label">Type</div>
+                    <div class="metadata-value">
+                        <a href="/research?type={{ instance|urlencode }}" class="artist-link">{{ instance }}</a>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% set genre = oeuvre.genre_fr if session.language == 'fr' else oeuvre.genre_en %}
+                {% if genre %}
+                <div class="metadata-item">
+                    <div class="metadata-label">Genre</div>
+                    <div class="metadata-value">
+                        <a href="/research?genre={{ genre|urlencode }}" class="artist-link">{{ genre }}</a>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% set mouvement = oeuvre.movement_fr if session.language == 'fr' else oeuvre.movement_en %}
+                {% if mouvement %}
+                <div class="metadata-item">
+                    <div class="metadata-label">Mouvement</div>
+                    <div class="metadata-value">
+                        <a href="/research?movement={{ mouvement|urlencode }}" class="artist-link">{{ mouvement }}</a>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% set materiau = oeuvre.made_from_material_fr if session.language == 'fr' else oeuvre.made_from_material_en %}
+                {% if materiau %}
+                <div class="metadata-item">
+                    <div class="metadata-label">Matériau</div>
+                    <div class="metadata-value">
+                        <a href="/research?material={{ materiau|urlencode }}" class="artist-link">{{ materiau }}</a>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if oeuvre.height and oeuvre.width %}
+                <div class="metadata-item">
+                    <div class="metadata-label">Dimensions</div>
+                    <div class="metadata-value">{{ oeuvre.height }} × {{ oeuvre.width }} cm</div>
+                </div>
+                {% endif %}
+
+                {% set copyright = oeuvre.copyright_status_fr if session.language == 'fr' else oeuvre.copyright_status_en %}
+                {% if copyright %}
+                <div class="metadata-item">
+                    <div class="metadata-label">Copyright</div>
+                    <div class="metadata-value">{{ copyright }}</div>
+                </div>
+                {% endif %}
+            </div>
+
+            {% set nom = oeuvre.collection_fr if session.language == 'fr' else oeuvre.collection_en %}
+            {% set ville = oeuvre.city_fr if session.language == 'fr' else oeuvre.city_en %}
+            {% set pays = oeuvre.country_fr if session.language == 'fr' else oeuvre.country_en %}
+            {% if nom or ville or pays %}
+            <div class="collection-info">
+                <div class="collection-title">Lieu de conservation</div>
+                {% if nom %}
+                <div class="collection-detail">
+                    <i class="fas fa-landmark"></i>
+                    <a href="/research?museum={{ nom|urlencode }}" class="museum-link">{{ nom }}</a>
+                </div>
+                {% endif %}
+                {% if ville %}
+                <div class="collection-detail">
+                    <i class="fas fa-city"></i>
+                    <a href="/research?city={{ ville|urlencode }}" class="city-link">{{ ville }}</a>
+                </div>
+                {% endif %}
+                {% if pays %}
+                <div class="collection-detail">
+                    <i class="fas fa-flag"></i>
+                    <a href="/research?country={{ pays|urlencode }}" class="country-link">{{ pays }}</a>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="community-section">
+        <div class="community-layout">
+            <div class="panel-notes">
+                <div class="panel-label">Note globale</div>
+                <div class="score-block">
+                    <div class="score-number" id="global-number">
+                        {{ stats.moyenne_globale|round(1) if stats and stats.moyenne_globale else '–' }}
+                    </div>
+                    <div class="score-right">
+                        <div class="score-stars" id="global-stars">☆☆☆☆☆</div>
+                        <div class="score-meta">
+                            <span id="count-notes">{{ stats.total_notes if stats else 0 }}</span> avis ·
+                            <span id="count-favs">{{ stats.favorites_count if stats else 0 }}</span> favoris
+                        </div>
+                    </div>
+                </div>
+                <div id="distribution-container"></div>
+            </div>
+
+            <div class="panel-comments">
+                <div class="write-zone">
+                    <div class="panel-label" style="margin-bottom:0.5rem;">Votre commentaire</div>
+                    <textarea id="commentaire" placeholder="Partagez votre avis..."></textarea>
+                    <div class="write-footer">
+                        <div class="vis-toggle">
+                            <input type="radio" name="visibility" id="vis-public" value="public" checked>
+                            <label for="vis-public" onclick="checkLoginBeforeAction(event)"><i class="fas fa-globe"></i> Public</label>
+                            <input type="radio" name="visibility" id="vis-private" value="private">
+                            <label for="vis-private" onclick="checkLoginBeforeAction(event)"><i class="fas fa-lock"></i> Privé</label>
+                        </div>
+                        <button class="btn-publish" id="btn-publish" onclick="saveComment()">Publier</button>
+                    </div>
+                </div>
+
+                <div class="private-comment-box" id="private-comment-box">
+                    <div class="private-comment-header">
+                        <div class="private-badge"><i class="fas fa-lock"></i> Mon commentaire privé</div>
+                    </div>
+                    <div class="private-comment-text" id="private-comment-text"></div>
+                </div>
+
+                <div id="comments-container">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'footer.html' %}
+
+<script>
+    const artworkId = '{{ oeuvre.id }}';
+    let saveTimeout;
+    let currentNote = 0;
+
+    // Fonction pour vérifier la connexion avant une action
+    function checkLoginBeforeAction(event) {
+        {% if not session.user_id %}
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            const modal = document.getElementById('loginModal');
+            if (modal) modal.classList.add('active');
+            return false;
+        {% endif %}
+        return true;
+    }
+
+    function requireLogin(event) {
+        return checkLoginBeforeAction(event);
+    }
+
+    function closeLoginModal() {
+        const modal = document.getElementById('loginModal');
+        if (modal) modal.classList.remove('active');
+    }
+
+    function updateSliderFill(slider) {
+        const value = parseFloat(slider.value);
+        const max = parseFloat(slider.max);
+        const percent = (value / max) * 100;
+        slider.style.setProperty('--fill-percent', percent + '%');
+    }
+
+    const techniqueSlider = document.getElementById('note-technique');
+    const originaliteSlider = document.getElementById('note-originalite');
+    const emotionSlider = document.getElementById('note-emotion');
+    const techniqueVal = document.getElementById('technique-value');
+    const originaliteVal = document.getElementById('originalite-value');
+    const emotionVal = document.getElementById('emotion-value');
+
+    function setupSlider(slider, display) {
+        if (!slider) return;
+        updateSliderFill(slider);
+        slider.addEventListener('mousedown', function(e) {
+            if (!checkLoginBeforeAction(e)) return;
+        });
+        slider.addEventListener('input', function(e) {
+            if (!checkLoginBeforeAction(e)) return;
+            display.textContent = this.value;
+            updateSliderFill(this);
+            autoSave();
+        });
+    }
+
+    setupSlider(techniqueSlider, techniqueVal);
+    setupSlider(originaliteSlider, originaliteVal);
+    setupSlider(emotionSlider, emotionVal);
+
+    (function initTheme() {
+        const t = localStorage.getItem('theme') || 'dark';
+        document.body.classList.add('theme-' + t);
+    })();
+
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    let scale = 1, translateX = 0, translateY = 0;
+    let isDragging = false, startX, startY;
+
+    function applyTransform() {
+        modalImage.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+    }
+
+    function openImageModal(url) {
+        if (!url) return;
+        modalImage.src = url;
+        scale = 1; translateX = 0; translateY = 0;
+        applyTransform();
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        isDragging = false;
+    }
+
+    modalImage.addEventListener('wheel', function(e) {
+        e.preventDefault();
+        const delta = e.deltaY * -0.003;
+        const newScale = Math.min(Math.max(scale + delta, 1), 20);
+        const rect = modalImage.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left - rect.width / 2;
+        const mouseY = e.clientY - rect.top - rect.height / 2;
+        translateX -= mouseX * (newScale - scale) / scale;
+        translateY -= mouseY * (newScale - scale) / scale;
+        scale = newScale;
+        if (scale <= 1) { translateX = 0; translateY = 0; }
+        modalImage.style.cursor = scale > 1 ? 'grab' : 'zoom-in';
+        applyTransform();
+    }, { passive: false });
+
+    modalImage.addEventListener('mousedown', function(e) {
+        if (scale <= 1) return;
+        isDragging = true;
+        startX = e.clientX - translateX;
+        startY = e.clientY - translateY;
+        modalImage.style.cursor = 'grabbing';
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        translateX = e.clientX - startX;
+        translateY = e.clientY - startY;
+        applyTransform();
+    });
+
+    document.addEventListener('mouseup', function() {
+        if (!isDragging) return;
+        isDragging = false;
+        modalImage.style.cursor = scale > 1 ? 'grab' : 'zoom-in';
+    });
+
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) closeModal();
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeModal();
+    });
+
+    function initStars() {
+        document.querySelectorAll('.stars-row').forEach(container => {
+            const stars = container.querySelectorAll('.star');
+            if (!stars.length) return;
+
+            container.addEventListener('mousemove', function(e) {
+                const target = e.target.closest('.star');
+                if (!target) return;
+                const idx = parseInt(target.dataset.value);
+                const rect = target.getBoundingClientRect();
+                const isHalf = (e.clientX - rect.left) < rect.width / 2;
+
+                stars.forEach(s => {
+                    const v = parseInt(s.dataset.value);
+                    s.classList.remove('full', 'half', 'preview-full', 'preview-half');
+                    if (v < idx) {
+                        s.classList.add('preview-full');
+                    } else if (v === idx) {
+                        s.classList.add(isHalf ? 'preview-half' : 'preview-full');
+                    }
+                });
+            });
+
+            container.addEventListener('mouseleave', function() {
+                renderStars(stars, currentNote);
+            });
+
+            container.addEventListener('click', function(e) {
+                if (!checkLoginBeforeAction(e)) return;
+                const target = e.target.closest('.star');
+                if (!target) return;
+                const idx = parseInt(target.dataset.value);
+                const rect = target.getBoundingClientRect();
+                const isHalf = (e.clientX - rect.left) < rect.width / 2;
+                const clickedVal = isHalf ? idx - 0.5 : idx;
+
+                if (clickedVal === currentNote) {
+                    currentNote = 0;
+                } else {
+                    currentNote = clickedVal;
+                }
+
+                document.querySelectorAll('#note-globale').forEach(el => el.value = currentNote);
+                document.querySelectorAll('.stars-row').forEach(c => {
+                    renderStars(c.querySelectorAll('.star'), currentNote);
+                });
+
+                autoSave();
+            });
+        });
+    }
+
+    function renderStars(stars, value) {
+        stars.forEach(s => {
+            const v = parseInt(s.dataset.value);
+            s.classList.remove('full', 'half', 'preview-full', 'preview-half');
+            if (value >= v) {
+                s.classList.add('full');
+            } else if (value >= v - 0.5) {
+                s.classList.add('half');
+            }
+        });
+    }
+
+    function autoSave() {
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(saveRating, 1000);
+    }
+
+    async function saveRating() {
+        {% if not session.user_id %} return; {% endif %}
+        const note = parseFloat(document.getElementById('note-globale').value) || 0;
+        const technique = parseFloat(document.getElementById('note-technique').value) || 0;
+        const originalite = parseFloat(document.getElementById('note-originalite').value) || 0;
+        const emotion = parseFloat(document.getElementById('note-emotion').value) || 0;
+        
+        if (note === 0 && technique === 0 && originalite === 0 && emotion === 0) return;
+        
+        try {
+            await fetch('/api/rating/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content },
+                body: JSON.stringify({ 
+                    artwork_id: artworkId, 
+                    note_globale: note, 
+                    note_technique: technique, 
+                    note_originalite: originalite, 
+                    note_emotion: emotion, 
+                    commentaire: document.getElementById('commentaire').value.trim() 
+                })
+            });
+            loadStats();
+            loadPublicAverages();
+        } catch(e) {}
+    }
+
+    async function saveComment() {
+        {% if not session.user_id %}
+            const modal = document.getElementById('loginModal');
+            if (modal) modal.classList.add('active');
+            return;
+        {% endif %}
+        
+        const comment = document.getElementById('commentaire').value.trim();
+        const note = parseFloat(document.getElementById('note-globale').value) || 0;
+        const btn = document.getElementById('btn-publish');
+
+        if (!comment) {
+            if (!confirm('Supprimer votre avis ?')) return;
+            await fetch('/api/rating/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content },
+                body: JSON.stringify({ artwork_id: artworkId })
+            });
+            hidePrivateComment();
+            loadComments();
+            loadStats();
+            loadPublicAverages();
+            btn.textContent = 'Publier';
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = '...';
+        try {
+            const visibility = document.querySelector('input[name="visibility"]:checked')?.value || 'public';
+            const isPublic = visibility === 'public';
+            await fetch('/api/rating/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content },
+                body: JSON.stringify({ 
+                    artwork_id: artworkId, 
+                    note_globale: note, 
+                    note_technique: parseFloat(document.getElementById('note-technique').value) || 0,
+                    note_originalite: parseFloat(document.getElementById('note-originalite').value) || 0,
+                    note_emotion: parseFloat(document.getElementById('note-emotion').value) || 0,
+                    commentaire: comment, 
+                    is_public: isPublic 
+                })
+            });
+            if (!isPublic && comment) {
+                showPrivateComment(comment);
+            } else {
+                hidePrivateComment();
+            }
+            loadComments();
+            loadStats();
+            loadPublicAverages();
+        } catch(e) {}
+        finally {
+            btn.disabled = false;
+            btn.textContent = 'Modifier';
+        }
+    }
+
+    function showPrivateComment(text) {
+        const box = document.getElementById('private-comment-box');
+        const textEl = document.getElementById('private-comment-text');
+        if (box && textEl) { textEl.textContent = text; box.style.display = 'block'; }
+    }
+
+    function hidePrivateComment() {
+        const box = document.getElementById('private-comment-box');
+        if (box) box.style.display = 'none';
+    }
+
+    async function toggleFavorite() {
+        {% if not session.user_id %}
+            const modal = document.getElementById('loginModal');
+            if (modal) modal.classList.add('active');
+            return;
+        {% endif %}
+        
+        const btn = document.getElementById('favorite-btn');
+        const icon = document.getElementById('favorite-icon');
+        
+        try {
+            const response = await fetch('/api/favorite/toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content },
+                body: JSON.stringify({ artwork_id: artworkId })
+            });
+            const data = await response.json();
+            if (data.favorite) {
+                btn.classList.add('active');
+                icon.className = 'fas fa-heart';
+            } else {
+                btn.classList.remove('active');
+                icon.className = 'far fa-heart';
+            }
+            const favCountEl = document.getElementById('count-favs');
+            if (favCountEl) {
+                let currentCount = parseInt(favCountEl.textContent) || 0;
+                favCountEl.textContent = data.favorite ? currentCount + 1 : currentCount - 1;
+            }
+        } catch(e) {
+            console.error('Erreur toggle favorite:', e);
+        }
+    }
+
+    async function checkFavorite() {
+        {% if session.user_id %}
+        try {
+            const response = await fetch(`/api/favorite/check/${artworkId}`);
+            const data = await response.json();
             const btn = document.getElementById('favorite-btn');
             const icon = document.getElementById('favorite-icon');
-            
-            try {
-                const response = await fetch('/api/favorite/toggle', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content },
-                    body: JSON.stringify({ artwork_id: artworkId })
-                });
-                const data = await response.json();
-                if (data.favorite) {
-                    btn.classList.add('active');
-                    icon.className = 'fas fa-heart';
-                } else {
-                    btn.classList.remove('active');
-                    icon.className = 'far fa-heart';
-                }
-                const favCountEl = document.getElementById('count-favs');
-                if (favCountEl) {
-                    let currentCount = parseInt(favCountEl.textContent) || 0;
-                    favCountEl.textContent = data.favorite ? currentCount + 1 : currentCount - 1;
-                }
-            } catch(e) {
-                console.error('Erreur toggle favorite:', e);
+            if (data.favorite) {
+                btn.classList.add('active');
+                icon.className = 'fas fa-heart';
             }
-        }
+        } catch(e) {}
+        {% endif %}
+    }
 
-        async function checkFavorite() {
-            {% if session.user_id %}
-            try {
-                const response = await fetch(`/api/favorite/check/${artworkId}`);
-                const data = await response.json();
-                const btn = document.getElementById('favorite-btn');
-                const icon = document.getElementById('favorite-icon');
-                if (data.favorite) {
-                    btn.classList.add('active');
-                    icon.className = 'fas fa-heart';
-                }
-            } catch(e) {}
-            {% endif %}
-        }
+    async function loadUserRating() {
+        {% if session.user_id %}
+        try {
+            const res = await fetch(`/api/rating/get/${artworkId}`);
+            const data = await res.json();
+            if (!data.has_rating) return;
+            const r = data.rating;
+            currentNote = r.note_globale;
+            document.querySelectorAll('#note-globale').forEach(el => el.value = r.note_globale);
+            document.querySelectorAll('.stars-row').forEach(c => {
+                renderStars(c.querySelectorAll('.star'), r.note_globale);
+            });
+            
+            if (r.note_technique !== undefined) {
+                document.getElementById('note-technique').value = r.note_technique;
+                document.getElementById('technique-value').textContent = r.note_technique;
+                updateSliderFill(document.getElementById('note-technique'));
+            }
+            if (r.note_originalite !== undefined) {
+                document.getElementById('note-originalite').value = r.note_originalite;
+                document.getElementById('originalite-value').textContent = r.note_originalite;
+                updateSliderFill(document.getElementById('note-originalite'));
+            }
+            if (r.note_emotion !== undefined) {
+                document.getElementById('note-emotion').value = r.note_emotion;
+                document.getElementById('emotion-value').textContent = r.note_emotion;
+                updateSliderFill(document.getElementById('note-emotion'));
+            }
+            
+            if (r.commentaire) document.getElementById('commentaire').value = r.commentaire;
+            document.getElementById('btn-publish').textContent = 'Modifier';
+            const visInput = document.querySelector(`input[name="visibility"][value="${r.is_public ? 'public' : 'private'}"]`);
+            if (visInput) visInput.checked = true;
+            if (!r.is_public && r.commentaire) showPrivateComment(r.commentaire);
+        } catch(e) {}
+        {% endif %}
+    }
 
- 
-
-        // CHARGEMENT DES DONNÉES
-        async function loadUserRating() {
-            {% if session.user_id %}
-            try {
-                const res = await fetch(`/api/rating/get/${artworkId}`);
-                const data = await res.json();
-                if (!data.has_rating) return;
-                const r = data.rating;
-                currentNote = r.note_globale;
-                document.querySelectorAll('#note-globale').forEach(el => el.value = r.note_globale);
-                document.querySelectorAll('.stars-row').forEach(c => {
-                    renderStars(c.querySelectorAll('.star'), r.note_globale);
-                });
-                
-                // Charger les 3 sous-notes
-                if (r.note_technique !== undefined) {
-                    document.getElementById('note-technique').value = r.note_technique;
-                    document.getElementById('technique-value').textContent = r.note_technique;
-                }
-                if (r.note_originalite !== undefined) {
-                    document.getElementById('note-originalite').value = r.note_originalite;
-                    document.getElementById('originalite-value').textContent = r.note_originalite;
-                }
-                if (r.note_emotion !== undefined) {
-                    document.getElementById('note-emotion').value = r.note_emotion;
-                    document.getElementById('emotion-value').textContent = r.note_emotion;
-                }
-                
-                if (r.commentaire) document.getElementById('commentaire').value = r.commentaire;
-                document.getElementById('btn-publish').textContent = 'Modifier';
-                const visInput = document.querySelector(`input[name="visibility"][value="${r.is_public ? 'public' : 'private'}"]`);
-                if (visInput) visInput.checked = true;
-                if (!r.is_public && r.commentaire) showPrivateComment(r.commentaire);
-            } catch(e) {}
-            {% endif %}
-        }
-
-        async function loadStats() {
-            try {
-                const res = await fetch(`/api/artwork/stats/${artworkId}`);
-                const stats = await res.json();
-                document.getElementById('global-number').textContent = stats.moyenne_globale ? stats.moyenne_globale.toFixed(1) : '–';
-                document.getElementById('count-notes').textContent = stats.total_notes || 0;
-                document.getElementById('count-favs').textContent = stats.favorites_count || 0;
-                const avg = stats.moyenne_globale || 0;
-                let starsHtml = '';
-                for (let i = 0; i < 5; i++) {
-                    if (avg >= i + 1) starsHtml += '★';
-                    else if (avg >= i + 0.5) starsHtml += '½';
-                    else starsHtml += '☆';
-                }
-                document.getElementById('global-stars').textContent = starsHtml;
-                const distContainer = document.getElementById('distribution-container');
-                if (distContainer && stats.distribution) {
-                    let html = '';
-                    for (let i = 5; i >= 1; i--) {
-                        const count = stats.distribution[i] || 0;
-                        const pct = stats.total_notes > 0 ? (count / stats.total_notes * 100) : 0;
-                        html += `<div class="dist-row">
-                            <span class="dist-label">${i}★</span>
-                            <div class="dist-bar-wrap"><div class="dist-bar-fill" style="width:${pct}%"></div></div>
-                            <span class="dist-count">${count}</span>
-                        </div>`;
-                    }
-                    distContainer.innerHTML = html;
-                }
-            } catch(e) {}
-        }
-
-        async function loadComments() {
-            try {
-                const res = await fetch(`/api/comments/${artworkId}`);
-                const comments = await res.json();
-                const container = document.getElementById('comments-container');
-                if (!comments || !comments.length) {
-                    container.innerHTML = '<div class="no-comments">Aucun commentaire public pour le moment</div>';
-                    return;
-                }
-                container.innerHTML = `<div class="comments-list">${comments.map(c => {
-                    const initial = (c.username || 'A')[0].toUpperCase();
-                    let starsHtml = '';
-                    for (let i = 1; i <= 5; i++) starsHtml += i <= c.note_globale ? '★' : '☆';
-                    return `<div class="comment-item">
-                        <div class="comment-top">
-                            <div class="comment-author-wrap">
-                                <div class="comment-avatar">${initial}</div>
-                                <span class="comment-author">${c.username || 'Anonyme'}</span>
-                            </div>
-                            <div class="comment-right">
-                                ${c.note_globale ? `<span class="comment-stars">${starsHtml}</span>` : ''}
-                                <span class="comment-date">${c.created_at || ''}</span>
-                            </div>
-                        </div>
-                        <div class="comment-text">${c.commentaire || ''}</div>
+    async function loadStats() {
+        try {
+            const res = await fetch(`/api/artwork/stats/${artworkId}`);
+            const stats = await res.json();
+            document.getElementById('global-number').textContent = stats.moyenne_globale ? stats.moyenne_globale.toFixed(1) : '–';
+            document.getElementById('count-notes').textContent = stats.total_notes || 0;
+            document.getElementById('count-favs').textContent = stats.favorites_count || 0;
+            const avg = stats.moyenne_globale || 0;
+            let starsHtml = '';
+            for (let i = 0; i < 5; i++) {
+                if (avg >= i + 1) starsHtml += '★';
+                else if (avg >= i + 0.5) starsHtml += '½';
+                else starsHtml += '☆';
+            }
+            document.getElementById('global-stars').textContent = starsHtml;
+            const distContainer = document.getElementById('distribution-container');
+            if (distContainer && stats.distribution) {
+                let html = '';
+                for (let i = 5; i >= 1; i--) {
+                    const count = stats.distribution[i] || 0;
+                    const pct = stats.total_notes > 0 ? (count / stats.total_notes * 100) : 0;
+                    html += `<div class="dist-row">
+                        <span class="dist-label">${i}★</span>
+                        <div class="dist-bar-wrap"><div class="dist-bar-fill" style="width:${pct}%"></div></div>
+                        <span class="dist-count">${count}</span>
                     </div>`;
-                }).join('')}</div>`;
-            } catch(e) {}
+                }
+                distContainer.innerHTML = html;
+            }
+        } catch(e) {}
+    }
+
+    async function loadPublicAverages() {
+        try {
+            const res = await fetch(`/api/artwork/public-averages/${artworkId}`);
+            const data = await res.json();
+            // Tu peux utiliser ces données si tu veux afficher les moyennes publiques
+        } catch(e) {}
+    }
+
+async function loadComments() {
+    try {
+        const res = await fetch(`/api/comments/${artworkId}`);
+        const comments = await res.json();
+        const container = document.getElementById('comments-container');
+        if (!comments || !comments.length) {
+            container.innerHTML = '';  // Rien du tout, pas de cadre ni message
+            return;
         }
+        container.innerHTML = `<div class="comments-list">${comments.map(c => {
+            const initial = (c.username || 'A')[0].toUpperCase();
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) starsHtml += i <= c.note_globale ? '★' : '☆';
+            return `<div class="comment-item">
+                <div class="comment-top">
+                    <div class="comment-author-wrap">
+                        <div class="comment-avatar">${initial}</div>
+                        <span class="comment-author">${escapeHtml(c.username || 'Anonyme')}</span>
+                    </div>
+                    <div class="comment-right">
+                        ${c.note_globale ? `<span class="comment-stars">${starsHtml}</span>` : ''}
+                        <span class="comment-date">${c.created_at || ''}</span>
+                    </div>
+                </div>
+                <div class="comment-text">${escapeHtml(c.commentaire || '')}</div>
+            </div>`;
+        }).join('')}</div>`;
+    } catch(e) {}
+}
 
-        // INITIALISATION
-        document.addEventListener('DOMContentLoaded', () => {
-            initStars();
-            checkFavorite();
-            loadUserRating();
-            loadStats();
-            loadComments();
-            
-            // Gestion des curseurs
-            const techniqueSlider = document.getElementById('note-technique');
-            const originaliteSlider = document.getElementById('note-originalite');
-            const emotionSlider = document.getElementById('note-emotion');
-            const techniqueVal = document.getElementById('technique-value');
-            const originaliteVal = document.getElementById('originalite-value');
-            const emotionVal = document.getElementById('emotion-value');
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
 
-            if (techniqueSlider) {
-                techniqueSlider.addEventListener('input', function() {
-                    techniqueVal.textContent = this.value;
-                    autoSave();
-                });
-            }
-            if (originaliteSlider) {
-                originaliteSlider.addEventListener('input', function() {
-                    originaliteVal.textContent = this.value;
-                    autoSave();
-                });
-            }
-            if (emotionSlider) {
-                emotionSlider.addEventListener('input', function() {
-                    emotionVal.textContent = this.value;
-                    autoSave();
-                });
+    document.addEventListener('DOMContentLoaded', () => {
+        initStars();
+        checkFavorite();
+        loadUserRating();
+        loadStats();
+        loadComments();
+        loadPublicAverages();
+        
+        const techniqueSlider = document.getElementById('note-technique');
+        const originaliteSlider = document.getElementById('note-originalite');
+        const emotionSlider = document.getElementById('note-emotion');
+        const techniqueVal = document.getElementById('technique-value');
+        const originaliteVal = document.getElementById('originalite-value');
+        const emotionVal = document.getElementById('emotion-value');
+
+        if (techniqueSlider) {
+            techniqueSlider.addEventListener('input', function() {
+                if (!checkLoginBeforeAction()) return;
+                techniqueVal.textContent = this.value;
+                autoSave();
+            });
+        }
+        if (originaliteSlider) {
+            originaliteSlider.addEventListener('input', function() {
+                if (!checkLoginBeforeAction()) return;
+                originaliteVal.textContent = this.value;
+                autoSave();
+            });
+        }
+        if (emotionSlider) {
+            emotionSlider.addEventListener('input', function() {
+                if (!checkLoginBeforeAction()) return;
+                emotionVal.textContent = this.value;
+                autoSave();
+            });
+        }
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLoginModal();
             }
         });
-    </script>
+
+        const loginModal = document.getElementById('loginModal');
+        if (loginModal) {
+            loginModal.addEventListener('click', function(e) {
+                if (e.target === loginModal) closeLoginModal();
+            });
+        }
+    });
+</script>
 </body>
 </html>

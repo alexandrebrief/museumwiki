@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+{% if session.language == 'en' %}
+<html lang="en">
+{% else %}
+<html lang="fr">
+{% endif %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ site_name }} · Explorer</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --accent: #6c5ce7;
+            --accent-hover: #5a4bcf;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-text: 'Inter', sans-serif;
+        }
+
+        body.theme-dark {
+            --bg: #0a0a0a;
+            --surface: #121212;
+            --surface-hover: #1e1e1e;
+            --text: #ffffff;
+            --text-muted: #888888;
+            --border: #2a2a2a;
+        }
+        body.theme-light {
+            --bg: #f5f5f5;
+            --surface: #ffffff;
+            --surface-hover: #f0f0f0;
+            --text: #1a1a1a;
+            --text-muted: #6a6a6a;
+            --border: #e0e0e0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-text);
+            min-height: 100vh;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 1rem; }
+        .main-content { margin-top: 80px; padding-bottom: 80px; }
+
+        /* ===== HERO ===== */
+        .hero {
+            text-align: center;
+            padding: 2rem 0 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+        .hero h1 span { color: var(--accent); }
+
+        /* ===== CONTEXTE DE RECHERCHE (affiche ce que l'utilisateur cherche) ===== */
+        .search-header {
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+        .search-header-title {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        .search-header-title i { color: var(--accent); margin-right: 0.5rem; }
+        .search-header-query {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            font-family: var(--font-display);
+        }
+        .search-header-desc {
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+        }
+        .search-header-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .context-badge {
+            padding: 0.3rem 0.8rem;
+            background: rgba(108,92,231,0.1);
+            border-radius: 30px;
+            font-size: 0.7rem;
+            color: var(--accent);
+        }
+
+        /* ===== SUGGESTIONS HORIZONTALES (comme tu aimais) ===== */
+        .suggestions-section {
+            margin-bottom: 3rem;
+        }
+        .suggestions-title {
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .suggestions-scroll {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            scrollbar-width: thin;
+        }
+        .suggestions-scroll::-webkit-scrollbar { height: 2px; }
+        .suggestions-scroll::-webkit-scrollbar-track { background: var(--border); }
+        .suggestions-scroll::-webkit-scrollbar-thumb { background: var(--accent); }
+
+        .suggestion-pill {
+            flex: 0 0 auto;
+            padding: 0.8rem 1.5rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            transition: all 0.2s;
+        }
+        .suggestion-pill:hover {
+            border-color: var(--accent);
+            background: rgba(108,92,231,0.05);
+        }
+        .suggestion-pill i { color: var(--accent); font-size: 0.9rem; }
+        .suggestion-pill-info { text-align: left; }
+        .suggestion-pill-name { font-weight: 600; font-size: 0.85rem; }
+        .suggestion-pill-count { font-size: 0.65rem; color: var(--text-muted); }
+
+        /* ===== FILTRES RAPIDES ===== */
+        .quick-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .quick-filter {
+            padding: 0.4rem 1rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quick-filter.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        /* ===== GRILLE RÉSULTATS ===== */
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .results-count {
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        .results-count span { color: var(--accent); font-weight: 700; font-size: 1.2rem; }
+
+        .works-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+        .work-card {
+            text-decoration: none;
+            color: inherit;
+            background: var(--surface);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform 0.2s;
+            border: 1px solid var(--border);
+        }
+        .work-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+        .work-image {
+            position: relative;
+            aspect-ratio: 1/1;
+            overflow: hidden;
+        }
+        .work-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .work-fav {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            width: 30px;
+            height: 30px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .work-fav i { color: white; font-size: 0.7rem; }
+        .work-fav.active i { color: #e03131; }
+        .work-info { padding: 0.6rem; }
+        .work-title {
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .work-artist {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 0.2rem;
+        }
+
+        /* ===== LOAD MORE ===== */
+        .load-more-container { text-align: center; padding: 2rem 0; }
+        .load-more-btn {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 0.7rem 2rem;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+        .end-message, .no-results { text-align: center; padding: 2rem; color: var(--text-muted); }
+
+        /* ===== SCROLL TOP ===== */
+        .scroll-top {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 44px;
+            height: 44px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+        }
+        .scroll-top.visible { opacity: 1; visibility: visible; }
+        .scroll-top:hover { background: var(--accent); color: white; }
+
+        @media (max-width: 1024px) { .works-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 768px) { 
+            .works-grid { grid-template-columns: repeat(2, 1fr); }
+            .search-header-query { font-size: 1.3rem; }
+        }
+        @media (max-width: 480px) { .works-grid { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+</head>
+<body>
+<script>
+    (function() {
+        const t = localStorage.getItem('theme') || 'dark';
+        document.body.classList.remove('theme-dark', 'theme-light');
+        document.body.classList.add('theme-' + t);
+    })();
+</script>
+
+{% include 'navbar.html' %}
+
+<div class="container main-content">
+
+    <!-- HERO -->
+    <div class="hero">
+        <h1>Explorer <span>l'art</span></h1>
+    </div>
+
+    {% if q %}
+    <!-- ===== CONTEXTE DE RECHERCHE ===== -->
+    <div class="search-header">
+        <div class="search-header-title">
+            <i class="fas fa-search"></i> Vous cherchez
+        </div>
+        <div class="search-header-query">« {{ q }} »</div>
+        <div class="search-header-desc">
+            {% if search_results.artists or search_results.museums or search_results.cities or search_results.countries %}
+            Voici ce qui correspond le mieux à votre recherche
+            {% else %}
+            Aucune suggestion directe — voici les œuvres correspondantes
+            {% endif %}
+        </div>
+        <div class="search-header-badges">
+            {% if search_results.artists %}<span class="context-badge"><i class="fas fa-user"></i> {{ search_results.artists|length }} artiste(s)</span>{% endif %}
+            {% if search_results.museums %}<span class="context-badge"><i class="fas fa-landmark"></i> {{ search_results.museums|length }} musée(s)</span>{% endif %}
+            {% if search_results.cities %}<span class="context-badge"><i class="fas fa-city"></i> {{ search_results.cities|length }} ville(s)</span>{% endif %}
+            {% if search_results.countries %}<span class="context-badge"><i class="fas fa-globe"></i> {{ search_results.countries|length }} pays</span>{% endif %}
+        </div>
+    </div>
+
+    <!-- ===== SUGGESTIONS HORIZONTALES (ce que tu aimais) ===== -->
+    {% if search_results.artists or search_results.museums or search_results.cities or search_results.countries %}
+    <div class="suggestions-section">
+        <div class="suggestions-title">
+            <i class="fas fa-magic"></i> Suggestions
+        </div>
+        <div class="suggestions-scroll">
+            {% for artist in search_results.artists[:8] %}
+            <a href="/research?artist={{ artist.nom|urlencode }}" class="suggestion-pill">
+                <i class="fas fa-user"></i>
+                <div class="suggestion-pill-info">
+                    <div class="suggestion-pill-name">{{ artist.nom }}</div>
+                    <div class="suggestion-pill-count">{{ artist.count }} œuvres</div>
+                </div>
+            </a>
+            {% endfor %}
+            {% for museum in search_results.museums[:6] %}
+            <a href="/research?museum={{ museum.id|urlencode }}" class="suggestion-pill">
+                <i class="fas fa-landmark"></i>
+                <div class="suggestion-pill-info">
+                    <div class="suggestion-pill-name">{{ museum.nom }}</div>
+                    <div class="suggestion-pill-count">{{ museum.count }} œuvres</div>
+                </div>
+            </a>
+            {% endfor %}
+            {% for city in search_results.cities[:6] %}
+            <a href="/research?city={{ city.nom|urlencode }}" class="suggestion-pill">
+                <i class="fas fa-city"></i>
+                <div class="suggestion-pill-info">
+                    <div class="suggestion-pill-name">{{ city.nom }}</div>
+                    <div class="suggestion-pill-count">{{ city.oeuvres_count }} œuvres</div>
+                </div>
+            </a>
+            {% endfor %}
+            {% for country in search_results.countries[:6] %}
+            <a href="/research?country={{ country.nom|urlencode }}" class="suggestion-pill">
+                <i class="fas fa-globe"></i>
+                <div class="suggestion-pill-info">
+                    <div class="suggestion-pill-name">{{ country.nom }}</div>
+                    <div class="suggestion-pill-count">{{ country.oeuvres_count }} œuvres</div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
+
+    <!-- ===== FILTRES RAPIDES ===== -->
+    <div class="quick-filters">
+        <button class="quick-filter active" data-filter="all" onclick="filterWorks('all')">Toutes</button>
+        <button class="quick-filter" data-filter="peinture" onclick="filterWorks('peinture')">Peinture</button>
+        <button class="quick-filter" data-filter="sculpture" onclick="filterWorks('sculpture')">Sculpture</button>
+        <button class="quick-filter" data-filter="dessin" onclick="filterWorks('dessin')">Dessin</button>
+        <button class="quick-filter" data-filter="photo" onclick="filterWorks('photo')">Photographie</button>
+    </div>
+
+    <!-- ===== RÉSULTATS ===== -->
+    <div class="results-header">
+        <div class="results-count">
+            <span id="visible-count">{{ total_oeuvres }}</span> résultat{{ 's' if total_oeuvres > 1 else '' }}
+        </div>
+    </div>
+
+    <div class="works-grid" id="works-grid">
+        {% for artwork in works %}
+        <a href="/oeuvre/{{ artwork.id }}" class="work-card" data-type="{{ artwork.instance_of|lower if artwork.instance_of else '' }}">
+            <div class="work-image">
+                <div class="work-fav" onclick="toggleFav(event, '{{ artwork.id }}', this)">
+                    <i class="far fa-heart"></i>
+                </div>
+                {% if artwork.image_url %}
+                <img src="https://images.weserv.nl/?url={{ artwork.image_url|urlencode }}&w=400&h=400&fit=cover&output=webp&q=75"
+                     alt="{{ artwork.titre }}"
+                     loading="lazy"
+                     onerror="this.src='{{ artwork.image_url }}'">
+                {% else %}
+                <div style="width:100%;height:100%;background:var(--surface-hover);display:flex;align-items:center;justify-content:center;">
+                    <i class="fas fa-image" style="font-size:1.5rem;color:var(--text-muted);"></i>
+                </div>
+                {% endif %}
+            </div>
+            <div class="work-info">
+                <div class="work-title">{{ artwork.titre|truncate(35) if artwork.titre else 'SANS TITRE' }}</div>
+                <div class="work-artist">{{ artwork.createur|truncate(25) if artwork.createur else 'ARTISTE INCONNU' }}</div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+
+    <div class="load-more-container" id="load-more-container" style="display:{% if has_more %}block{% else %}none{% endif %};">
+        <button class="load-more-btn" onclick="loadMore()">Voir plus</button>
+    </div>
+    <div class="end-message" id="end-message" style="display:none;">✨ Fin des résultats ✨</div>
+
+</div>
+
+<div class="scroll-top" id="scroll-top"><i class="fas fa-arrow-up"></i></div>
+{% include 'footer.html' %}
+
+<script>
+    let currentPage = 1;
+    let isLoading = false;
+    let hasMore = {{ 'true' if has_more else 'false' }};
+    const isLoggedIn = {{ 'true' if session.user_id else 'false' }};
+    let currentFilter = 'all';
+
+    window.toggleFav = async function(e, artworkId, el) {
+        e.preventDefault(); e.stopPropagation();
+        if (!isLoggedIn) { window.location.href = '/login?next=/research'; return; }
+        try {
+            const res = await fetch('/api/favorite/toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content },
+                body: JSON.stringify({ artwork_id: artworkId })
+            });
+            const data = await res.json();
+            el.classList.toggle('active', data.favorite);
+            el.querySelector('i').className = data.favorite ? 'fas fa-heart' : 'far fa-heart';
+        } catch(e) {}
+    };
+
+    window.filterWorks = function(filter) {
+        currentFilter = filter;
+        document.querySelectorAll('.quick-filter').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`.quick-filter[data-filter="${filter}"]`).classList.add('active');
+        
+        const cards = document.querySelectorAll('.work-card');
+        let visible = 0;
+        cards.forEach(card => {
+            if (filter === 'all') {
+                card.style.display = 'block';
+                visible++;
+            } else {
+                const type = card.getAttribute('data-type')?.toLowerCase() || '';
+                const show = type.includes(filter);
+                card.style.display = show ? 'block' : 'none';
+                if (show) visible++;
+            }
+        });
+        document.getElementById('visible-count').textContent = visible;
+    };
+
+    window.loadMore = async function() {
+        if (isLoading || !hasMore) return;
+        isLoading = true;
+        const btn = document.getElementById('load-more-btn');
+        if (btn) btn.disabled = true;
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('page', currentPage + 1);
+            const res = await fetch('/api/works?' + urlParams);
+            const data = await res.json();
+            if (data.works?.length) {
+                appendWorks(data.works);
+                currentPage++;
+                hasMore = data.has_more;
+            } else { hasMore = false; }
+            if (!hasMore) {
+                document.getElementById('load-more-container').style.display = 'none';
+                document.getElementById('end-message').style.display = 'block';
+            }
+        } catch(e) { console.error(e); }
+        finally { isLoading = false; if (btn) btn.disabled = false; }
+    };
+
+    function appendWorks(works) {
+        const grid = document.getElementById('works-grid');
+        works.forEach(w => {
+            const card = document.createElement('a');
+            card.href = `/oeuvre/${w.id}`;
+            card.className = 'work-card';
+            card.setAttribute('data-type', (w.instance_of || '').toLowerCase());
+            card.innerHTML = `
+                <div class="work-image">
+                    <div class="work-fav" onclick="toggleFav(event, '${w.id}', this)"><i class="far fa-heart"></i></div>
+                    <img src="https://images.weserv.nl/?url=${encodeURIComponent(w.image_url)}&w=400&h=400&fit=cover&output=webp&q=75" loading="lazy" onerror="this.src='${w.image_url}'">
+                </div>
+                <div class="work-info">
+                    <div class="work-title">${esc((w.titre||'Sans titre').substring(0,35))}</div>
+                    <div class="work-artist">${esc((w.createur||'Artiste inconnu').substring(0,25))}</div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+        if (currentFilter !== 'all') filterWorks(currentFilter);
+    }
+
+    function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    const scrollTop = document.getElementById('scroll-top');
+    window.addEventListener('scroll', () => scrollTop.classList.toggle('visible', window.scrollY > 500));
+    scrollTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>

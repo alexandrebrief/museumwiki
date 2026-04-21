@@ -8,257 +8,473 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ site_name }}</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>{{ site_name }} · À propos</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-:root {
-    --bg-dark: #0a0a0a;
-    --bg-light: #ffffff;
-    --surface-dark: #141414;
-    --surface-light: #f5f5f5;
-    --text-dark: #ffffff;
-    --text-light: #1a1a1a;
-    --text-muted-dark: #7a7a7a;
-    --text-muted-light: #9a9a9a;
-    --border-dark: #2a2a2a;
-    --border-light: #e0e0e0;
-    --accent: #6c5ce7;
-    --accent-hover: #5a4bcf;
-    --font-display: 'Space Grotesk', sans-serif;
-    --font-text: 'Inter', sans-serif;
-}
+        :root {
+            --accent: #6c5ce7;
+            --accent-hover: #5a4bcf;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-text: 'Inter', sans-serif;
+        }
 
-body {
-    background-color: var(--bg-dark);
-    font-family: var(--font-text);
-    color: var(--text-dark);
-    line-height: 1.5;
-    font-weight: 300;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    min-height: 100vh;
-}
+        body.theme-dark {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --surface2: #1a1a1a;
+            --text: #ffffff;
+            --text-muted: #7a7a7a;
+            --border: #2a2a2a;
+            --card: #0d0d0d;
+        }
 
-body.theme-light {
-    background-color: var(--bg-light);
-    color: var(--text-light);
-    --surface: var(--surface-light);
-    --surface-hover: #eaeaea;
-    --border-color: var(--border-light);
-    --text-muted: var(--text-muted-light);
-}
+        body.theme-light {
+            --bg: #ffffff;
+            --surface: #f5f5f5;
+            --surface2: #f0f0f0;
+            --text: #111111;
+            --text-muted: #666666;
+            --border: #e0e0e0;
+            --card: #fafafa;
+        }
 
-body.theme-dark {
-    --surface: var(--surface-dark);
-    --surface-hover: #1f1f1f;
-    --border-color: var(--border-dark);
-    --text-muted: var(--text-muted-dark);
-}
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-text);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
 
-.container {
-    max-width: 1440px;
-    margin: 0 auto;
-    padding: 0 0.75rem;
-}
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
 
-.main-content {
-    margin-top: 100px;
-    min-height: calc(100vh - 100px);
-    padding-bottom: 6rem;
-}
+        .main-content {
+            margin-top: 100px;
+        }
 
-/* ===== HEADER ===== */
-.page-header {
-    padding: 3rem 0 2rem;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 4rem;
-}
+        /* ===== HERO (fond blanc) ===== */
+        .hero {
+            text-align: center;
+            padding: 3rem 0 4rem;
+            background: var(--bg);
+        }
 
-.page-title {
-    font-family: var(--font-display);
-    font-size: 3rem;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    text-transform: uppercase;
-    line-height: 0.9;
-}
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            margin-bottom: 1rem;
+        }
 
-.page-title span {
-    color: var(--accent);
-}
+        .hero-subtitle {
+            font-size: 1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
 
-/* ===== GRILLE 2 COLONNES ===== */
-.about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    max-width: 1000px;
-}
+        /* ===== STATS (fond gris) ===== */
+        .stats-section {
+            background: var(--surface);
+            padding: 4rem 0;
+        }
 
-.about-block {
-    background: var(--surface);
-    border: 1px solid var(--border-color);
-    padding: 2.5rem;
-    position: relative;
-}
+        .stats-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 3rem;
+        }
 
-.about-block::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent), transparent);
-}
+        .stat-item {
+            text-align: center;
+        }
 
-.block-label {
-    font-family: var(--font-display);
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    color: var(--accent);
-    margin-bottom: 1.5rem;
-    font-weight: 600;
-}
+        .stat-number {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
 
-.block-title {
-    font-family: var(--font-display);
-    font-size: 1.6rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: -0.02em;
-    margin-bottom: 1.2rem;
-    line-height: 1;
-}
+        .stat-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
 
-.block-text {
-    font-size: 0.95rem;
-    line-height: 1.8;
-    color: var(--text-muted);
-}
+        /* ===== FAQ (fond blanc) ===== */
+        .faq-section {
+            padding: 5rem 0;
+            background: var(--bg);
+        }
 
-.block-text p {
-    margin-bottom: 1rem;
-}
+        .faq-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 3rem;
+            letter-spacing: -0.02em;
+        }
 
-.block-text p:last-child {
-    margin-bottom: 0;
-}
+        .faq-list {
+            max-width: 800px;
+            margin: 0 auto;
+        }
 
-/* ===== TECH ===== */
-.tech-section {
-    margin-top: 4rem;
-    max-width: 1000px;
-}
+        .faq-item {
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 0;
+        }
 
-.tech-label {
-    font-family: var(--font-display);
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    color: var(--text-muted);
-    margin-bottom: 1rem;
-    font-weight: 600;
-}
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 0;
+            cursor: pointer;
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
 
-.tech-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
+        .faq-question:hover {
+            color: var(--accent);
+        }
 
-.tech-tag {
-    background: var(--surface);
-    border: 1px solid var(--border-color);
-    padding: 0.4rem 1rem;
-    font-family: var(--font-display);
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--text-muted);
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-}
+        .faq-question i {
+            transition: transform 0.3s;
+            color: var(--accent);
+        }
 
-.tech-tag i { color: var(--accent); font-size: 0.8rem; }
-.tech-tag:hover { border-color: var(--accent); color: var(--accent); }
+        .faq-question.active i {
+            transform: rotate(180deg);
+        }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
-    .about-grid { grid-template-columns: 1fr; }
-    .page-title { font-size: 2rem; }
-    .main-content { margin-top: 58px !important; }
-}
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            padding: 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .faq-answer.active {
+            max-height: 300px;
+            padding-bottom: 1.2rem;
+        }
+
+        /* ===== CONTACT (fond gris) ===== */
+        .contact-section {
+            padding: 5rem 0;
+            background: var(--surface);
+        }
+
+        .contact-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 3rem;
+            letter-spacing: -0.02em;
+        }
+
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: var(--font-text);
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .contact-submit {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .contact-submit:hover {
+            background: var(--accent-hover);
+        }
+
+        .contact-note {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 700px) {
+            .main-content { margin-top: 68px; }
+            .hero-title { font-size: 2rem; }
+            .hero { padding: 2rem 0 3rem; }
+            .stats-list { gap: 1.5rem; }
+            .stat-number { font-size: 1.5rem; }
+            .faq-question { font-size: 0.9rem; }
+            .contact-title { font-size: 1.5rem; }
+            .faq-title { font-size: 1.5rem; }
+            .stats-section { padding: 3rem 0; }
+            .faq-section { padding: 3rem 0; }
+            .contact-section { padding: 3rem 0; }
+        }
+
+        @media (max-width: 500px) {
+            .stats-list { gap: 1rem; }
+            .stat-item { min-width: 80px; }
+        }
     </style>
 </head>
-<body style="visibility:hidden">
+
+<body class="theme-dark" style="visibility:hidden">
 <script>
     (function() {
         const t = localStorage.getItem('theme') || 'dark';
-        document.body.classList.remove('theme-dark', 'theme-light');
-        document.body.classList.add('theme-' + t);
+        document.body.classList.remove('theme-dark','theme-light');
+        document.body.classList.add('theme-'+t);
         document.body.style.visibility = '';
     })();
 </script>
 
-    {% include 'navbar.html' %}
+{% include 'navbar.html' %}
 
-    <div class="container main-content">
-
-        <div class="page-header">
-            <h1 class="page-title">À <span>Propos</span></h1>
+<div class="main-content">
+    
+    <!-- HERO - fond blanc -->
+    <div class="hero">
+        <div class="container">
+            <h1 class="hero-title">À propos</h1>
+            <p class="hero-subtitle">{{ site_name }} est la plateforme de référence pour noter, commenter et découvrir des œuvres d'art du monde entier.</p>
         </div>
-
-        <div class="about-grid">
-
-            <div class="about-block">
-                <div class="block-label">01</div>
-                <div class="block-title">L'Objectif</div>
-                <div class="block-text">
-                    <p><strong style="color:inherit; font-weight:500;">{{ site_name }}</strong> est né d'une idée simple : rendre l'art accessible à tous.</p>
-                    <p>Que vous soyez amateur éclairé ou simple curieux, explorez des milliers d'œuvres issues des plus grands musées du monde, filtrez par artiste, ville ou mouvement, et construisez votre propre galerie virtuelle.</p>
-                    <p>L'art n'est pas fait uniquement pour les musées — il mérite d'être collectionné, partagé et intégré dans notre quotidien.</p>
-                </div>
-            </div>
-
-            <div class="about-block">
-                <div class="block-label">02</div>
-                <div class="block-title">Ma Vision</div>
-                <div class="block-text">
-                    <p>Je crois qu'une œuvre d'art gagne en valeur quand elle est partagée. Chaque note, chaque commentaire construit une mémoire collective autour d'un patrimoine commun.</p>
-                    <p>L'objectif à terme est de créer un espace où chacun peut non seulement découvrir, mais aussi contribuer — par ses avis, ses listes, sa curiosité — à une base de connaissances vivante sur l'art mondial.</p>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="tech-section">
-            <div class="tech-label">Stack technique</div>
-            <div class="tech-tags">
-                <span class="tech-tag"><i class="fab fa-python"></i> Python</span>
-                <span class="tech-tag"><i class="fas fa-flask"></i> Flask</span>
-                <span class="tech-tag"><i class="fas fa-database"></i> PostgreSQL</span>
-                <span class="tech-tag"><i class="fas fa-code"></i> HTML / CSS</span>
-                <span class="tech-tag"><i class="fas fa-project-diagram"></i> Wikidata API</span>
-                <span class="tech-tag"><i class="fas fa-envelope"></i> SendGrid</span>
-                <span class="tech-tag"><i class="fas fa-cloud"></i> Weserv</span>
-            </div>
-        </div>
-
     </div>
 
-    {% include 'footer.html' %}
+    <!-- STATS - fond gris -->
+    <div class="stats-section">
+        <div class="container">
+            <div class="stats-list">
+                <div class="stat-item">
+                    <div class="stat-number">{{ total_oeuvres }}</div>
+                    <div class="stat-label">ŒUVRES</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ total_artistes }}</div>
+                    <div class="stat-label">ARTISTES</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ total_musees }}</div>
+                    <div class="stat-label">MUSÉES</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ total_visits }}</div>
+                    <div class="stat-label">VISITEURS</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ total_users }}</div>
+                    <div class="stat-label">MEMBRES</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ - fond blanc -->
+    <div class="faq-section">
+        <div class="container">
+            <h2 class="faq-title">Questions fréquentes</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Qu'est-ce que {{ site_name }} ?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        {{ site_name }} est une plateforme communautaire dédiée à l'art. Vous pouvez noter, commenter et découvrir des milliers d'œuvres d'art, d'artistes et de musées. C'est comme Letterboxd, mais pour l'art.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Comment noter une œuvre ?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Rendez-vous sur la page d'une œuvre, cliquez sur les étoiles pour donner une note globale (1 à 5). Vous pouvez aussi affiner votre note avec trois sous-critères : technique, créativité et émotion.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Puis-je commenter une œuvre ?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Oui ! Après vous être connecté, vous pouvez laisser un commentaire public ou privé sur chaque œuvre. Partagez votre avis et discutez avec la communauté.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Comment créer une liste de favoris ?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Connectez-vous et cliquez sur l'icône cœur sur la page d'une œuvre. Retrouvez toutes vos œuvres préférées dans votre espace "Mes favoris".
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>L'inscription est-elle gratuite ?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Oui, totalement gratuite ! Créez votre compte en quelques secondes et rejoignez notre communauté de passionnés d'art.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Puis-je modifier ou supprimer mes notes ?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Absolument ! Vous pouvez modifier ou supprimer vos notes et commentaires à tout moment depuis la page de l'œuvre ou votre espace personnel.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Comment sont classées les œuvres ?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Les œuvres sont classées par note moyenne, nombre de favoris, date d'ajout, ou selon vos filtres personnalisés (artiste, musée, mouvement, etc.).
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Puis-je partager mes critiques ?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Oui ! Vos commentaires publics sont visibles par tous. Vous pouvez également les partager sur les réseaux sociaux depuis la page de l'œuvre.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTACT - fond gris -->
+    <div class="contact-section">
+        <div class="container">
+            <h2 class="contact-title">Nous contacter</h2>
+            <form class="contact-form" action="https://formspree.io/f/mnjlblwk" method="POST">
+                <div class="form-group">
+                    <label>Nom</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea name="message" required></textarea>
+                </div>
+                <input type="text" name="_gotcha" style="display:none">
+                <input type="hidden" name="_next" value="{{ url_for('home', _external=True) }}">
+                <button type="submit" class="contact-submit">Envoyer</button>
+                <div class="contact-note">
+                    <i class="fas fa-lock"></i> Vos informations ne sont pas partagées.
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+{% include 'footer.html' %}
+
+<script>
+    function toggleFaq(element) {
+        const answer = element.nextElementSibling;
+        element.classList.toggle('active');
+        answer.classList.toggle('active');
+    }
+
+    // Animations scroll
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.stat-item, .faq-item, .contact-section, .hero').forEach((el, i) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = `all 0.4s ease ${i * 0.05}s`;
+        observer.observe(el);
+    });
+</script>
 
 </body>
 </html>

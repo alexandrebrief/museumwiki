@@ -6,9 +6,9 @@
 {% endif %}
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ site_name }}</title>
+    <title>{{ site_name }} · Toutes les notes</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,16 +17,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --bg-dark: #0a0a0a;
-            --bg-light: #ffffff;
-            --surface-dark: #141414;
-            --surface-light: #f5f5f5;
-            --text-dark: #ffffff;
-            --text-light: #1a1a1a;
-            --text-muted-dark: #7a7a7a;
-            --text-muted-light: #9a9a9a;
-            --border-dark: #2a2a2a;
-            --border-light: #e0e0e0;
             --accent: #6c5ce7;
             --accent-hover: #5a4bcf;
             --gold: #c9a96e;
@@ -34,230 +24,482 @@
             --font-text: 'Inter', sans-serif;
         }
 
-        body {
-            background-color: var(--bg-dark);
-            font-family: var(--font-text);
-            color: var(--text-dark);
-            line-height: 1.5;
-            font-weight: 300;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            min-height: 100vh;
-        }
-
-        body.theme-light {
-            background-color: var(--bg-light);
-            color: var(--text-light);
-            --surface: var(--surface-light);
-            --surface-hover: #eaeaea;
-            --border-color: var(--border-light);
-            --text-muted: var(--text-muted-light);
-        }
-
         body.theme-dark {
-            --surface: var(--surface-dark);
-            --surface-hover: #1f1f1f;
-            --border-color: var(--border-dark);
-            --text-muted: var(--text-muted-dark);
+            --bg: #060606;
+            --surface: #0c0c0c;
+            --surface2: #111111;
+            --surface3: #1a1a1a;
+            --text: #f0ece4;
+            --text-muted: #5a5a5a;
+            --border: rgba(255,255,255,0.05);
+            --card-bg: #0a0a0a;
+        }
+        body.theme-light {
+            --bg: #f8f6f2;
+            --surface: #ffffff;
+            --surface2: #f0f0f0;
+            --surface3: #e8e8e8;
+            --text: #0a0a0a;
+            --text-muted: #9a9a9a;
+            --border: rgba(0,0,0,0.06);
+            --card-bg: #ffffff;
         }
 
-        .container { max-width: 1440px; margin: 0 auto; padding: 0 0.75rem; }
-        .main-content { margin-top: 100px; min-height: calc(100vh - 100px); padding-top: 0.5cm; }
-
-        /* Toolbar */
-        .toolbar { display: flex; justify-content: space-between; align-items: center; margin: 2rem 0 2rem; padding: 1rem 0; }
-        .works-counter { display: flex; align-items: baseline; gap: 0.5rem; }
-        #displayed-count { font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: var(--gold); line-height: 1; }
-        .works-counter-label { font-family: var(--font-display); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); font-weight: 400; }
-
-        .filter-tools { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-left: auto; flex: 1; }
-
-        /* Icon buttons */
-        .icon-button {
-            background: transparent; border: 1px solid var(--border-color);
-            width: 40px; height: 40px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.2s;
-            color: var(--text-muted); font-size: 1rem;
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-text);
+            font-weight: 400;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        .icon-button:hover { border-color: var(--accent); color: var(--accent); }
-        .icon-button.active { background: var(--accent); border-color: var(--accent); color: white; }
 
-        /* Load more */
-        #load-more-btn {
-            background: transparent; border: 1px solid var(--gold);
-            color: var(--gold); padding: 0.9rem 3.5rem;
-            font-family: var(--font-display); font-size: 0.75rem;
-            text-transform: uppercase; letter-spacing: 2px;
-            cursor: pointer; transition: all 0.3s ease;
-            display: inline-flex; align-items: center; gap: 0.8rem;
+        .container { max-width: 1600px; margin: 0 auto; padding: 0 1rem; flex: 1; }
+        .main-content { margin-top: 80px; padding-top: 1rem; padding-bottom: 80px; }
+
+        /* ===== EN-TÊTE ===== */
+        .page-header {
+            padding: 2rem 0 1.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1rem;
         }
-        #load-more-btn:hover { background: var(--gold); color: white; }
-        #load-more-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-        /* Dropdowns */
-        .filter-dropdown { position: relative; }
-        .dropdown-menu {
-            position: absolute; top: calc(100% + 5px); left: 0;
-            min-width: 340px; max-width: 380px;
-            background: var(--surface); border: 1px solid var(--border-color);
-            padding: 1.5rem; z-index: 1000; display: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        .page-count {
+            font-family: var(--font-display);
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 0.9;
+            letter-spacing: -0.03em;
         }
-        body.theme-dark .dropdown-menu { background: #1e1e1e; border-color: #3a3a3a; }
-        .dropdown-menu.show { display: block; animation: fadeIn 0.2s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        .dropdown-search {
-            display: flex; align-items: center;
-            background: var(--surface-hover);
-            border: 1px solid var(--border-color);
-            padding: 0.3rem 0.8rem; margin-bottom: 1rem; width: 100%;
+        .page-label {
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
         }
-        body.theme-dark .dropdown-search { background: #2a2a2a; border-color: #3a3a3a; }
-        .dropdown-search i { color: var(--text-muted); font-size: 0.8rem; margin-right: 0.5rem; }
-        .dropdown-search input { background: transparent; border: none; width: 100%; padding: 0.3rem 0; font-size: 0.85rem; color: inherit; }
-        .dropdown-search input:focus { outline: none; }
-        .dropdown-search input::placeholder { color: var(--text-muted); opacity: 0.7; }
 
-        .dropdown-items { max-height: 250px; overflow-y: auto; margin-bottom: 1rem; scrollbar-width: thin; scrollbar-color: var(--accent) var(--border-color); }
-        .dropdown-items::-webkit-scrollbar { width: 3px; }
-        .dropdown-items::-webkit-scrollbar-track { background: var(--border-color); }
-        .dropdown-items::-webkit-scrollbar-thumb { background: var(--accent); }
-
-        .dropdown-item { padding: 0.2rem 0; }
-        .dropdown-item label {
-            display: flex; align-items: center; gap: 0.5rem;
-            font-size: 0.85rem; cursor: pointer;
-            padding: 0.3rem 0.5rem; transition: background 0.2s;
-        }
-        .dropdown-item label:hover { background: var(--surface-hover); }
-        .dropdown-item input[type="checkbox"], .dropdown-item input[type="radio"] {
-            appearance: none; -webkit-appearance: none;
-            width: 16px; height: 16px;
-            border: 2px solid var(--text-muted);
-            border-radius: 3px; background: transparent;
-            cursor: pointer; position: relative; margin: 0;
-        }
-        .dropdown-item input:checked { background: var(--accent); border-color: var(--accent); }
-        .dropdown-item input:checked::after {
-            content: '✓'; color: white; font-size: 12px;
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        .dropdown-item .count { color: var(--text-muted); font-size: 0.7rem; margin-left: auto; }
-
-        .dropdown-actions { display: flex; justify-content: flex-end; padding-top: 1rem; border-top: 1px solid var(--border-color); }
-        .apply-btn {
-            background: transparent; border: 1px solid var(--accent); color: var(--accent);
-            padding: 0.4rem 1.5rem; font-size: 0.7rem;
-            text-transform: uppercase; letter-spacing: 1px;
-            cursor: pointer; transition: all 0.2s;
-        }
-        .apply-btn:hover { background: var(--accent); color: white; }
-
-        /* Tags actifs */
-        .active-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0; }
-        .filter-tag {
-            background: var(--surface); border: 1px solid var(--border-color);
-            padding: 0.2rem 1rem 0.2rem 1.2rem;
-            font-size: 0.7rem; display: flex; align-items: center; gap: 0.5rem;
-            text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        body.theme-dark .filter-tag { background: #1e1e1e; }
-        .filter-tag i { color: var(--accent); cursor: pointer; font-size: 0.6rem; }
-        .filter-tag i:hover { color: #c44545; }
-
-        /* Results line */
-        .srp-results-line { margin: 1.5rem 0 0.8rem; }
-        .srp-results-line-top { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 0.6rem; flex-wrap: wrap; }
-        .srp-header-num { font-family: var(--font-display); font-size: 2.2rem; font-weight: 700; color: var(--gold); line-height: 1; }
-        .srp-header-label { font-family: var(--font-display); font-size: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; }
-
-        /* Rating badge */
-        .rating-badge {
-            position: absolute;
-            top: 0.5rem;
-            left: 0.5rem;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(4px);
-            padding: 0.3rem 0.6rem;
-            font-size: 0.7rem;
-            font-weight: 600;
+        /* ===== TOOLBAR ===== */
+        .toolbar {
             display: flex;
             align-items: center;
-            gap: 0.3rem;
-            z-index: 10;
-            font-family: var(--font-display);
-            border-radius: 4px;
+            justify-content: space-between;
+            padding: 1rem 0;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
-        .rating-badge i { font-size: 0.6rem; color: var(--gold); }
+        .toolbar-left { display: flex; gap: 0.8rem; }
+        .toolbar-right { display: flex; gap: 0.5rem; }
+
+        .btn-outline {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 0;
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-outline i { font-size: 0.8rem; }
+        .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+        .filter-badge {
+            background: var(--accent);
+            color: white;
+            border-radius: 20px;
+            padding: 0 6px;
+            font-size: 0.6rem;
+            margin-left: 4px;
+        }
+
+        .view-btn {
+            width: 38px; height: 38px;
+            background: transparent;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+        .view-btn.active { border-color: var(--accent); color: var(--accent); }
+
+        .active-tags-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 0;
+            margin-bottom: 1.5rem;
+        }
+        .filter-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.3rem 0.8rem 0.3rem 1rem;
+            background: rgba(108,92,231,0.08);
+            border: 1px solid rgba(108,92,231,0.2);
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            color: var(--accent);
+        }
+        .filter-tag button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--accent);
+            font-size: 0.7rem;
+            padding: 0;
+        }
+        .tags-clear-all {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            padding: 0.3rem 0.8rem;
+            transition: all 0.2s;
+        }
+        .tags-clear-all:hover { color: #e03131; background: rgba(224,49,49,0.08); }
+
+        .works-grid { display: grid; gap: 2px; margin-top: 1rem; }
+        .works-grid.grid-6 { grid-template-columns: repeat(6, 1fr); }
+        .works-grid.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+        .work-item {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            background: var(--card-bg);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .work-item:hover { transform: translateY(-2px); }
+
+        .work-image-container {
+            position: relative;
+            width: 100%;
+            background: var(--surface2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .works-grid.grid-6 .work-image-container { aspect-ratio: 2/3; }
+        .works-grid.grid-4 .work-image-container { aspect-ratio: 1/1; }
+
+        .work-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            filter: brightness(0.85);
+            transition: filter 0.3s ease;
+        }
+        .work-item:hover .work-image-container img { filter: brightness(1); }
+
+        .image-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface2);
+            color: var(--text-muted);
+            font-size: 2rem;
+        }
+
+        .rating-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            z-index: 10;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            padding: 4px 8px;
+            font-family: var(--font-display);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--gold);
+        }
+        .rating-badge i { font-size: 0.55rem; }
         .rating-count {
             font-size: 0.6rem;
             opacity: 0.7;
-            margin-left: 0.2rem;
+            margin-left: 2px;
         }
-
-        /* Grid */
-        .works-grid { display: grid; gap: 0.5rem; margin: 0.5rem 0 0; padding: 0.5rem 0; }
-        .works-grid.grid-4 { grid-template-columns: repeat(4, 1fr); }
-        .works-grid.grid-6 { grid-template-columns: repeat(6, 1fr); }
-
-        .work-item { position: relative; text-decoration: none; color: inherit; display: block; overflow: hidden; }
-        .works-grid.grid-4 .work-item { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; }
-        .works-grid.grid-4 .work-item img { width: 100%; height: 100%; object-fit: contain; }
-        .works-grid.grid-6 .work-item { aspect-ratio: 2/3; }
-        .works-grid.grid-6 .work-item img { width: 100%; height: 100%; object-fit: cover; }
-        .work-item:hover img { opacity: 0.7; }
-
-        .work-image-container { width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; background: transparent; }
-        .image-placeholder { width: 100%; height: 100%; min-height: 300px; background: var(--surface); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 1.5rem; }
 
         .work-overlay {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 80%);
-            padding: 2rem 1rem 1rem;
-            opacity: 0; transition: opacity 0.3s ease;
-            color: white; pointer-events: none;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%);
+            padding: 2rem 0.6rem 0.6rem;
+            opacity: 0;
+            transition: opacity 0.25s;
+            color: #fff;
+            pointer-events: none;
         }
         .work-item:hover .work-overlay { opacity: 1; }
-        .work-title { font-family: var(--font-display); font-weight: 500; font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: uppercase; }
-        .work-artist { font-size: 0.65rem; opacity: 0.7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .work-title {
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .work-artist {
+            font-size: 0.6rem;
+            opacity: 0.7;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
+        }
 
-        /* States */
-        .loading-indicator, .end-message, .no-results { text-align: center; padding: 4rem; color: var(--text-muted); font-size: 0.9rem; }
-        .empty-state { text-align: center; padding: 6rem 2rem; color: var(--text-muted); }
-        .empty-state i { font-size: 3rem; color: var(--gold); opacity: 0.3; margin-bottom: 1.5rem; display: block; }
-        .empty-state h3 { font-family: var(--font-display); font-size: 1.2rem; font-weight: 500; margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 2px; }
-        .btn-explore { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 0.8rem 2rem; font-family: var(--font-display); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; text-decoration: none; display: inline-block; transition: all 0.2s; }
-        .btn-explore:hover { background: var(--accent); color: white; }
+        /* ===== PANELS ===== */
+        .filter-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border-top: 2px solid var(--accent);
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            z-index: 1000;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .filter-panel.open { transform: translateY(0); }
 
-        /* Scroll top */
-        .scroll-top { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: var(--surface); border: 1px solid var(--border-color); color: var(--text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; visibility: hidden; transition: all 0.2s; z-index: 100; }
+        .drag-handle {
+            display: flex;
+            justify-content: center;
+            padding: 12px 0 6px;
+            cursor: grab;
+        }
+        .drag-handle-bar {
+            width: 40px;
+            height: 3px;
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        .filter-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 1.2rem 1rem;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: var(--surface);
+            z-index: 10;
+        }
+        .filter-panel-header h3 {
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+        .close-panel {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            padding: 0.5rem;
+        }
+
+        .filter-section {
+            padding: 1rem 1.2rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .filter-section-title {
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.8rem;
+        }
+
+        .chips-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .filter-chip {
+            padding: 0.4rem 1rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-chip.active { background: var(--accent); border-color: var(--accent); color: white; }
+        .filter-chip:hover:not(.active) { border-color: var(--accent); }
+
+        .show-more-chip {
+            padding: 0.4rem 1rem;
+            background: transparent;
+            border: 1px dashed var(--accent);
+            font-size: 0.7rem;
+            cursor: pointer;
+            color: var(--accent);
+        }
+
+        .sort-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .sort-option {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.6rem 1rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .sort-option.active { border-color: var(--accent); background: rgba(108,92,231,0.05); }
+        .sort-option i { width: 24px; color: var(--accent); font-size: 0.9rem; }
+        .sort-option span { font-size: 0.8rem; }
+
+        .filter-actions {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 1.2rem;
+            border-top: 1px solid var(--border);
+            position: sticky;
+            bottom: 0;
+            background: var(--surface);
+        }
+        .btn-clear, .btn-apply {
+            flex: 1;
+            padding: 0.7rem;
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-clear {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+        .btn-clear:hover { border-color: #e03131; color: #e03131; }
+        .btn-apply {
+            background: var(--accent);
+            border: none;
+            color: white;
+        }
+        .btn-apply:hover { background: var(--accent-hover); }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s;
+        }
+        .overlay.visible { opacity: 1; visibility: visible; }
+
+        #load-more-container { text-align: center; padding: 3rem 0; }
+        #load-more-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.8rem 2rem;
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        #load-more-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+        .end-message { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.8rem; }
+        .empty-state { text-align: center; padding: 4rem 2rem; }
+        .empty-state i { font-size: 3rem; color: var(--accent); opacity: 0.3; margin-bottom: 1rem; display: block; }
+        .empty-state h3 { font-family: var(--font-display); font-size: 1rem; font-weight: 500; letter-spacing: 2px; margin-bottom: 0.5rem; }
+        .btn-explore { display: inline-block; margin-top: 1rem; padding: 0.6rem 1.5rem; border: 1px solid var(--accent); color: var(--accent); text-decoration: none; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; }
+
+        .scroll-top {
+            position: fixed; bottom: 1.5rem; right: 1.5rem;
+            width: 44px; height: 44px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            opacity: 0; visibility: hidden;
+            transition: all 0.2s;
+            z-index: 100;
+        }
         .scroll-top.visible { opacity: 1; visibility: visible; }
         .scroll-top:hover { border-color: var(--accent); color: var(--accent); }
 
-        @media (max-width: 1200px) { .works-grid.grid-6 { grid-template-columns: repeat(5, 1fr); } }
-        @media (max-width: 992px) { .works-grid.grid-6 { grid-template-columns: repeat(4, 1fr); } }
+        @media (min-width: 769px) { .works-grid { gap: 2px; } }
         @media (max-width: 768px) {
-            .works-grid.grid-4 { grid-template-columns: repeat(3, 1fr); }
-            .works-grid.grid-6 { grid-template-columns: repeat(3, 1fr); }
-            .toolbar { flex-direction: column; align-items: flex-start; gap: 1rem; }
-            .filter-tools { width: 100%; justify-content: flex-start; }
-            .dropdown-menu { min-width: 300px; }
+            .works-grid.grid-6, .works-grid.grid-4 { grid-template-columns: repeat(3, 1fr); }
+            .main-content { margin-top: 58px; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .toolbar-left, .toolbar-right { justify-content: center; }
+            .page-count { font-size: 2.5rem; }
         }
-        @media (max-width: 576px) {
-            .works-grid.grid-4, .works-grid.grid-6 { grid-template-columns: repeat(2, 1fr); }
-            .dropdown-menu { min-width: 280px; }
+        @media (max-width: 480px) {
+            .works-grid.grid-6, .works-grid.grid-4 { grid-template-columns: repeat(2, 1fr); }
         }
-        @media (max-width: 700px) { .main-content { margin-top: 58px !important; } }
     </style>
 </head>
 <body style="visibility:hidden">
 <script>
     (function() {
         const t = localStorage.getItem('theme') || 'dark';
-        document.body.classList.remove('theme-dark', 'theme-light');
-        document.body.classList.add('theme-' + t);
+        document.body.classList.remove('theme-dark','theme-light');
+        document.body.classList.add('theme-'+t);
         document.body.style.visibility = '';
     })();
 </script>
@@ -265,134 +507,49 @@
 {% include 'navbar.html' %}
 
 <div class="container main-content">
-    <div class="srp-results-line">
-        <div class="srp-results-line-top">
-            <span class="srp-header-num" id="displayed-count">{{ total_artworks }}</span>
-            <span class="srp-header-label">œuvre{{ 's' if total_artworks > 1 else '' }} notée{{ 's' if total_artworks > 1 else '' }}</span>
-            <i class="fas fa-star" style="color:var(--gold); font-size:0.9rem;"></i>
+
+    <div class="page-header">
+        <div class="page-count" id="displayed-count">{{ total_artworks }}</div>
+        <div class="page-label">œuvre{{ 's' if total_artworks > 1 else '' }} notée{{ 's' if total_artworks > 1 else '' }}</div>
+    </div>
+
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <button class="btn-outline" onclick="openFilterPanel()">
+                <i class="fas fa-sliders-h"></i> Filtrer
+                <span id="filter-count-badge" class="filter-badge"></span>
+            </button>
+            <button class="btn-outline" onclick="openSortPanel()">
+                <i class="fas fa-arrow-up-wide-short"></i> Trier
+            </button>
         </div>
-
-        <div class="filter-tools">
-            <!-- ARTISTE -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('artist-dropdown', event)"><i class="fas fa-user"></i></button>
-                <div class="dropdown-menu" id="artist-dropdown">
-                    <div class="dropdown-search"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher un artiste..." id="artist-search-filter"></div>
-                    <div class="dropdown-items" id="artist-items"><div style="padding:1rem;text-align:center;"><i class="fas fa-spinner fa-spin"></i></div></div>
-                    <div class="dropdown-actions"><button onclick="applyArtistFilter()" class="apply-btn">Appliquer</button></div>
-                </div>
-            </div>
-            <!-- MUSÉE -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('museum-dropdown', event)"><i class="fas fa-landmark"></i></button>
-                <div class="dropdown-menu" id="museum-dropdown">
-                    <div class="dropdown-search"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher un musée..." id="museum-search-filter"></div>
-                    <div class="dropdown-items" id="museum-items"><div style="padding:1rem;text-align:center;"><i class="fas fa-spinner fa-spin"></i></div></div>
-                    <div class="dropdown-actions"><button onclick="applyMuseumFilter()" class="apply-btn">Appliquer</button></div>
-                </div>
-            </div>
-            <!-- GÉO -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('geo-dropdown', event)"><i class="fas fa-globe"></i></button>
-                <div class="dropdown-menu" id="geo-dropdown">
-                    <div class="dropdown-section">
-                        <div class="dropdown-search"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher un pays..." id="country-search-filter"></div>
-                        <div class="dropdown-items" id="country-items"><div style="padding:1rem;text-align:center;"><i class="fas fa-spinner fa-spin"></i></div></div>
-                    </div>
-                    <div class="dropdown-section">
-                        <div class="dropdown-search"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher une ville..." id="city-search-filter"></div>
-                        <div class="dropdown-items" id="city-items"><div style="padding:1rem;text-align:center;"><i class="fas fa-spinner fa-spin"></i></div></div>
-                    </div>
-                    <div class="dropdown-actions"><button onclick="applyGeoFilter()" class="apply-btn">Appliquer</button></div>
-                </div>
-            </div>
-            <!-- TYPE -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('type-dropdown', event)"><i class="fas fa-object-group"></i></button>
-                <div class="dropdown-menu" id="type-dropdown">
-                    <div class="dropdown-search"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher un type..." id="type-search-filter"></div>
-                    <div class="dropdown-items" id="type-items"><div style="padding:1rem;text-align:center;"><i class="fas fa-spinner fa-spin"></i></div></div>
-                    <div class="dropdown-actions"><button onclick="applyTypeFilter()" class="apply-btn">Appliquer</button></div>
-                </div>
-            </div>
-            <!-- MOUVEMENT -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('movement-dropdown', event)"><i class="fas fa-palette"></i></button>
-                <div class="dropdown-menu" id="movement-dropdown">
-                    <div class="dropdown-search"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher un mouvement..." id="movement-search-filter"></div>
-                    <div class="dropdown-items" id="movement-items"><div style="padding:1rem;text-align:center;"><i class="fas fa-spinner fa-spin"></i></div></div>
-                    <div class="dropdown-actions"><button onclick="applyMovementFilter()" class="apply-btn">Appliquer</button></div>
-                </div>
-            </div>
-            <!-- GENRE -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('genre-dropdown', event)"><i class="fas fa-masks-theater"></i></button>
-                <div class="dropdown-menu" id="genre-dropdown">
-                    <div class="dropdown-search"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher un genre..." id="genre-search-filter"></div>
-                    <div class="dropdown-items" id="genre-items"><div style="padding:1rem;text-align:center;"><i class="fas fa-spinner fa-spin"></i></div></div>
-                    <div class="dropdown-actions"><button onclick="applyGenreFilter()" class="apply-btn">Appliquer</button></div>
-                </div>
-            </div>
-            <!-- MATÉRIAU -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('material-dropdown', event)"><i class="fas fa-cube"></i></button>
-                <div class="dropdown-menu" id="material-dropdown">
-                    <div class="dropdown-search"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher un matériau..." id="material-search-filter"></div>
-                    <div class="dropdown-items" id="material-items"><div style="padding:1rem;text-align:center;"><i class="fas fa-spinner fa-spin"></i></div></div>
-                    <div class="dropdown-actions"><button onclick="applyMaterialFilter()" class="apply-btn">Appliquer</button></div>
-                </div>
-            </div>
-            <!-- NOTE MOYENNE -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('rating-dropdown', event)"><i class="fas fa-star"></i></button>
-                <div class="dropdown-menu" id="rating-dropdown">
-                    <div class="dropdown-items" id="rating-items">
-                        <div class="dropdown-item"><label><input type="radio" name="rating_filter" value="all" checked><span>Toutes les notes</span></label></div>
-                        <div class="dropdown-item"><label><input type="radio" name="rating_filter" value="5"><span>★★★★★ (5) et plus</span></label></div>
-                        <div class="dropdown-item"><label><input type="radio" name="rating_filter" value="4"><span>★★★★☆ (4) et plus</span></label></div>
-                        <div class="dropdown-item"><label><input type="radio" name="rating_filter" value="3"><span>★★★☆☆ (3) et plus</span></label></div>
-                        <div class="dropdown-item"><label><input type="radio" name="rating_filter" value="2"><span>★★☆☆☆ (2) et plus</span></label></div>
-                        <div class="dropdown-item"><label><input type="radio" name="rating_filter" value="1"><span>★☆☆☆☆ (1) et plus</span></label></div>
-                    </div>
-                    <div class="dropdown-actions"><button onclick="applyRatingFilter()" class="apply-btn">Appliquer</button></div>
-                </div>
-            </div>
-            <!-- TRI -->
-            <div class="filter-dropdown">
-                <button class="icon-button" onclick="toggleDropdown('sort-dropdown', event)"><i class="fas fa-arrow-up-wide-short"></i></button>
-                <div class="dropdown-menu" id="sort-dropdown">
-                    <div class="dropdown-items" id="sort-items"></div>
-                    <div class="dropdown-actions"><button onclick="applySortFilter()" class="apply-btn">Appliquer</button></div>
-                </div>
-            </div>
-
-            <button class="icon-button" onclick="clearAllFilters()"><i class="fas fa-times"></i></button>
-            <button class="icon-button view-btn" id="view-4" onclick="setViewMode(4)"><i class="fas fa-th-large"></i></button>
-            <button class="icon-button view-btn" id="view-6" onclick="setViewMode(6)"><i class="fas fa-th"></i></button>
-            <div class="active-tags" id="active-tags"></div>
+        <div class="toolbar-right">
+            <button class="view-btn" id="view-4" onclick="setViewMode(4)"><i class="fas fa-th-large"></i></button>
+            <button class="view-btn" id="view-6" onclick="setViewMode(6)"><i class="fas fa-th"></i></button>
         </div>
     </div>
+
+    <div class="active-tags-row" id="active-tags"></div>
 
     {% if artworks %}
     <div class="works-grid grid-4" id="works-grid">
         {% for artwork in artworks %}
-        <a href="/oeuvre/{{ artwork.id }}" class="work-item" data-id="{{ artwork.id }}">
+        <a href="/oeuvre/{{ artwork.id }}" class="work-item">
             <div class="work-image-container">
                 <div class="rating-badge">
                     <i class="fas fa-star"></i> {{ artwork.avg_rating|round(1) if artwork.avg_rating else '0' }}
                     <span class="rating-count">({{ artwork.rating_count }} avis)</span>
                 </div>
-                {% if artwork.image_url and artwork.image_url != '' %}
+                {% if artwork.image_url %}
                 <img src="https://images.weserv.nl/?url={{ artwork.image_url|urlencode }}&w=400&h=400&fit=cover&output=webp&q=75"
                      alt="{{ artwork.titre }}"
-                     data-fallback1="https://wsrv.nl/?url={{ artwork.image_url|urlencode }}&w=400&h=400&fit=cover&output=webp&q=75"
-                     data-fallback3="{{ artwork.image_url }}"
-                     data-error-count="0"
+                     data-f1="https://wsrv.nl/?url={{ artwork.image_url|urlencode }}&w=400&h=400&fit=cover&output=webp&q=75"
+                     data-f2="{{ artwork.image_url }}"
+                     data-err="0"
                      loading="lazy"
-                     style="opacity:0; transition: opacity 0.3s;"
+                     style="opacity:0;transition:opacity 0.3s;"
                      onload="this.style.opacity='1'"
-                     onerror="handleImageError(this)">
-                <div class="image-placeholder" style="display:none;"><i class="fas fa-image"></i></div>
+                     onerror="imgErr(this)">
                 {% else %}
                 <div class="image-placeholder"><i class="fas fa-image"></i></div>
                 {% endif %}
@@ -405,26 +562,103 @@
         {% endfor %}
     </div>
 
-    <div id="load-more-container" style="text-align:center; padding: 3rem 0 4rem;" {% if not has_more %}style="display:none;"{% endif %}>
-        <button id="load-more-btn" onclick="loadMore()"><span class="btn-text">Voir plus</span></button>
+    <div id="load-more-container" style="display:{% if has_more %}block{% else %}none{% endif %};">
+        <button id="load-more-btn" onclick="loadMore()">Voir plus</button>
     </div>
-    <div class="end-message" id="end-message" style="display:none;"><i class="fas fa-check"></i> Fin des résultats</div>
+    <div class="end-message" id="end-message" style="display:none;">Fin de la collection</div>
 
     {% else %}
     <div class="empty-state">
         <i class="fas fa-star"></i>
-        {% set has_filters = request.args.getlist('artist') or request.args.get('country') or request.args.getlist('city') or request.args.getlist('museum') or request.args.getlist('type') or request.args.getlist('movement') or request.args.getlist('genre') or request.args.getlist('material') or request.args.get('rating') %}
-        {% if has_filters %}
-            <h3>Aucun résultat pour ces filtres</h3>
-            <p>Essayez de modifier ou supprimer vos filtres.</p>
+        {% if request.args.getlist('artist') or request.args.get('country') or request.args.getlist('city') or request.args.getlist('museum') %}
+            <h3>Aucun résultat</h3>
             <a href="/all-rated" class="btn-explore">Effacer les filtres</a>
         {% else %}
-            <h3>Aucune œuvre notée pour le moment</h3>
-            <p>Explorez la collection et notez vos œuvres préférées.</p>
+            <h3>Aucune œuvre notée</h3>
             <a href="/research" class="btn-explore">Explorer la collection</a>
         {% endif %}
     </div>
     {% endif %}
+
+</div>
+
+<div class="overlay" id="overlay" onclick="closeAllPanels()"></div>
+
+<!-- PANEL FILTRES -->
+<div class="filter-panel" id="filter-panel">
+    <div class="drag-handle">
+        <div class="drag-handle-bar"></div>
+    </div>
+    <div class="filter-panel-header">
+        <h3>Filtrer</h3>
+        <button class="close-panel" onclick="closeFilterPanel()"><i class="fas fa-times"></i></button>
+    </div>
+
+    <div class="filter-section">
+        <div class="filter-section-title">Artiste</div>
+        <div class="chips-row" id="artist-chips-row"></div>
+    </div>
+    <div class="filter-section">
+        <div class="filter-section-title">Musée</div>
+        <div class="chips-row" id="museum-chips-row"></div>
+    </div>
+    <div class="filter-section">
+        <div class="filter-section-title">Pays</div>
+        <div class="chips-row" id="country-chips-row"></div>
+    </div>
+    <div class="filter-section">
+        <div class="filter-section-title">Ville</div>
+        <div class="chips-row" id="city-chips-row"></div>
+    </div>
+    <div class="filter-section">
+        <div class="filter-section-title">Type</div>
+        <div class="chips-row" id="type-chips-row"></div>
+    </div>
+    <div class="filter-section">
+        <div class="filter-section-title">Mouvement</div>
+        <div class="chips-row" id="movement-chips-row"></div>
+    </div>
+    <div class="filter-section">
+        <div class="filter-section-title">Genre</div>
+        <div class="chips-row" id="genre-chips-row"></div>
+    </div>
+    <div class="filter-section">
+        <div class="filter-section-title">Matériau</div>
+        <div class="chips-row" id="material-chips-row"></div>
+    </div>
+    <div class="filter-section">
+        <div class="filter-section-title">Note moyenne</div>
+        <div class="chips-row" id="rating-chips-row">
+            <div class="filter-chip" data-rating="5">5 étoiles et plus</div>
+            <div class="filter-chip" data-rating="4">4 étoiles et plus</div>
+            <div class="filter-chip" data-rating="3">3 étoiles et plus</div>
+            <div class="filter-chip" data-rating="2">2 étoiles et plus</div>
+            <div class="filter-chip" data-rating="1">1 étoile et plus</div>
+        </div>
+    </div>
+
+    <div class="filter-actions">
+        <button class="btn-clear" onclick="clearAllFilters()">Effacer</button>
+        <button class="btn-apply" onclick="applyFilters()">Appliquer</button>
+    </div>
+</div>
+
+<!-- PANEL TRI -->
+<div class="filter-panel" id="sort-panel">
+    <div class="drag-handle">
+        <div class="drag-handle-bar"></div>
+    </div>
+    <div class="filter-panel-header">
+        <h3>Trier par</h3>
+        <button class="close-panel" onclick="closeSortPanel()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="filter-section">
+        <div class="sort-options" id="sort-options"></div>
+    </div>
+    <div class="filter-actions">
+        <button class="btn-clear" onclick="resetSort()">Réinitialiser</button>
+        <button class="btn-apply" onclick="applySort()">Appliquer</button>
+    </div>
 </div>
 
 <div class="scroll-top" id="scroll-top"><i class="fas fa-arrow-up"></i></div>
@@ -432,497 +666,243 @@
 
 <script>
 (function() {
-    // ================================================
-    // ÉTAT GLOBAL
-    // ================================================
     let currentPage = 1;
     let isLoading = false;
     let hasMore = {{ 'true' if has_more else 'false' }};
-    let displayedCount = {{ artworks|length }};
     let currentView = 4;
     let allFilterOptions = null;
+    let showMoreStates = {};
 
-    try {
-        const saved = localStorage.getItem('viewMode');
-        if (saved && [4, 6].includes(parseInt(saved))) currentView = parseInt(saved);
-    } catch(e) {}
+    try { const s = localStorage.getItem('viewMode'); if (s && [4,6].includes(+s)) currentView = +s; } catch(e) {}
 
-    // ================================================
-    // IMAGES
-    // ================================================
-    window.handleImageError = function(img) {
-        const n = parseInt(img.dataset.errorCount || '0');
-        if (n === 0) { img.dataset.errorCount = '1'; img.src = img.dataset.fallback1; }
-        else if (n === 1) { img.dataset.errorCount = '2'; img.src = img.dataset.fallback3; }
-        else { img.style.display = 'none'; const ph = img.nextElementSibling; if (ph) ph.style.display = 'flex'; }
+    function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function params() { return new URLSearchParams(window.location.search); }
+    function navigate(url) { window.location.href = url; }
+
+    window.imgErr = function(img) {
+        let n = parseInt(img.dataset.err || '0');
+        if (n === 0) { img.dataset.err = '1'; img.src = img.dataset.f1; }
+        else if (n === 1) { img.dataset.err = '2'; img.src = img.dataset.f2; }
+        else { img.style.display = 'none'; const ph = img.parentElement?.querySelector('.image-placeholder'); if (ph) ph.style.display = 'flex'; }
     };
 
-    // ================================================
-    // VUE
-    // ================================================
     window.setViewMode = function(mode) {
         currentView = mode;
-        const grid = document.getElementById('works-grid');
-        if (!grid) return;
-        grid.classList.remove('grid-4', 'grid-6');
-        grid.classList.add('grid-' + mode);
+        const g = document.getElementById('works-grid');
+        if (g) { g.classList.remove('grid-4','grid-6'); g.classList.add('grid-'+mode); }
         document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('view-' + mode)?.classList.add('active');
+        document.getElementById('view-'+mode)?.classList.add('active');
         try { localStorage.setItem('viewMode', mode); } catch(e) {}
-        const url = new URL(window.location);
-        url.searchParams.set('view', mode);
-        window.history.replaceState({}, '', url);
     };
 
-    // ================================================
-    // LOAD MORE
-    // ================================================
     window.loadMore = async function() {
         if (isLoading || !hasMore) return;
         isLoading = true;
         const btn = document.getElementById('load-more-btn');
-        const btnText = document.querySelector('.btn-text');
         if (btn) btn.disabled = true;
-        if (btnText) btnText.textContent = 'Chargement...';
-
         try {
-            const urlParams = new URLSearchParams(window.location.search);
-            urlParams.set('page', currentPage + 1);
-            const res = await fetch('/api/all-rated/works?' + urlParams.toString());
+            const p = params(); p.set('page', currentPage + 1);
+            const res = await fetch('/api/all-rated/works?' + p);
             const data = await res.json();
-
-            if (data.works && data.works.length) {
+            if (data.works?.length) {
                 appendWorks(data.works);
                 currentPage++;
-                displayedCount += data.works.length;
                 hasMore = data.has_more;
-                document.getElementById('displayed-count').textContent = displayedCount;
-            } else {
-                hasMore = false;
-            }
-
+            } else { hasMore = false; }
             if (!hasMore) {
                 document.getElementById('load-more-container').style.display = 'none';
                 document.getElementById('end-message').style.display = 'block';
             }
         } catch(e) { console.error(e); }
-        finally {
-            isLoading = false;
-            if (btn) btn.disabled = false;
-            if (btnText) btnText.textContent = 'Voir plus';
-        }
+        finally { if (btn) btn.disabled = false; }
     };
 
     function appendWorks(works) {
         const grid = document.getElementById('works-grid');
-        const fit = currentView === 4 ? 'contain' : 'cover';
-        const frag = document.createDocumentFragment();
-
-        works.forEach(artwork => {
+        works.forEach(w => {
             const a = document.createElement('a');
-            a.href = `/oeuvre/${artwork.id}`;
+            a.href = '/oeuvre/' + w.id;
             a.className = 'work-item';
-
-            const wrap = document.createElement('div');
-            wrap.className = 'work-image-container';
-
-            const badge = document.createElement('div');
-            badge.className = 'rating-badge';
-            badge.innerHTML = `<i class="fas fa-star"></i> ${(artwork.avg_rating || 0).toFixed(1)}<span class="rating-count">(${artwork.rating_count} avis)</span>`;
-            wrap.appendChild(badge);
-
-            if (artwork.image_url) {
-                const enc = encodeURIComponent(artwork.image_url);
-                const img = document.createElement('img');
-                img.src = `https://images.weserv.nl/?url=${enc}&w=400&h=400&fit=${fit}&output=webp&q=75`;
-                img.alt = artwork.titre || '';
-                img.loading = 'lazy';
-                img.style.cssText = 'opacity:0;transition:opacity 0.3s;';
-                img.dataset.fallback1 = `https://wsrv.nl/?url=${enc}&w=400&h=400&fit=${fit}&output=webp&q=75`;
-                img.dataset.fallback3 = artwork.image_url;
-                img.dataset.errorCount = '0';
-                img.onload = function() { this.style.opacity = '1'; };
-                img.onerror = function() { handleImageError(this); };
-                const ph = document.createElement('div');
-                ph.className = 'image-placeholder';
-                ph.style.display = 'none';
-                ph.innerHTML = '<i class="fas fa-image"></i>';
-                wrap.appendChild(img);
-                wrap.appendChild(ph);
-            } else {
-                const ph = document.createElement('div');
-                ph.className = 'image-placeholder';
-                ph.innerHTML = '<i class="fas fa-image"></i>';
-                wrap.appendChild(ph);
-            }
-
-            const ov = document.createElement('div');
-            ov.className = 'work-overlay';
-            ov.innerHTML = `<div class="work-title">${escHtml((artwork.titre||'Sans titre').substring(0,40))}</div>
-                            <div class="work-artist">${escHtml((artwork.createur||'Artiste inconnu').substring(0,30))}</div>`;
-            wrap.appendChild(ov);
-            a.appendChild(wrap);
-            frag.appendChild(a);
+            const enc = w.image_url ? encodeURIComponent(w.image_url) : '';
+            a.innerHTML = `
+                <div class="work-image-container">
+                    <div class="rating-badge"><i class="fas fa-star"></i> ${w.avg_rating ? w.avg_rating.toFixed(1) : '0'}<span class="rating-count">(${w.rating_count} avis)</span></div>
+                    ${enc ? `<img src="https://images.weserv.nl/?url=${enc}&w=400&h=400&fit=cover&output=webp&q=75"
+                        data-f1="https://wsrv.nl/?url=${enc}&w=400&h=400&fit=cover&output=webp&q=75"
+                        data-f2="${esc(w.image_url)}" data-err="0" loading="lazy"
+                        style="opacity:0;transition:opacity 0.3s;"
+                        onload="this.style.opacity='1'" onerror="imgErr(this)">`
+                    : '<div class="image-placeholder" style="display:flex;"><i class="fas fa-image"></i></div>'}
+                    <div class="work-overlay">
+                        <div class="work-title">${esc((w.titre||'Sans titre').substring(0,40))}</div>
+                        <div class="work-artist">${esc((w.createur||'Artiste inconnu').substring(0,30))}</div>
+                    </div>
+                </div>
+            `;
+            grid.appendChild(a);
         });
-        grid.appendChild(frag);
     }
 
-    // ================================================
-    // FILTER OPTIONS
-    // ================================================
-    async function loadAllFilterOptions() {
-        if (allFilterOptions) return allFilterOptions;
-        try {
-            const res = await fetch('/api/all-rated/filter-options');
-            allFilterOptions = await res.json();
-            return allFilterOptions;
-        } catch(e) { return { artists: [], museums: [], countries: [], cities: [], types: [], movements: [], genres: [], materials: [] }; }
+    function setupSwipeClose(panelId, closeFn) {
+        const panel = document.getElementById(panelId);
+        const handle = panel.querySelector('.drag-handle');
+        let startY = 0, dragging = false;
+        handle.addEventListener('touchstart', e => { startY = e.touches[0].clientY; dragging = true; panel.style.transition = 'none'; });
+        panel.addEventListener('touchmove', e => {
+            if (!dragging) return;
+            const y = e.touches[0].clientY;
+            const delta = y - startY;
+            if (delta > 0) panel.style.transform = `translateY(${delta}px)`;
+        });
+        panel.addEventListener('touchend', e => {
+            dragging = false;
+            panel.style.transition = '';
+            const y = e.changedTouches[0].clientY;
+            if (y - startY > 80) closeFn();
+            else panel.style.transform = '';
+        });
     }
 
-    // ================================================
-    // DROPDOWNS
-    // ================================================
-    window.toggleDropdown = function(id, event) {
-        if (event) { event.preventDefault(); event.stopPropagation(); }
-
-        if (id === 'artist-dropdown') loadArtists();
-        if (id === 'museum-dropdown') loadMuseums();
-        if (id === 'geo-dropdown') { loadCountries(); loadCities(); }
-        if (id === 'type-dropdown') loadTypes();
-        if (id === 'movement-dropdown') loadMovements();
-        if (id === 'genre-dropdown') loadGenres();
-        if (id === 'material-dropdown') loadMaterials();
-        if (id === 'sort-dropdown') loadSortOptions();
-
-        const dropdown = document.getElementById(id);
-        dropdown.classList.toggle('show');
-
-        const wrap = event?.target?.closest('.filter-dropdown');
-        if (wrap) {
-            const rect = wrap.getBoundingClientRect();
-            if (rect.right - 340 < 0) { dropdown.style.left = `-${rect.left - 12}px`; dropdown.style.right = 'auto'; }
-            else { dropdown.style.left = 'auto'; dropdown.style.right = '0'; }
-        }
-
-        document.querySelectorAll('.dropdown-menu').forEach(m => { if (m.id !== id) m.classList.remove('show'); });
+    window.openFilterPanel = async function() {
+        document.getElementById('filter-panel').classList.add('open');
+        document.getElementById('overlay').classList.add('visible');
+        document.body.style.overflow = 'hidden';
+        await loadFilterOptions();
     };
+    window.closeFilterPanel = function() {
+        document.getElementById('filter-panel').classList.remove('open');
+        document.getElementById('overlay').classList.remove('visible');
+        document.body.style.overflow = '';
+    };
+    window.openSortPanel = function() {
+        loadSortOptions();
+        document.getElementById('sort-panel').classList.add('open');
+        document.getElementById('overlay').classList.add('visible');
+        document.body.style.overflow = 'hidden';
+    };
+    window.closeSortPanel = function() {
+        document.getElementById('sort-panel').classList.remove('open');
+        document.getElementById('overlay').classList.remove('visible');
+        document.body.style.overflow = '';
+    };
+    window.closeAllPanels = function() { closeFilterPanel(); closeSortPanel(); };
+    setupSwipeClose('filter-panel', closeFilterPanel);
+    setupSwipeClose('sort-panel', closeSortPanel);
 
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.filter-dropdown')) {
-            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
-        }
-    });
+    async function loadFilterOptions() {
+        const fp = new URLSearchParams();
+        const p = params();
+        ['artist','museum','city','type','movement','genre','material'].forEach(k => p.getAll(k).forEach(v => fp.append(k, v)));
+        const country = p.get('country'); if (country) fp.set('country', country);
+        const rating = p.get('rating'); if (rating) fp.set('rating', rating);
+        try {
+            const res = await fetch('/api/all-rated/filter-options?' + fp);
+            allFilterOptions = await res.json();
+            renderFilterChips(allFilterOptions);
+        } catch(e) { console.error(e); }
+    }
 
-    // ================================================
-    // LOADERS AVEC RECHERCHE
-    // ================================================
-    async function loadArtists() {
-        const opts = await loadAllFilterOptions();
-        const container = document.getElementById('artist-items');
-        const selected = new URLSearchParams(window.location.search).getAll('artist');
-        if (!opts.artists || !opts.artists.length) {
-            container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Aucun artiste trouvé</div>';
-            return;
-        }
-        container.innerHTML = opts.artists.map(a => `<div class="dropdown-item" data-artist-name="${escHtml(a.name).toLowerCase()}"><label>
-            <input type="checkbox" value="${escHtml(a.id)}" ${selected.includes(a.id) ? 'checked' : ''}>
-            <span>${escHtml(a.name)}</span><span class="count">${a.count}</span>
-        </label></div>`).join('');
-        
-        const searchInput = document.getElementById('artist-search-filter');
-        if (searchInput && !searchInput._initialized) {
-            searchInput._initialized = true;
-            searchInput.addEventListener('input', function() {
-                const term = this.value.trim().toLowerCase();
-                document.querySelectorAll('#artist-items .dropdown-item').forEach(item => {
-                    const name = item.getAttribute('data-artist-name') || '';
-                    item.style.display = (!term || name.includes(term)) ? 'block' : 'none';
-                });
-            });
+    function renderChipsRow(containerId, items, type, valueKey, nameKey) {
+        const row = document.getElementById(containerId + '-chips-row');
+        if (!row) return;
+        if (!items?.length) { row.innerHTML = '<span style="color:var(--text-muted);">Aucun</span>'; return; }
+        const selected = params().getAll(type);
+        const INIT = 8;
+        const expanded = !!showMoreStates[containerId];
+        const visible = expanded ? items : items.slice(0, INIT);
+        const hasHidden = items.length > INIT;
+        row.innerHTML = '';
+        visible.forEach(item => {
+            const chip = document.createElement('div');
+            chip.className = 'filter-chip' + (selected.includes(String(item[valueKey])) ? ' active' : '');
+            chip.dataset.value = item[valueKey];
+            chip.dataset.type = type;
+            chip.textContent = item[nameKey];
+            chip.addEventListener('click', () => chip.classList.toggle('active'));
+            row.appendChild(chip);
+        });
+        if (hasHidden) {
+            const btn = document.createElement('button');
+            btn.className = 'show-more-chip';
+            btn.textContent = expanded ? '− Voir moins' : `+ Voir plus (${items.length - INIT})`;
+            btn.addEventListener('click', () => { showMoreStates[containerId] = !showMoreStates[containerId]; renderChipsRow(containerId, items, type, valueKey, nameKey); });
+            row.appendChild(btn);
         }
     }
 
-    async function loadMuseums() {
-        const opts = await loadAllFilterOptions();
-        const container = document.getElementById('museum-items');
-        const selected = new URLSearchParams(window.location.search).getAll('museum');
-        if (!opts.museums || !opts.museums.length) {
-            container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Aucun musée trouvé</div>';
-            return;
-        }
-        container.innerHTML = opts.museums.map(m => `<div class="dropdown-item" data-museum-name="${escHtml(m.name).toLowerCase()}"><label>
-            <input type="checkbox" value="${escHtml(m.id)}" ${selected.includes(m.id) ? 'checked' : ''}>
-            <span>${escHtml(m.name)}</span><span class="count">${m.count}</span>
-        </label></div>`).join('');
-        
-        const searchInput = document.getElementById('museum-search-filter');
-        if (searchInput && !searchInput._initialized) {
-            searchInput._initialized = true;
-            searchInput.addEventListener('input', function() {
-                const term = this.value.trim().toLowerCase();
-                document.querySelectorAll('#museum-items .dropdown-item').forEach(item => {
-                    const name = item.getAttribute('data-museum-name') || '';
-                    item.style.display = (!term || name.includes(term)) ? 'block' : 'none';
-                });
-            });
-        }
-    }
-
-    async function loadCountries() {
-        const opts = await loadAllFilterOptions();
-        const container = document.getElementById('country-items');
-        const selected = new URLSearchParams(window.location.search).get('country') || '';
-        let html = `<div class="dropdown-item"><label><input type="radio" name="country" value="" ${!selected ? 'checked' : ''}><span>Tous les pays</span></label></div>`;
-        if (opts.countries && opts.countries.length) {
-            html += opts.countries.map(c => `<div class="dropdown-item" data-country-name="${escHtml(c.name).toLowerCase()}"><label>
-                <input type="radio" name="country" value="${escHtml(c.id)}" ${selected === c.id ? 'checked' : ''}>
-                <span>${escHtml(c.name)}</span><span class="count">${c.count}</span>
-            </label></div>`).join('');
-        }
-        container.innerHTML = html;
-        
-        const searchInput = document.getElementById('country-search-filter');
-        if (searchInput && !searchInput._initialized) {
-            searchInput._initialized = true;
-            searchInput.addEventListener('input', function() {
-                const term = this.value.trim().toLowerCase();
-                document.querySelectorAll('#country-items .dropdown-item').forEach(item => {
-                    const name = item.getAttribute('data-country-name') || '';
-                    if (!term || name.includes(term)) item.style.display = 'block';
-                    else item.style.display = 'none';
-                });
-            });
-        }
-    }
-
-    async function loadCities() {
-        const opts = await loadAllFilterOptions();
-        const container = document.getElementById('city-items');
-        const selected = new URLSearchParams(window.location.search).getAll('city');
-        if (!opts.cities || !opts.cities.length) {
-            container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Aucune ville trouvée</div>';
-            return;
-        }
-        container.innerHTML = opts.cities.map(c => `<div class="dropdown-item" data-city-name="${escHtml(c.name).toLowerCase()}"><label>
-            <input type="checkbox" value="${escHtml(c.id)}" ${selected.includes(c.id) ? 'checked' : ''}>
-            <span>${escHtml(c.name)}</span><span class="count">${c.count}</span>
-        </label></div>`).join('');
-        
-        const searchInput = document.getElementById('city-search-filter');
-        if (searchInput && !searchInput._initialized) {
-            searchInput._initialized = true;
-            searchInput.addEventListener('input', function() {
-                const term = this.value.trim().toLowerCase();
-                document.querySelectorAll('#city-items .dropdown-item').forEach(item => {
-                    const name = item.getAttribute('data-city-name') || '';
-                    item.style.display = (!term || name.includes(term)) ? 'block' : 'none';
-                });
-            });
-        }
-    }
-
-    async function loadTypes() {
-        const opts = await loadAllFilterOptions();
-        const container = document.getElementById('type-items');
-        const selected = new URLSearchParams(window.location.search).getAll('type');
-        if (!opts.types || !opts.types.length) {
-            container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Aucun type trouvé</div>';
-            return;
-        }
-        container.innerHTML = opts.types.map(t => `<div class="dropdown-item" data-type-name="${escHtml(t.name).toLowerCase()}"><label>
-            <input type="checkbox" value="${escHtml(t.name)}" ${selected.includes(t.name) ? 'checked' : ''}>
-            <span>${escHtml(t.name)}</span><span class="count">${t.count}</span>
-        </label></div>`).join('');
-        
-        const searchInput = document.getElementById('type-search-filter');
-        if (searchInput && !searchInput._initialized) {
-            searchInput._initialized = true;
-            searchInput.addEventListener('input', function() {
-                const term = this.value.trim().toLowerCase();
-                document.querySelectorAll('#type-items .dropdown-item').forEach(item => {
-                    const name = item.getAttribute('data-type-name') || '';
-                    item.style.display = (!term || name.includes(term)) ? 'block' : 'none';
-                });
-            });
-        }
-    }
-
-    async function loadMovements() {
-        const opts = await loadAllFilterOptions();
-        const container = document.getElementById('movement-items');
-        const selected = new URLSearchParams(window.location.search).getAll('movement');
-        if (!opts.movements || !opts.movements.length) {
-            container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Aucun mouvement trouvé</div>';
-            return;
-        }
-        container.innerHTML = opts.movements.map(m => `<div class="dropdown-item" data-movement-name="${escHtml(m.name).toLowerCase()}"><label>
-            <input type="checkbox" value="${escHtml(m.name)}" ${selected.includes(m.name) ? 'checked' : ''}>
-            <span>${escHtml(m.name)}</span><span class="count">${m.count}</span>
-        </label></div>`).join('');
-        
-        const searchInput = document.getElementById('movement-search-filter');
-        if (searchInput && !searchInput._initialized) {
-            searchInput._initialized = true;
-            searchInput.addEventListener('input', function() {
-                const term = this.value.trim().toLowerCase();
-                document.querySelectorAll('#movement-items .dropdown-item').forEach(item => {
-                    const name = item.getAttribute('data-movement-name') || '';
-                    item.style.display = (!term || name.includes(term)) ? 'block' : 'none';
-                });
-            });
-        }
-    }
-
-    async function loadGenres() {
-        const opts = await loadAllFilterOptions();
-        const container = document.getElementById('genre-items');
-        const selected = new URLSearchParams(window.location.search).getAll('genre');
-        if (!opts.genres || !opts.genres.length) {
-            container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Aucun genre trouvé</div>';
-            return;
-        }
-        container.innerHTML = opts.genres.map(g => `<div class="dropdown-item" data-genre-name="${escHtml(g.name).toLowerCase()}"><label>
-            <input type="checkbox" value="${escHtml(g.name)}" ${selected.includes(g.name) ? 'checked' : ''}>
-            <span>${escHtml(g.name)}</span><span class="count">${g.count}</span>
-        </label></div>`).join('');
-        
-        const searchInput = document.getElementById('genre-search-filter');
-        if (searchInput && !searchInput._initialized) {
-            searchInput._initialized = true;
-            searchInput.addEventListener('input', function() {
-                const term = this.value.trim().toLowerCase();
-                document.querySelectorAll('#genre-items .dropdown-item').forEach(item => {
-                    const name = item.getAttribute('data-genre-name') || '';
-                    item.style.display = (!term || name.includes(term)) ? 'block' : 'none';
-                });
-            });
-        }
-    }
-
-    async function loadMaterials() {
-        const opts = await loadAllFilterOptions();
-        const container = document.getElementById('material-items');
-        const selected = new URLSearchParams(window.location.search).getAll('material');
-        if (!opts.materials || !opts.materials.length) {
-            container.innerHTML = '<div style="padding:1rem;color:var(--text-muted);text-align:center;">Aucun matériau trouvé</div>';
-            return;
-        }
-        container.innerHTML = opts.materials.map(m => `<div class="dropdown-item" data-material-name="${escHtml(m.name).toLowerCase()}"><label>
-            <input type="checkbox" value="${escHtml(m.name)}" ${selected.includes(m.name) ? 'checked' : ''}>
-            <span>${escHtml(m.name)}</span><span class="count">${m.count}</span>
-        </label></div>`).join('');
-        
-        const searchInput = document.getElementById('material-search-filter');
-        if (searchInput && !searchInput._initialized) {
-            searchInput._initialized = true;
-            searchInput.addEventListener('input', function() {
-                const term = this.value.trim().toLowerCase();
-                document.querySelectorAll('#material-items .dropdown-item').forEach(item => {
-                    const name = item.getAttribute('data-material-name') || '';
-                    item.style.display = (!term || name.includes(term)) ? 'block' : 'none';
-                });
-            });
-        }
+    function renderFilterChips(opts) {
+        renderChipsRow('artist', opts.artists, 'artist', 'id', 'name');
+        renderChipsRow('museum', opts.museums, 'museum', 'id', 'name');
+        renderChipsRow('country', opts.countries, 'country', 'id', 'name');
+        renderChipsRow('city', opts.cities, 'city', 'id', 'name');
+        renderChipsRow('type', opts.types, 'type', 'name', 'name');
+        renderChipsRow('movement', opts.movements, 'movement', 'name', 'name');
+        renderChipsRow('genre', opts.genres, 'genre', 'name', 'name');
+        renderChipsRow('material', opts.materials, 'material', 'name', 'name');
     }
 
     function loadSortOptions() {
-        const container = document.getElementById('sort-items');
-        if (!container) return;
-        const cur = new URLSearchParams(window.location.search).get('sort') || 'rating_desc';
-        const opts = [
-            { value: 'rating_desc', label: 'Note moyenne (décroissante)' },
-            { value: 'rating_asc', label: 'Note moyenne (croissante)' },
-            { value: 'count_desc', label: 'Nombre d\'avis (décroissant)' },
-            { value: 'title_asc', label: 'Titre A-Z' },
-            { value: 'artist_asc', label: 'Artiste A-Z' },
-            { value: 'date_desc', label: 'Date de création (récente)' },
-            { value: 'date_asc', label: 'Date de création (ancienne)' },
+        const current = params().get('sort') || 'rating_desc';
+        const sorts = [
+            { value: 'rating_desc', icon: 'fa-star', label: 'Mieux notées' },
+            { value: 'rating_asc', icon: 'fa-star', label: 'Moins bien notées' },
+            { value: 'count_desc', icon: 'fa-chart-simple', label: 'Plus d\'avis' },
+            { value: 'title_asc', icon: 'fa-font', label: 'Titre A-Z' },
+            { value: 'artist_asc', icon: 'fa-user', label: 'Artiste A-Z' },
+            { value: 'date_desc', icon: 'fa-calendar', label: 'Date création (récente)' },
+            { value: 'date_asc', icon: 'fa-calendar', label: 'Date création (ancienne)' }
         ];
-        container.innerHTML = opts.map(o => `<div class="dropdown-item"><label>
-            <input type="radio" name="sort" value="${o.value}" ${cur === o.value ? 'checked' : ''}>
-            <span>${o.label}</span>
-        </label></div>`).join('');
+        const container = document.getElementById('sort-options');
+        container.innerHTML = sorts.map(s => `<div class="sort-option ${current === s.value ? 'active' : ''}" data-sort="${s.value}"><i class="fas ${s.icon}"></i><span>${s.label}</span></div>`).join('');
+        container.querySelectorAll('.sort-option').forEach(opt => opt.addEventListener('click', () => { container.querySelectorAll('.sort-option').forEach(o => o.classList.remove('active')); opt.classList.add('active'); }));
     }
 
-    // ================================================
-    // APPLY FILTERS
-    // ================================================
-    function buildParams() { return new URLSearchParams(window.location.search); }
+    window.applyFilters = function() {
+        const p = new URLSearchParams();
+        document.querySelectorAll('#artist-chips-row .filter-chip.active').forEach(c => p.append('artist', c.dataset.value));
+        document.querySelectorAll('#museum-chips-row .filter-chip.active').forEach(c => p.append('museum', c.dataset.value));
+        const country = document.querySelector('#country-chips-row .filter-chip.active');
+        if (country) p.set('country', country.dataset.value);
+        document.querySelectorAll('#city-chips-row .filter-chip.active').forEach(c => p.append('city', c.dataset.value));
+        document.querySelectorAll('#type-chips-row .filter-chip.active').forEach(c => p.append('type', c.dataset.value));
+        document.querySelectorAll('#movement-chips-row .filter-chip.active').forEach(c => p.append('movement', c.dataset.value));
+        document.querySelectorAll('#genre-chips-row .filter-chip.active').forEach(c => p.append('genre', c.dataset.value));
+        document.querySelectorAll('#material-chips-row .filter-chip.active').forEach(c => p.append('material', c.dataset.value));
 
-    window.applyArtistFilter = function() {
-        const sel = Array.from(document.querySelectorAll('#artist-items input:checked')).map(c => c.value);
-        const p = buildParams(); p.delete('artist'); sel.forEach(a => p.append('artist', a));
-        window.location.href = '/all-rated?' + p;
-    };
-    window.applyMuseumFilter = function() {
-        const sel = Array.from(document.querySelectorAll('#museum-items input:checked')).map(c => c.value);
-        const p = buildParams(); p.delete('museum'); sel.forEach(m => p.append('museum', m));
-        window.location.href = '/all-rated?' + p;
-    };
-    window.applyGeoFilter = function() {
-        const country = document.querySelector('input[name="country"]:checked')?.value || '';
-        const cities = Array.from(document.querySelectorAll('#city-items input:checked')).map(c => c.value);
-        const p = buildParams();
-        if (country) p.set('country', country); else p.delete('country');
-        p.delete('city'); cities.forEach(c => p.append('city', c));
-        window.location.href = '/all-rated?' + p;
-    };
-    window.applyTypeFilter = function() {
-        const sel = Array.from(document.querySelectorAll('#type-items input:checked')).map(c => c.value);
-        const p = buildParams(); p.delete('type'); sel.forEach(t => p.append('type', t));
-        window.location.href = '/all-rated?' + p;
-    };
-    window.applyMovementFilter = function() {
-        const sel = Array.from(document.querySelectorAll('#movement-items input:checked')).map(c => c.value);
-        const p = buildParams(); p.delete('movement'); sel.forEach(m => p.append('movement', m));
-        window.location.href = '/all-rated?' + p;
-    };
-    window.applyGenreFilter = function() {
-        const sel = Array.from(document.querySelectorAll('#genre-items input:checked')).map(c => c.value);
-        const p = buildParams(); p.delete('genre'); sel.forEach(g => p.append('genre', g));
-        window.location.href = '/all-rated?' + p;
-    };
-    window.applyMaterialFilter = function() {
-        const sel = Array.from(document.querySelectorAll('#material-items input:checked')).map(c => c.value);
-        const p = buildParams(); p.delete('material'); sel.forEach(m => p.append('material', m));
-        window.location.href = '/all-rated?' + p;
-    };
-    window.applyRatingFilter = function() {
-        const rating = document.querySelector('input[name="rating_filter"]:checked')?.value;
-        const p = buildParams();
-        if (rating && rating !== 'all') p.set('rating', rating);
-        else p.delete('rating');
-        p.set('page', '1');
-        window.location.href = '/all-rated?' + p;
-    };
-    window.applySortFilter = function() {
-        const sort = document.querySelector('input[name="sort"]:checked')?.value;
-        const p = buildParams();
+        const ratingChip = document.querySelector('#rating-chips-row .filter-chip.active');
+        if (ratingChip) p.set('rating', ratingChip.dataset.rating);
+
+        const sort = params().get('sort');
         if (sort && sort !== 'rating_desc') p.set('sort', sort);
-        else p.delete('sort');
-        window.location.href = '/all-rated?' + p;
+        navigate('/all-rated?' + p);
     };
-    window.clearAllFilters = function() { window.location.href = '/all-rated'; };
 
-    // ================================================
-    // ACTIVE TAGS
-    // ================================================
+    window.applySort = function() {
+        const active = document.querySelector('#sort-options .sort-option.active');
+        const p = params();
+        if (active && active.dataset.sort !== 'rating_desc') p.set('sort', active.dataset.sort);
+        else p.delete('sort');
+        navigate('/all-rated?' + p);
+    };
+    window.resetSort = function() { const p = params(); p.delete('sort'); navigate('/all-rated?' + p); };
+    window.clearAllFilters = function() { navigate('/all-rated'); };
+
     function updateActiveTags() {
         const container = document.getElementById('active-tags');
         if (!container) return;
-        const params = new URLSearchParams(window.location.search);
+        const p = params();
         const tags = [];
-        params.getAll('artist').forEach(a => tags.push({ type: 'artist', label: a, value: a }));
-        const country = params.get('country');
-        if (country) tags.push({ type: 'country', label: country, value: country });
-        params.getAll('city').forEach(c => tags.push({ type: 'city', label: c, value: c }));
-        params.getAll('museum').forEach(m => tags.push({ type: 'museum', label: m, value: m }));
-        params.getAll('type').forEach(t => tags.push({ type: 'type', label: t, value: t }));
-        params.getAll('movement').forEach(m => tags.push({ type: 'movement', label: m, value: m }));
-        params.getAll('genre').forEach(g => tags.push({ type: 'genre', label: g, value: g }));
-        params.getAll('material').forEach(m => tags.push({ type: 'material', label: m, value: m }));
+
+        p.getAll('artist').forEach(a => tags.push({ type: 'artist', label: a, value: a }));
+        p.getAll('museum').forEach(m => tags.push({ type: 'museum', label: m, value: m }));
+        const country = p.get('country'); if (country) tags.push({ type: 'country', label: country, value: country });
+        p.getAll('city').forEach(c => tags.push({ type: 'city', label: c, value: c }));
+        p.getAll('type').forEach(t => tags.push({ type: 'type', label: t, value: t }));
+        p.getAll('movement').forEach(m => tags.push({ type: 'movement', label: m, value: m }));
+        p.getAll('genre').forEach(g => tags.push({ type: 'genre', label: g, value: g }));
+        p.getAll('material').forEach(m => tags.push({ type: 'material', label: m, value: m }));
         
-        const rating = params.get('rating');
+        const rating = p.get('rating');
         if (rating) {
             let label = '';
             if (rating === '5') label = '5★ et plus';
@@ -933,47 +913,45 @@
             tags.push({ type: 'rating', label: label, value: rating });
         }
         
-        const sort = params.get('sort');
-        if (sort && sort !== 'rating_desc') {
-            const lbl = { rating_asc: 'Note croissante', count_desc: 'Nb avis', title_asc: 'A-Z', artist_asc: 'Artiste A-Z', date_desc: 'Date récente', date_asc: 'Date ancienne' };
-            tags.push({ type: 'sort', label: lbl[sort] || sort, value: sort });
-        }
-        container.innerHTML = tags.map(t => `<div class="filter-tag">${escHtml(t.label)}<i class="fas fa-times" onclick="removeTag('${t.type}','${escHtml(t.value)}')"></i></div>`).join('');
+        const sort = p.get('sort');
+        const sortLabels = { rating_asc: 'Note croissante', count_desc: 'Nb avis', title_asc: 'A-Z', artist_asc: 'Artiste A-Z', date_desc: 'Date récente', date_asc: 'Date ancienne' };
+        if (sort && sort !== 'rating_desc') tags.push({ type: 'sort', label: sortLabels[sort] || sort, value: sort });
+
+        if (!tags.length) { container.innerHTML = ''; document.getElementById('filter-count-badge').textContent = ''; return; }
+        container.innerHTML = tags.map(t => `<div class="filter-tag">${esc(t.label)}<button onclick="removeTag('${t.type}','${esc(t.value)}')"><i class="fas fa-times"></i></button></div>`).join('') + `<button class="tags-clear-all" onclick="clearAllFilters()">Tout effacer</button>`;
+        document.getElementById('filter-count-badge').textContent = tags.length;
     }
 
     window.removeTag = function(type, value) {
-        const p = buildParams();
-        const multi = ['artist', 'city', 'museum', 'type', 'movement', 'genre', 'material'];
+        const p = params();
+        const multi = ['artist','city','museum','type','movement','genre','material'];
         if (multi.includes(type)) {
             const list = p.getAll(type).filter(v => v !== value);
             p.delete(type); list.forEach(v => p.append(type, v));
-        } else { p.delete(type); }
-        window.location.href = '/all-rated?' + p;
+        } else if (type === 'country') { p.delete('country'); }
+        else if (type === 'rating') { p.delete('rating'); }
+        else if (type === 'sort') { p.delete('sort'); }
+        else { p.delete(type); }
+        navigate('/all-rated?' + p);
     };
 
-    // ================================================
-    // SCROLL TO TOP
-    // ================================================
-    function initScrollToTop() {
-        const btn = document.getElementById('scroll-top');
-        window.addEventListener('scroll', () => btn.classList.toggle('visible', window.scrollY > 500));
-        btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-    }
+    // Rating chips handlers
+    document.querySelectorAll('#rating-chips-row .filter-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            document.querySelectorAll('#rating-chips-row .filter-chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+        });
+    });
 
-    function escHtml(str) {
-        if (!str) return '';
-        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-    }
+    const scrollBtn = document.getElementById('scroll-top');
+    window.addEventListener('scroll', () => scrollBtn?.classList.toggle('visible', window.scrollY > 500));
+    scrollBtn?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-    // ================================================
-    // INIT
-    // ================================================
     document.addEventListener('DOMContentLoaded', () => {
         setViewMode(currentView);
         updateActiveTags();
         loadSortOptions();
-        initScrollToTop();
-        loadAllFilterOptions();
+        loadFilterOptions();
     });
 })();
 </script>

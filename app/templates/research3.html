@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+{% if session.language == 'en' %}
+<html lang="en">
+{% else %}
+<html lang="fr">
+{% endif %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ site_name }} · Explorer</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --accent: #6c5ce7;
+            --accent-hover: #5a4bcf;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-text: 'Inter', sans-serif;
+        }
+
+        body.theme-dark {
+            --bg: #0a0a0a;
+            --surface: #121212;
+            --surface-hover: #1e1e1e;
+            --text: #ffffff;
+            --text-muted: #888888;
+            --border: #2a2a2a;
+        }
+        body.theme-light {
+            --bg: #f5f5f5;
+            --surface: #ffffff;
+            --surface-hover: #f0f0f0;
+            --text: #1a1a1a;
+            --text-muted: #6a6a6a;
+            --border: #e0e0e0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-text);
+            min-height: 100vh;
+        }
+
+        .container { max-width: 1600px; margin: 0 auto; padding: 0 1rem; }
+        .main-content { margin-top: 80px; padding-bottom: 80px; }
+
+        /* ===== HERO ===== */
+        .hero-search {
+            text-align: center;
+            padding: 2rem 0 3rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+        .hero-search h1 {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+        .hero-search h1 span { color: var(--accent); }
+        .hero-search p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* ===== SUGGESTIONS PANEL (quand il y a une recherche) ===== */
+        .suggestions-panel {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+        .suggestions-title {
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .suggestions-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+        .suggestion-category {
+            border-right: 1px solid var(--border);
+            padding-right: 1rem;
+        }
+        .suggestion-category:last-child { border-right: none; }
+        .suggestion-category-header {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .suggestion-category-header i { color: var(--accent); font-size: 0.8rem; }
+        .suggestion-list { display: flex; flex-direction: column; gap: 0.5rem; }
+        .suggestion-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.4rem 0;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.85rem;
+            border-bottom: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        .suggestion-link:hover {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+        .suggestion-count {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+        .view-all {
+            margin-top: 0.8rem;
+            font-size: 0.7rem;
+            color: var(--accent);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        /* ===== TOOLBAR ===== */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .results-count {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+        .results-count span { color: var(--accent); font-size: 1.8rem; font-weight: 700; }
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .filter-chip {
+            padding: 0.5rem 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .filter-chip.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+        .filter-chip i { font-size: 0.7rem; }
+        .sort-select {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        /* ===== GRILLE CINÉMA (3 colonnes larges) ===== */
+        .cinema-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        .cinema-card {
+            text-decoration: none;
+            color: inherit;
+            background: var(--surface);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .cinema-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.3);
+        }
+        .cinema-image {
+            position: relative;
+            aspect-ratio: 4/3;
+            overflow: hidden;
+        }
+        .cinema-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        .cinema-card:hover .cinema-image img { transform: scale(1.05); }
+        .cinema-fav {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 36px;
+            height: 36px;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .cinema-fav i { color: white; font-size: 0.9rem; }
+        .cinema-fav.active i { color: #e03131; }
+        .cinema-info { padding: 1rem; }
+        .cinema-title {
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .cinema-artist {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+        .cinema-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+        .cinema-meta i { color: var(--accent); width: 14px; }
+
+        /* ===== LOAD MORE ===== */
+        .load-more-container { text-align: center; padding: 3rem 0; }
+        .load-more-btn {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 0.8rem 2.5rem;
+            border-radius: 40px;
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .load-more-btn:hover { background: var(--accent); color: white; }
+        .end-message { text-align: center; padding: 2rem; color: var(--text-muted); }
+        .no-results { text-align: center; padding: 4rem; color: var(--text-muted); }
+
+        /* ===== SCROLL TOP ===== */
+        .scroll-top {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 44px;
+            height: 44px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+            z-index: 100;
+        }
+        .scroll-top.visible { opacity: 1; visibility: visible; }
+        .scroll-top:hover { background: var(--accent); border-color: var(--accent); color: white; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .cinema-grid { grid-template-columns: repeat(2, 1fr); }
+            .suggestions-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+            .suggestion-category { border-right: none; padding-right: 0; }
+        }
+        @media (max-width: 768px) {
+            .main-content { margin-top: 58px; }
+            .hero-search h1 { font-size: 1.5rem; }
+            .cinema-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .filter-buttons { justify-content: center; }
+            .suggestions-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Animation */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .cinema-card { animation: fadeUp 0.4s ease forwards; opacity: 0; }
+        .cinema-card:nth-child(1) { animation-delay: 0.02s; }
+        .cinema-card:nth-child(2) { animation-delay: 0.05s; }
+        .cinema-card:nth-child(3) { animation-delay: 0.08s; }
+        .cinema-card:nth-child(4) { animation-delay: 0.11s; }
+        .cinema-card:nth-child(5) { animation-delay: 0.14s; }
+        .cinema-card:nth-child(6) { animation-delay: 0.17s; }
+    </style>
+</head>
+<body>
+<script>
+    (function() {
+        const t = localStorage.getItem('theme') || 'dark';
+        document.body.classList.remove('theme-dark', 'theme-light');
+        document.body.classList.add('theme-' + t);
+    })();
+</script>
+
+{% include 'navbar.html' %}
+
+<div class="container main-content">
+
+    <!-- HERO -->
+    <div class="hero-search">
+        <h1>Explorer <span>la collection</span></h1>
+        <p>{{ total_oeuvres }} œuvres · {{ search_results.artists|length if search_results else 0 }} artistes · mouvements · musées</p>
+    </div>
+
+    <!-- SUGGESTIONS (quand il y a une recherche) -->
+    {% if search_results and (search_results.artists or search_results.museums or search_results.cities or search_results.countries) %}
+    <div class="suggestions-panel">
+        <div class="suggestions-title">
+            <i class="fas fa-magic"></i> Suggestions pour « {{ q }} »
+        </div>
+        <div class="suggestions-grid">
+            {% if search_results.artists %}
+            <div class="suggestion-category">
+                <div class="suggestion-category-header"><i class="fas fa-user"></i> Artistes</div>
+                <div class="suggestion-list">
+                    {% for a in search_results.artists[:5] %}
+                    <a href="/research?artist={{ a.nom|urlencode }}" class="suggestion-link">
+                        <span>{{ a.nom }}</span>
+                        <span class="suggestion-count">{{ a.count }} œuvres</span>
+                    </a>
+                    {% endfor %}
+                    {% if search_results.artists|length > 5 %}
+                    <a href="#" class="view-all" onclick="showAllArtists()">Voir tous les artistes →</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if search_results.museums %}
+            <div class="suggestion-category">
+                <div class="suggestion-category-header"><i class="fas fa-landmark"></i> Musées</div>
+                <div class="suggestion-list">
+                    {% for m in search_results.museums[:5] %}
+                    <a href="/research?museum={{ m.id|urlencode }}" class="suggestion-link">
+                        <span>{{ m.nom }}</span>
+                        <span class="suggestion-count">{{ m.count }} œuvres</span>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if search_results.cities or search_results.countries %}
+            <div class="suggestion-category">
+                <div class="suggestion-category-header"><i class="fas fa-map-marker-alt"></i> Lieux</div>
+                <div class="suggestion-list">
+                    {% for c in search_results.cities[:3] %}
+                    <a href="/research?city={{ c.nom|urlencode }}" class="suggestion-link">
+                        <span>{{ c.nom }}</span>
+                        <span class="suggestion-count">{{ c.oeuvres_count }} œuvres</span>
+                    </a>
+                    {% endfor %}
+                    {% for c in search_results.countries[:3] %}
+                    <a href="/research?country={{ c.nom|urlencode }}" class="suggestion-link">
+                        <span>{{ c.nom }}</span>
+                        <span class="suggestion-count">{{ c.oeuvres_count }} œuvres</span>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+        <div class="results-count">
+            <span>{{ total_oeuvres }}</span> résultat{{ 's' if total_oeuvres > 1 else '' }}
+        </div>
+        <div class="filter-buttons">
+            <button class="filter-chip" data-filter="all" onclick="setActiveFilter('all')">
+                <i class="fas fa-th-large"></i> Toutes
+            </button>
+            <button class="filter-chip" data-filter="peinture" onclick="setActiveFilter('peinture')">
+                <i class="fas fa-palette"></i> Peinture
+            </button>
+            <button class="filter-chip" data-filter="sculpture" onclick="setActiveFilter('sculpture')">
+                <i class="fas fa-cube"></i> Sculpture
+            </button>
+            <button class="filter-chip" data-filter="dessin" onclick="setActiveFilter('dessin')">
+                <i class="fas fa-pencil-alt"></i> Dessin
+            </button>
+            <button class="filter-chip" data-filter="photo" onclick="setActiveFilter('photo')">
+                <i class="fas fa-camera"></i> Photographie
+            </button>
+        </div>
+        <select class="sort-select" id="sort-select" onchange="applySort()">
+            <option value="relevance">Pertinence</option>
+            <option value="rating_desc">Mieux notées</option>
+            <option value="date_desc">Plus récentes</option>
+            <option value="date_asc">Plus anciennes</option>
+            <option value="title_asc">Titre A-Z</option>
+            <option value="artist_asc">Artiste A-Z</option>
+        </select>
+    </div>
+
+    <!-- GRILLE CINÉMA -->
+    <div class="cinema-grid" id="works-grid">
+        {% for artwork in works %}
+        <div class="cinema-card" data-id="{{ artwork.id }}">
+            <a href="/oeuvre/{{ artwork.id }}" style="text-decoration: none; color: inherit;">
+                <div class="cinema-image">
+                    <div class="cinema-fav" onclick="toggleFav(event, '{{ artwork.id }}', this)">
+                        <i class="far fa-heart"></i>
+                    </div>
+                    {% if artwork.image_url %}
+                    <img src="https://images.weserv.nl/?url={{ artwork.image_url|urlencode }}&w=600&h=450&fit=cover&output=webp&q=75"
+                         alt="{{ artwork.titre }}"
+                         loading="lazy"
+                         onerror="this.src='{{ artwork.image_url }}'">
+                    {% else %}
+                    <div style="width:100%;height:100%;background:var(--surface-hover);display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-image" style="font-size:3rem;color:var(--text-muted);"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="cinema-info">
+                    <div class="cinema-title">{{ artwork.titre|truncate(45) if artwork.titre else 'SANS TITRE' }}</div>
+                    <div class="cinema-artist">{{ artwork.createur|truncate(35) if artwork.createur else 'ARTISTE INCONNU' }}</div>
+                    <div class="cinema-meta">
+                        {% if artwork.date %}<span><i class="far fa-calendar-alt"></i> {{ artwork.date }}</span>{% endif %}
+                        {% if artwork.lieu %}<span><i class="fas fa-map-marker-alt"></i> {{ artwork.lieu|truncate(20) }}</span>{% endif %}
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- LOAD MORE -->
+    <div class="load-more-container" id="load-more-container" style="display:{% if has_more %}block{% else %}none{% endif %};">
+        <button class="load-more-btn" onclick="loadMore()">Voir plus</button>
+    </div>
+    <div class="end-message" id="end-message" style="display:none;">
+        ✨ Fin de la collection ✨
+    </div>
+    <div class="no-results" id="no-results" style="display:none;">
+        <i class="fas fa-search" style="font-size:2rem;opacity:0.3;margin-bottom:1rem;display:block;"></i>
+        Aucune œuvre trouvée
+    </div>
+
+</div>
+
+<div class="scroll-top" id="scroll-top"><i class="fas fa-arrow-up"></i></div>
+{% include 'footer.html' %}
+
+<script>
+    let currentPage = 1;
+    let isLoading = false;
+    let hasMore = {{ 'true' if has_more else 'false' }};
+    let currentFilter = 'all';
+    const isLoggedIn = {{ 'true' if session.user_id else 'false' }};
+
+    function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // ===== FAVORIS =====
+    window.toggleFav = async function(e, artworkId, el) {
+        e.preventDefault(); e.stopPropagation();
+        if (!isLoggedIn) { window.location.href = '/login?next=/research'; return; }
+        try {
+            const res = await fetch('/api/favorite/toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content },
+                body: JSON.stringify({ artwork_id: artworkId })
+            });
+            const data = await res.json();
+            el.classList.toggle('active', data.favorite);
+            el.querySelector('i').className = data.favorite ? 'fas fa-heart' : 'far fa-heart';
+        } catch(e) {}
+    };
+
+    // ===== FILTRES (frontend) =====
+    window.setActiveFilter = function(filter) {
+        currentFilter = filter;
+        document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
+        document.querySelector(`.filter-chip[data-filter="${filter}"]`).classList.add('active');
+        
+        const cards = document.querySelectorAll('.cinema-card');
+        cards.forEach(card => {
+            if (filter === 'all') {
+                card.style.display = 'block';
+            } else {
+                // Filtrage basique par type (à améliorer avec les données réelles)
+                const title = card.querySelector('.cinema-title')?.innerText?.toLowerCase() || '';
+                const show = title.includes(filter.toLowerCase());
+                card.style.display = show ? 'block' : 'none';
+            }
+        });
+        
+        const visible = document.querySelectorAll('.cinema-card[style="display: block"], .cinema-card:not([style])').length;
+        document.querySelector('.results-count span').textContent = visible;
+    };
+
+    // ===== TRI =====
+    window.applySort = function() {
+        const sort = document.getElementById('sort-select').value;
+        const params = new URLSearchParams(window.location.search);
+        if (sort !== 'relevance') params.set('sort', sort);
+        else params.delete('sort');
+        window.location.href = '/research?' + params;
+    };
+
+    // ===== LOAD MORE =====
+    window.loadMore = async function() {
+        if (isLoading || !hasMore) return;
+        isLoading = true;
+        const btn = document.getElementById('load-more-btn');
+        if (btn) btn.disabled = true;
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('page', currentPage + 1);
+            const res = await fetch('/api/works?' + urlParams);
+            const data = await res.json();
+            if (data.works?.length) {
+                appendWorks(data.works);
+                currentPage++;
+                hasMore = data.has_more;
+            } else { hasMore = false; }
+            if (!hasMore) {
+                document.getElementById('load-more-container').style.display = 'none';
+                document.getElementById('end-message').style.display = 'block';
+            }
+        } catch(e) { console.error(e); }
+        finally { isLoading = false; if (btn) btn.disabled = false; }
+    };
+
+    function appendWorks(works) {
+        const grid = document.getElementById('works-grid');
+        works.forEach(w => {
+            const card = document.createElement('div');
+            card.className = 'cinema-card';
+            card.innerHTML = `
+                <a href="/oeuvre/${w.id}" style="text-decoration: none; color: inherit;">
+                    <div class="cinema-image">
+                        <div class="cinema-fav" onclick="toggleFav(event, '${w.id}', this)">
+                            <i class="far fa-heart"></i>
+                        </div>
+                        <img src="https://images.weserv.nl/?url=${encodeURIComponent(w.image_url)}&w=600&h=450&fit=cover&output=webp&q=75" loading="lazy" onerror="this.src='${w.image_url}'">
+                    </div>
+                    <div class="cinema-info">
+                        <div class="cinema-title">${esc((w.titre||'Sans titre').substring(0,45))}</div>
+                        <div class="cinema-artist">${esc((w.createur||'Artiste inconnu').substring(0,35))}</div>
+                        <div class="cinema-meta">
+                            ${w.date ? `<span><i class="far fa-calendar-alt"></i> ${esc(w.date)}</span>` : ''}
+                        </div>
+                    </div>
+                </a>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    // ===== SCROLL TOP =====
+    const scrollTop = document.getElementById('scroll-top');
+    window.addEventListener('scroll', () => scrollTop.classList.toggle('visible', window.scrollY > 500));
+    scrollTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', () => {
+        const sortSelect = document.getElementById('sort-select');
+        const currentSort = new URLSearchParams(window.location.search).get('sort');
+        if (currentSort) sortSelect.value = currentSort;
+        
+        // Animation des cartes
+        const cards = document.querySelectorAll('.cinema-card');
+        cards.forEach((card, i) => {
+            card.style.animationDelay = `${0.02 + i * 0.03}s`;
+        });
+    });
+</script>
+</body>
+</html>
