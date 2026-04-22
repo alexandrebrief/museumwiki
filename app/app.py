@@ -884,14 +884,32 @@ def index():
 # ---- Page d'accueil ----
 @app.route('/home')
 def home():
-    # Image aléatoire pour le hero
-    hero_image = db.session.query(Artwork.image_url).filter(
+    # Récupérer une œuvre aléatoire AVEC son ID pour le hero
+    hero_artwork = db.session.query(
+        Artwork.id, 
+        Artwork.image_url, 
+        Artwork.label_fr, 
+        Artwork.label_en,
+        Artwork.creator_fr,
+        Artwork.creator_en
+    ).filter(
         Artwork.image_url.isnot(None),
         Artwork.image_url != ''
     ).order_by(func.random()).first()
-    hero_image_url = hero_image[0] if hero_image else None
     
-    # Récupération de l'œuvre en vedette (La Joconde)
+    if hero_artwork:
+        hero_image_url = hero_artwork[1]
+        hero_artwork_id = hero_artwork[0]  # ← L'ID de l'œuvre aléatoire
+        lang = session.get('language', 'fr')
+        hero_title = hero_artwork[2] if lang == 'fr' else hero_artwork[3]
+        hero_artist = hero_artwork[4] if lang == 'fr' else hero_artwork[5]
+    else:
+        hero_image_url = None
+        hero_artwork_id = 'Q12418'
+        hero_title = 'La Joconde'
+        hero_artist = 'Léonard de Vinci'
+    
+    # Récupération de l'œuvre en vedette (La Joconde) pour le spotlight
     spotlight_artwork = Artwork.query.filter_by(id='Q12418').first()
     
     if spotlight_artwork:
@@ -905,6 +923,9 @@ def home():
     
     return render_template('home.html',
         hero_image=hero_image_url,
+        hero_artwork_id=hero_artwork_id,
+        hero_title=hero_title,
+        hero_artist=hero_artist,
         spotlight_image=spotlight_image,
         spotlight_title=spotlight_title,
         spotlight_artist=spotlight_artist
@@ -1019,7 +1040,7 @@ def cached_discover_data():
     """)
     museums = [{'name': r.name, 'count': r.count} for r in db.session.execute(museums_sql)]
 
-    artist_ids = ['Q762', 'Q483992', 'Q351746', 'Q325961', 'Q12345227', 'Q102135']
+    artist_ids = ['Q762', 'Q290407', 'Q217434', 'Q5582', 'Q296', 'Q130531']
     artist_sql = text(f"""
         SELECT DISTINCT ON (a.{art_col})
             a.{art_col} as name, a.creator_id,
@@ -1234,6 +1255,244 @@ def top():
     )
 
 
+
+
+
+
+
+
+@app.route('/suggestions')
+def suggestions():
+    q = request.args.get('q', '').strip()
+    page = request.args.get('page', 1, type=int)
+    limit = min(request.args.get('limit', 24, type=int), 48)
+    
+    # Récupérer TOUS les paramètres de filtre
+    artists = request.args.getlist('artist')
+    country = request.args.get('country', '')
+    cities = request.args.getlist('city')
+    museums = request.args.getlist('museum')
+    movements = request.args.getlist('movement')
+    sort = request.args.get('sort', 'relevance')
+    view = request.args.get('view', 6, type=int)
+    
+    # ============================================================
+    # REQUÊTE AVEC FILTRES
+    # ============================================================
+    from sqlalchemy import case as sql_case, func
+    
+    query = db.session.query(Artwork.id, Artwork.label_fr, Artwork.label_en, 
+                              Artwork.creator_fr, Artwork.creator_en, Artwork.image_url)
+    
+    # Recherche par mot-clé avec progression (fallback)
+    if q:
+        s = f"%{q}%"
+        lang = session.get('language', 'fr')
+        
+        # Niveau 1 : Ville + Musée + Artiste (champs prioritaires)
+        primary_fields = db.or_(
+            Artwork.city_fr.ilike(s),
+            Artwork.collection_fr.ilike(s),
+            Artwork.creator_fr.ilike(s)
+        )
+        
+        temp_query = db.session.query(Artwork.id).filter(primary_fields)
+        temp_count = temp_query.limit(1000).count()
+        
+        if temp_count >= 24:
+            query = query.filter(primary_fields)
+        else:
+            if lang == 'fr':
+                query = query.filter(
+                    db.or_(
+                        primary_fields,
+                        Artwork.label_fr.ilike(s),
+                        Artwork.country_fr.ilike(s),
+                        Artwork.movement_fr.ilike(s)
+                    )
+                )
+            else:
+                query = query.filter(
+                    db.or_(
+                        primary_fields,
+                        Artwork.label_en.ilike(s),
+                        Artwork.country_en.ilike(s),
+                        Artwork.movement_en.ilike(s)
+                    )
+                )
+    
+    # Filtres
+    if country:
+        query = query.filter(db.or_(
+            Artwork.country_fr.ilike(f"%{country}%"), 
+            Artwork.country_en.ilike(f"%{country}%")
+        ))
+    
+    if artists:
+        filters = [Artwork.creator_fr.ilike(f"%{a}%") for a in artists]
+        query = query.filter(db.or_(*filters))
+    
+    if cities:
+        filters = [Artwork.city_fr.ilike(f"%{c}%") for c in cities]
+        query = query.filter(db.or_(*filters))
+    
+    if museums:
+        filters = [Artwork.collection_fr.ilike(f"%{m}%") for m in museums]
+        query = query.filter(db.or_(*filters))
+    
+    if movements:
+        filters = [Artwork.movement_fr.ilike(f"%{m}%") for m in movements]
+        query = query.filter(db.or_(*filters))
+    
+    # ✅ SAUVEGARDER LA REQUÊTE FILTRÉE (avant pagination et tri)
+    filtered_query = query
+    
+    # Tri
+    if sort != 'relevance':
+        query = _apply_sort(query, sort)
+    
+    query = query.order_by(
+        sql_case((Artwork.image_url.isnot(None), 0), else_=1).asc()
+    )
+    
+    # ============================================================
+    # PAGINATION
+    # ============================================================
+    works_page = query.offset((page - 1) * limit).limit(limit).all()
+    works = []
+    for w in works_page:
+        works.append({
+            'id': w.id,
+            'titre': w.label_fr or w.label_en or 'Sans titre',
+            'createur': w.creator_fr or w.creator_en or 'Artiste inconnu',
+            'image_url': w.image_url
+        })
+    
+    if len(works_page) < limit:
+        has_more = False
+    else:
+        has_more = True
+    
+    total_oeuvres = db.session.query(func.count()).select_from(filtered_query.subquery()).scalar()
+    
+    # ============================================================
+    # RÉSULTATS POUR LA BARRE LATÉRALE
+    # ============================================================
+    search_results = None
+    
+    # ✅ MODIFICATION : calculer search_results s'il y a q OU des filtres
+    if (q or artists or country or cities or museums or movements) and page == 1:
+        lang = session.get('language', 'fr')
+        pattern = f"%{q}%" if q else None
+        
+        base_query = filtered_query  # ← maintenant filtered_query existe !
+        
+        sr_artists = base_query.with_entities(
+            Artwork.creator_fr.label('nom'), 
+            func.count(Artwork.id).label('count')
+        ).filter(
+            Artwork.creator_fr.isnot(None), 
+            Artwork.creator_fr != '',
+            Artwork.creator_fr != 'Artiste inconnu'
+        ).group_by(Artwork.creator_fr).order_by(func.count(Artwork.id).desc()).limit(10).all()
+        
+        sr_cities = base_query.with_entities(
+            Artwork.city_fr.label('nom'),
+            func.count(Artwork.id).label('oeuvres_count')
+        ).filter(
+            Artwork.city_fr.isnot(None), 
+            Artwork.city_fr != ''
+        ).group_by(Artwork.city_fr).order_by(func.count(Artwork.id).desc()).limit(10).all()
+        
+        sr_countries = base_query.with_entities(
+            Artwork.country_fr.label('nom'),
+            func.count(Artwork.id).label('oeuvres_count')
+        ).filter(
+            Artwork.country_fr.isnot(None), 
+            Artwork.country_fr != ''
+        ).group_by(Artwork.country_fr).order_by(func.count(Artwork.id).desc()).limit(10).all()
+        
+        sr_museums = base_query.with_entities(
+            Artwork.collection_fr.label('nom'), 
+            func.count(Artwork.id).label('count')
+        ).filter(
+            Artwork.collection_fr.isnot(None), 
+            Artwork.collection_fr != ''
+        ).group_by(Artwork.collection_fr).order_by(func.count(Artwork.id).desc()).limit(10).all()
+        
+        sr_movements = base_query.with_entities(
+            Artwork.movement_fr.label('nom'), 
+            func.count(Artwork.id).label('count')
+        ).filter(
+            Artwork.movement_fr.isnot(None), 
+            Artwork.movement_fr != ''
+        ).group_by(Artwork.movement_fr).order_by(func.count(Artwork.id).desc()).limit(10).all()
+        
+        if any([sr_artists, sr_countries, sr_cities, sr_museums, sr_movements]):
+            search_results = {
+                'query': q or 'filtres',
+                'artists': [{'nom': a.nom, 'count': a.count} for a in sr_artists],
+                'countries': [{'nom': c.nom, 'oeuvres_count': c.oeuvres_count} for c in sr_countries],
+                'cities': [{'nom': c.nom, 'oeuvres_count': c.oeuvres_count} for c in sr_cities],
+                'museums': [{'id': m.nom, 'nom': m.nom, 'count': m.count} for m in sr_museums],
+                'movements': [{'nom': m.nom, 'count': m.count} for m in sr_movements],
+            }
+    
+    # ============================================================
+    # SUGGESTIONS RAPIDES
+    # ============================================================
+    quick_suggestions = []
+    if search_results:
+        all_items = []
+        for museum in search_results.get('museums', [])[:2]:
+            all_items.append({'name': museum['nom'], 'count': museum['count'], 'icon': 'fa-landmark', 'url': f"/suggestions?q={q}&museum={museum['id']}"})
+        for artist in search_results.get('artists', [])[:2]:
+            all_items.append({'name': artist['nom'], 'count': artist['count'], 'icon': 'fa-user', 'url': f"/suggestions?q={q}&artist={artist['nom']}"})
+        for city in search_results.get('cities', [])[:2]:
+            all_items.append({'name': city['nom'], 'count': city['oeuvres_count'], 'icon': 'fa-city', 'url': f"/suggestions?q={q}&city={city['nom']}"})
+        for country_item in search_results.get('countries', [])[:2]:
+            all_items.append({'name': country_item['nom'], 'count': country_item['oeuvres_count'], 'icon': 'fa-globe', 'url': f"/suggestions?q={q}&country={country_item['nom']}"})
+        for movement in search_results.get('movements', [])[:2]:
+            all_items.append({'name': movement['nom'], 'count': movement['count'], 'icon': 'fa-palette', 'url': f"/suggestions?q={q}&movement={movement['nom']}"})
+        
+        all_items.sort(key=lambda x: x['count'], reverse=True)
+        quick_suggestions = all_items[:3]
+    
+    return render_template('suggestions.html',
+        works=works,
+        total_oeuvres=total_oeuvres,
+        current_page=page,
+        current_view=view,
+        limit=limit,
+        search_results=search_results,
+        quick_suggestions=quick_suggestions,
+        q=q,
+        has_more=has_more,
+        sort=sort,
+        museum_names={},
+        artists=artists,           # <-- AJOUTE
+        museums=museums,           # <-- AJOUTE
+        cities=cities,             # <-- AJOUTE
+        country=country,           # <-- AJOUTE
+        movements=movements  
+    )
+
+
+
+
+
+
+
+
+
+    
+    
+    
+    
+
+
+
+
 # ---- Page Recherche ----
 @app.route('/research')
 def research():
@@ -1324,6 +1583,9 @@ def research():
         current_view=view, search_results=search_results, q=q,
         museum_names=museum_names
     )
+
+
+
 
 
 # ---- Page Favoris ----

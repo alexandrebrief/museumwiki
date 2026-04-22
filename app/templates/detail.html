@@ -1228,14 +1228,20 @@
         modalImage.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
     }
 
-    function openImageModal(url) {
-        if (!url) return;
-        modalImage.src = url;
-        scale = 1; translateX = 0; translateY = 0;
-        applyTransform();
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
+let isDraggingModal = false;  // Ajoute cette variable globale
+
+function openImageModal(url) {
+    if (!url) return;
+    modalImage.src = url;
+    scale = 1;
+    translateX = 0;
+    translateY = 0;
+    isDraggingModal = false;
+    applyTransform();
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    modalImage.style.cursor = 'zoom-in';
+}
 
     function closeModal() {
         modal.classList.remove('active');
@@ -1245,6 +1251,8 @@
 
     modalImage.addEventListener('wheel', function(e) {
         e.preventDefault();
+        e.stopPropagation();  // ← AJOUTE cette ligne
+
         const delta = e.deltaY * -0.003;
         const newScale = Math.min(Math.max(scale + delta, 1), 20);
         const rect = modalImage.getBoundingClientRect();
@@ -1258,31 +1266,44 @@
         applyTransform();
     }, { passive: false });
 
-    modalImage.addEventListener('mousedown', function(e) {
-        if (scale <= 1) return;
-        isDragging = true;
-        startX = e.clientX - translateX;
-        startY = e.clientY - translateY;
-        modalImage.style.cursor = 'grabbing';
-        e.preventDefault();
-    });
 
-    document.addEventListener('mousemove', function(e) {
-        if (!isDragging) return;
-        translateX = e.clientX - startX;
-        translateY = e.clientY - startY;
-        applyTransform();
-    });
 
-    document.addEventListener('mouseup', function() {
-        if (!isDragging) return;
-        isDragging = false;
-        modalImage.style.cursor = scale > 1 ? 'grab' : 'zoom-in';
-    });
 
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) closeModal();
-    });
+modalImage.addEventListener('mousedown', function(e) {
+    if (scale <= 1) return;
+    isDraggingModal = true;
+    startX = e.clientX - translateX;
+    startY = e.clientY - translateY;
+    modalImage.style.cursor = 'grabbing';
+    e.preventDefault();
+    e.stopPropagation();
+});
+
+document.addEventListener('mousemove', function(e) {
+    if (!isDraggingModal) return;
+    translateX = e.clientX - startX;
+    translateY = e.clientY - startY;
+    applyTransform();
+});
+
+document.addEventListener('mouseup', function() {
+    if (!isDraggingModal) return;
+    isDraggingModal = false;
+    modalImage.style.cursor = scale > 1 ? 'grab' : 'zoom-in';
+});
+
+// Éviter la fermeture du modal quand on clique sur l'image (sauf si pas de drag)
+modalImage.addEventListener('click', function(e) {
+    if (!isDraggingModal) {
+        e.stopPropagation();  // Empêche la fermeture
+    }
+});
+
+
+
+
+
+
 
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape') closeModal();

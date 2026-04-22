@@ -17,11 +17,11 @@
         <div class="navbar-left">
             <a href="/" class="navbar-logo"><span style="color: var(--accent);">/</span>{{ site_name }}<span style="color: var(--accent);">/</span></a>
             <div class="navbar-links">
-                <a href="/discover" class="nav-link">Découvrir</a>
-                <a href="/all-rated" class="nav-link">Avis du public</a>
-                <a href="/top" class="nav-link">Top</a>   
-                <a href="/rated" class="nav-link">Mes scores</a>
-                <a href="/favoris" class="nav-link">Mes favoris</a>
+                <a href="/discover" class="nav-link">Explorer</a>
+                <a href="/top" class="nav-link">Classement</a>   
+                <a href="/all-rated" class="nav-link">Communnauté</a>                
+                <a href="/favoris" class="nav-link">Favoris</a>
+                <a href="/rated" class="nav-link">Mes notes</a>                
             </div>
         </div>
         <div class="navbar-right">
@@ -86,7 +86,7 @@
 <div class="mob-search-overlay" id="mob-search-overlay">
     <div class="mso-header">
 <div class="mso-input-wrap">
-    <i class="fas fa-search mso-icon" onclick="document.getElementById('mob-search-input').value && (window.location.href='/research?q='+encodeURIComponent(document.getElementById('mob-search-input').value))" style="cursor:pointer;"></i>
+    <i class="fas fa-search mso-icon" onclick="document.getElementById('mob-search-input').value && (window.location.href='/suggestions?q='+encodeURIComponent(document.getElementById('mob-search-input').value))" style="cursor:pointer;"></i>
     <input type="text" id="mob-search-input" class="mso-input" placeholder="Ville, artiste, musée, oeuvre..." autocomplete="off">
     <button class="mso-clear" id="mso-clear" onclick="clearMobSearch()" style="display:none"><i class="fas fa-times"></i></button>
 </div>
@@ -127,11 +127,11 @@
         </div>
 <nav class="mob-drawer-nav">
     <a href="/home" class="mdn-link" onclick="closeMobDrawer()"><span>Accueil</span><i class="fas fa-chevron-right"></i></a>
-    <a href="/discover" class="mdn-link" onclick="closeMobDrawer()"><span>Découvrir</span><i class="fas fa-chevron-right"></i></a>
-    <a href="/all-rated" class="mdn-link" onclick="closeMobDrawer()"><span>Avis du public</span><i class="fas fa-chevron-right"></i></a>
-    <a href="/top" class="mdn-link" onclick="closeMobDrawer()"><span>Top</span><i class="fas fa-chevron-right"></i></a>
-    <a href="/rated" class="mdn-link" onclick="closeMobDrawer()"><span>Mes scores</span><i class="fas fa-chevron-right"></i></a>    
+    <a href="/discover" class="mdn-link" onclick="closeMobDrawer()"><span>Explorer</span><i class="fas fa-chevron-right"></i></a>
+    <a href="/top" class="mdn-link" onclick="closeMobDrawer()"><span>Classement</span><i class="fas fa-chevron-right"></i></a>
+    <a href="/all-rated" class="mdn-link" onclick="closeMobDrawer()"><span>Communauté</span><i class="fas fa-chevron-right"></i></a>    
     <a href="/favoris" class="mdn-link" onclick="closeMobDrawer()"><span>Mes favoris</span><i class="fas fa-chevron-right"></i></a>
+    <a href="/rated" class="mdn-link" onclick="closeMobDrawer()"><span>Mes notes</span><i class="fas fa-chevron-right"></i></a>    
 </nav>
         </nav>
     </div>
@@ -213,7 +213,7 @@ body.theme-light {
     transition: color 0.2s;
 }
 .navbar-home:not(.scrolled) .navbar-logo { color: #fff; }
-.navbar-logo:hover { color: var(--accent); }
+.navbar-logo:hover { color: var(--accent); }.navbar-toggler-icon,
 
 /* ===== NAV LINKS ===== */
 .navbar-links { 
@@ -351,6 +351,49 @@ body.theme-light {
     padding: 0.2rem;
 }
 
+
+
+/* FORCE : après scroll en mode clair, les liens deviennent NOIRS */
+body.theme-light .navbar-home.scrolled .nav-link {
+    color: #111111 !important;
+}
+
+body.theme-light .navbar-home.scrolled .navbar-logo {
+    color: #111111 !important;
+}
+
+/* FORCE : après scroll en mode clair, les liens deviennent NOIRS */
+body.theme-light .navbar-home.scrolled .nav-link {
+    color: #111111 !important;
+}
+
+body.theme-light .navbar-home.scrolled .navbar-logo {
+    color: #111111 !important;
+}
+
+/* POUR LA LOUPE ET L'ICÔNE THÈME */
+body.theme-light .navbar-home.scrolled .fa-search,
+body.theme-light .navbar-home.scrolled .fa-adjust,
+body.theme-light .navbar-home.scrolled .nav-action i {
+    color: #111111 !important;
+}
+
+/* POUR LES BARRES DU BURGER MOBILE (les 2 traits) */
+body.theme-light .mob-nav.scrolled .bline {
+    background: #111111 !important;
+}
+
+/* POUR LE LOGO MOBILE */
+body.theme-light .mob-nav.scrolled .mob-logo {
+    color: #111111 !important;
+}
+
+/* POUR LES ICÔNES MOBILES (loupe, user, burger) */
+body.theme-light .mob-nav.scrolled .mob-btn i,
+body.theme-light .mob-nav.scrolled .mob-btn {
+    color: #111111 !important;
+}
+
 /* ===== USER MENU ===== */
 .nav-user { position: relative; }
 .nav-user-btn {
@@ -435,7 +478,7 @@ body.theme-light {
     align-items: center; 
     gap: 0.8rem;
     transition: background 0.12s; 
-    font-size: 0.85rem; 
+    font-size: 0.95rem; 
     color: var(--nt);
 }
 .navbar-suggestion-item:last-child { border-bottom: none; }
@@ -492,6 +535,8 @@ body.theme-light {
         max-width: 220px;
     }
 }
+
+
 
 
 
@@ -558,13 +603,13 @@ body.theme-light {
     padding: 0.85rem 1rem; cursor: pointer;
     border-bottom: 1px solid var(--nb-line);
     display: flex; align-items: center; gap: 0.9rem;
-    transition: background 0.12s; font-size: 0.92rem; color: var(--nt);
+    transition: background 0.12s; font-size: 1rem; color: var(--nt);
 }
 .navbar-suggestion-item:last-child { border-bottom: none; }
 .navbar-suggestion-item:hover, .navbar-suggestion-item.selected { background: var(--nh); }
 .navbar-suggestion-item i { color: var(--accent); width: 18px; }
 .navbar-suggestion-category {
-    font-family: var(--font-display); font-size: 0.6rem; font-weight: 700;
+    font-family: var(--font-display); font-size: 0.80rem; font-weight: 700;
     color: var(--accent); letter-spacing: 1px; text-transform: uppercase;
     margin-left: auto;
 }
@@ -894,7 +939,7 @@ let searchActive = false, currentSuggestionIndex = -1, suggestionsList = [], sea
 const searchInput = document.getElementById('navbar-search-input');
 const suggestionsContainer = document.getElementById('navbar-suggestions');
 if (searchInput) {
-    window.performSearch = () => { const q = searchInput.value.trim(); window.location.href = q ? `/research?q=${encodeURIComponent(q)}` : '/research'; };
+    window.performSearch = () => { const q = searchInput.value.trim(); window.location.href = q ? `/suggestions?q=${encodeURIComponent(q)}` : '/suggestions'; };
     searchInput.addEventListener('keydown', e => {
         if (e.key === 'Escape') { searchInput.blur(); suggestionsContainer?.classList.remove('visible'); return; }
         if (!suggestionsContainer.classList.contains('visible')) { if (e.key === 'Enter') performSearch(); return; }
@@ -928,21 +973,22 @@ if (searchInput) {
             const div = document.createElement('div'); div.className='navbar-suggestion-item';
             div.innerHTML=`<i class="fas ${icon}"></i><div style="flex:1"><div style="font-weight:600;">${text}</div>${sub?`<div class="navbar-suggestion-subtitle">${sub}</div>`:''}</div><span class="navbar-suggestion-category">${cat}</span>`;
             if (id) div.dataset.id=id;
-            div.addEventListener('click', () => {
-                if (cat==='OEUVRE'&&id) window.location.href=`/oeuvre/${id}`;
-                else if (cat==='MUSÉE') window.location.href=`/research?museum=${encodeURIComponent(fv||text)}`;
-                else if (cat==='ARTISTE') window.location.href=`/research?artist=${encodeURIComponent(fv||text)}`;
-                else if (cat==='VILLE') window.location.href=`/research?city=${encodeURIComponent(fv||text)}`;
-                else if (cat==='PAYS') window.location.href=`/research?country=${encodeURIComponent(fv||text)}`;
-                else { searchInput.value=text; suggestionsContainer.classList.remove('visible'); performSearch(); }
-            });
+div.addEventListener('click', () => {
+    if (cat==='OEUVRE'&&id) window.location.href=`/oeuvre/${id}`;
+    else if (cat==='MUSÉE') window.location.href=`/suggestions?museum=${encodeURIComponent(fv||text)}`;
+    else if (cat==='ARTISTE') window.location.href=`/suggestions?artist=${encodeURIComponent(fv||text)}`;
+    else if (cat==='VILLE') window.location.href=`/suggestions?city=${encodeURIComponent(fv||text)}`;
+    else if (cat==='PAYS') window.location.href=`/suggestions?country=${encodeURIComponent(fv||text)}`;
+    else { searchInput.value=text; suggestionsContainer.classList.remove('visible'); performSearch(); }
+});
             suggestionsContainer.appendChild(div);
         };
-        if (data.pays)     data.pays.slice(0,5).forEach(i=>add(i.nom,'PAYS','fa-flag',`${i.oeuvres_count||0} oeuvre(s)`,null,i.nom));
+        if (data.villes)   data.villes.slice(0,5).forEach(i=>add(i.nom,'VILLE','fa-city',`${i.oeuvres_count||0} oeuvre(s)`,null,i.nom));
         if (data.artistes) data.artistes.slice(0,5).forEach(i=>add(i.nom,'ARTISTE','fa-user',`${i.oeuvres_count||0} oeuvre(s)`,null,i.nom));
         if (data.musees)   data.musees.slice(0,5).forEach(i=>add(i.nom,'MUSÉE','fa-landmark',`${i.oeuvres_count||0} oeuvre(s)`,null,i.nom));
+        if (data.pays)     data.pays.slice(0,5).forEach(i=>add(i.nom,'PAYS','fa-flag',`${i.oeuvres_count||0} oeuvre(s)`,null,i.nom));
         if (data.oeuvres)  data.oeuvres.slice(0,5).forEach(i=>add(i.titre,'OEUVRE','fa-paint-brush',null,i.id,i.titre));
-        if (data.villes)   data.villes.slice(0,5).forEach(i=>add(i.nom,'VILLE','fa-city',`${i.oeuvres_count||0} oeuvre(s)`,null,i.nom));
+
         if (suggestionsContainer.children.length>0) {
             suggestionsContainer.classList.add('visible');
             suggestionsList=Array.from(document.querySelectorAll('.navbar-suggestion-item'));
@@ -959,7 +1005,7 @@ function closeMobSearch() { document.getElementById('mob-search-overlay').classL
 function clearMobSearch() { const inp=document.getElementById('mob-search-input'); if(inp){inp.value='';inp.focus();} document.getElementById('mso-results').innerHTML=''; document.getElementById('mso-clear').style.display='none'; }
 const mobSearchInput=document.getElementById('mob-search-input'); let mobSearchTimeout;
 if (mobSearchInput) {
-    mobSearchInput.addEventListener('keypress', e=>{ if(e.key==='Enter'){const q=mobSearchInput.value.trim();window.location.href=q?`/research?q=${encodeURIComponent(q)}`:'/research';} });
+    mobSearchInput.addEventListener('keypress', e=>{ if(e.key==='Enter'){const q=mobSearchInput.value.trim();window.location.href=q?`/suggestions?q=${encodeURIComponent(q)}`:'/suggestions';} });
     mobSearchInput.addEventListener('input', function(){
         const q=this.value.trim(); const clr=document.getElementById('mso-clear');
         if(clr)clr.style.display=q?'block':'none';
@@ -1036,23 +1082,25 @@ function mobPerformSearch() {
 }
 
 function dispMobResults(data) {
-    const c=document.getElementById('mso-results'); c.innerHTML='';
-    const cats=[
-        {key:'artistes',icon:'fa-user',cat:'ARTISTE',url:i=>`/research?artist=${encodeURIComponent(i.nom)}`,name:i=>i.nom},
+    const c = document.getElementById('mso-results'); 
+    c.innerHTML = '';
+    const cats = [
+        {key:'artistes',icon:'fa-user',cat:'ARTISTE',url:i=>`/suggestions?artist=${encodeURIComponent(i.nom)}`,name:i=>i.nom},
         {key:'oeuvres',icon:'fa-paint-brush',cat:'OEUVRE',url:i=>`/oeuvre/${i.id}`,name:i=>i.titre},
-        {key:'musees',icon:'fa-landmark',cat:'MUSÉE',url:i=>`/research?museum=${encodeURIComponent(i.nom)}`,name:i=>i.nom},
-        {key:'villes',icon:'fa-city',cat:'VILLE',url:i=>`/research?city=${encodeURIComponent(i.nom)}`,name:i=>i.nom},
-        {key:'pays',icon:'fa-flag',cat:'PAYS',url:i=>`/research?country=${encodeURIComponent(i.nom)}`,name:i=>i.nom}
+        {key:'musees',icon:'fa-landmark',cat:'MUSÉE',url:i=>`/suggestions?museum=${encodeURIComponent(i.nom)}`,name:i=>i.nom},
+        {key:'villes',icon:'fa-city',cat:'VILLE',url:i=>`/suggestions?city=${encodeURIComponent(i.nom)}`,name:i=>i.nom},
+        {key:'pays',icon:'fa-flag',cat:'PAYS',url:i=>`/suggestions?country=${encodeURIComponent(i.nom)}`,name:i=>i.nom}
     ];
-    cats.forEach(({key,icon,cat,url,name})=>{
-        (data[key]||[]).slice(0,4).forEach(item=>{
-            const div=document.createElement('div'); div.className='mso-result-item';
-            div.innerHTML=`<i class="fas ${icon} mso-result-icon"></i><span class="mso-result-name">${name(item)}</span><span class="mso-result-cat">${cat}</span>`;
-            div.addEventListener('click',()=>window.location.href=url(item)); c.appendChild(div);
+    cats.forEach(({key,icon,cat,url,name}) => {
+        (data[key] || []).slice(0,4).forEach(item => {
+            const div = document.createElement('div'); 
+            div.className = 'mso-result-item';
+            div.innerHTML = `<i class="fas ${icon} mso-result-icon"></i><span class="mso-result-name">${name(item)}</span><span class="mso-result-cat">${cat}</span>`;
+            div.addEventListener('click', () => window.location.href = url(item)); 
+            c.appendChild(div);
         });
     });
 }
-
 
 
 

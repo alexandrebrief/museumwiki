@@ -57,79 +57,95 @@
             line-height: 1.5;
             min-height: 100vh;
         }
-/* ===== NAVBAR TRANSPARENTE ===== */
-.navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    background: transparent !important;
-    padding: 1rem 2rem;
-    transition: background 0.3s ease;
-}
 
-.navbar.scrolled {
-    background: var(--surface) !important;
-    backdrop-filter: blur(10px);
-}
+        /* ===== NAVBAR TRANSPARENTE ===== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: transparent !important;
+            padding: 1rem 2rem;
+            transition: background 0.3s ease;
+        }
 
-/* Par défaut (sans scroll) : TOUJOURS blanc pour être visible sur l'image hero */
-.navbar-brand, 
-.navbar-nav .nav-link,
-.navbar .nav-link,
-.navbar .fa-moon, 
-.navbar .fa-sun,
-.navbar .fa-user,
-.navbar .fa-search,
-.navbar .fa-heart,
-.navbar .fa-sign-in-alt,
-.navbar .fa-user-plus {
+        .navbar.scrolled {
+            background: var(--surface) !important;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand, 
+        .navbar-nav .nav-link,
+        .navbar .nav-link,
+        .navbar .fa-moon, 
+        .navbar .fa-sun,
+        .navbar .fa-user,
+        .navbar .fa-search,
+        .navbar .fa-heart,
+        .navbar .fa-sign-in-alt,
+        .navbar .fa-user-plus {
+            color: white !important;
+        }
+
+        .navbar-toggler {
+            border-color: rgba(255,255,255,0.5) !important;
+        }
+
+        body.theme-light .navbar.scrolled .navbar-brand,
+        body.theme-light .navbar.scrolled .navbar-nav .nav-link,
+        body.theme-light .navbar.scrolled .nav-link,
+        body.theme-light .navbar.scrolled .fa-moon, 
+        body.theme-light .navbar.scrolled .fa-sun,
+        body.theme-light .navbar.scrolled .fa-user,
+        body.theme-light .navbar.scrolled .fa-search,
+        body.theme-light .navbar.scrolled .fa-heart,
+        body.theme-light .navbar.scrolled .fa-sign-in-alt,
+        body.theme-light .navbar.scrolled .fa-user-plus {
+            color: #111111 !important;
+        }
+
+        body.theme-dark .navbar.scrolled .navbar-brand,
+        body.theme-dark .navbar.scrolled .navbar-nav .nav-link,
+        body.theme-dark .navbar.scrolled .nav-link,
+        body.theme-dark .navbar.scrolled .fa-moon, 
+        body.theme-dark .navbar.scrolled .fa-sun,
+        body.theme-dark .navbar.scrolled .fa-user,
+        body.theme-dark .navbar.scrolled .fa-search,
+        body.theme-dark .navbar.scrolled .fa-heart,
+        body.theme-dark .navbar.scrolled .fa-sign-in-alt,
+        body.theme-dark .navbar.scrolled .fa-user-plus {
+            color: white !important;
+        }
+
+
+/* Forcer le blanc sur la navbar mobile au démarrage (sur l'image hero) */
+.mob-nav-home .mob-logo,
+.mob-nav-home .mob-btn {
     color: white !important;
 }
 
-.navbar-toggler {
-    border-color: rgba(255,255,255,0.5) !important;
+/* Après scroll, reprendre la couleur normale */
+.mob-nav-home.scrolled .mob-logo,
+.mob-nav-home.scrolled .mob-btn {
+    color: var(--nt) !important;
 }
 
-/* Après scroll en mode clair : tout devient NOIR */
-body.theme-light .navbar.scrolled .navbar-brand,
-body.theme-light .navbar.scrolled .navbar-nav .nav-link,
-body.theme-light .navbar.scrolled .nav-link,
-body.theme-light .navbar.scrolled .fa-moon, 
-body.theme-light .navbar.scrolled .fa-sun,
-body.theme-light .navbar.scrolled .fa-user,
-body.theme-light .navbar.scrolled .fa-search,
-body.theme-light .navbar.scrolled .fa-heart,
-body.theme-light .navbar.scrolled .fa-sign-in-alt,
-body.theme-light .navbar.scrolled .fa-user-plus {
-    color: #111111 !important;
+
+/* Barres du burger blanches au démarrage */
+.mob-nav-home .bline {
+    background: white !important;
 }
 
-/* Après scroll en mode sombre : reste BLANC */
-body.theme-dark .navbar.scrolled .navbar-brand,
-body.theme-dark .navbar.scrolled .navbar-nav .nav-link,
-body.theme-dark .navbar.scrolled .nav-link,
-body.theme-dark .navbar.scrolled .fa-moon, 
-body.theme-dark .navbar.scrolled .fa-sun,
-body.theme-dark .navbar.scrolled .fa-user,
-body.theme-dark .navbar.scrolled .fa-search,
-body.theme-dark .navbar.scrolled .fa-heart,
-body.theme-dark .navbar.scrolled .fa-sign-in-alt,
-body.theme-dark .navbar.scrolled .fa-user-plus {
-    color: white !important;
+/* Après scroll en mode clair, deviennent noires */
+body.theme-light .mob-nav.scrolled .bline {
+    background: #111111 !important;
 }
 
-/* Bordure du toggler en mode clair après scroll */
-body.theme-light .navbar.scrolled .navbar-toggler {
-    border-color: rgba(0,0,0,0.2) !important;
+/* Après scroll en mode sombre, restent blanches */
+body.theme-dark .mob-nav.scrolled .bline {
+    background: white !important;
 }
-
-/* Version hero : au tout début (sans scroll) on veut du blanc sur l'image */
-/* Mais on laisse var(--text) gérer le reste */
-
-
-
         /* ===== HERO ===== */
         .hero {
             position: relative;
@@ -155,18 +171,13 @@ body.theme-light .navbar.scrolled .navbar-toggler {
             z-index: 0;
         }
 
-        /* Animation subtile de l'image comme dans les musées */
         .hero-bg.animate {
             animation: subtleZoom 20s ease-in-out infinite alternate;
         }
 
         @keyframes subtleZoom {
-            0% {
-                transform: scale(1.02);
-            }
-            100% {
-                transform: scale(1.08);
-            }
+            0% { transform: scale(1.02); }
+            100% { transform: scale(1.08); }
         }
 
         .hero-content {
@@ -201,7 +212,7 @@ body.theme-light .navbar.scrolled .navbar-toggler {
             display: flex;
             justify-content: flex-start;
             gap: 2rem;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
             flex-wrap: wrap;
         }
 
@@ -213,16 +224,15 @@ body.theme-light .navbar.scrolled .navbar-toggler {
             font-family: var(--font-display);
             font-size: 1.8rem;
             font-weight: 600;
-            color: var(--accent-light);
+            color: rgba(255,255,255,0.7);
             line-height: 1;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
 
         .hero-stat-label {
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 2px;
-    color: rgba(255,255,255,0.7);
+            color: rgba(255,255,255,0.7);
             margin-top: 0.3rem;
         }
 
@@ -239,6 +249,7 @@ body.theme-light .navbar.scrolled .navbar-toggler {
             text-decoration: none;
             transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(108,92,231,0.3);
+            border-radius: 0;
         }
 
         .hero-cta:hover {
@@ -246,6 +257,84 @@ body.theme-light .navbar.scrolled .navbar-toggler {
             color: white;
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(108,92,231,0.4);
+        }
+
+        /* ===== BARRE DE RECHERCHE ===== */
+        .hero-search {
+            margin-top: 2rem;
+            max-width: 500px;
+        }
+        .hero-search-form {
+            display: flex;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.25);
+            transition: all 0.3s;
+        }
+        .hero-search-form:focus-within {
+            background: rgba(255,255,255,0.25);
+            border-color: var(--accent);
+        }
+        .hero-search-input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            background: transparent;
+            border: none;
+            color: white;
+            font-family: var(--font-text);
+            font-size: 0.9rem;
+            outline: none;
+        }
+        .hero-search-input::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+        .hero-search-btn {
+            background: var(--accent);
+            border: none;
+            padding: 0 1.2rem;
+            color: white;
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .hero-search-btn:hover {
+            background: var(--accent-hover);
+        }
+
+
+
+/* ===== CRÉDIT OEUVRE (bas droite) ===== */
+.hero-credit {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 3;
+    font-size: 0.75rem;
+}
+.hero-credit a {
+    color: white;
+    text-decoration: none;
+    font-weight: 400;
+    transition: color 0.2s;
+}
+.hero-credit a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+}
+
+
+
+        .hero-credit a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+        .hero-credit i {
+            margin-right: 0.3rem;
+            font-size: 0.65rem;
         }
 
         /* ===== FEATURES ===== */
@@ -314,7 +403,7 @@ body.theme-light .navbar.scrolled .navbar-toggler {
             line-height: 1.5;
         }
 
-        /* ===== SPOTLIGHT OEUVRE ===== */
+        /* ===== SPOTLIGHT ===== */
         .spotlight {
             padding: 5rem 2rem;
             border-top: 1px solid var(--border);
@@ -474,7 +563,6 @@ body.theme-light .navbar.scrolled .navbar-toggler {
             text-transform: uppercase;
             letter-spacing: 2px;
             transition: all 0.3s;
-
         }
 
         .btn-primary:hover {
@@ -494,7 +582,6 @@ body.theme-light .navbar.scrolled .navbar-toggler {
             text-transform: uppercase;
             letter-spacing: 2px;
             transition: all 0.3s;
-
         }
 
         .btn-secondary:hover {
@@ -509,6 +596,7 @@ body.theme-light .navbar.scrolled .navbar-toggler {
             .hero-stat-number { font-size: 1.4rem; }
             .quote-text { font-size: 1.2rem; }
             .hero-content { padding-left: 5%; }
+            .hero-search { max-width: 100%; }
         }
 
         @media (max-width: 600px) {
@@ -532,6 +620,7 @@ body.theme-light .navbar.scrolled .navbar-toggler {
             }
             .hero-content { padding-left: 1.5rem; padding-right: 1.5rem; }
             .hero-stats { gap: 1rem; }
+            .hero-credit { bottom: 0.8rem; right: 0.8rem; font-size: 0.65rem; }
         }
     </style>
 </head>
@@ -542,16 +631,24 @@ body.theme-light .navbar.scrolled .navbar-toggler {
     <!-- HERO -->
     <section class="hero">
         <div class="hero-bg animate" id="heroBg" style="background-image: url('{{ hero_image }}');"></div>
+        
+<!-- CRÉDIT DE L'ŒUVRE EN BAS À DROITE -->
+<div class="hero-credit">
+    <a href="/oeuvre/{{ hero_artwork_id }}">
+        {{ hero_title }}
+    </a>
+</div>
+        
         <div class="hero-content">
-            <h1 class="hero-logo">POLOUM</h1>
+            <h1 class="hero-logo"><span style="color: var(--accent);">/</span>POLOUM<span style="color: var(--accent);">/</span></h1>
             <p class="hero-tagline">
-                La plateforme où l'art rencontre la communauté.<br>
-                Notez, critiquez, partagez.
+                L'art n'a jamais été aussi proche de vous<br>
+                Notez, critiquez, partagez
             </p>
             
             <div class="hero-stats">
                 <div class="hero-stat">
-                    <div class="hero-stat-number">2M</div>
+                    <div class="hero-stat-number">2 millions</div>
                     <div class="hero-stat-label">ŒUVRES</div>
                 </div>
                 <div class="hero-stat">
@@ -564,7 +661,15 @@ body.theme-light .navbar.scrolled .navbar-toggler {
                 </div>
             </div>
 
-            <a href="/discover" class="hero-cta">Découvrir</a>
+
+            
+            <!-- BARRE DE RECHERCHE -->
+            <div class="hero-search">
+                <form action="/suggestions" method="GET" class="hero-search-form">
+                    <input type="text" name="q" class="hero-search-input" placeholder="Ville, artiste, musée, oeuvre..." autocomplete="off">
+                    <button type="submit" class="hero-search-btn">Rechercher</button>
+                </form>
+            </div>
         </div>
     </section>
 
@@ -580,7 +685,7 @@ body.theme-light .navbar.scrolled .navbar-toggler {
     <div class="spotlight">
         <div class="spotlight-inner">
             <div class="spotlight-text">
-                <h2><a href="/details.html">La Joconde</a></h2>
+                <h2><a href="/oeuvre/Q12418">La Joconde</a></h2>
                 <a href="/oeuvre/Q12418" class="spotlight-artist">Léonard de Vinci · 1503-1519</a>
                 <p>Chef-d'œuvre emblématique de la Renaissance italienne, ce portrait de Lisa Gherardini est mondialement célèbre pour son mystérieux sourire et la technique innovante du sfumato.</p>
                 <div class="spotlight-demo-stats">
@@ -589,7 +694,7 @@ body.theme-light .navbar.scrolled .navbar-toggler {
                     <div class="demo-stat"><i class="fas fa-comment"></i> <span>342 commentaires</span></div>
                 </div>
             </div>
-            <a href="/details.html" class="spotlight-image">
+            <a href="/oeuvre/Q12418" class="spotlight-image">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/800px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg" 
                      alt="La Joconde"
                      style="object-fit: contain;"
@@ -606,39 +711,39 @@ body.theme-light .navbar.scrolled .navbar-toggler {
                 <div class="feature-icon"><i class="fas fa-star"></i></div>
                 <div class="feature-content">
                     <div class="feature-title">Notez les œuvres</div>
-                    <div class="feature-desc">De 1 à 5 étoiles, affinez avec technique, créativité et émotion.</div>
+                    <div class="feature-desc">De 0 à 5 étoiles, puis affinez selon la technicité, la créativité et l'émotion.</div>
                 </div>
             </div>
             <div class="feature-item">
                 <div class="feature-icon"><i class="fas fa-comments"></i></div>
                 <div class="feature-content">
                     <div class="feature-title">Partagez votre avis</div>
-                    <div class="feature-desc">Commentez, débattez, inspirez les autres membres.</div>
+                    <div class="feature-desc">Commentez, débattez, inspirez les autres.</div>
                 </div>
             </div>
             <div class="feature-item">
                 <div class="feature-icon"><i class="fas fa-search"></i></div>
                 <div class="feature-content">
-                    <div class="feature-title">Explorez sans limites</div>
-                    <div class="feature-desc">Recherchez par artiste, musée, mouvement ou période.</div>
+                    <div class="feature-title">Explorez sans limites et gratuitement</div>
+                    <div class="feature-desc">Toutes les oeuvres d'art sont ici.</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- CTA FINAL -->
-    <div class="cta-final">
-        <h2>Une communauté passionnée</h2>
-        <p>Rejoignez des milliers d'amateurs d'art qui partagent leurs découvertes, échangent leurs points de vue et construisent ensemble une référence culturelle unique.</p>
-        <div class="cta-buttons">
-            <a href="/login" class="btn-primary">Se connecter</a>
-            {% if session.user_id %}
-            <a href="/research" class="btn-secondary">Explorer</a>
-            {% else %}
-            <a href="/register" class="btn-secondary">Créer un compte</a>
-            {% endif %}
-        </div>
+<!-- CTA FINAL -->
+<div class="cta-final">
+    <h2>Une communauté passionnée</h2>
+    <p>Rejoignez des milliers d'amateurs d'art qui partagent leurs découvertes, échangent leurs points de vue et construisent ensemble une référence culturelle unique.</p>
+    <div class="cta-buttons">
+        {% if not session.user_id %}
+        <a href="/login" class="btn-primary">Se connecter</a>
+        <a href="/register" class="btn-secondary">Créer un compte</a>
+        {% else %}
+        <a href="/discover" class="btn-primary">Découvrir</a>
+        {% endif %}
     </div>
+</div>
 
     {% include 'footer.html' %}
 

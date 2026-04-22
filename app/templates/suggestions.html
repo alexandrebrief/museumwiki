@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+{% if session.language == 'en' %}
+<html lang="en">
+{% else %}
+<html lang="fr">
+{% endif %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ site_name }} · Suggestions</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --accent: #6c5ce7;
+            --accent-hover: #5a4bcf;
+            --gold: #c9a96e;
+            --tech: #4a9eff;
+            --crea: #ffb347;
+            --emo: #ff6b9d;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-text: 'Inter', sans-serif;
+            --sidebar-w: 280px;
+        }
+
+        body.theme-dark {
+            --bg: #0a0a0a;
+            --surface: #121212;
+            --surface2: #1a1a1a;
+            --surface3: #222222;
+            --text: #ffffff;
+            --text-muted: #6b6b6b;
+            --text-subtle: #888888;
+            --border: #2a2a2a;
+            --border-light: #1f1f1f;
+            --card-bg: #121212;
+            --overlay: rgba(0,0,0,0.7);
+        }
+
+        body.theme-light {
+            --bg: #f8f6f2;
+            --surface: #ffffff;
+            --surface2: #f0f0f0;
+            --surface3: #e8e8e8;
+            --text: #1a1a1a;
+            --text-muted: #9a9a9a;
+            --text-subtle: #666666;
+            --border: #e0e0e0;
+            --border-light: #eeeeee;
+            --card-bg: #ffffff;
+            --overlay: rgba(0,0,0,0.5);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-text);
+            font-weight: 400;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container { max-width: 1600px; margin: 0 auto; padding: 0 0.75rem; flex: 1; }
+        .main-content { margin-top: 80px; padding-top: 1rem; padding-bottom: 80px; }
+
+        /* ===== EN-TÊTE ===== */
+        .hero-header {
+            text-align: center;
+            padding: 2rem 0 1.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+        .hero-count {
+            font-family: var(--font-display);
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+            letter-spacing: -0.02em;
+        }
+        .hero-label {
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+        .hero-query {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-subtle);
+            margin-top: 0.5rem;
+        }
+        .hero-query strong {
+            color: var(--text);
+            font-weight: 700;
+            background: rgba(108,92,231,0.1);
+            padding: 0.1rem 0.5rem;
+            border-radius: 20px;
+        }
+
+        /* ===== SUGGESTIONS CHIPS (violet solide) ===== */
+        .suggestions-bar {
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+        .suggestion-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.5rem 1.2rem;
+            background: var(--accent);
+            border: none;
+            border-radius: 40px;
+            text-decoration: none;
+            color: white;
+            font-family: var(--font-display);
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .suggestion-chip:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+        .suggestion-chip i { font-size: 0.8rem; }
+        .chip-count {
+            background: rgba(255,255,255,0.25);
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.1rem 0.5rem;
+            color: white;
+        }
+
+        /* ===== LAYOUT ===== */
+        .search-layout {
+            display: grid;
+            grid-template-columns: var(--sidebar-w) 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .filters-sidebar {
+            position: sticky;
+            top: 100px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+        .filters-sidebar::-webkit-scrollbar { width: 3px; }
+        .filters-sidebar::-webkit-scrollbar-track { background: var(--surface); border-radius: 4px; }
+        .filters-sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding: 0 0.25rem;
+        }
+        .sidebar-title {
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-subtle);
+        }
+        .sidebar-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .btn-expand-all, .btn-clear-filters {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 0.3rem 0.8rem;
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-expand-all:hover, .btn-clear-filters:hover { border-color: var(--accent); color: var(--accent); background: rgba(108,92,231,0.05); }
+        .btn-clear-filters { border-color: rgba(224,49,49,0.3); color: #e03131; }
+        .btn-clear-filters:hover { border-color: #e03131; background: rgba(224,49,49,0.08); }
+
+        .filter-group {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            overflow: hidden;
+        }
+        .filter-group-toggle {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.9rem 1rem;
+            background: var(--surface);
+            border: none;
+            cursor: pointer;
+            color: var(--text);
+            font-family: var(--font-display);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .filter-group-toggle:hover { background: var(--surface2); }
+        .group-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+        }
+        .group-count {
+            font-size: 0.65rem;
+            font-family: monospace;
+            color: var(--text-muted);
+            background: var(--surface2);
+            padding: 0.1rem 0.4rem;
+            border-radius: 20px;
+            margin-left: 0.6rem;
+        }
+        .group-arrow {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            transition: transform 0.2s;
+        }
+        .filter-group.open .group-arrow { transform: rotate(180deg); }
+        .filter-body {
+            display: none;
+            border-top: 1px solid var(--border-light);
+            padding: 0.25rem 0;
+        }
+        .filter-group.open .filter-body { display: block; }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 1rem;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            border-left: 2px solid transparent;
+        }
+        .filter-item:hover {
+            color: var(--text);
+            background: rgba(108,92,231,0.05);
+            border-left-color: var(--accent);
+        }
+        .filter-item.active {
+            color: var(--accent);
+            border-left-color: var(--accent);
+            background: rgba(108,92,231,0.08);
+            font-weight: 600;
+        }
+        .item-name {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .item-count {
+            font-size: 0.7rem;
+            color: var(--text-subtle);
+            background: var(--surface2);
+            padding: 0.1rem 0.45rem;
+            border-radius: 20px;
+        }
+        .filter-more-btn {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            background: none;
+            border: none;
+            font-size: 0.7rem;
+            font-family: var(--font-display);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            cursor: pointer;
+            text-align: left;
+        }
+
+        /* ===== TOOLBAR ===== */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        .active-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+            flex: 1;
+        }
+        .filter-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.3rem 0.8rem 0.3rem 1.2rem;
+            background: rgba(108,92,231,0.12);
+            border: 1px solid rgba(108,92,231,0.3);
+            border-radius: 30px;
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--accent);
+        }
+        .filter-tag button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--accent);
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+        .filter-tag button:hover { opacity: 1; }
+
+        .toolbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+        .btn-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+        .btn-icon.active { background: var(--accent); border-color: var(--accent); color: white; }
+        .btn-icon:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+
+        .btn-notes-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.5rem 1.2rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-notes-toggle i { color: var(--accent); }
+        .btn-notes-toggle:hover { border-color: var(--accent); background: rgba(108,92,231,0.05); }
+        .btn-notes-toggle.mode-community { border-color: var(--accent); background: rgba(108,92,231,0.1); color: var(--accent); }
+        .btn-notes-toggle.mode-personal { border-color: #ec4899; background: rgba(236,72,153,0.1); color: #ec4899; }
+        .btn-notes-toggle.mode-personal i { color: #ec4899; }
+
+        .filter-badge {
+            background: var(--accent);
+            color: white;
+            border-radius: 20px;
+            padding: 0 6px;
+            font-size: 0.7rem;
+            margin-left: 4px;
+        }
+
+        /* ===== GRILLE - 6 oeuvres ===== */
+        .works-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 4px;
+            margin-top: 0.5rem;
+        }
+
+        .work-card {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            background: var(--card-bg);
+            overflow: hidden;
+            transition: transform 0.2s;
+            position: relative;
+        }
+        .work-card:hover { transform: translateY(-2px); z-index: 2; }
+
+        .work-image {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 2 / 3;
+            background: var(--surface2);
+            overflow: hidden;
+        }
+
+        .work-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.4s;
+        }
+        .work-card:hover .work-image img { transform: scale(1.03); }
+
+        .image-placeholder, .no-copyright-badge {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface2);
+            color: var(--text-muted);
+            gap: 0.5rem;
+        }
+        .no-copyright-badge i { font-size: 2rem; opacity: 0.2; }
+        .no-copyright-badge span { font-family: var(--font-display); font-size: 0.7rem; text-transform: uppercase; }
+
+        /* ===== STACK NOTES ===== */
+        .rating-stack {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            z-index: 10;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(4px);
+            padding: 5px 8px;
+            border-radius: 6px;
+            font-family: var(--font-display);
+            cursor: pointer;
+            pointer-events: auto;
+        }
+        .rating-main {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--gold);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding-bottom: 3px;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+        }
+        .rating-main i { font-size: 0.6rem; }
+        .rating-sub {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-top: 3px;
+        }
+        .sub-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.6rem;
+            color: rgba(255,255,255,0.7);
+        }
+        .sub-item i { width: 12px; font-size: 0.55rem; }
+        .sub-item.technique i { color: var(--tech); }
+        .sub-item.originalite i { color: var(--crea); }
+        .sub-item.emotion i { color: var(--emo); }
+
+        /* ===== FAVORI EN HAUT A DROITE ===== */
+        .work-fav {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            background: transparent;
+        }
+        .work-fav i {
+            color: white;
+            font-size: 1rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        .work-fav:hover i { transform: scale(1.1); }
+        .work-fav.active i { color: #e03131; }
+
+        .work-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: var(--font-display);
+            margin-top: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: center;
+        }
+        .work-artist {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
+            text-align: center;
+        }
+
+        /* ===== MODAL NOTES ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: var(--overlay);
+            backdrop-filter: blur(8px);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.8rem;
+            width: min(440px, 92vw);
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .modal-title {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+            padding-right: 2rem;
+        }
+        .modal-artist {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+        .rating-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            gap: 1rem;
+        }
+        .rating-label {
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-subtle);
+            min-width: 90px;
+        }
+        .stars-input {
+            display: flex;
+            gap: 0.2rem;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+        .stars-input input { display: none; }
+        .stars-input label {
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: var(--border);
+            transition: color 0.15s;
+        }
+        .stars-input.small label { font-size: 1rem; }
+        .stars-input label:hover,
+        .stars-input label:hover ~ label,
+        .stars-input input:checked ~ label { color: #fbbf24; }
+        .modal-divider { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
+        .modal-actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
+        .btn-primary {
+            flex: 1;
+            background: var(--accent);
+            border: none;
+            color: white;
+            padding: 0.7rem;
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-secondary {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.7rem;
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+        .btn-secondary:hover { border-color: #e03131; color: #e03131; }
+
+        /* ===== LOAD MORE ===== */
+        .load-more-container { text-align: center; padding: 2rem 0; }
+        .load-more-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.7rem 2rem;
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 40px;
+            transition: all 0.2s;
+        }
+        .load-more-btn:hover { border-color: var(--gold); color: var(--gold); }
+        .load-more-info {
+            font-size: 0.75rem;
+            color: var(--text-subtle);
+            margin-top: 0.75rem;
+        }
+        .load-more-info span { color: var(--accent); font-weight: 700; }
+
+        .no-results { text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
+        .no-results i { font-size: 3rem; color: var(--gold); opacity: 0.3; margin-bottom: 1rem; display: block; }
+
+        /* ===== MOBILE ===== */
+        .mobile-filter-btn {
+            display: none;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.5rem 1.2rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .drawer-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: var(--overlay);
+            z-index: 200;
+        }
+        .mobile-drawer {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: min(320px, 85vw);
+            background: var(--surface);
+            z-index: 201;
+            overflow-y: auto;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+        }
+        .mobile-drawer.open { transform: translateX(0); }
+        .drawer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: var(--surface);
+        }
+        .drawer-header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .drawer-title {
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-subtle);
+        }
+        .drawer-expand-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 0.3rem 0.8rem;
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        .drawer-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+        .drawer-inner {
+            padding: 0.5rem 0;
+        }
+
+        @media (max-width: 1400px) { .works-grid { grid-template-columns: repeat(5, 1fr); } }
+        @media (max-width: 1200px) { .works-grid { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 1000px) { .works-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 860px) {
+            .search-layout { grid-template-columns: 1fr; }
+            .filters-sidebar { display: none; }
+            .mobile-filter-btn { display: flex; }
+            .works-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 640px) {
+            .works-grid { grid-template-columns: repeat(2, 1fr); }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .toolbar-actions { justify-content: flex-start; }
+            .hero-count { font-size: 2.5rem; }
+        }
+
+        .scroll-top {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            width: 44px;
+            height: 44px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+            z-index: 100;
+        }
+        .scroll-top.visible { opacity: 1; visibility: visible; }
+        .scroll-top:hover { border-color: var(--accent); color: var(--accent); }
+    </style>
+</head>
+<body style="visibility:hidden">
+<script>
+    (function() {
+        const t = localStorage.getItem('theme') || 'light';
+        document.body.classList.remove('theme-dark', 'theme-light');
+        document.body.classList.add('theme-' + t);
+        document.body.style.visibility = '';
+    })();
+
+    let CSRF_TOKEN = '';
+    let userRatings = {};
+    let communityRatings = {};
+    let noteDisplayMode = 'community';
+    let isLoading = false;
+    let currentPage = {{ current_page }};
+    let hasMore = {{ 'true' if has_more else 'false' }};
+    let displayedCount = {{ works|length }};
+    let totalCount = {{ total_oeuvres }};
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        if (meta) CSRF_TOKEN = meta.content;
+        {% if session.user_id %}loadUserRatings();{% endif %}
+        loadAllCommunityRatings();
+        updateLoadMoreInfo();
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('title_only') === '1') document.getElementById('btn-title-only')?.classList.add('active');
+    });
+
+    function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function params() { return new URLSearchParams(window.location.search); }
+    function navigate(url) { window.location.href = url; }
+
+    window.imgErr = function(img) {
+        let n = parseInt(img.dataset.err || '0');
+        if (n === 0) { img.dataset.err = '1'; img.src = img.dataset.f1; }
+        else if (n === 1) { img.dataset.err = '2'; img.src = img.dataset.f2; }
+        else { img.style.display = 'none'; const ph = img.parentElement?.querySelector('.image-placeholder'); if (ph) ph.style.display = 'flex'; }
+    };
+
+    // Favorites
+    async function toggleFav(e, artworkId, el) {
+        e.preventDefault(); e.stopPropagation();
+        if (!{{ 'true' if session.user_id else 'false' }}) { window.location.href = '/login?next=/suggestions?q={{ q }}'; return; }
+        try {
+            const res = await fetch('/api/favorite/toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
+                body: JSON.stringify({ artwork_id: artworkId })
+            });
+            const data = await res.json();
+            el.classList.toggle('active', data.favorite);
+            el.querySelector('i').className = data.favorite ? 'fas fa-heart' : 'far fa-heart';
+        } catch(e) {}
+    }
+
+    // Community ratings
+    async function loadAllCommunityRatings() {
+        const ids = [...new Set(Array.from(document.querySelectorAll('.work-card[data-artwork-id]')).map(el => el.dataset.artworkId))];
+        for (let i = 0; i < ids.length; i += 8) {
+            await Promise.all(ids.slice(i, i + 8).map(loadOneCommunityRating));
+        }
+        refreshAllNoteDisplays();
+    }
+
+    async function loadOneCommunityRating(id) {
+        if (communityRatings[id]) return;
+        try {
+            const [stats, averages] = await Promise.all([
+                fetch(`/api/artwork/stats/${id}`).then(r => r.json()),
+                fetch(`/api/artwork/public-averages/${id}`).then(r => r.json())
+            ]);
+            communityRatings[id] = {
+                avg: stats.moyenne_globale || 0,
+                count: stats.total_notes || 0,
+                technique: averages.technique || 0,
+                originalite: averages.originalite || 0,
+                emotion: averages.emotion || 0
+            };
+        } catch(e) { communityRatings[id] = { avg: 0, count: 0, technique: 0, originalite: 0, emotion: 0 }; }
+    }
+
+    // User ratings
+    async function loadUserRatings() {
+        const ids = [...new Set(Array.from(document.querySelectorAll('.work-card[data-artwork-id]')).map(el => el.dataset.artworkId))];
+        for (const id of ids) await fetchUserRating(id);
+    }
+
+    async function fetchUserRating(artworkId) {
+        try {
+            const res = await fetch('/api/rating/get/' + artworkId);
+            const data = await res.json();
+            if (data.has_rating) {
+                userRatings[artworkId] = data.rating;
+            }
+        } catch(e) {}
+        refreshAllNoteDisplays();
+    }
+
+    // Toggle note display mode
+    function toggleNoteDisplay() {
+        if (noteDisplayMode === 'community') {
+            noteDisplayMode = 'personal';
+            document.getElementById('notes-toggle-btn').className = 'btn-notes-toggle mode-personal';
+            document.getElementById('notes-toggle-btn').innerHTML = '<i class="fas fa-heart"></i> <span>Mes notes</span>';
+        } else if (noteDisplayMode === 'personal') {
+            noteDisplayMode = 'hidden';
+            document.getElementById('notes-toggle-btn').className = 'btn-notes-toggle';
+            document.getElementById('notes-toggle-btn').innerHTML = '<i class="far fa-eye-slash"></i> <span>Masquer</span>';
+        } else {
+            noteDisplayMode = 'community';
+            document.getElementById('notes-toggle-btn').className = 'btn-notes-toggle mode-community';
+            document.getElementById('notes-toggle-btn').innerHTML = '<i class="fas fa-users"></i> <span>Notes public</span>';
+        }
+        refreshAllNoteDisplays();
+    }
+
+    function refreshAllNoteDisplays() {
+        document.querySelectorAll('.work-card[data-artwork-id]').forEach(card => {
+            const artworkId = card.dataset.artworkId;
+            const stack = card.querySelector('.rating-stack');
+            if (!stack) return;
+            
+            if (noteDisplayMode === 'hidden') {
+                stack.style.display = 'none';
+                return;
+            }
+            stack.style.display = 'block';
+            
+            const cr = communityRatings[artworkId] || {};
+            const ur = userRatings[artworkId] || null;
+            const fmt = v => v ? parseFloat(v).toFixed(1) : '—';
+            
+            if (noteDisplayMode === 'community') {
+                if (cr.avg && cr.avg > 0) {
+                    stack.innerHTML = `
+                        <div class="rating-main"><i class="fas fa-star"></i><span>${fmt(cr.avg)}</span></div>
+                        <div class="rating-sub">
+                            <div class="sub-item technique"><i class="fas fa-paintbrush"></i><span>${fmt(cr.technique)}</span></div>
+                            <div class="sub-item originalite"><i class="fas fa-lightbulb"></i><span>${fmt(cr.originalite)}</span></div>
+                            <div class="sub-item emotion"><i class="fas fa-heart"></i><span>${fmt(cr.emotion)}</span></div>
+                        </div>
+                    `;
+                } else {
+                    stack.innerHTML = `
+                        <div class="rating-main"><i class="far fa-star"></i><span></span></div>
+                        <div class="rating-sub">
+                            <div class="sub-item technique"><i class="fas fa-paintbrush"></i><span>—</span></div>
+                            <div class="sub-item originalite"><i class="fas fa-lightbulb"></i><span>—</span></div>
+                            <div class="sub-item emotion"><i class="fas fa-heart"></i><span>—</span></div>
+                        </div>
+                    `;
+                }
+            } else if (noteDisplayMode === 'personal') {
+                if (ur && ur.note_globale > 0) {
+                    stack.innerHTML = `
+                        <div class="rating-main"><i class="fas fa-star"></i><span>${fmt(ur.note_globale)}</span></div>
+                        <div class="rating-sub">
+                            <div class="sub-item technique"><i class="fas fa-paintbrush"></i><span>${fmt(ur.note_technique)}</span></div>
+                            <div class="sub-item originalite"><i class="fas fa-lightbulb"></i><span>${fmt(ur.note_originalite)}</span></div>
+                            <div class="sub-item emotion"><i class="fas fa-heart"></i><span>${fmt(ur.note_emotion)}</span></div>
+                        </div>
+                    `;
+                } else {
+                    stack.innerHTML = `
+                        <div class="rating-main"><i class="far fa-star"></i><span></span></div>
+                        <div class="rating-sub">
+                            <div class="sub-item technique"><i class="fas fa-paintbrush"></i><span>—</span></div>
+                            <div class="sub-item originalite"><i class="fas fa-lightbulb"></i><span>—</span></div>
+                            <div class="sub-item emotion"><i class="fas fa-heart"></i><span>—</span></div>
+                        </div>
+                    `;
+                }
+            }
+            
+            const title = card.querySelector('.work-title')?.textContent || '';
+            const artist = card.querySelector('.work-artist')?.textContent || '';
+            stack.setAttribute('onclick', `openRatingModal(event,'${artworkId}','${esc(title)}','${esc(artist)}')`);
+        });
+    }
+
+    let currentArtworkId = null;
+
+    function openRatingModal(e, artworkId, title, artist) {
+        e.preventDefault(); e.stopPropagation();
+        if (!{{ 'true' if session.user_id else 'false' }}) { window.location.href = '/login?next=/suggestions?q={{ q }}'; return; }
+        currentArtworkId = artworkId;
+        document.getElementById('modal-title').textContent = title;
+        document.getElementById('modal-artist').textContent = artist;
+        ['globale', 'technique', 'originalite', 'emotion'].forEach(k => {
+            document.querySelectorAll(`input[name="note_${k}"]`).forEach(inp => inp.checked = false);
+        });
+        document.getElementById('btn-delete-rating').style.display = 'none';
+        const existing = userRatings[artworkId];
+        if (existing) {
+            setStars('globale', existing.note_globale);
+            setStars('technique', existing.note_technique);
+            setStars('originalite', existing.note_originalite);
+            setStars('emotion', existing.note_emotion);
+            document.getElementById('btn-delete-rating').style.display = '';
+        }
+        document.getElementById('rating-modal-overlay').classList.add('open');
+    }
+
+    function setStars(field, value) { if (!value) return; const inp = document.querySelector(`input[name="note_${field}"][value="${value}"]`); if (inp) inp.checked = true; }
+    function closeRatingModal() { document.getElementById('rating-modal-overlay').classList.remove('open'); currentArtworkId = null; }
+
+    async function saveRating() {
+        if (!currentArtworkId) return;
+        const g = document.querySelector('input[name="note_globale"]:checked');
+        if (!g) return alert('Note globale requise.');
+        const t = document.querySelector('input[name="note_technique"]:checked');
+        const o = document.querySelector('input[name="note_originalite"]:checked');
+        const em = document.querySelector('input[name="note_emotion"]:checked');
+        const payload = {
+            artwork_id: currentArtworkId,
+            note_globale: parseFloat(g.value),
+            note_technique: t ? parseFloat(t.value) : 0,
+            note_originalite: o ? parseFloat(o.value) : 0,
+            note_emotion: em ? parseFloat(em.value) : 0,
+            is_public: true
+        };
+        try {
+            const res = await fetch('/api/rating/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (data.success) {
+                userRatings[currentArtworkId] = data.rating;
+                if (noteDisplayMode === 'personal') refreshAllNoteDisplays();
+                closeRatingModal();
+            }
+        } catch(err) {}
+    }
+
+    async function deleteRating() {
+        if (!currentArtworkId) return;
+        if (!confirm('Supprimer cette note ?')) return;
+        try {
+            await fetch('/api/rating/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
+                body: JSON.stringify({ artwork_id: currentArtworkId })
+            });
+            delete userRatings[currentArtworkId];
+            if (noteDisplayMode === 'personal') refreshAllNoteDisplays();
+            closeRatingModal();
+        } catch(err) {}
+    }
+
+    // Title only (recherche dans titre uniquement) - icône "T" pour Titre
+    function toggleTitleOnly() {
+        const p = params();
+        p.get('title_only') === '1' ? p.delete('title_only') : p.set('title_only', '1');
+        p.delete('page');
+        navigate('/suggestions?' + p);
+    }
+
+    // Filters
+    function toggleGroup(btn) { btn.closest('.filter-group').classList.toggle('open'); }
+    let allExpanded = true;
+    function toggleExpandAll() {
+        allExpanded = !allExpanded;
+        document.querySelectorAll('.filter-group').forEach(g => allExpanded ? g.classList.add('open') : g.classList.remove('open'));
+        document.querySelectorAll('.btn-expand-all, .drawer-expand-btn').forEach(btn => {
+            btn.innerHTML = allExpanded ? '<i class="fas fa-chevron-up"></i> Replier' : '<i class="fas fa-chevron-down"></i> Déplier';
+        });
+    }
+    function toggleMoreFilter(id, btn) { const el = document.getElementById(id); const isOpen = el.style.display === 'block'; el.style.display = isOpen ? 'none' : 'block'; btn.textContent = isOpen ? 'VOIR PLUS →' : 'VOIR MOINS ↑'; }
+    function removeFilter(type, value) {
+        const p = params();
+        if (['artist', 'museum', 'city', 'movement'].includes(type)) {
+            const list = p.getAll(type).filter(v => v !== value);
+            p.delete(type);
+            list.forEach(v => p.append(type, v));
+        } else { p.delete(type); }
+        p.delete('page');
+        navigate('/suggestions?' + p);
+    }
+    function clearAllFilters() {
+        const p = params();
+        ['artist', 'museum', 'city', 'country', 'movement'].forEach(k => p.delete(k));
+        p.delete('page');
+        navigate('/suggestions?' + p);
+    }
+
+    // Load more
+    function updateLoadMoreInfo() {
+        const info = document.querySelector('.load-more-info');
+        if (info) info.innerHTML = `Affichage de <span>${displayedCount}</span> œuvre${displayedCount > 1 ? 's' : ''} sur <span>${totalCount}</span>`;
+        const btn = document.querySelector('.load-more-btn');
+        if (btn && !isLoading) {
+            const remaining = totalCount - displayedCount;
+            btn.textContent = remaining > 0 ? `VOIR PLUS (${Math.min(remaining, 12)} supplémentaires)` : 'TOUT AFFICHÉ';
+        }
+    }
+
+    window.loadMoreWorks = async function() {
+        if (isLoading || !hasMore) return;
+        isLoading = true;
+        const btn = document.querySelector('.load-more-btn');
+        if (btn) { btn.disabled = true; btn.textContent = 'CHARGEMENT…'; }
+        try {
+            let url = `/api/works?page=${currentPage + 1}&limit=12&q={{ q }}`;
+            {% for a in request.args.getlist('artist') %}url += '&artist={{ a }}';{% endfor %}
+            {% for c in request.args.getlist('city') %}url += '&city={{ c }}';{% endfor %}
+            {% for m in request.args.getlist('museum') %}url += '&museum={{ m }}';{% endfor %}
+            {% if request.args.get('country') %}url += '&country={{ request.args.get('country') }}';{% endif %}
+            {% for m in request.args.getlist('movement') %}url += '&movement={{ m }}';{% endfor %}
+            {% if request.args.get('title_only') == '1' %}url += '&title_only=1';{% endif %}
+
+            const res = await fetch(url);
+            const data = await res.json();
+            if (data.works && data.works.length) {
+                const grid = document.querySelector('.works-grid');
+                for (const w of data.works) grid.appendChild(buildCard(w));
+                currentPage++;
+                hasMore = data.has_more;
+                displayedCount += data.works.length;
+                for (const w of data.works) {
+                    await loadOneCommunityRating(w.id);
+                    {% if session.user_id %}await fetchUserRating(w.id);{% endif %}
+                }
+                refreshAllNoteDisplays();
+            }
+            if (!hasMore) { const c = document.querySelector('.load-more-container'); if (c) c.style.display = 'none'; }
+            updateLoadMoreInfo();
+        } catch(e) { console.error(e); }
+        finally { isLoading = false; if (btn) { btn.disabled = false; updateLoadMoreInfo(); } }
+    };
+
+    function buildCard(w) {
+        const card = document.createElement('a');
+        card.href = `/oeuvre/${w.id}`;
+        card.className = 'work-card';
+        card.dataset.artworkId = w.id;
+        const title = (w.titre || 'Sans titre').substring(0, 40);
+        const artist = (w.createur || 'Artiste inconnu').substring(0, 30);
+        const imgHtml = w.image_url
+            ? `<img src="https://images.weserv.nl/?url=${encodeURIComponent(w.image_url)}&w=300&h=450&fit=cover&output=webp&q=75" alt="${esc(title)}" data-f1="https://wsrv.nl/?url=${encodeURIComponent(w.image_url)}&w=300&h=450&fit=cover&output=webp&q=75" data-f2="${w.image_url}" data-err="0" loading="lazy" onload="this.style.opacity='1'" onerror="imgErr(this)"><div class="image-placeholder" style="display:none;"><i class="fas fa-image"></i></div>`
+            : '<div class="no-copyright-badge"><i class="fas fa-lock"></i><span>© Non disponible</span></div>';
+        card.innerHTML = `
+            <div class="work-image">
+                <div class="rating-stack"></div>
+                ${imgHtml}
+                <div class="work-fav" onclick="toggleFav(event,'${w.id}',this)"><i class="far fa-heart"></i></div>
+            </div>
+            <div class="work-title">${title}</div>
+            <div class="work-artist">${artist}</div>
+        `;
+        return card;
+    }
+
+    // Mobile drawer
+    function openDrawer() { document.getElementById('drawer-overlay').classList.add('open'); document.getElementById('mobile-drawer').classList.add('open'); document.body.style.overflow = 'hidden'; }
+    function closeDrawer() { document.getElementById('drawer-overlay').classList.remove('open'); document.getElementById('mobile-drawer').classList.remove('open'); document.body.style.overflow = ''; }
+
+    // Scroll top
+    const scrollBtn = document.getElementById('scroll-top');
+    window.addEventListener('scroll', () => scrollBtn?.classList.toggle('visible', window.scrollY > 500));
+    scrollBtn?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+
+{% include 'navbar.html' %}
+
+<!-- Rating Modal -->
+<div class="modal-overlay" id="rating-modal-overlay" onclick="if(event.target===this)closeRatingModal()">
+    <div class="modal">
+        <button class="modal-close" onclick="closeRatingModal()"><i class="fas fa-times"></i></button>
+        <div class="modal-title" id="modal-title"></div>
+        <div class="modal-artist" id="modal-artist"></div>
+        <div class="rating-row">
+            <span class="rating-label">Note globale</span>
+            <div class="stars-input">
+                <input type="radio" name="note_globale" id="g5" value="5"><label for="g5">★</label>
+                <input type="radio" name="note_globale" id="g4" value="4"><label for="g4">★</label>
+                <input type="radio" name="note_globale" id="g3" value="3"><label for="g3">★</label>
+                <input type="radio" name="note_globale" id="g2" value="2"><label for="g2">★</label>
+                <input type="radio" name="note_globale" id="g1" value="1"><label for="g1">★</label>
+            </div>
+        </div>
+        <hr class="modal-divider">
+        <div class="rating-row">
+            <span class="rating-label">Technique</span>
+            <div class="stars-input small">
+                <input type="radio" name="note_technique" id="t5" value="5"><label for="t5">★</label>
+                <input type="radio" name="note_technique" id="t4" value="4"><label for="t4">★</label>
+                <input type="radio" name="note_technique" id="t3" value="3"><label for="t3">★</label>
+                <input type="radio" name="note_technique" id="t2" value="2"><label for="t2">★</label>
+                <input type="radio" name="note_technique" id="t1" value="1"><label for="t1">★</label>
+            </div>
+        </div>
+        <div class="rating-row">
+            <span class="rating-label">Créativité</span>
+            <div class="stars-input small">
+                <input type="radio" name="note_originalite" id="o5" value="5"><label for="o5">★</label>
+                <input type="radio" name="note_originalite" id="o4" value="4"><label for="o4">★</label>
+                <input type="radio" name="note_originalite" id="o3" value="3"><label for="o3">★</label>
+                <input type="radio" name="note_originalite" id="o2" value="2"><label for="o2">★</label>
+                <input type="radio" name="note_originalite" id="o1" value="1"><label for="o1">★</label>
+            </div>
+        </div>
+        <div class="rating-row">
+            <span class="rating-label">Émotion</span>
+            <div class="stars-input small">
+                <input type="radio" name="note_emotion" id="e5" value="5"><label for="e5">★</label>
+                <input type="radio" name="note_emotion" id="e4" value="4"><label for="e4">★</label>
+                <input type="radio" name="note_emotion" id="e3" value="3"><label for="e3">★</label>
+                <input type="radio" name="note_emotion" id="e2" value="2"><label for="e2">★</label>
+                <input type="radio" name="note_emotion" id="e1" value="1"><label for="e1">★</label>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-primary" onclick="saveRating()">Enregistrer</button>
+            <button class="btn-secondary" id="btn-delete-rating" onclick="deleteRating()">Supprimer</button>
+        </div>
+    </div>
+</div>
+
+<!-- Mobile Drawer -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="mobile-drawer" id="mobile-drawer">
+    <div class="drawer-header">
+        <div class="drawer-header-left">
+            <span class="drawer-title">FILTRES DISPONIBLES</span>
+            <button class="drawer-expand-btn" onclick="toggleExpandAll()"><i class="fas fa-chevron-up"></i> Replier</button>
+        </div>
+        <button class="drawer-close" onclick="closeDrawer()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="drawer-inner">
+        {%- macro filter_groups(pfx) %}
+        {% if search_results %}
+        {%- set ns = namespace(groups=[]) %}
+        {%- if search_results.artists and search_results.artists|length > 0 %}{% set _top = (search_results.artists|sort(attribute='count', reverse=true))[0] %}{% set ns.groups = ns.groups + [{'key': 'artists', 'weight': _top.count}] %}{% endif %}
+        {%- if search_results.museums and search_results.museums|length > 0 %}{% set _top = (search_results.museums|sort(attribute='count', reverse=true))[0] %}{% set ns.groups = ns.groups + [{'key': 'museums', 'weight': _top.count}] %}{% endif %}
+        {%- if search_results.cities and search_results.cities|length > 0 %}{% set _top = (search_results.cities|sort(attribute='oeuvres_count', reverse=true))[0] %}{% set ns.groups = ns.groups + [{'key': 'cities', 'weight': _top.oeuvres_count}] %}{% endif %}
+        {%- if search_results.countries and search_results.countries|length > 0 %}{% set _top = (search_results.countries|sort(attribute='oeuvres_count', reverse=true))[0] %}{% set ns.groups = ns.groups + [{'key': 'countries', 'weight': _top.oeuvres_count}] %}{% endif %}
+        {%- if search_results.movements and search_results.movements|length > 0 %}{% set _top = (search_results.movements|sort(attribute='count', reverse=true))[0] %}{% set ns.groups = ns.groups + [{'key': 'movements', 'weight': _top.count}] %}{% endif %}
+        
+        {% for grp in (ns.groups|sort(attribute='weight', reverse=true)) %}
+            {% if grp.key == 'artists' %}
+            {% set sorted = search_results.artists|sort(attribute='count', reverse=true) %}
+            <div class="filter-group open"><button class="filter-group-toggle" onclick="toggleGroup(this)"><span class="toggle-left"><span class="group-label">ARTISTES</span><span class="group-count">{{ sorted|length }}</span></span><i class="fas fa-chevron-down group-arrow"></i></button><div class="filter-body">{% for a in sorted[:5] %}<a href="/suggestions?q={{ q }}&artist={{ a.nom }}" class="filter-item {{ 'active' if a.nom in request.args.getlist('artist') }}"><span class="item-name">{{ a.nom|truncate(26) }}</span><span class="item-count">{{ a.count }}</span></a>{% endfor %}{% if sorted|length > 5 %}<div id="{{ pfx }}more-artists" style="display:none;">{% for a in sorted[5:] %}<a href="/suggestions?q={{ q }}&artist={{ a.nom }}" class="filter-item {{ 'active' if a.nom in request.args.getlist('artist') }}"><span class="item-name">{{ a.nom|truncate(26) }}</span><span class="item-count">{{ a.count }}</span></a>{% endfor %}</div><button class="filter-more-btn" onclick="toggleMoreFilter('{{ pfx }}more-artists',this)">VOIR PLUS →</button>{% endif %}</div></div>
+            {% endif %}
+            {% if grp.key == 'museums' %}
+            {% set sorted = search_results.museums|sort(attribute='count', reverse=true) %}
+            <div class="filter-group open"><button class="filter-group-toggle" onclick="toggleGroup(this)"><span class="toggle-left"><span class="group-label">MUSÉES</span><span class="group-count">{{ sorted|length }}</span></span><i class="fas fa-chevron-down group-arrow"></i></button><div class="filter-body">{% for m in sorted[:5] %}<a href="/suggestions?q={{ q }}&museum={{ m.id }}" class="filter-item {{ 'active' if m.id|string in request.args.getlist('museum') }}"><span class="item-name">{{ m.nom|truncate(26) }}</span><span class="item-count">{{ m.count }}</span></a>{% endfor %}{% if sorted|length > 5 %}<div id="{{ pfx }}more-museums" style="display:none;">{% for m in sorted[5:] %}<a href="/suggestions?q={{ q }}&museum={{ m.id }}" class="filter-item {{ 'active' if m.id|string in request.args.getlist('museum') }}"><span class="item-name">{{ m.nom|truncate(26) }}</span><span class="item-count">{{ m.count }}</span></a>{% endfor %}</div><button class="filter-more-btn" onclick="toggleMoreFilter('{{ pfx }}more-museums',this)">VOIR PLUS →</button>{% endif %}</div></div>
+            {% endif %}
+            {% if grp.key == 'cities' %}
+            {% set sorted = search_results.cities|sort(attribute='oeuvres_count', reverse=true) %}
+            <div class="filter-group open"><button class="filter-group-toggle" onclick="toggleGroup(this)"><span class="toggle-left"><span class="group-label">VILLES</span><span class="group-count">{{ sorted|length }}</span></span><i class="fas fa-chevron-down group-arrow"></i></button><div class="filter-body">{% for c in sorted[:5] %}<a href="/suggestions?q={{ q }}&city={{ c.nom }}" class="filter-item {{ 'active' if c.nom in request.args.getlist('city') }}"><span class="item-name">{{ c.nom|truncate(26) }}</span><span class="item-count">{{ c.oeuvres_count }}</span></a>{% endfor %}{% if sorted|length > 5 %}<div id="{{ pfx }}more-cities" style="display:none;">{% for c in sorted[5:] %}<a href="/suggestions?q={{ q }}&city={{ c.nom }}" class="filter-item {{ 'active' if c.nom in request.args.getlist('city') }}"><span class="item-name">{{ c.nom|truncate(26) }}</span><span class="item-count">{{ c.oeuvres_count }}</span></a>{% endfor %}</div><button class="filter-more-btn" onclick="toggleMoreFilter('{{ pfx }}more-cities',this)">VOIR PLUS →</button>{% endif %}</div></div>
+            {% endif %}
+            {% if grp.key == 'countries' %}
+            {% set sorted = search_results.countries|sort(attribute='oeuvres_count', reverse=true) %}
+            <div class="filter-group open"><button class="filter-group-toggle" onclick="toggleGroup(this)"><span class="toggle-left"><span class="group-label">PAYS</span><span class="group-count">{{ sorted|length }}</span></span><i class="fas fa-chevron-down group-arrow"></i></button><div class="filter-body">{% for p in sorted[:5] %}<a href="/suggestions?q={{ q }}&country={{ p.nom }}" class="filter-item {{ 'active' if p.nom == request.args.get('country') }}"><span class="item-name">{{ p.nom|truncate(26) }}</span><span class="item-count">{{ p.oeuvres_count }}</span></a>{% endfor %}{% if sorted|length > 5 %}<div id="{{ pfx }}more-countries" style="display:none;">{% for p in sorted[5:] %}<a href="/suggestions?q={{ q }}&country={{ p.nom }}" class="filter-item {{ 'active' if p.nom == request.args.get('country') }}"><span class="item-name">{{ p.nom|truncate(26) }}</span><span class="item-count">{{ p.oeuvres_count }}</span></a>{% endfor %}</div><button class="filter-more-btn" onclick="toggleMoreFilter('{{ pfx }}more-countries',this)">VOIR PLUS →</button>{% endif %}</div></div>
+            {% endif %}
+            {% if grp.key == 'movements' %}
+            {% set sorted = search_results.movements|sort(attribute='count', reverse=true) %}
+            <div class="filter-group open"><button class="filter-group-toggle" onclick="toggleGroup(this)"><span class="toggle-left"><span class="group-label">MOUVEMENTS</span><span class="group-count">{{ sorted|length }}</span></span><i class="fas fa-chevron-down group-arrow"></i></button><div class="filter-body">{% for m in sorted[:5] %}<a href="/suggestions?q={{ q }}&movement={{ m.nom }}" class="filter-item {{ 'active' if m.nom in request.args.getlist('movement') }}"><span class="item-name">{{ m.nom|truncate(26) }}</span><span class="item-count">{{ m.count }}</span></a>{% endfor %}{% if sorted|length > 5 %}<div id="{{ pfx }}more-movements" style="display:none;">{% for m in sorted[5:] %}<a href="/suggestions?q={{ q }}&movement={{ m.nom }}" class="filter-item {{ 'active' if m.nom in request.args.getlist('movement') }}"><span class="item-name">{{ m.nom|truncate(26) }}</span><span class="item-count">{{ m.count }}</span></a>{% endfor %}</div><button class="filter-more-btn" onclick="toggleMoreFilter('{{ pfx }}more-movements',this)">VOIR PLUS →</button>{% endif %}</div></div>
+            {% endif %}
+        {% endfor %}
+        {% endif %}
+        {%- endmacro %}
+        {{ filter_groups('d-') }}
+    </div>
+</div>
+
+<div class="container main-content">
+    {% if q or artists or museums or cities or country or movements %}
+    <div class="hero-header">
+        <div class="hero-count">{{ total_oeuvres }}</div>
+        <div class="hero-label">Résutat{{ 'S' if total_oeuvres > 1 else '' }}</div>
+        <div class="hero-query">pour <strong>{{ q }}</strong></div>
+    </div>
+
+    {% if quick_suggestions and quick_suggestions|length > 0 %}
+    <div class="suggestions-bar">
+        {% for item in quick_suggestions %}
+        <a href="{{ item.url }}" class="suggestion-chip">
+            <i class="fas {{ item.icon }}"></i>{{ item.name }}
+            {% if item.count is defined %}<span class="chip-count">{{ item.count }}</span>{% endif %}
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="search-layout">
+        <aside class="filters-sidebar">
+            {% set has_filters = request.args.getlist('artist') or request.args.getlist('museum') or request.args.getlist('city') or request.args.get('country') or request.args.getlist('movement') %}
+            <div class="sidebar-header">
+                <span class="sidebar-title">FILTRES</span>
+                <div class="sidebar-actions">
+                    <button class="btn-expand-all" onclick="toggleExpandAll()"><i class="fas fa-chevron-up"></i> Replier</button>
+                    {% if has_filters %}<button class="btn-clear-filters" onclick="clearAllFilters()"><i class="fas fa-times"></i> Effacer</button>{% endif %}
+                </div>
+            </div>
+            {{ filter_groups('s-') }}
+        </aside>
+
+        <div class="content-area">
+            <div class="toolbar">
+                <div class="active-filters">
+                    <button class="mobile-filter-btn" onclick="openDrawer()">
+                        <i class="fas fa-sliders-h"></i> FILTRER
+                        {% set fc = request.args.getlist('artist')|length + request.args.getlist('museum')|length + request.args.getlist('city')|length + (1 if request.args.get('country') else 0) + request.args.getlist('movement')|length %}
+                        {% if fc > 0 %}<span class="filter-badge">{{ fc }}</span>{% endif %}
+                    </button>
+                    {% for a in request.args.getlist('artist') %}<div class="filter-tag"><span>{{ a }}</span><button onclick="removeFilter('artist','{{ a }}')"><i class="fas fa-times"></i></button></div>{% endfor %}
+                    {% for m in request.args.getlist('museum') %}<div class="filter-tag"><span>{{ m }}</span><button onclick="removeFilter('museum','{{ m }}')"><i class="fas fa-times"></i></button></div>{% endfor %}
+                    {% for c in request.args.getlist('city') %}<div class="filter-tag"><span>{{ c }}</span><button onclick="removeFilter('city','{{ c }}')"><i class="fas fa-times"></i></button></div>{% endfor %}
+                    {% if request.args.get('country') %}<div class="filter-tag"><span>{{ request.args.get('country') }}</span><button onclick="removeFilter('country','{{ request.args.get('country') }}')"><i class="fas fa-times"></i></button></div>{% endif %}
+                    {% for m in request.args.getlist('movement') %}<div class="filter-tag"><span>{{ m }}</span><button onclick="removeFilter('movement','{{ m }}')"><i class="fas fa-times"></i></button></div>{% endfor %}
+                </div>
+                <div class="toolbar-actions">
+                    <button class="btn-icon {% if request.args.get('title_only') == '1' %}active{% endif %}" id="btn-title-only" onclick="toggleTitleOnly()" title="Rechercher uniquement dans le titre"><i class="fas fa-font"></i></button>
+                    <button class="btn-notes-toggle mode-community" id="notes-toggle-btn" onclick="toggleNoteDisplay()"><i class="fas fa-users"></i> <span>Notes public</span></button>
+                </div>
+            </div>
+
+            {% if works and works|length > 0 %}
+            <div class="works-grid" id="works-grid">
+                {% for w in works %}
+                <a href="/oeuvre/{{ w.id }}" class="work-card" data-artwork-id="{{ w.id }}">
+                    <div class="work-image">
+                        <div class="rating-stack"></div>
+                        {% if w.image_url %}
+                        <img src="https://images.weserv.nl/?url={{ w.image_url|urlencode }}&w=300&h=450&fit=cover&output=webp&q=75" alt="{{ w.titre }}" data-f1="https://wsrv.nl/?url={{ w.image_url|urlencode }}&w=300&h=450&fit=cover&output=webp&q=75" data-f2="{{ w.image_url }}" data-err="0" loading="lazy" onload="this.style.opacity='1'" onerror="imgErr(this)">
+                        <div class="image-placeholder" style="display:none;"><i class="fas fa-image"></i></div>
+                        {% else %}
+                        <div class="no-copyright-badge"><i class="fas fa-lock"></i><span>© Non disponible</span></div>
+                        {% endif %}
+                        <div class="work-fav" onclick="toggleFav(event,'{{ w.id }}',this)">
+                            <i class="{% if session.user_id and w.id in favorites %}fas{% else %}far{% endif %} fa-heart"></i>
+                        </div>
+                    </div>
+                    <div class="work-title">{{ w.titre|truncate(40) if w.titre else 'SANS TITRE' }}</div>
+                    <div class="work-artist">{{ w.createur|truncate(30) if w.createur else 'ARTISTE INCONNU' }}</div>
+                </a>
+                {% endfor %}
+            </div>
+
+            {% if has_more %}
+            <div class="load-more-container">
+                <button class="load-more-btn" onclick="loadMoreWorks()">VOIR PLUS</button>
+                <div class="load-more-info">Affichage de <span>{{ works|length }}</span> œuvre{% if works|length > 1 %}s{% endif %} sur <span>{{ total_oeuvres }}</span></div>
+            </div>
+            {% else %}
+            <div class="load-more-info" style="text-align:center;margin-top:1.5rem"><span>{{ works|length }}</span> résultat{% if works|length > 1 %}s{% endif %} affiché{% if works|length > 1 %}s{% endif %} sur <span>{{ total_oeuvres }}</span></div>
+            {% endif %}
+
+            {% else %}
+            <div class="no-results"><i class="fas fa-search"></i><h3>Aucun résultat trouvé</h3><p>Essayez d'autres mots-clés ou ajustez vos filtres</p></div>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <div class="no-results"><i class="fas fa-search"></i><h3>Recherchez une œuvre, un artiste, un musée ou une ville</h3><p>Utilisez la barre de recherche ci-dessus</p></div>
+    {% endif %}
+</div>
+
+<div class="scroll-top" id="scroll-top"><i class="fas fa-arrow-up"></i></div>
+{% include 'footer.html' %}
+</body>
+</html>

@@ -897,25 +897,30 @@ body {
 
     .final-cta-title { padding: 0 1.2rem; }
 
-    /* ── DAILY : scroll horizontal, image centrale visible, côtés coupés ── */
-    .daily-grid {
-        display: flex;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        gap: 0;
-        scrollbar-width: none;
-        /* Padding pour que la carte centrale soit bien centrée et les côtés débordent */
-        padding-left: 15vw;
-        padding-right: 15vw;
-    }
-    .daily-grid::-webkit-scrollbar { display: none; }
+/* ── DAILY : affichage centré avec œuvre 2 au milieu, 1 et 3 sur les côtés ── */
+.daily-grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 0;
+    scrollbar-width: none;
+    /* Ajuste les padding pour centrer la 2e œuvre */
+    padding-left: calc(50vw - 35vw);
+    padding-right: calc(50vw - 35vw);
+}
+.daily-grid::-webkit-scrollbar { display: none; }
 
-    .daily-card {
-        flex-shrink: 0;
-        width: 70vw;
-        aspect-ratio: 3/4;
-        scroll-snap-align: center;
-    }
+.daily-card {
+    flex-shrink: 0;
+    width: 70vw;
+    aspect-ratio: 3/4;
+    scroll-snap-align: start;
+}
+
+/* Force le scroll pour que la 2e œuvre soit visible au centre au chargement */
+.daily-card:nth-child(2) {
+    scroll-snap-align: center;
+}
 
     /* Toutes les cartes visibles (pas de display:none) */
     .daily-card:last-child { display: block; }
